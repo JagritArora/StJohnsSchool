@@ -12,7 +12,7 @@
 <meta name="apple-mobile-web-app-title" content="St. John's" />
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-<link href="https://fonts.googleapis.com/css2?family=Figtree:wght@400..800&family=Mukta:wght@400;600;700&display=swap" rel="stylesheet" />
+<link href="https://fonts.googleapis.com/css2?family=Figtree:wght@400..800&display=swap" rel="stylesheet" />
 <link rel="stylesheet" href="css/site.css" />
 <script>
 /* Before the first paint: fade photos in as they load. */
@@ -38,12 +38,11 @@
     <div class="wrap">
       <span class="eyebrow">Proposal · October 2026</span>
       <h1>A website parents use every day, not once at admission time.</h1>
-      <p>A new public website for St. John's School, with an app behind it that connects parents, teachers and the principal — and an AI assistant that saves teachers time and answers parents in Hindi or English.</p>
+      <p>A new public website for St. John's School, with an app behind it that connects parents, teachers and the principal — and an AI assistant that saves teachers time and answers parents' questions at any hour.</p>
       <div class="hero-cta">
         <a href="index.html" class="btn btn-primary">See the new website</a>
         <a href="login.html?role=parent" class="btn btn-ghost">Parent view</a>
-        <a href="login.html?role=teacher" class="btn btn-ghost">Teacher view</a>
-        <a href="login.html?role=principal" class="btn btn-ghost">Principal view</a>
+        <a href="login.html?role=staff" class="btn btn-ghost">Staff view</a>
       </div>
     </div>
   </header>
@@ -71,7 +70,7 @@
             <li>Online admission enquiry, straight to the principal's dashboard.</li>
             <li>News and events posted from the same app teachers use — never empty again.</li>
             <li>A login for every parent, teacher and the principal: attendance, homework, marks, fees and messages.</li>
-            <li>An AI assistant that answers parents at any hour, in Hindi or English.</li>
+            <li>An AI assistant that answers parents at any hour.</li>
             <li>Works on any phone, loads fast, light and dark mode, and is easy to find on Google.</li>
           </ul>
         </div>
@@ -88,8 +87,8 @@
         <div class="day-row"><span class="time">8:05</span><div><span class="who-l g">Parent</span><p>The parent of an absent child gets an app notification and SMS: “Aarav is marked absent today.”</p></div><div class="muted">A child who left home but didn't reach school is noticed within minutes.</div></div>
         <div class="day-row"><span class="time">11:30</span><div><span class="who-l">Teacher</span><p>Posts homework in a free period. AI drafts the practice questions from a topic; the teacher edits and sends.</p></div><div class="muted">Every parent sees it. No “my child didn't write it down”.</div></div>
         <div class="day-row"><span class="time">2:30</span><div><span class="who-l">Teacher</span><p>Enters Unit Test marks once and taps Publish.</p></div><div class="muted">Parents see the mark with the class average. Report cards fill in automatically.</div></div>
-        <div class="day-row"><span class="time">8:00 PM</span><div><span class="who-l g">Parent</span><p>Asks the assistant “कल क्या ले जाना है?” and gets tomorrow's subjects and pending homework.</p></div><div class="muted">The assistant only knows that parent's own child.</div></div>
-        <div class="day-row"><span class="time">Friday</span><div><span class="who-l g">Parent</span><p>Gets a short weekly summary: attendance, marks, what's due, what to work on — in English or Hindi.</p></div><div class="muted">Fewer surprises at the PTM.</div></div>
+        <div class="day-row"><span class="time">8:00 PM</span><div><span class="who-l g">Parent</span><p>Asks the assistant “What should Aarav pack for tomorrow?” and gets tomorrow's subjects and pending homework.</p></div><div class="muted">The assistant only knows that parent's own child.</div></div>
+        <div class="day-row"><span class="time">Friday</span><div><span class="who-l g">Parent</span><p>Gets a short weekly summary: attendance, marks, what's due, what to work on.</p></div><div class="muted">Fewer surprises at the PTM.</div></div>
         <div class="day-row"><span class="time">9:00 AM</span><div><span class="who-l">Principal</span><p>Reads a morning brief: attendance by class, classes that haven't marked, new admission enquiries, fees, students who need support.</p></div><div class="muted">The whole school on one screen, without asking for reports.</div></div>
       </div>
     </div>
@@ -99,12 +98,12 @@
     <div class="wrap">
       <div class="sec-head"><span class="eyebrow">AI features</span><h2>AI that drafts, people who decide.</h2><p>Built on Claude by Anthropic. Every feature below is in the prototype and can be tried.</p></div>
       <div class="feat">
-        <div><span class="who-l">Website visitors</span><h3>Admissions assistant</h3><p>Answers questions about admission, documents, Class XI rules and the campus, in Hindi or English. If it doesn't know, it passes the question to the office.</p></div>
+        <div><span class="who-l">Website visitors</span><h3>Admissions assistant</h3><p>Answers questions about admission, documents, Class XI rules and the campus. If it doesn't know, it passes the question to the office.</p></div>
         <div><span class="who-l">Parents</span><h3>“Ask about my child”</h3><p>Attendance, marks, homework, fees, bus and notices — for their own child only. A weekly summary arrives on Friday.</p></div>
         <div><span class="who-l">Parents</span><h3>What to work on</h3><p>Spots the subject that slipped since the last test and suggests simple steps at home before the PTM.</p></div>
         <div><span class="who-l">Teachers</span><h3>Report-card remarks</h3><p>A personal draft for each student from marks and attendance — all 32 at once. The teacher edits before saving.</p></div>
         <div><span class="who-l">Teachers</span><h3>Practice sets &amp; lesson plans</h3><p>Worksheets and a 40-minute plan on any topic, sent as homework in one tap.</p></div>
-        <div><span class="who-l">Teachers &amp; office</span><h3>Notices in Hindi</h3><p>Every notice can go out in both languages, checked by a person before sending.</p></div>
+        <div><span class="who-l">Teachers &amp; office</span><h3>Notes to parents</h3><p>Turns a school notice into a short, warm note for one class, checked and edited by the teacher before sending.</p></div>
         <div><span class="who-l">Teachers</span><h3>Early warning</h3><p>Flags students with attendance under 85%, a sharp drop in marks, or a subject under 50% — before it shows up in the board result.</p></div>
         <div><span class="who-l">Principal</span><h3>Morning brief</h3><p>A short daily summary of attendance, admissions, fees and students needing support.</p></div>
         <div><span class="who-l">Principal</span><h3>Ask the school</h3><p>“Which class has the lowest attendance this month?” — answered from live records.</p></div>

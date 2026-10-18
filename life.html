@@ -23,16 +23,13 @@
 <meta name="apple-mobile-web-app-title" content="St. John's" />
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-<link href="https://fonts.googleapis.com/css2?family=Figtree:wght@400..800&family=Mukta:wght@400;600;700&display=swap" rel="stylesheet" />
+<link href="https://fonts.googleapis.com/css2?family=Figtree:wght@400..800&display=swap" rel="stylesheet" />
 <link rel="stylesheet" href="css/school.css" />
 <meta name="theme-color" content="#1C1F24" media="(prefers-color-scheme: light)" />
 <meta name="theme-color" content="#1B1D22" media="(prefers-color-scheme: dark)" />
 <script>
 /* Before the first paint: fade photos in as they load, and hold headline motion until the fonts arrive. */
 (function (d) { var h = d.documentElement, done = function () { h.classList.add("fonts"); }; h.classList.add("js");
-  /* Hindi: keep the page hidden for the moment it takes to swap in the Hindi text. */
-  var L; try { L = new URLSearchParams(location.search).get("lang") || localStorage.getItem("sjs-lang"); } catch (e) {}
-  if (L === "hi") { h.lang = "hi"; h.classList.add("tr-wait"); setTimeout(function () { h.classList.remove("tr-wait"); }, 2500); }
   var m = function (e) { if (e.target.tagName === "IMG") e.target.classList.add("is-loaded"); };
   d.addEventListener("load", m, true); d.addEventListener("error", m, true);
   if (d.fonts && d.fonts.load) Promise.all([d.fonts.load("700 1em Figtree"), d.fonts.load("400 1em Figtree")]).then(done, done); else done();
@@ -41,7 +38,6 @@
 </head>
 <body data-page="life">
 <script src="js/shell.js"></script>
-<script src="js/lang.js"></script>
 <main id="main">
   <header class="phero">
     <div class="wrap phero-in">
@@ -81,11 +77,11 @@
   <section class="sec" id="houses">
     <div class="wrap">
       <div class="sec-title"><h2 class="t-l">Houses</h2><p>Every student belongs to a house, competing in sport, debates and cultural events across the year. House names and colours: <span class="tbc" title="To be provided by the school">to be added</span>.</p></div>
-      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px">
-        <div style="background:var(--band-brick);color:#fff;border-radius:999px 999px 16px 16px;padding:56px 22px 24px;font:650 22px/1.1 var(--display);font-variation-settings:'wdth' 85">Red house</div>
-        <div style="background:var(--royal);color:#fff;border-radius:999px 999px 16px 16px;padding:56px 22px 24px;font:650 22px/1.1 var(--display);font-variation-settings:'wdth' 85">Blue house</div>
-        <div style="background:var(--hedge);color:#fff;border-radius:999px 999px 16px 16px;padding:56px 22px 24px;font:650 22px/1.1 var(--display);font-variation-settings:'wdth' 85">Green house</div>
-        <div style="background:var(--marigold);color:#2A1408;border-radius:999px 999px 16px 16px;padding:56px 22px 24px;font:650 22px/1.1 var(--display);font-variation-settings:'wdth' 85">Yellow house</div>
+      <div class="houses">
+        <div class="house h-red"><b>Red house</b></div>
+        <div class="house h-blue"><b>Blue house</b></div>
+        <div class="house h-green"><b>Green house</b></div>
+        <div class="house h-yellow"><b>Yellow house</b></div>
       </div>
     </div>
   </section>

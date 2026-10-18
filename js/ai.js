@@ -12,7 +12,7 @@
   const upcomingHolidays = () => Object.entries(S.HOLIDAYS).filter(([k]) => k >= S.todayKey).slice(0, 3);
 
   // ---------- Shared helpers ----------
-  S.weekly = (lang) => {
+  S.weekly = () => {
     const s = S.me, hy = s.hy;
     const sorted = [...S.subjects].sort((a, b) => hy[b] - hy[a]);
     const weak = S.subjects.map((x) => ({ x, gap: S.classAvg("hy", x) - hy[x] })).sort((a, b) => b.gap - a.gap)[0];
@@ -22,13 +22,6 @@
     let present = 0, days = 0, d = new Date(S.today);
     for (let i = 0; i < 12 && days < 5; i++, d = S.addDays(d, -1)) {
       const st = S.statusOn(s.roll, S.iso(d)); if (st === "H" || st === null) continue; days++; if (st === "P") present++;
-    }
-    if (lang === "hi") {
-      return `इस हफ़्ते आरव की उपस्थिति <b>${days} में से ${present} दिन</b> रही।\n` +
-        `अर्धवार्षिक परीक्षा में सबसे अच्छे अंक <b>${S.subjectsHi[sorted[0]]} (${hy[sorted[0]]}%)</b> और <b>${S.subjectsHi[sorted[1]]} (${hy[sorted[1]]}%)</b> में आए।\n` +
-        (weak.gap > 0 ? `<b>${S.subjectsHi[weak.x]} (${hy[weak.x]}%)</b> कक्षा के औसत (${S.classAvg("hy", weak.x)}%) से थोड़ा कम है — रोज़ 15 मिनट ज़ोर से पढ़ने का अभ्यास मदद करेगा।\n` : "") +
-        (pending.length ? `बाकी गृहकार्य: ${pending.map((h) => `${S.subjectsHi[h.subj] || h.subj} (${S.fmt(h.due)})`).join(", ")}।\n` : "सारा गृहकार्य पूरा है।\n") +
-        (fee ? `तीसरी किस्त <b>${S.rupee(fee.amount)}</b> की अंतिम तिथि ${S.fmt(fee.due)} है।` : "सभी फ़ीस जमा है। धन्यवाद!");
     }
     return `Aarav was present <b>${present} of ${days} days</b> this week.\n` +
       `Half-yearly results are strongest in <b>${sorted[0]} (${hy[sorted[0]]}%)</b> and <b>${sorted[1]} (${hy[sorted[1]]}%)</b>.\n` +
@@ -68,61 +61,40 @@
   const topicName = { integers: "Integers", fractions: "Fractions & Decimals", equations: "Simple Equations", triangles: "Triangles & their Properties" };
   S.practice = (topic, n) => { const t = topicIn(lower(topic)); return { name: topicName[t], qs: BANK[t].slice(0, n) }; };
 
-  // Built-in website answers come in the language the site is being read in.
-  const say = (en, hi) => (S.lang === "hi" ? hi : en);
-
   // ---------- Brains by role ----------
   const brains = {
     public(q) {
       if (has(q, /alum|old student|studied (here|at)|ex-student|passed out/))
-        return say("Welcome back! Send the school your name, the year you finished and what you're doing now, from the Contact page. The office will add you to the alumni list and invite you to Annual Day.",
-        "आपका फिर से स्वागत है! संपर्क पेज से स्कूल को अपना नाम, स्कूल छोड़ने का साल और आजकल आप क्या कर रहे हैं, भेजिए। ऑफ़िस आपको पूर्व छात्रों की सूची में जोड़ेगा और वार्षिकोत्सव का न्योता भेजेगा।");
-      if (/[\u0900-\u097F]/.test(q) || /\b(kya|kaise|kab|hai|chahiye|admission kab)\b/.test(q))
-        return "नमस्ते! सेंट जॉन्स स्कूल, सेक्टर 7A, फ़रीदाबाद में <b>नर्सरी</b> और <b>कक्षा XI</b> के लिए दाख़िले की पूछताछ शुरू है।\n• दाख़िला मेरिट के आधार पर होता है।\n• ज़रूरी दस्तावेज़: जन्म प्रमाण-पत्र, निवास प्रमाण, बच्चे और माता-पिता की फ़ोटो।\n• दाख़िला पेज पर फ़ॉर्म भरें, स्कूल ऑफ़िस आपको कॉल करेगा।";
+        return "Welcome back! Send the school your name, the year you finished and what you're doing now, from the Contact page. The office will add you to the alumni list and invite you to Annual Day.";
       if (has(q, /document|certificate|paper|proof|tc\b|transfer/))
-        return say("Documents needed for admission:\n• Date of birth certificate\n• Residence proof\n• 1 passport photo of the child, and 1 of each parent with the child\n• Class XI: original Transfer Certificate and Class IX result (provisional), then the Class X mark sheet once CBSE results are out\nPlease bring originals for verification along with photocopies.",
-        "दाख़िले के लिए ज़रूरी दस्तावेज़:\n• जन्म प्रमाण-पत्र\n• निवास प्रमाण\n• बच्चे की 1 पासपोर्ट फ़ोटो, और बच्चे के साथ माता और पिता की 1-1 फ़ोटो\n• कक्षा XI: मूल ट्रांसफ़र सर्टिफ़िकेट और कक्षा IX का परिणाम (अस्थायी), फिर CBSE परिणाम आने पर कक्षा X की मार्कशीट\nजाँच के लिए मूल दस्तावेज़ और उनकी फ़ोटोकॉपी साथ लाएँ।");
+        return "Documents needed for admission:\n• Date of birth certificate\n• Residence proof\n• 1 passport photo of the child, and 1 of each parent with the child\n• Class XI: original Transfer Certificate and Class IX result (provisional), then the Class X mark sheet once CBSE results are out\nPlease bring originals for verification along with photocopies.";
       if (has(q, /xi\b|11|eleven|stream|commerce|humanities|science stream/))
-        return say("Class XI admission is <b>provisional</b>, based on the Class IX result. It is confirmed once the Class X CBSE result and pass certificate are submitted — if a student does not pass Class X, the provisional seat is cancelled automatically.\nFor the streams on offer this year, the admissions office will confirm when they call you back.",
-        "कक्षा XI में दाख़िला कक्षा IX के परिणाम के आधार पर <b>अस्थायी</b> होता है। कक्षा X का CBSE परिणाम और पास सर्टिफ़िकेट जमा होने पर यह पक्का होता है — अगर छात्र कक्षा X पास नहीं करता, तो अस्थायी सीट अपने-आप रद्द हो जाती है।\nइस साल कौन-सी स्ट्रीम हैं, यह दाख़िला ऑफ़िस कॉल करके बताएगा।");
+        return "Class XI admission is <b>provisional</b>, based on the Class IX result. It is confirmed once the Class X CBSE result and pass certificate are submitted — if a student does not pass Class X, the provisional seat is cancelled automatically.\nFor the streams on offer this year, the admissions office will confirm when they call you back.";
       if (has(q, /admi|seat|apply|enquir|form|join|nursery|vacanc/))
-        return say("Admissions for <b>Nursery</b> and <b>Class XI</b> are open for enquiry.\n• Nursery: selected students are listed on the notice board at the school reception.\n• Admission is on merit, and is valid once all documents are submitted.\n• Fill the enquiry form on the Admissions page and pick a day — the office calls you back to confirm your campus visit.",
-        "<b>नर्सरी</b> और <b>कक्षा XI</b> के लिए दाख़िले की पूछताछ शुरू है।\n• नर्सरी: चुने गए बच्चों के नाम स्कूल रिसेप्शन के नोटिस बोर्ड पर लगाए जाते हैं।\n• दाख़िला मेरिट पर होता है, और सारे दस्तावेज़ जमा होने पर ही मान्य होता है।\n• दाख़िला पेज पर पूछताछ फ़ॉर्म भरें और एक दिन चुनें — ऑफ़िस कॉल करके आपकी कैंपस विज़िट पक्की करेगा।");
+        return "Admissions for <b>Nursery</b> and <b>Class XI</b> are open for enquiry.\n• Nursery: selected students are listed on the notice board at the school reception.\n• Admission is on merit, and is valid once all documents are submitted.\n• Fill the enquiry form on the Admissions page and pick a day — the office calls you back to confirm your campus visit.";
       if (has(q, /fee|cost|charges|expens/))
-        return say("St. John's follows <b>CBSE norms for fees</b>. The office shares the current fee structure for your child's class when they call you after an enquiry.\n(Once the school uploads the fee schedule, I will answer this with exact amounts.)",
-        "सेंट जॉन्स में <b>फ़ीस CBSE के नियमों के अनुसार</b> है। पूछताछ के बाद जब ऑफ़िस आपको कॉल करेगा, तब आपके बच्चे की कक्षा की मौजूदा फ़ीस बताएगा।\n(स्कूल फ़ीस की सूची अपलोड करते ही मैं सही रकम बता सकूँगा।)");
-      if (has(q, /cbse|board|affiliat|icse/)) return say("St. John's School is a <b>CBSE</b> school, from Nursery to Class XII.",
-        "सेंट जॉन्स स्कूल नर्सरी से कक्षा XII तक <b>CBSE</b> स्कूल है।");
+        return "St. John's follows <b>CBSE norms for fees</b>. The office shares the current fee structure for your child's class when they call you after an enquiry.\n(Once the school uploads the fee schedule, I will answer this with exact amounts.)";
+      if (has(q, /cbse|board|affiliat|icse/)) return "St. John's School is a <b>CBSE</b> school, from Nursery to Class XII.";
       if (has(q, /found|histor|since|1965|old|who start|trust|t\.?i\.? john/))
-        return say("St. John's was founded in <b>1965</b> by <b>Shri T.I. John</b> and is run by the <b>Idicula Trust Society (Regd.)</b>. Sixty years on, it sits on a green <b>4-acre campus</b> in Sector 7A, Faridabad. Motto: <i>Learn to serve.</i>",
-        "सेंट जॉन्स की स्थापना <b>1965</b> में <b>श्री टी.आई. जॉन</b> ने की थी, और इसे <b>इडिकुला ट्रस्ट सोसाइटी (पंजीकृत)</b> चलाती है। साठ साल बाद यह सेक्टर 7A, फ़रीदाबाद में <b>चार एकड़ के हरे-भरे कैंपस</b> पर है। आदर्श वाक्य: <i>Learn to serve</i> (सेवा के लिए सीखो)।");
+        return "St. John's was founded in <b>1965</b> by <b>Shri T.I. John</b> and is run by the <b>Idicula Trust Society (Regd.)</b>. Sixty years on, it sits on a green <b>4-acre campus</b> in Sector 7A, Faridabad. Motto: <i>Learn to serve.</i>";
       if (has(q, /where|address|locat|reach|map|direction/))
-        return say("We're in <b>Sector 7A, Faridabad</b>, Haryana. The Contact page has a map and directions.",
-        "हम <b>सेक्टर 7A, फ़रीदाबाद</b>, हरियाणा में हैं। संपर्क पेज पर नक्शा और रास्ता दिया है।");
+        return "We're in <b>Sector 7A, Faridabad</b>, Haryana. The Contact page has a map and directions.";
       if (has(q, /facilit|campus|sport|lab|library|music|band|dance|activit|fit india/))
-        return say("Life at St. John's goes well beyond the classroom: a green 4-acre campus, school band, choir and music, Indian and folk dance, sports and the <b>Fit India</b> programme, plus annual day and inter-house events. Have a look at the photos on the Student life page.",
-        "सेंट जॉन्स में पढ़ाई के अलावा भी बहुत कुछ है: चार एकड़ का हरा-भरा कैंपस, स्कूल बैंड, कॉयर और संगीत, भारतीय और लोक नृत्य, खेल और <b>फ़िट इंडिया</b> कार्यक्रम, साथ ही वार्षिकोत्सव और अंतर-सदन प्रतियोगिताएँ। छात्र जीवन पेज पर तस्वीरें देखिए।");
+        return "Life at St. John's goes well beyond the classroom: a green 4-acre campus, school band, choir and music, Indian and folk dance, sports and the <b>Fit India</b> programme, plus annual day and inter-house events. Have a look at the photos on the Student life page.";
       if (has(q, /time|timing|hour|open|close|when does/))
-        return say("The office will publish school and office timings here. Until then, please call the school office (number on the Contact page).",
-        "स्कूल और ऑफ़िस का समय जल्द ही यहाँ दिया जाएगा। तब तक स्कूल ऑफ़िस को कॉल करें (नंबर संपर्क पेज पर है)।");
+        return "The office will publish school and office timings here. Until then, please call the school office (number on the Contact page).";
       if (has(q, /bus|transport|van|route/))
-        return say("School transport covers routes across Faridabad. The route list and stops will appear here once the school adds them; parents already enrolled can see their child's bus live in the parent app.",
-        "स्कूल बस फ़रीदाबाद के कई रूटों पर चलती है। स्कूल के जोड़ते ही रूट और स्टॉप की सूची यहाँ आ जाएगी। जिनके बच्चे पहले से यहाँ पढ़ते हैं, वे पेरेंट ऐप में बस की लाइव लोकेशन देख सकते हैं।");
-      if (has(q, /contact|phone|call|email|number/)) return say("You can reach the school office through the Contact page, or leave your number in the admissions form and the office will call you back.",
-        "आप संपर्क पेज से स्कूल ऑफ़िस तक पहुँच सकते हैं, या दाख़िला फ़ॉर्म में अपना नंबर छोड़ दें, ऑफ़िस आपको कॉल करेगा।");
+        return "School transport covers routes across Faridabad. The route list and stops will appear here once the school adds them; parents already enrolled can see their child's bus live in the parent app.";
+      if (has(q, /contact|phone|call|email|number/)) return "You can reach the school office through the Contact page, or leave your number in the admissions form and the office will call you back.";
       if (has(q, /vision|mission|motto|value/))
-        return say("Motto: <b>Learn to serve.</b>\nVision: nurture each child's potential and create lifelong learners and global citizens with innovation and strong values — <i>\"Vision with action can build the future.\"</i>\nMission: honesty, compassion, secularism, tolerance and respect, with pride in the nation's heritage.",
-        "आदर्श वाक्य: <b>Learn to serve</b> (सेवा के लिए सीखो)।\nदृष्टि: हर बच्चे की क्षमता को निखारना, और नए विचारों व मज़बूत मूल्यों के साथ जीवन भर सीखने वाले विश्व-नागरिक तैयार करना — <i>\"कर्म के साथ दृष्टि ही भविष्य बनाती है।\"</i>\nमिशन: ईमानदारी, करुणा, धर्मनिरपेक्षता, सहिष्णुता और सम्मान, और देश की विरासत पर गर्व।");
-      if (has(q, /^(hi|hello|hey|namaste)/)) return say("Hello! Ask me anything about admissions, documents, the campus or school life at St. John's.",
-        "नमस्ते! सेंट जॉन्स में दाख़िले, दस्तावेज़ों, कैंपस या स्कूल जीवन के बारे में कुछ भी पूछिए।");
-      return say("I don't have that answer yet. Send your question from the <b>Contact</b> page, or the <b>admissions form</b> for admission questions, and the school office will get back to you.",
-        "इसका जवाब अभी मेरे पास नहीं है। अपना सवाल <b>संपर्क</b> पेज से भेजें, या दाख़िले से जुड़े सवाल के लिए <b>दाख़िला फ़ॉर्म</b> भरें — स्कूल ऑफ़िस आपसे संपर्क करेगा।");
+        return "Motto: <b>Learn to serve.</b>\nVision: nurture each child's potential and create lifelong learners and global citizens with innovation and strong values — <i>\"Vision with action can build the future.\"</i>\nMission: honesty, compassion, secularism, tolerance and respect, with pride in the nation's heritage.";
+      if (has(q, /^(hi|hello|hey|namaste)/)) return "Hello! Ask me anything about admissions, documents, the campus or school life at St. John's.";
+      return "I don't have that answer yet. Send your question from the <b>Contact</b> page, or the <b>admissions form</b> for admission questions, and the school office will get back to you.";
     },
 
     parent(q) {
       const s = S.me;
-      if (/[\u0900-\u097F]/.test(q) || has(q, /hindi me|in hindi|hindi mein/)) return S.weekly("hi");
-      if (has(q, /week|summary|overall|how is|how's|doing/)) return S.weekly("en");
+      if (has(q, /week|summary|overall|how is|how's|doing/)) return S.weekly();
       if (has(q, /attend|absent|present|leave|miss/)) {
         const t = S.statusOn(s.roll, S.todayKey);
         const month = Object.keys(S.history).filter((k) => k.slice(0, 7) === S.todayKey.slice(0, 7) && S.history[k][s.roll]);
@@ -180,7 +152,7 @@
         const t = topicName[topicIn(q)];
         return `40-minute plan — <b>${t}</b>\n• 5 min: warm-up question on the board\n• 10 min: concept with a number-line / real-life example\n• 15 min: pairs solve 4 questions from the practice set\n• 7 min: two pairs present; correct common mistakes\n• 3 min: exit ticket — one question in the notebook`;
       }
-      if (has(q, /translat|hindi|हिंदी/)) return "Hindi version of the PTM notice:\n\n<b>अभिभावक–शिक्षक बैठक</b>\nकक्षा VI–VIII के लिए अभिभावक–शिक्षक बैठक शनिवार, 31 अक्टूबर को सुबह 9:00 बजे से दोपहर 12:30 बजे तक होगी। अर्धवार्षिक परीक्षा की उत्तर-पुस्तिकाएँ दिखाई जाएँगी।";
+      if (has(q, /note|parents|notice|ptm|meeting/)) return "Draft note to VII-B parents:\n\nDear parents, the parent–teacher meeting for VII-B is on <b>Saturday, 31 October, 9:00 AM to 12:30 PM</b>. I will go through your child's half-yearly answer sheets with you. If you can't come, reply here and we'll find another time.\n— Neha Mathew\n\nEdit it, then send it from AI assist → Note to parents.";
       if (has(q, /risk|attention|struggl|weak|concern|worr|follow/)) {
         const list = S.atRisk();
         return `<b>${list.length} students</b> need attention in VII-B:\n` + list.map((x) => `• <b>${x.s.name}</b> — ${x.why.join("; ")}`).join("\n") + "\n\nI can draft a note to each parent, or book them first at the PTM.";
@@ -196,7 +168,7 @@
         const top = [...S.students].sort((a, b) => S.avgOf(b.hy) - S.avgOf(a.hy)).slice(0, 3);
         return "Half-yearly class averages:\n" + S.subjects.map((x) => `• ${x}: ${S.classAvg("hy", x)}%`).join("\n") + `\nTop three: ${top.map((s) => `${s.name} (${S.avgOf(s.hy)}%)`).join(", ")}.`;
       }
-      return "I can draft report-card remarks, make practice sets and lesson plans, translate notices into Hindi, and tell you who needs attention. Try: “Quiz on fractions” or “Remarks for Kabir”.";
+      return "I can draft report-card remarks, make practice sets and lesson plans, draft notes to parents, and tell you who needs attention. Try: “Quiz on fractions” or “Remarks for Kabir”.";
     },
 
     principal(q) {
@@ -319,7 +291,7 @@ ${noticesTxt()}
 Upcoming holidays: ${holidaysTxt()}`;
     },
 
-    teacher: () => `You are talking to ${S.teacher.name}, class teacher of VII-B and Maths teacher. You can see VII-B only. You draft report-card remarks, CBSE/NCERT Class VII practice sets with answer keys, lesson plans, notes to parents and Hindi translations — always as drafts the teacher checks. Remarks: 2–3 sentences, specific (cite marks or attendance), kind, with one concrete next step.
+    teacher: () => `You are talking to ${S.teacher.name}, class teacher of VII-B and Maths teacher. You can see VII-B only. You draft report-card remarks, CBSE/NCERT Class VII practice sets with answer keys, lesson plans, and notes to parents — always as drafts the teacher checks. Remarks: 2–3 sentences, specific (cite marks or attendance), kind, with one concrete next step.
 VII-B ROSTER (attendance %, Unit Test 1 %, Half-yearly %; subjects: ${S.subjects.join(", ")})
 ${S.students.map((s) => `${s.roll}. ${s.name} — att ${S.attendancePct(s.roll)}; UT1 ${S.subjects.map((x) => s.ut1[x]).join("/")}; HY ${S.subjects.map((x) => s.hy[x]).join("/")}`).join("\n")}
 Class averages, half-yearly: ${S.subjects.map((x) => `${x} ${S.classAvg("hy", x)}`).join(", ")}
@@ -352,7 +324,7 @@ Upcoming holidays: ${holidaysTxt()}`;
 
   S.aiSystem = (mode) => `You are "${META[mode].title}", the AI assistant in the St. John's School app. Today is ${S.fmtLong(S.today)}.
 This is a prototype shown to the school with sample data. Answer only from the data below. If the answer isn't there, say so plainly and say who at school can confirm. Never invent numbers, names, fees, phone numbers or dates.
-Reply in the person's language: Hindi in Devanagari if they write Hindi, simple Hinglish if they write Hinglish, otherwise Indian English.${mode === "public" && S.lang === "hi" ? "\nThe visitor is reading the website in Hindi: answer in simple Hindi in Devanagari unless they clearly write in English." : ""}
+Reply in simple Indian English, even if the question is in another language.
 Keep it short and warm: usually 2–6 short lines. Use "• " for list items and **bold** for the key number or name. No headings, tables or links.
 
 ${ROLE[mode]()}`;
@@ -371,9 +343,9 @@ ${ROLE[mode]()}`;
   S.ICON = Object.assign(S.ICON || {}, ICON);
 
   const META = {
-    public: { title: "Ask St. John's", sub: "Admissions, campus, school life", hello: "Namaste! I'm the St. John's assistant. Ask me about admissions, documents, the campus — in English or Hindi.", chips: ["How do I apply for Nursery?", "Documents needed", "Class XI admission", "Is it CBSE?", "दाख़िला कैसे होगा?"] },
-    parent: { title: "Ask about Aarav", sub: "Sees only Aarav's records", hello: "Hello! Ask me anything about Aarav — attendance, marks, homework, fees or the bus.", chips: ["How is Aarav doing?", "What should we work on?", "Homework due", "What to pack tomorrow?", "Maths marks", "हिंदी में बताइए"] },
-    teacher: { title: "Teaching assistant", sub: "VII-B · your classes only", hello: "Good morning! I can draft remarks, make practice sets, translate notices and spot who needs help.", chips: ["Who needs attention?", "Quiz on fractions", "Remarks for Ishita", "Lesson plan: integers", "Translate PTM notice"] },
+    public: { title: "Ask St. John's", sub: "Admissions, campus, school life", hello: "Hello! I'm the St. John's assistant. Ask me about admissions, documents, the campus or school life.", chips: ["How do I apply for Nursery?", "Documents needed", "Class XI admission", "Is it CBSE?", "Where is the school?"] },
+    parent: { title: "Ask about Aarav", sub: "Sees only Aarav's records", hello: "Hello! Ask me anything about Aarav — attendance, marks, homework, fees or the bus.", chips: ["How is Aarav doing?", "What should we work on?", "Homework due", "What to pack tomorrow?", "Maths marks"] },
+    teacher: { title: "Teaching assistant", sub: "VII-B · your classes only", hello: "Good morning! I can draft remarks, make practice sets, write notes to parents and spot who needs help.", chips: ["Who needs attention?", "Quiz on fractions", "Remarks for Ishita", "Lesson plan: integers", "Note about the PTM"] },
     principal: { title: "School assistant", sub: "Whole-school view", hello: "Good morning. Ask for today's brief, attendance, fees or admissions.", chips: ["Today's brief", "Admission enquiries", "Fee collection", "Who needs attention?", "Staff today"] }
   };
 
@@ -381,8 +353,7 @@ ${ROLE[mode]()}`;
   const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
 
   S.mountAI = (mode) => {
-    const m = META[mode], hi = S.lang === "hi" && mode === "public";
-    if (hi) m.hello = "नमस्ते! मैं सेंट जॉन्स का सहायक हूँ। दाख़िले, ज़रूरी काग़ज़ात या कैंपस के बारे में पूछिए, हिंदी या अंग्रेज़ी में।";
+    const m = META[mode];
     const fab = document.createElement("button");
     fab.className = "ai-fab"; fab.type = "button";
     fab.innerHTML = ICON.spark + `<span>${m.title}</span>`;
@@ -403,17 +374,15 @@ ${ROLE[mode]()}`;
     const open = () => { panel.classList.add("open"); fab.classList.add("hide"); if (!greeted) { add(m.hello, "bot"); greeted = true; } setTimeout(() => input.focus({ preventScroll: true }), 250); };
     const close = () => { panel.classList.remove("open"); fab.classList.remove("hide"); };
 
-    // Footer: which engine is answering, the switch, and the voice language.
-    let vlang = store.get("sjs-voice") || (hi ? "hi-IN" : "en-IN");
+    // Footer: which engine is answering, and the switch.
+    const vlang = "en-IN";
     const renderFoot = () => {
-      foot.innerHTML = (S.claude.on ? `<span class="seg"><span class="ai-live"><i></i>Live answers from Claude</span> · <button type="button" data-k="off">Disconnect</button></span>` : `<span class="seg">Built-in answers from sample data</span> · <span class="seg"><button type="button" data-k="on">Connect Claude</button></span>`) +
-        (SR ? ` · <span class="seg">Voice <button type="button" data-k="lang" aria-label="Voice language">${vlang === "hi-IN" ? "हिंदी" : "English"}</button></span>` : "");
+      foot.innerHTML = (S.claude.on ? `<span class="seg"><span class="ai-live"><i></i>Live answers from Claude</span> · <button type="button" data-k="off">Disconnect</button></span>` : `<span class="seg">Built-in answers from sample data</span> · <span class="seg"><button type="button" data-k="on">Connect Claude</button></span>`);
     };
     renderFoot();
     foot.addEventListener("click", (e) => {
       const b = e.target.closest("[data-k]"); if (!b) return;
-      if (b.dataset.k === "lang") { vlang = vlang === "hi-IN" ? "en-IN" : "hi-IN"; store.set("sjs-voice", vlang); renderFoot(); return; }
-      if (b.dataset.k === "off") { S.claude.disconnect(); renderFoot(); add(hi ? "डिस्कनेक्ट हो गया। अब जवाब नमूना जानकारी से आएँगे।" : "Disconnected. Answers now come from the built-in sample data.", "bot"); return; }
+      if (b.dataset.k === "off") { S.claude.disconnect(); renderFoot(); add("Disconnected. Answers now come from the built-in sample data.", "bot"); return; }
       if (b.dataset.k === "cancel") { renderFoot(); return; }
       if (b.dataset.k === "on") {
         foot.innerHTML = `<form class="ai-key"><input type="password" placeholder="Paste an Anthropic API key" aria-label="Anthropic API key" autocomplete="off" spellcheck="false" /><button type="submit">Connect</button><button type="button" data-k="cancel">Cancel</button></form><span>The key stays in this browser only.</span>`;
@@ -425,7 +394,7 @@ ${ROLE[mode]()}`;
       const k = foot.querySelector("input").value.trim();
       if (!/^sk-ant-/.test(k)) { foot.querySelector("input").setCustomValidity("An Anthropic key starts with sk-ant-"); foot.querySelector("input").reportValidity(); return; }
       S.claude.connect(k); renderFoot(); open();
-      add(hi ? "कनेक्ट हो गया। अब Claude उन्हीं नमूना रिकॉर्ड से सीधे जवाब देगा।" : "Connected. I'll now answer live with Claude, from the same sample records.", "bot");
+      add("Connected. I'll now answer live with Claude, from the same sample records.", "bot");
     });
     foot.addEventListener("input", (e) => e.target.setCustomValidity(""));
 
@@ -464,7 +433,7 @@ ${ROLE[mode]()}`;
           bubble.innerHTML = fmtAI(answer);
         } catch (e) {
           answer = null;
-          note = e.status === 401 ? (hi ? "Claude ने चाबी स्वीकार नहीं की, इसलिए यह पहले से तैयार जवाब है।" : "Claude didn't accept the key, so this is the built-in answer.") : (hi ? "Claude तक नहीं पहुँच पाए, इसलिए यह पहले से तैयार जवाब है।" : "Couldn't reach Claude, so this is the built-in answer.");
+          note = e.status === 401 ? ("Claude didn't accept the key, so this is the built-in answer.") : ("Couldn't reach Claude, so this is the built-in answer.");
         }
       }
       if (answer === null) {
@@ -484,7 +453,7 @@ ${ROLE[mode]()}`;
       rec = new SR(); rec.lang = vlang; rec.interimResults = true;
       let said = "";
       rec.onresult = (e) => { said = [...e.results].map((r) => r[0].transcript).join(""); input.value = said; };
-      rec.onerror = (e) => { if (e.error === "not-allowed" || e.error === "service-not-allowed") add(hi ? "इस पेज के लिए माइक्रोफ़ोन बंद है। ब्राउज़र की साइट सेटिंग में इसकी अनुमति दें, फिर माइक दोबारा दबाएँ।" : "The microphone is blocked for this page. Allow it in the browser's site settings, then tap the mic again.", "bot"); };
+      rec.onerror = (e) => { if (e.error === "not-allowed" || e.error === "service-not-allowed") add("The microphone is blocked for this page. Allow it in the browser's site settings, then tap the mic again.", "bot"); };
       rec.onend = () => { rec = null; mic.classList.remove("rec"); mic.setAttribute("aria-pressed", "false"); if (said.trim() && !busy) { input.value = ""; ask(said); } };
       rec.start(); mic.classList.add("rec"); mic.setAttribute("aria-pressed", "true");
     });

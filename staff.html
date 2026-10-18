@@ -1,0 +1,682 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<!-- Prototype: kept out of search results so it never competes with the school's own site. -->
+<meta name="robots" content="noindex, nofollow" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+<title>Staff | St. John's School</title>
+<link rel="icon" href="assets/crest.svg" type="image/svg+xml" />
+<link rel="manifest" href="manifest.webmanifest" />
+<link rel="apple-touch-icon" href="assets/icons/apple-touch-icon.png" />
+<meta name="apple-mobile-web-app-title" content="St. John's" />
+<meta name="mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-status-bar-style" content="default" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Figtree:wght@400..800&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="css/site.css" />
+<script>
+/* Before the first paint: fade photos in as they load. */
+(function (d) { d.documentElement.classList.add("js");
+  var m = function (e) { if (e.target.tagName === "IMG") e.target.classList.add("is-loaded"); };
+  d.addEventListener("load", m, true); d.addEventListener("error", m, true); })(document);
+</script>
+</head>
+<body class="app">
+<div class="proto-bar" id="proto"><b>Prototype</b> · Staff view.</div>
+<div class="app-shell">
+  <aside class="side">
+    <a href="index.html" class="brand"><img src="assets/crest.svg" alt="" width="40" height="40" /><span><span class="brand-name">St. John&#x27;s School</span><span class="brand-sub" data-role-label>Staff</span></span></a>
+    <nav id="nav-side"></nav>
+    <div class="side-foot">
+      <a class="side-btn" href="login.html?role=staff" data-signout><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M15 4h4v16h-4M10 8l-4 4 4 4M6 12h10"/></svg>Sign out</a>
+      <div class="who"><span class="avatar" id="who-av"></span><div><b id="who-name"></b><span id="who-title"></span></div></div>
+    </div>
+  </aside>
+
+  <main class="main">
+    <div class="mobile-head"><img src="assets/crest.svg" alt="" /><b>St. John&#x27;s School<small data-role-label>Staff</small></b><div class="right"><button class="icon-btn" data-go="messages" data-only="teacher" aria-label="Messages"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5h16v11H9l-5 4z"/></svg></button><a class="icon-btn" href="login.html?role=staff" data-signout aria-label="Sign out"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M15 4h4v16h-4M10 8l-4 4 4 4M6 12h10"/></svg></a></div></div>
+
+    <!-- TEACHER -->
+    <!-- HOME -->
+    <section data-view="home" data-roles="teacher">
+      <div class="topbar"><div><h1 id="hello">Good morning, Neha</h1><div class="sub" id="today-line"></div></div></div>
+      <div id="att-banner" style="margin-bottom:16px"></div>
+      <div class="grid g4" id="t-stats" style="margin-bottom:16px"></div>
+      <div class="grid g21" style="margin-bottom:16px">
+        <div class="ai-card">
+          <div class="card-h" style="margin:0"><span class="ai-tag"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l1.9 5.3L19 10l-5.1 1.7L12 17l-1.9-5.3L5 10l5.1-1.7z"/></svg>Needs attention · spotted by AI</span></div>
+          <div class="list" id="risk" style="margin-top:12px"></div>
+          <p class="muted" style="font-size:12.5px;margin-top:12px">Flags attendance under 85%, a drop of 15+ points since Unit Test 1, or any subject under 50%.</p>
+        </div>
+        <div class="card"><div class="card-h"><h2>My periods today</h2></div><div class="list" id="periods"></div></div>
+      </div>
+      <div class="grid g2">
+        <div class="card"><div class="card-h"><h2>Leave requests</h2></div><div class="list" id="leaves"></div></div>
+        <div class="card"><div class="card-h"><h2>Messages from parents</h2><button class="right link-btn" data-go="messages">Open →</button></div><div class="list" id="inbox"></div></div>
+      </div>
+    </section>
+
+    <!-- ATTENDANCE -->
+    <section data-view="attendance" data-roles="teacher">
+      <div class="topbar"><div><h1>Attendance · VII-B</h1><div class="sub" id="att-sub">Tap a name to mark absent. Tap again for leave.</div></div>
+        <div class="right"><button class="btn btn-ghost btn-sm" id="all-present">All present</button><button class="btn btn-primary btn-sm" id="att-save">Submit</button></div></div>
+      <div id="att-done" style="margin-bottom:16px"></div>
+      <div class="chips" style="margin-bottom:16px" id="att-count"></div>
+      <div class="att-grid" id="att-grid"></div>
+    </section>
+
+    <!-- HOMEWORK -->
+    <section data-view="homework" data-roles="teacher">
+      <div class="topbar"><div><h1>Homework</h1><div class="sub">Post once — every parent in the class sees it.</div></div></div>
+      <div class="grid g21">
+        <form class="card" id="hw-form">
+          <div class="card-h"><h2>New homework</h2></div>
+          <div class="row2"><div class="field"><label for="hw-cls">Class</label><select id="hw-cls"><option>VII-B</option><option>VII-A</option><option>VIII-A</option></select></div><div class="field"><label for="hw-due">Due</label><input type="date" id="hw-due" required /></div></div>
+          <div class="field"><label for="hw-title">Title</label><input id="hw-title" required placeholder="e.g. Fractions — practice set" /></div>
+          <div class="field"><label for="hw-detail">Details</label><textarea id="hw-detail" required style="min-height:150px"></textarea></div>
+          <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:18px">
+            <button type="button" class="btn btn-ghost" id="hw-ai"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l1.9 5.3L19 10l-5.1 1.7L12 17l-1.9-5.3L5 10l5.1-1.7z"/></svg>Draft from title with AI</button>
+            <button class="btn btn-primary" type="submit" style="flex:1">Post to parents</button>
+          </div>
+        </form>
+        <div class="card"><div class="card-h"><h2>Posted</h2></div><div class="list" id="hw-list"></div></div>
+      </div>
+    </section>
+
+    <!-- MARKS -->
+    <section data-view="marks" data-roles="teacher">
+      <div class="topbar"><div><h1>Marks · Unit Test 2</h1><div class="sub">Mathematics · VII-B · out of 20</div></div>
+        <div class="right"><button class="btn btn-ghost btn-sm" id="fill-sample">Fill sample marks</button><button class="btn btn-primary btn-sm" id="publish">Publish to parents</button></div></div>
+      <div class="grid g4" id="m-stats" style="margin-bottom:16px"></div>
+      <div class="card"><div class="tbl-wrap"><table class="tbl" id="m-tbl"></table></div></div>
+    </section>
+
+    <!-- AI ASSIST -->
+    <section data-view="assist" data-roles="teacher">
+      <div class="topbar"><div><h1>AI assist</h1><div class="sub">Drafts only — you review and edit before anything is saved or sent.</div></div></div>
+      <div class="grid g2">
+        <div class="card">
+          <div class="card-h"><span class="ai-tag">Report-card remarks</span></div>
+          <div class="field" style="margin-top:0"><label for="rm-s">Student</label><select id="rm-s"></select></div>
+          <div class="field"><label for="rm-out">Draft remark (editable)</label><textarea id="rm-out" style="min-height:150px"></textarea></div>
+          <div style="display:flex;gap:10px;margin-top:14px;flex-wrap:wrap"><button class="btn btn-primary btn-sm" id="rm-go">Draft remark</button><button class="btn btn-ghost btn-sm" id="rm-all">Draft all 32</button><button class="btn btn-ghost btn-sm" id="rm-save">Save to report card</button></div>
+        </div>
+        <div class="card">
+          <div class="card-h"><span class="ai-tag">Practice set</span></div>
+          <div class="row2" style="margin-top:-16px"><div class="field"><label for="ps-t">Topic</label><select id="ps-t"><option>Integers</option><option>Fractions</option><option>Simple equations</option><option>Triangles</option></select></div><div class="field"><label for="ps-n">Questions</label><select id="ps-n"><option>4</option><option selected>6</option><option>8</option></select></div></div>
+          <ol id="ps-out" style="margin:16px 0 0;padding-left:20px;display:grid;gap:8px;font-size:15px"></ol>
+          <div style="display:flex;gap:10px;margin-top:14px;flex-wrap:wrap"><button class="btn btn-primary btn-sm" id="ps-go">Make practice set</button><button class="btn btn-ghost btn-sm" id="ps-send" disabled>Send as homework</button></div>
+        </div>
+        <div class="card">
+          <div class="card-h"><span class="ai-tag">Note to parents</span></div>
+          <div class="field" style="margin-top:0"><label for="tr-n">From the school notice</label><select id="tr-n"></select></div>
+          <div class="field"><label for="tr-out">Draft for VII-B parents (editable)</label><textarea id="tr-out" style="min-height:130px"></textarea></div>
+          <div style="display:flex;gap:10px;margin-top:14px;flex-wrap:wrap"><button class="btn btn-primary btn-sm" id="tr-send" type="button">Send to class parents</button></div>
+        </div>
+        <div class="card">
+          <div class="card-h"><span class="ai-tag">Ask the assistant</span></div>
+          <p class="muted" style="font-size:15px">Questions about your class, in plain words.</p>
+          <div class="ai-qs" style="margin-top:14px">
+            <button class="chip" style="padding:10px 14px" data-ask="Who needs attention?">Who needs attention?</button>
+            <button class="chip" style="padding:10px 14px" data-ask="Remarks for Kabir">Remarks for Kabir</button>
+            <button class="chip" style="padding:10px 14px" data-ask="Lesson plan on fractions">Lesson plan on fractions</button>
+            <button class="chip" style="padding:10px 14px" data-ask="Class averages and toppers">Class averages and toppers</button>
+          </div>
+        </div>
+      </div>
+      <div class="card" id="rm-table" style="margin-top:16px" hidden><div class="card-h"><h2>All remarks · VII-B</h2></div><div class="tbl-wrap"><table class="tbl"><tbody id="rm-rows"></tbody></table></div></div>
+    </section>
+
+    <!-- MESSAGES -->
+    <section data-view="messages" data-roles="teacher">
+      <div class="topbar"><div><h1>Messages</h1><div class="sub">Parents of VII-B</div></div></div>
+      <div class="grid g21" style="grid-template-columns:1fr 1.6fr">
+        <div class="card"><div class="list">
+          <div class="li" style="background:var(--accent-soft);margin:-6px -10px;padding:12px 10px;border-radius:12px"><span class="avatar">AS</span><div class="t"><b>Aarav Sharma's parent</b><span id="last-msg"></span></div></div>
+          <div class="li"><span class="avatar soft">IV</span><div class="t"><b>Ishita Verma's parent</b><span>Thank you for the update, ma'am.</span></div></div>
+          <div class="li"><span class="avatar soft">KM</span><div class="t"><b>Kabir Malhotra's parent</b><span>He had fever, will send medical.</span></div></div>
+        </div></div>
+        <div class="card">
+          <div class="thread" id="thread"></div>
+          <form id="msg-form" class="ai-form" style="padding:14px 0 0;margin-top:12px"><input placeholder="Reply to Aarav's parent…" aria-label="Message" /><button type="submit" aria-label="Send"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button></form>
+        </div>
+      </div>
+    </section>
+
+    <!-- PRINCIPAL AND OFFICE -->
+    <!-- HOME -->
+    <section data-view="overview" data-roles="principal admin">
+      <div class="topbar"><div><h1 id="p-hello">Good morning</h1><div class="sub" id="p-today-line"></div></div><div class="right"><button class="btn btn-primary btn-sm" data-go="notices">Send a notice</button></div></div>
+      <div class="ai-card" style="margin-bottom:16px" data-only="principal">
+        <span class="ai-tag"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l1.9 5.3L19 10l-5.1 1.7L12 17l-1.9-5.3L5 10l5.1-1.7z"/></svg>Morning brief · written by AI at 9:00 AM</span>
+        <div class="body" id="brief"></div>
+      </div>
+      <div class="card" data-only="admin" style="margin-bottom:16px"><div class="card-h"><h2>On the office desk today</h2></div><div class="list" id="todo"></div></div>
+      <div class="grid g4" id="kpis" style="margin-bottom:16px"></div>
+      <div class="grid g21" style="margin-bottom:16px">
+        <div class="card">
+          <div class="card-h"><h2>Attendance by class · today (%)</h2><span class="right muted" style="font-size:12.5px">Hover a bar for the number</span></div>
+          <div class="cols" id="cols"></div>
+          <div class="col-labels" id="col-labels"></div>
+          <div class="legend"><span><i style="background:var(--accent)"></i>90% or more</span><span><i style="background:var(--warn)"></i>Below 90% — follow up</span></div>
+        </div>
+        <div class="card">
+          <div class="card-h"><h2>Q3 fee collection</h2></div>
+          <div class="stat"><div class="num">₹1.92 Cr <small>of ₹2.74 Cr</small></div></div>
+          <div class="track" style="height:12px;border-radius:4px;background:var(--sunken);margin:16px 0 8px;position:relative"><span style="position:absolute;inset:0 30% 0 0;background:var(--green);border-radius:0 4px 4px 0"></span></div>
+          <div class="muted" style="font-size:13px;display:flex;justify-content:space-between"><span>70% collected</span><span id="fee-due"></span></div>
+          <div class="list" style="margin-top:16px">
+            <div class="li"><span class="sq green">UPI</span><div class="t"><b>Paid online</b><span>58% of payments this quarter</span></div></div>
+            <div class="li"><span class="sq warn">612</span><div class="t"><b>Families yet to pay</b><span>Auto-reminders 7 days and 1 day before</span></div></div>
+          </div>
+        </div>
+      </div>
+      <div class="grid g2">
+        <div class="card"><div class="card-h"><h2>Admission enquiries</h2><button class="right link-btn" data-go="admissions">All →</button></div><div class="list" id="enq-mini"></div></div>
+        <div class="card" data-only="principal"><div class="card-h"><h2>Students needing support · VII-B</h2></div><div class="list" id="p-risk"></div></div>
+      </div>
+    </section>
+
+    <!-- ADMISSIONS -->
+    <section data-view="admissions" data-roles="principal admin">
+      <div class="topbar"><div><h1>Admissions 2027–28</h1><div class="sub">Every enquiry from the website lands here.</div></div></div>
+      <div class="grid g4" id="adm-kpis" style="margin-bottom:16px"></div>
+      <div class="card"><div class="tbl-wrap"><table class="tbl" id="adm-tbl"></table></div></div>
+    </section>
+
+    <!-- WEBSITE -->
+    <section data-view="website" data-roles="principal admin">
+      <div class="topbar"><div><h1>Website</h1><div class="sub">Change what families see on the school website. Each change is live as soon as you save it, and can be undone.</div></div><div class="right"><a class="btn btn-ghost btn-sm" href="index.html" target="_blank" rel="noopener">Open the website</a></div></div>
+      <div class="grid g2" style="margin-bottom:16px">
+        <form class="card" id="w-adm">
+          <div class="card-h"><h2>Admissions banner</h2><span class="right pill" id="w-adm-state"></span></div>
+          <div class="seg" role="group" aria-label="Admissions are" id="w-open"><button type="button" data-open="1">Open</button><button type="button" data-open="0">Closed</button></div>
+          <div class="field"><label for="w-session">Session</label><input id="w-session" required pattern=".{4,20}" /></div>
+          <fieldset class="field fs"><legend class="lbl">Classes taking admission</legend><div class="checks" id="w-classes"></div></fieldset>
+          <div class="preview" aria-live="polite"><span class="lbl">On the home page</span><b id="w-prev-t"></b><span id="w-prev-p"></span></div>
+          <button class="btn btn-primary btn-block" type="submit" style="margin-top:18px">Save the banner</button>
+        </form>
+        <form class="card" id="w-facts">
+          <div class="card-h"><h2>School details</h2><span class="right pill" id="w-facts-n"></span></div>
+          <p class="muted" style="font-size:14px">Each detail fills in every "to be added" for it across the website, the disclosure page and the assistant's answers. Leave a box empty to keep it marked as missing.</p>
+          <div class="facts-f" id="w-facts-f"></div>
+          <button class="btn btn-primary btn-block" type="submit" style="margin-top:18px">Save details</button>
+        </form>
+      </div>
+      <div class="card" style="margin-bottom:16px">
+        <div class="card-h"><h2>Home page photos</h2><span class="right muted" id="w-sl-n" style="font-size:13px"></span></div>
+        <p class="muted" style="font-size:14px;margin-bottom:14px">The photos that change behind the welcome on the home page, in this order. "Keep in view" is the part of the photo that must not be cut off on phones.</p>
+        <div class="tiles" id="w-slides"></div>
+        <label class="btn btn-ghost btn-sm upload" style="margin-top:14px"><input type="file" accept="image/*" id="w-slide-file" class="sr-only" />Upload a photo</label>
+      </div>
+      <div class="grid g21">
+        <div class="card">
+          <div class="card-h"><h2>Photo gallery</h2><a class="right link-btn" href="life.html#gallery" target="_blank" rel="noopener">See the gallery</a></div>
+          <form id="w-gal">
+            <div class="row2">
+              <div class="field" style="margin-top:0"><label for="w-gal-file">Photo</label><input id="w-gal-file" type="file" accept="image/*" required /></div>
+              <div class="field" style="margin-top:0"><label for="w-gal-cat">Album</label><select id="w-gal-cat"><option value="stage">On stage</option><option value="band">Band</option><option value="juniors">Juniors</option><option value="prizes">Prizes</option></select></div>
+            </div>
+            <div class="field"><label for="w-gal-cap">Caption</label><input id="w-gal-cap" required placeholder="Annual Day 2026, the senior choir" /></div>
+            <div class="field"><label for="w-gal-alt">What the photo shows <span class="opt">for visitors who can't see it</span></label><input id="w-gal-alt" placeholder="Senior students in white singing on a decorated stage" /></div>
+            <button class="btn btn-primary btn-sm" type="submit" style="margin-top:16px">Add to the gallery</button>
+          </form>
+          <div class="list" id="w-gal-list" style="margin-top:16px"></div>
+        </div>
+        <div class="card">
+          <div class="card-h"><h2>Recent changes</h2><button class="right link-btn" type="button" id="w-undo">Undo the last change</button></div>
+          <div class="list" id="w-log"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- NOTICES -->
+    <section data-view="notices" data-roles="principal admin">
+      <div class="topbar"><div><h1>Notices</h1><div class="sub">One notice reaches the app, SMS, WhatsApp and the website.</div></div></div>
+      <div class="grid g21">
+        <form class="card" id="nt-form">
+          <div class="card-h"><h2>New notice</h2></div>
+          <div class="field" style="margin-top:0"><label for="nt-title">Title</label><input id="nt-title" required value="Winter uniform from 2 November" /></div>
+          <div class="field"><label for="nt-text">Message</label><textarea id="nt-text" required style="min-height:130px">Students will wear the full winter uniform (blazer and maroon sweater) from Monday, 2 November.</textarea></div>
+          <div class="field"><label for="nt-date">Date of the event, holiday or deadline</label><input id="nt-date" type="date" required value="2026-11-02" /><span class="hint">The website lists it under "Coming up" until this date has passed.</span></div>
+          <div class="row2"><div class="field"><label for="nt-to">Send to</label><select id="nt-to"><option>All parents</option><option>Classes VI–VIII</option><option>Staff only</option></select></div><div class="field"><label for="nt-tag">Type</label><select id="nt-tag"><option>Notice</option><option>Event</option><option>Holiday</option><option>PTM</option></select></div></div>
+          <label style="display:flex;gap:10px;align-items:center;margin-top:16px;font-size:14.5px"><input type="checkbox" checked id="nt-web" /> Show on the website's News section</label>
+          <button class="btn btn-primary btn-block" type="submit" style="margin-top:20px">Send notice</button>
+        </form>
+        <div class="card"><div class="card-h"><h2>Sent</h2></div><div class="list" id="nt-list"></div></div>
+      </div>
+    </section>
+  </main>
+</div>
+<nav class="bottom-nav" id="nav-bottom"></nav>
+
+
+
+
+
+<script src="js/data.js"></script>
+<script>
+/* One staff page. The staff ID (from sign-in, or ?id= in the address) picks the
+   role; only that role's screens stay on the page, and only its script runs. */
+(function () {
+  const S = SJS;
+  let id = new URLSearchParams(location.search).get("id");
+  try { if (id) localStorage.setItem("sjs-staff", id.toUpperCase()); else id = localStorage.getItem("sjs-staff"); } catch (e) {}
+  id = (id || "").toUpperCase();
+  const me = S.STAFF[id];
+  if (!me) { location.replace("login.html?role=staff"); return; }
+  S.staff = Object.assign({ id }, me);
+  const role = me.role, label = S.ROLE_LABEL[role];
+  document.body.classList.add("role-" + role);
+  document.querySelectorAll("[data-roles]").forEach((el) => { if (!el.dataset.roles.split(" ").includes(role)) el.remove(); });
+  document.title = label + " | St. John's School";
+  document.querySelectorAll("[data-role-label]").forEach((el) => (el.textContent = label));
+  S.$ = S.$ || ((q) => document.querySelector(q));
+  document.getElementById("who-av").textContent = me.initials;
+  if (me.tone) document.getElementById("who-av").classList.add(me.tone);
+  document.getElementById("who-name").textContent = me.name;
+  document.getElementById("who-title").textContent = me.title + " · " + id;
+  const PROTO = {
+    teacher: 'Teacher view with sample data. <a href="parent.html" target="_blank">Open the parent view in a new tab</a>',
+    principal: "Principal view. School-wide numbers are samples; VII-B and admissions are live from the demo.",
+    admin: "School office view. Admissions, notices and the website are live from the demo."
+  };
+  document.getElementById("proto").innerHTML = `<b>Prototype</b> · ${PROTO[role]} · <a href="login.html?role=staff">Use another staff ID</a>`;
+  document.querySelectorAll("[data-signout]").forEach((a) => a.addEventListener("click", () => { try { localStorage.removeItem("sjs-staff"); } catch (e) {} }));
+  const I = {
+    home: '<path d="M4 11l8-7 8 7v9H4z"/><path d="M10 20v-5h4v5"/>', overview: '<path d="M4 11l8-7 8 7v9H4z"/><path d="M10 20v-5h4v5"/>',
+    attendance: '<rect x="4" y="5" width="16" height="15" rx="2"/><path d="M4 10h16M9 3v4M15 3v4M9 15l2 2 4-4"/>',
+    homework: '<path d="M6 3h9l4 4v14H6z"/><path d="M14 3v5h5M9 13h7M9 17h5"/>', marks: '<path d="M5 20V10M12 20V4M19 20v-7"/>',
+    assist: '<path d="M12 3l1.9 5.3L19 10l-5.1 1.7L12 17l-1.9-5.3L5 10l5.1-1.7z"/><path d="M19 15l.8 2.2L22 18l-2.2.8L19 21l-.8-2.2L16 18l2.2-.8z"/>',
+    messages: '<path d="M4 5h16v11H9l-5 4z"/>', admissions: '<circle cx="10" cy="8" r="4"/><path d="M3 21c1-4 4-6 7-6 1.5 0 3 .4 4.2 1.3M17 14v6M14 17h6"/>',
+    notices: '<path d="M4 10v4h3l6 4V6L7 10z"/><path d="M17 9a4 4 0 0 1 0 6"/>', website: '<rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 9h18M7 6.5h.01M10 6.5h.01"/>'
+  };
+  const NAV = {
+    teacher: [["home", "Home"], ["attendance", "Attendance"], ["homework", "Homework"], ["marks", "Marks"], ["assist", "AI assist"], ["messages", "Messages"]],
+    principal: [["overview", "Overview"], ["admissions", "Admissions"], ["notices", "Notices"], ["website", "Website"]],
+    admin: [["overview", "Office desk"], ["admissions", "Admissions"], ["notices", "Notices"], ["website", "Website"]]
+  }[role];
+  const btn = ([k, l]) => `<button class="side-btn" data-go="${k}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">${I[k]}</svg>${l}<span class="count" data-count="${k}" hidden></span></button>`;
+  document.getElementById("nav-side").innerHTML = NAV.map(btn).join("");
+  document.getElementById("nav-bottom").innerHTML = NAV.filter(([k]) => k !== "messages").map(btn).join("");
+})();
+</script>
+<script src="js/common.js"></script>
+<script src="js/ai.js"></script>
+<script>
+(function () {
+  const S = SJS;
+  if (!S.staff || S.staff.role !== "teacher") return;
+
+  // Working copy of today's marks (roll → "A" | "L"); present is the default.
+  let draft = Object.assign({}, (S.state.attendance[S.todayKey] || {}).marks);
+
+  function renderHome() {
+    S.$("#hello").textContent = S.greet() + ", " + S.staff.first;
+    S.$("#today-line").textContent = S.fmtLong(S.today) + " · Class teacher, VII-B";
+    const rec = S.state.attendance[S.todayKey];
+    S.$("#att-banner").innerHTML = rec
+      ? `<div class="status ok"><span class="sq green">✓</span><div><b>Attendance submitted at ${rec.at}</b><span>${32 - Object.keys(rec.marks).length} present, ${Object.keys(rec.marks).length} away. Parents were notified.</span></div></div>`
+      : `<div class="status wait" style="flex-wrap:wrap"><span class="sq warn">!</span><div><b>Today's attendance is not marked</b><span>Parents are waiting for the morning update.</span></div><button class="btn btn-primary btn-sm" data-go="attendance" style="margin-left:auto">Take attendance</button></div>`;
+    const waitLeaves = S.state.leaves.filter((l) => l.status === "Waiting").length;
+    const unread = S.state.messages.filter((m) => m.from === "parent" && m.fresh).length;
+    S.$("#t-stats").innerHTML = `
+      <div class="card stat"><span class="lbl">Present today</span><div class="num">${rec ? 32 - Object.keys(rec.marks).length : "—"}<small> / 32</small></div><div class="foot">${rec ? "Marked " + rec.at : "Not marked yet"}</div></div>
+      <div class="card stat"><span class="lbl">Class average</span><div class="num">${Math.round(S.students.reduce((a, s) => a + S.avgOf(s.hy), 0) / 32)}<small>%</small></div><div class="foot">Half-yearly</div></div>
+      <div class="card stat"><span class="lbl">Leave requests</span><div class="num">${waitLeaves}</div><div class="foot">Waiting for you</div></div>
+      <div class="card stat"><span class="lbl">Messages</span><div class="num">${unread}</div><div class="foot">Unread from parents</div></div>`;
+    S.$("#risk").innerHTML = S.atRisk().map((x) => `<div class="li"><span class="avatar soft">${x.s.initials}</span><div class="t"><b>${x.s.name}</b><span>${x.why.join(" · ")}</span></div><button class="end link-btn" data-ask="Remarks for ${x.s.first}">Draft note</button></div>`).join("");
+    const day = S.today.getDay(), tt = S.timetable[day];
+    const mine = tt.map((p, i) => (p === "Mathematics" ? [i, "VII-B"] : null)).filter(Boolean);
+    [[1, "VIII-A"], [4, "VII-A"]].forEach(([i, c]) => { if (!mine.find((m) => m[0] === i)) mine.push([i, c]); });
+    mine.sort((a, b) => a[0] - b[0]);
+    S.$("#periods").innerHTML = mine.map(([i, c]) => `<div class="li"><span class="sq ${c === "VII-B" ? "red" : ""}">P${i + 1}</span><div class="t"><b>Mathematics · ${c}</b><span>${S.periodTimes[i]}${c === "VII-B" ? " · your class" : ""}</span></div></div>`).join("");
+    S.$("#leaves").innerHTML = S.state.leaves.length ? S.state.leaves.map((l, i) => `<div class="li"><span class="avatar soft">${S.student(l.roll).initials}</span><div class="t"><b>${S.student(l.roll).name} · ${S.fmt(l.from)} – ${S.fmt(l.to)}</b><span>${S.esc(l.why)}</span></div><div class="end">${l.status === "Waiting" ? `<button class="btn btn-green btn-sm" data-approve="${i}">Approve</button>` : '<span class="pill green">Approved</span>'}</div></div>`).join("") : '<p class="muted" style="font-size:14.5px">No leave requests. Parents send them from the app.</p>';
+    const last = [...S.state.messages].reverse().find((m) => m.from === "parent");
+    S.$("#inbox").innerHTML = `<div class="li"><span class="avatar">AS</span><div class="t"><b>Aarav Sharma's parent ${unread ? `<span class="pill red">${unread} new</span>` : ""}</b><span>${last ? S.esc(last.text) : ""}</span></div></div><div class="li"><span class="avatar soft">KM</span><div class="t"><b>Kabir Malhotra's parent</b><span>He had fever, will send medical.</span></div></div>`;
+    S.$("#last-msg").textContent = last ? last.text : "";
+    document.querySelectorAll('[data-count="messages"]').forEach((c) => { c.hidden = !unread; c.textContent = unread; });
+    document.querySelectorAll('[data-count="attendance"]').forEach((c) => { c.hidden = !!rec; c.textContent = "!"; });
+  }
+  document.addEventListener("click", (e) => {
+    const a = e.target.closest("[data-approve]");
+    if (a) { const l = S.state.leaves[+a.dataset.approve]; l.status = "Approved"; S.save(); renderHome(); S.toast("Leave approved · parent notified"); }
+    const q = e.target.closest("[data-ask]"); if (q) S.ask(q.dataset.ask);
+  });
+
+  function renderAtt() {
+    const rec = S.state.attendance[S.todayKey];
+    S.$("#att-grid").innerHTML = S.students.map((s) => { const st = draft[s.roll] || "P"; return `<button class="att" data-roll="${s.roll}" data-s="${st}"><div><span class="roll">${String(s.roll).padStart(2, "0")}</span><span class="nm">${s.name}</span></div><span class="st">${st}</span></button>`; }).join("");
+    const a = Object.values(draft).filter((v) => v === "A").length, l = Object.values(draft).filter((v) => v === "L").length;
+    S.$("#att-count").innerHTML = `<span class="pill green">${32 - a - l} present</span><span class="pill red">${a} absent</span><span class="pill warn">${l} leave</span>`;
+    S.$("#att-done").innerHTML = rec ? `<div class="status ok"><span class="sq green">✓</span><div><b>Submitted at ${rec.at}</b><span>Change anything and submit again — parents get the correction.</span></div></div>` : "";
+    S.$("#att-sub").textContent = S.fmtLong(S.today) + " · tap a name to mark absent, again for leave.";
+  }
+  S.$("#att-grid").addEventListener("click", (e) => {
+    const b = e.target.closest(".att"); if (!b) return;
+    const r = b.dataset.roll, next = { P: "A", A: "L", L: "P" }[draft[r] || "P"];
+    if (next === "P") delete draft[r]; else draft[r] = next;
+    renderAtt();
+  });
+  S.$("#all-present").addEventListener("click", () => { draft = {}; renderAtt(); });
+  S.$("#att-save").addEventListener("click", () => {
+    S.state.attendance[S.todayKey] = { taken: true, at: S.timeNow(), marks: Object.assign({}, draft) };
+    S.save(); renderAtt(); renderHome();
+    const away = Object.keys(draft).length;
+    S.toast(away ? `Saved · ${away} parent${away > 1 ? "s" : ""} notified by app and SMS` : "Saved · everyone present");
+  });
+
+  // Homework
+  function renderHw() {
+    S.$("#hw-list").innerHTML = S.state.homework.filter((h) => h.by === S.teacher.name).map((h) => `<div class="li"><span class="sq red"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3h9l4 4v14H6z"/><path d="M14 3v5h5"/></svg></span><div class="t"><b>${S.esc(h.title)}</b><span>${S.esc(h.cls || "VII-B")} · due ${S.fmt(h.due)} · ${h.done ? "marked done by Aarav's parent" : "seen by parents"}</span></div></div>`).join("");
+  }
+  S.$("#hw-due").value = S.iso(S.nextSchoolDay(S.today, 2));
+  S.$("#hw-ai").addEventListener("click", () => {
+    const t = S.$("#hw-title").value || "Fractions — practice set";
+    if (!S.$("#hw-title").value) S.$("#hw-title").value = t;
+    const p = S.practice(t, 5);
+    S.$("#hw-detail").value = `Practice on ${p.name}. Do these in your Maths notebook and show all steps:\n` + p.qs.map((q, i) => `${i + 1}. ${q}`).join("\n");
+    S.toast("Draft ready — edit it before posting");
+  });
+  S.$("#hw-form").addEventListener("submit", (e) => {
+    e.preventDefault();
+    S.state.homework.unshift({ id: "h" + Date.now(), subj: "Mathematics", cls: S.$("#hw-cls").value, title: S.$("#hw-title").value.trim(), detail: S.$("#hw-detail").value.trim(), due: S.$("#hw-due").value, by: S.teacher.name, done: false, fresh: true });
+    S.save(); e.target.reset(); S.$("#hw-due").value = S.iso(S.nextSchoolDay(S.today, 2)); renderHw();
+    S.toast("Posted · 32 parents notified");
+  });
+
+  // Marks
+  function renderMarks() {
+    const m = S.state.ut2, vals = Object.values(m).map(Number).filter((v) => !isNaN(v));
+    const avg = vals.length ? (vals.reduce((a, b) => a + b, 0) / vals.length).toFixed(1) : "—";
+    S.$("#m-stats").innerHTML = `
+      <div class="card stat"><span class="lbl">Entered</span><div class="num">${vals.length}<small> / 32</small></div></div>
+      <div class="card stat"><span class="lbl">Average</span><div class="num">${avg}<small> / 20</small></div></div>
+      <div class="card stat"><span class="lbl">Highest</span><div class="num">${vals.length ? Math.max(...vals) : "—"}</div></div>
+      <div class="card stat"><span class="lbl">Status</span><div class="num" style="font-size:24px">${S.state.ut2Published ? "Published" : "Draft"}</div><div class="foot">${vals.filter((v) => v < 8).length} below 8 / 20</div></div>`;
+    if (!S.$("#m-tbl").dataset.built) {
+      S.$("#m-tbl").innerHTML = `<thead><tr><th>Roll</th><th>Student</th><th class="num">UT 1 Maths</th><th class="num">Half-yearly</th><th>UT 2 (/20)</th></tr></thead><tbody>` + S.students.map((s) => `<tr><td class="muted">${String(s.roll).padStart(2, "0")}</td><td>${s.name}</td><td class="num muted">${s.ut1.Mathematics}%</td><td class="num muted">${s.hy.Mathematics}%</td><td><input class="mark" data-roll="${s.roll}" inputmode="numeric" maxlength="2" value="${m[s.roll] ?? ""}" aria-label="UT 2 marks for ${s.name}" /></td></tr>`).join("") + "</tbody>";
+      S.$("#m-tbl").dataset.built = 1;
+    }
+  }
+  S.$("#m-tbl").addEventListener("input", (e) => {
+    const i = e.target.closest(".mark"); if (!i) return;
+    const v = Math.min(20, parseInt(i.value, 10)); if (isNaN(v)) delete S.state.ut2[i.dataset.roll]; else { S.state.ut2[i.dataset.roll] = v; if (+i.value > 20) i.value = 20; }
+    S.save(); renderMarks();
+  });
+  S.$("#fill-sample").addEventListener("click", () => {
+    S.students.forEach((s) => { S.state.ut2[s.roll] = Math.max(4, Math.min(20, Math.round((s.hy.Mathematics / 100) * 20 + ((s.roll * 7) % 5) - 2))); });
+    S.save(); delete S.$("#m-tbl").dataset.built; renderMarks();
+  });
+  S.$("#publish").addEventListener("click", () => {
+    if (Object.keys(S.state.ut2).length < 32) { S.toast("Enter marks for all 32 first — or use Fill sample marks"); return; }
+    S.state.ut2Published = true; S.save(); renderMarks(); S.toast("Published · parents can see UT 2 marks now");
+  });
+
+  // AI assist
+  S.$("#rm-s").innerHTML = S.students.map((s) => `<option value="${s.roll}">${s.name}</option>`).join("");
+  S.$("#rm-s").value = 11;
+  // With Claude connected the remark is written live; otherwise the built-in draft.
+  let rmRun = 0;
+  S.$("#rm-go").addEventListener("click", async () => {
+    const st = S.student(S.$("#rm-s").value), out = S.$("#rm-out"), run = ++rmRun;
+    if (!S.claude.on) { out.value = S.remarkFor(st); return; }
+    out.value = "Drafting…";
+    try {
+      await S.claude.stream({ system: S.aiSystem("teacher"), max: 300, messages: [{ role: "user", content: `Draft the half-yearly report-card remark for ${st.name} (Roll ${st.roll}). Plain text only: no bold, no preamble.` }], onText: (t) => { if (run === rmRun) out.value = t; } });
+    } catch (e) { if (run === rmRun) out.value = S.remarkFor(st); }
+  });
+  S.$("#rm-s").addEventListener("change", () => S.$("#rm-go").click());
+  S.$("#rm-save").addEventListener("click", () => S.toast("Saved to " + S.student(S.$("#rm-s").value).name + "'s report card"));
+  S.$("#rm-all").addEventListener("click", () => {
+    S.$("#rm-rows").innerHTML = S.students.map((s) => `<tr><td style="width:180px"><b>${s.name}</b></td><td>${S.remarkFor(s)}</td></tr>`).join("");
+    S.$("#rm-table").hidden = false; S.$("#rm-table").scrollIntoView({ behavior: "smooth", block: "start" });
+  });
+  let lastSet = null;
+  S.$("#ps-go").addEventListener("click", () => {
+    lastSet = S.practice(S.$("#ps-t").value, +S.$("#ps-n").value);
+    S.$("#ps-out").innerHTML = lastSet.qs.map((q) => `<li>${S.esc(q)}</li>`).join("");
+    S.$("#ps-send").disabled = false;
+  });
+  S.$("#ps-send").addEventListener("click", () => {
+    S.state.homework.unshift({ id: "h" + Date.now(), subj: "Mathematics", cls: "VII-B", title: lastSet.name + " — practice set", detail: lastSet.qs.map((q, i) => `${i + 1}. ${q}`).join("\n"), due: S.iso(S.nextSchoolDay(S.today, 2)), by: S.teacher.name, done: false, fresh: true });
+    S.save(); renderHw(); S.toast("Sent as homework to VII-B parents");
+  });
+  // A short, warm class note drafted from each school notice; the teacher edits before sending.
+  const NOTE = {
+    n1: "Dear parents, the parent–teacher meeting for VII-B is on Saturday, 31 October, from 9:00 AM to 12:30 PM. I will go through your child's half-yearly answer sheets with you. If you can't come, reply here and we'll find another time.",
+    n2: "Dear parents, school is closed on Tuesday, 20 October for Dussehra. Homework due that day can be handed in on Wednesday. Happy Dussehra!",
+    n3: "Dear parents, Children's Day is on Saturday, 14 November, with a special assembly and a performance by the teachers. Children may come in colour dress that day.",
+    n4: "Dear parents, school is closed for the Diwali break from 6 to 10 November and reopens on Wednesday, 11 November. A short revision sheet will come home before the break. Wishing your family a happy Diwali!"
+  };
+  const notices = S.state.notices.filter((n) => NOTE[n.id]);
+  S.$("#tr-n").innerHTML = notices.map((n) => `<option value="${n.id}">${S.esc(n.title)}</option>`).join("");
+  const showTr = () => { S.$("#tr-out").value = NOTE[S.$("#tr-n").value] + "\n\n— Neha Mathew, class teacher VII-B"; };
+  S.$("#tr-n").addEventListener("change", showTr); showTr();
+  S.$("#tr-send").addEventListener("click", () => {
+    const t = S.$("#tr-out").value.trim(); if (!t) return;
+    S.state.messages.push({ from: "teacher", text: t, at: "Today, " + S.timeNow(), fresh: true }); S.save(); renderThread(); S.toast("Sent to VII-B parents in the app");
+  });
+
+  // Messages
+  function renderThread() {
+    S.$("#thread").innerHTML = S.state.messages.map((m) => `<div class="msg ${m.from === "teacher" ? "me" : "bot"}">${S.esc(m.text)}<span class="when">${m.from === "parent" ? "Aarav's parent · " : ""}${S.esc(m.at)}</span></div>`).join("");
+    S.$("#thread").scrollTop = 1e6;
+  }
+  S.$("#msg-form").addEventListener("submit", (e) => {
+    e.preventDefault(); const i = e.target.querySelector("input"); if (!i.value.trim()) return;
+    S.state.messages.push({ from: "teacher", text: i.value.trim(), at: "Today, " + S.timeNow(), fresh: true }); i.value = ""; S.save(); renderThread(); renderHome();
+  });
+
+  document.addEventListener("sjs:view", (e) => {
+    if (e.detail === "messages") { S.state.messages.forEach((m) => { if (m.from === "parent") m.fresh = false; }); S.save(); }
+    renderHome(); renderThread();
+  });
+  document.addEventListener("sjs:sync", () => { renderHome(); renderHw(); renderThread(); if (S.state.messages.at(-1)?.from === "parent" && S.state.messages.at(-1).fresh) S.toast("New message from Aarav's parent"); });
+  renderHome(); renderAtt(); renderHw(); renderMarks(); renderThread(); S.$("#ps-go").click(); S.$("#rm-out").value = S.remarkFor(S.student(S.$("#rm-s").value));
+  S.mountAI("teacher");
+})();
+</script>
+<script>
+(function () {
+  const S = SJS;
+  if (!S.staff || !/^(principal|admin)$/.test(S.staff.role)) return;
+
+  const classes = S.sample.classes, sample = S.sample.attendance;
+
+  function render() {
+    S.$("#p-hello").textContent = S.greet() + (S.staff.first ? ", " + S.staff.first : "");
+    // The office's desk: what needs doing today, each a step away.
+    const missing = S.FACTS.filter(([k]) => !(S.state.site.facts[k] || "").trim()).length;
+    const upcoming = S.state.notices.filter((n) => n.date >= S.todayKey).length;
+    const callN = S.state.enquiries.filter((e) => e.status === "New").length;
+    S.$("#todo").innerHTML = [
+      [callN ? "red" : "green", callN, callN ? `Call back ${callN} new admission ${callN > 1 ? "enquiries" : "enquiry"}` : "No new enquiries waiting", "From the website's visit form", "admissions"],
+      [missing ? "warn" : "green", missing, missing ? `${missing} school details still missing on the website` : "All school details are on the website", "Phone, email, timings and more", "website"],
+      ["", upcoming, `${upcoming} notices coming up on the website`, "Check the dates are right", "notices"]
+    ].map(([tone, n, t, sub, go]) => `<button class="li todo" type="button" data-go="${go}"><span class="sq ${tone}">${n}</span><div class="t"><b>${t}</b><span>${sub}</span></div><span class="end muted">Open</span></button>`).join("");
+    S.$("#p-today-line").textContent = S.fmtLong(S.today) + " · St. John's School, Sector 7A";
+    S.$("#brief").innerHTML = S.brief();
+    const enq = S.state.enquiries, fresh = enq.filter((e) => e.status === "New").length;
+    S.$("#kpis").innerHTML = `
+      <div class="card stat"><span class="lbl">Present today</span><div class="num">93.4<small>%</small></div><div class="foot">Sample · all classes</div></div>
+      <div class="card stat"><span class="lbl">Staff present</span><div class="num">84<small> / 88</small></div><div class="foot">2 on leave, 2 on duty</div></div>
+      <div class="card stat"><span class="lbl">Q3 fees</span><div class="num">70<small>%</small></div><div class="foot">Collected so far</div></div>
+      <div class="card stat hl"><span class="lbl">New enquiries</span><div class="num">${fresh}</div><div class="foot">${enq.length} total this season</div></div>`;
+    const rec = S.state.attendance[S.todayKey];
+    const vals = sample.map((v, i) => classes[i] === "VII" ? (rec ? Math.round(((32 - Object.keys(rec.marks).length) / 32) * 100) : null) : v);
+    // Build the columns once; after that only move them, so a refresh never replays the whole chart.
+    const cols = S.$("#cols");
+    if (cols.children.length !== vals.length) {
+      cols.innerHTML = vals.map(() => `<div class="col"><span class="tip"></span><span class="c"></span></div>`).join("");
+      S.$("#col-labels").innerHTML = classes.map((c) => `<span>${c}</span>`).join("");
+      cols.getBoundingClientRect(); // let the zero height land before the first grow
+    }
+    vals.forEach((v, i) => {
+      const col = cols.children[i], c = col.querySelector(".c");
+      col.classList.toggle("low", v !== null && v < 90);
+      col.querySelector(".tip").textContent = `Class ${classes[i]}: ${v === null ? "not marked yet" : v + "% present"}`;
+      c.classList.toggle("pending", v === null);
+      c.style.height = v === null ? "100%" : v + "%";
+    });
+    S.$("#fee-due").textContent = "Due " + S.fmt(S.state.fees[2].due);
+    S.$("#enq-mini").innerHTML = enq.slice(0, 4).map((e) => `<div class="li"><span class="avatar soft">${e.child.split(" ").map((p) => p[0]).join("").slice(0, 2)}</span><div class="t"><b>${S.esc(e.child)} · ${S.esc(e.cls)}</b><span>${S.esc(e.parent)} · ${S.fmt(e.at)}</span></div><span class="end pill ${e.status === "New" ? "red" : e.status === "Visit booked" ? "green" : ""}">${e.status}</span></div>`).join("");
+    S.$("#p-risk").innerHTML = S.atRisk().map((x) => `<div class="li"><span class="avatar soft">${x.s.initials}</span><div class="t"><b>${x.s.name}</b><span>${x.why.join(" · ")}</span></div></div>`).join("");
+    document.querySelectorAll('[data-count="admissions"]').forEach((c) => { c.hidden = !fresh; c.textContent = fresh; });
+
+    // Admissions
+    const byCls = (c) => enq.filter((e) => e.cls === c).length;
+    S.$("#adm-kpis").innerHTML = `
+      <div class="card stat"><span class="lbl">Enquiries</span><div class="num">${enq.length}</div></div>
+      <div class="card stat"><span class="lbl">Nursery</span><div class="num">${byCls("Nursery")}</div></div>
+      <div class="card stat"><span class="lbl">Class XI</span><div class="num">${byCls("Class XI")}</div></div>
+      <div class="card stat hl"><span class="lbl">To call</span><div class="num">${fresh}</div></div>`;
+    S.$("#adm-tbl").innerHTML = `<thead><tr><th>Child</th><th>Class</th><th>Parent</th><th>Phone</th><th>Received</th><th>Status</th></tr></thead><tbody>` + enq.map((e, i) => `<tr><td><b>${S.esc(e.child)}</b>${e.fresh ? ' <span class="pill red">From website</span>' : ""}${e.note ? `<div class="muted" style="font-size:12.5px">${S.esc(e.note)}</div>` : ""}</td><td>${S.esc(e.cls)}</td><td>${S.esc(e.parent)}</td><td class="mono" style="font-size:13px">${S.esc(e.phone)}</td><td>${S.fmt(e.at)}</td><td><select class="input" data-enq="${i}" style="min-height:36px;padding:4px 10px;font-size:13.5px;width:auto">${["New", "Called", "Visit booked", "Form given", "Admitted"].map((s) => `<option ${s === e.status ? "selected" : ""}>${s}</option>`).join("")}</select></td></tr>`).join("") + "</tbody>";
+
+    // Notices
+    S.$("#nt-list").innerHTML = [...S.state.notices].reverse().map((n) => `<div class="li"><span class="sq ${n.fresh ? "red" : ""}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 10v4h3l6 4V6L7 10z"/></svg></span><div class="t"><b>${S.esc(n.title)}</b><span>${S.fmt(n.date, { weekday: "short", day: "numeric", month: "short" })} · ${S.esc(n.text)}</span></div><span class="end pill">${S.esc(n.tag)}</span></div>`).join("");
+    renderSite();
+  }
+
+  // ---------- Website ----------
+  // Every save keeps the previous content for undo and a line in the history.
+  // Uploaded photos are shrunk in the browser and kept by id.
+  const site = () => S.state.site;
+  const snap = () => JSON.stringify({ adm: site().adm, slides: site().slides, gallery: site().gallery, facts: site().facts });
+  const sweep = () => { const refs = snap() + site().undo.join(""); Object.keys(S.state.photos).forEach((id) => { if (!refs.includes("up:" + id)) delete S.state.photos[id]; }); };
+  const change = (what, fn) => {
+    const before = snap();
+    fn(site());
+    site().undo.push(before); if (site().undo.length > 12) site().undo.shift();
+    site().log.unshift({ what, at: Date.now(), by: S.staff.name }); site().log.length = Math.min(site().log.length, 30);
+    sweep();
+    if (!S.save()) {
+      Object.assign(site(), JSON.parse(site().undo.pop())); site().log.shift(); sweep(); S.save();
+      S.toast("The demo's storage is full. Remove a photo and try again."); renderSite(); return;
+    }
+    renderSite(); S.toast(what + ". It's live on the website.");
+  };
+  const shrink = (file, max) => new Promise((res, rej) => {
+    const img = new Image();
+    img.onload = () => {
+      const k = Math.min(1, max / Math.max(img.naturalWidth, img.naturalHeight)), c = document.createElement("canvas");
+      c.width = Math.round(img.naturalWidth * k); c.height = Math.round(img.naturalHeight * k);
+      c.getContext("2d").drawImage(img, 0, 0, c.width, c.height); URL.revokeObjectURL(img.src);
+      let d = c.toDataURL("image/webp", 0.78); if (!d.startsWith("data:image/webp")) d = c.toDataURL("image/jpeg", 0.8);
+      res(d);
+    };
+    img.onerror = () => rej(new Error("not an image"));
+    img.src = URL.createObjectURL(file);
+  });
+  const store = async (file, max) => { const id = Date.now().toString(36) + Math.random().toString(36).slice(2, 6); S.state.photos[id] = await shrink(file, max); return "up:" + id; };
+  const POS = [["25% 50%", "Left"], ["50% 50%", "Centre"], ["75% 50%", "Right"]];
+  const CAT = { stage: "On stage", band: "Band", juniors: "Juniors", prizes: "Prizes" };
+  const ago = (t) => { const m = Math.round((Date.now() - t) / 60000); return m < 1 ? "Just now" : m < 60 ? `${m} min ago` : new Date(t).toLocaleString("en-IN", { day: "numeric", month: "short", hour: "numeric", minute: "2-digit" }); };
+  let admDraft = null;
+
+  function renderSite() {
+    const st = site();
+    // Admissions
+    if (!admDraft) admDraft = JSON.parse(JSON.stringify(st.adm));
+    S.$$("#w-open button").forEach((b) => b.classList.toggle("on", (b.dataset.open === "1") === admDraft.open));
+    const stEl = S.$("#w-adm-state"); stEl.textContent = st.adm.open ? "Live: open" : "Live: closed"; stEl.className = "right pill " + (st.adm.open ? "green" : "");
+    if (document.activeElement !== S.$("#w-session")) S.$("#w-session").value = admDraft.session;
+    S.$("#w-classes").innerHTML = S.ADM_CLASSES.map(([c]) => `<label class="check"><input type="checkbox" value="${S.esc(c)}" ${admDraft.classes.includes(c) ? "checked" : ""} /> ${S.esc(c)}</label>`).join("");
+    const keep = S.state.site.adm; S.state.site.adm = admDraft; const t = S.admText("en"); S.state.site.adm = keep;
+    S.$("#w-prev-t").textContent = t.title; S.$("#w-prev-p").textContent = t.text;
+    // Details
+    const ff = S.$("#w-facts-f");
+    if (!ff.children.length) ff.innerHTML = S.FACTS.map(([k, l, eg]) => `<div class="field"><label for="f-${k}">${l}</label><input id="f-${k}" name="${k}" placeholder="${eg ? "e.g. " + S.esc(eg) : "To be added"}" /></div>`).join("");
+    S.FACTS.forEach(([k]) => { const i = S.$("#f-" + k); if (document.activeElement !== i) i.value = st.facts[k] || ""; });
+    const filled = S.FACTS.filter(([k]) => (st.facts[k] || "").trim()).length;
+    const fn = S.$("#w-facts-n"); fn.textContent = `${filled} of ${S.FACTS.length} filled in`; fn.className = "right pill " + (filled === S.FACTS.length ? "green" : "warn");
+    // Slides
+    const on = st.slides.filter((p) => p.on).length;
+    S.$("#w-sl-n").textContent = `${on} showing, up to 8`;
+    S.$("#w-slides").innerHTML = st.slides.map((p, i) => `<figure class="tile ${p.on ? "" : "off"}" data-i="${i}">
+      <div class="tile-ph"><img src="${S.esc(S.photo(p.src))}" alt="" style="object-position:${S.esc(p.pos || "50% 50%")}" />${p.on ? `<span class="tile-n">${st.slides.slice(0, i + 1).filter((x) => x.on).length}</span>` : ""}</div>
+      <figcaption>
+        <label class="check sm"><input type="checkbox" data-a="on" ${p.on ? "checked" : ""} /> Show</label>
+        <select data-a="pos" aria-label="Keep in view">${POS.map(([v, l]) => `<option value="${v}" ${(p.pos || "50% 50%") === v ? "selected" : ""}>Keep ${l.toLowerCase()}</option>`).join("")}</select>
+        <span class="tile-btns"><button type="button" data-a="up" aria-label="Move earlier" ${i ? "" : "disabled"}>‹</button><button type="button" data-a="down" aria-label="Move later" ${i < st.slides.length - 1 ? "" : "disabled"}>›</button>${p.src.startsWith("up:") ? '<button type="button" data-a="del" aria-label="Remove this photo">×</button>' : ""}</span>
+      </figcaption></figure>`).join("");
+    // Gallery
+    S.$("#w-gal-list").innerHTML = st.gallery.length ? st.gallery.map((g, i) => `<div class="li"><img class="thumb" src="${S.esc(S.photo(g.src))}" alt="" /><div class="t"><b>${S.esc(g.caption)}</b><span>${CAT[g.cat] || g.cat}${g.alt ? " · " + S.esc(g.alt) : ""}</span></div><button class="end link-btn" type="button" data-gdel="${i}">Remove</button></div>`).join("") : `<p class="muted" style="font-size:14px">Photos you add appear first in the gallery on the Student life page.</p>`;
+    // History
+    S.$("#w-undo").disabled = !st.undo.length;
+    S.$("#w-log").innerHTML = st.log.length ? st.log.slice(0, 8).map((l) => `<div class="li"><div class="t"><b>${S.esc(l.what)}</b><span>${ago(l.at)} · ${S.esc(l.by || "Principal")}</span></div></div>`).join("") : `<p class="muted" style="font-size:14px">Nothing changed yet. Every save shows here, with who made it and when.</p>`;
+  }
+
+  S.$("#w-open").addEventListener("click", (e) => { const b = e.target.closest("button"); if (!b) return; admDraft.open = b.dataset.open === "1"; renderSite(); });
+  S.$("#w-session").addEventListener("input", (e) => { admDraft.session = e.target.value.trim(); renderSite(); });
+  S.$("#w-classes").addEventListener("change", () => { admDraft.classes = S.ADM_CLASSES.map(([c]) => c).filter((c) => S.$$("#w-classes input").some((i) => i.checked && i.value === c)); renderSite(); });
+  S.$("#w-adm").addEventListener("submit", (e) => {
+    e.preventDefault();
+    if (admDraft.open && !admDraft.classes.length) { S.toast("Pick at least one class, or set admissions to closed."); return; }
+    change(admDraft.open ? `Admissions ${admDraft.session} shown as open` : `Admissions ${admDraft.session} shown as closed`, (st) => { st.adm = JSON.parse(JSON.stringify(admDraft)); });
+  });
+  S.$("#w-facts").addEventListener("submit", (e) => {
+    e.preventDefault();
+    const next = {}; S.FACTS.forEach(([k]) => { const v = S.$("#f-" + k).value.trim(); if (v) next[k] = v; });
+    const changed = S.FACTS.filter(([k]) => (next[k] || "") !== (site().facts[k] || "")).map(([, l]) => l.toLowerCase());
+    if (!changed.length) { S.toast("Nothing has changed."); return; }
+    change(`Updated ${changed.length > 2 ? changed.length + " school details" : changed.join(" and ")}`, (st) => { st.facts = next; });
+  });
+  S.$("#w-slides").addEventListener("change", (e) => {
+    const el = e.target, i = +el.closest(".tile").dataset.i, p = site().slides[i];
+    if (el.dataset.a === "on") {
+      if (el.checked && site().slides.filter((x) => x.on).length >= 8) { el.checked = false; S.toast("Up to eight photos at a time. Hide one first."); return; }
+      if (!el.checked && site().slides.filter((x) => x.on).length <= 1) { el.checked = true; S.toast("The home page needs at least one photo."); return; }
+      change(el.checked ? "Home page photo shown" : "Home page photo hidden", (st) => { st.slides[i].on = el.checked; });
+    }
+    if (el.dataset.a === "pos") change(`Home page photo set to keep ${POS.find((x) => x[0] === el.value)[1].toLowerCase()} in view`, (st) => { st.slides[i].pos = el.value; });
+    void p;
+  });
+  S.$("#w-slides").addEventListener("click", (e) => {
+    const b = e.target.closest("button[data-a]"); if (!b) return;
+    const i = +b.closest(".tile").dataset.i;
+    if (b.dataset.a === "del") { if (site().slides[i].on && site().slides.filter((x) => x.on).length <= 1) { S.toast("The home page needs at least one photo."); return; } change("Removed an uploaded home page photo", (st) => { st.slides.splice(i, 1); }); return; }
+    const j = b.dataset.a === "up" ? i - 1 : i + 1;
+    change("Home page photos reordered", (st) => { [st.slides[i], st.slides[j]] = [st.slides[j], st.slides[i]]; });
+  });
+  S.$("#w-slide-file").addEventListener("change", async (e) => {
+    const file = e.target.files[0]; e.target.value = ""; if (!file) return;
+    try {
+      const src = await store(file, 1600), full = site().slides.filter((x) => x.on).length >= 8;
+      change(full ? "Home page photo uploaded (hidden: eight are already showing)" : "Home page photo uploaded and shown first", (st) => { st.slides.unshift({ src, alt: "", on: !full, pos: "50% 50%" }); });
+    } catch (err) { S.toast("That file isn't a photo the browser can read. Try a JPG or PNG."); }
+  });
+  S.$("#w-gal").addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const file = S.$("#w-gal-file").files[0]; if (!file) return;
+    try {
+      const src = await store(file, 1200), caption = S.$("#w-gal-cap").value.trim(), alt = S.$("#w-gal-alt").value.trim(), cat = S.$("#w-gal-cat").value;
+      change(`Added "${caption}" to the gallery`, (st) => { st.gallery.unshift({ src, caption, alt, cat }); });
+      e.target.reset();
+    } catch (err) { S.toast("That file isn't a photo the browser can read. Try a JPG or PNG."); }
+  });
+  S.$("#w-gal-list").addEventListener("click", (e) => { const b = e.target.closest("[data-gdel]"); if (!b) return; const g = site().gallery[+b.dataset.gdel]; change(`Removed "${g.caption}" from the gallery`, (st) => { st.gallery.splice(+b.dataset.gdel, 1); }); });
+  S.$("#w-undo").addEventListener("click", () => {
+    const st = site(); if (!st.undo.length) return;
+    const last = st.log[0] ? st.log[0].what : "the last change";
+    Object.assign(st, JSON.parse(st.undo.pop())); admDraft = null;
+    st.log.unshift({ what: `Undid: ${last.charAt(0).toLowerCase() + last.slice(1)}`, at: Date.now(), by: S.staff.name });
+    sweep(); S.save(); renderSite(); S.toast("Undone. The website is back as it was.");
+  });
+  S.$("#adm-tbl").addEventListener("change", (e) => { const s = e.target.closest("[data-enq]"); if (!s) return; S.state.enquiries[+s.dataset.enq].status = s.value; S.save(); render(); S.toast("Status updated"); });
+  S.$("#nt-form").addEventListener("submit", (e) => {
+    e.preventDefault();
+    S.state.notices.push({ id: "n" + Date.now(), title: S.$("#nt-title").value.trim(), text: S.$("#nt-text").value.trim(), date: S.$("#nt-date").value || S.todayKey, tag: S.$("#nt-tag").value, fresh: true, web: S.$("#nt-web").checked });
+    S.save(); render(); S.toast(`Sent to ${S.$("#nt-to").value.toLowerCase()} · app, SMS and WhatsApp`);
+  });
+  let seen = S.state.enquiries.length;
+  document.addEventListener("sjs:sync", () => { const n = S.state.enquiries.length; render(); if (n > seen) S.toast("New admission enquiry from the website"); seen = n; });
+  render();
+  S.mountAI("principal");
+})();
+</script>
+</body>
+</html>

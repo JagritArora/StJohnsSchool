@@ -15,7 +15,7 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="default" />
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-<link href="https://fonts.googleapis.com/css2?family=Figtree:wght@400..800&family=Mukta:wght@400;600;700&display=swap" rel="stylesheet" />
+<link href="https://fonts.googleapis.com/css2?family=Figtree:wght@400..800&display=swap" rel="stylesheet" />
 <link rel="stylesheet" href="css/site.css" />
 <script>
 /* Before the first paint: fade photos in as they load. */
@@ -25,10 +25,10 @@
 </script>
 </head>
 <body class="app">
-<div class="proto-bar"><b>Prototype</b> · Parent view with sample data. <a href="teacher.html" target="_blank">Open teacher view in a new tab →</a></div>
+<div class="proto-bar"><b>Prototype</b> · Parent view with sample data. <a href="staff.html?id=SJS-T-0412" target="_blank">Open the teacher view in a new tab</a></div>
 <div class="app-shell">
   <aside class="side">
-    <a href="index.html" class="brand"><img src="assets/crest.svg" alt="" width="40" height="40" /><span><span class="brand-name">St. John's</span><span class="brand-sub">Parent</span></span></a>
+    <a href="index.html" class="brand"><img src="assets/crest.svg" alt="" width="40" height="40" /><span><span class="brand-name">St. John&#x27;s School</span><span class="brand-sub">Parent</span></span></a>
     <nav id="nav-side"></nav>
     <div class="side-foot">
       
@@ -38,18 +38,28 @@
   </aside>
 
   <main class="main">
-    <div class="mobile-head"><img src="assets/crest.svg" alt="" /><b>St. John's</b><div class="right"><span data-bell></span><button class="icon-btn" data-go="messages" aria-label="Messages"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5h16v11H9l-5 4z"/></svg></button><a class="icon-btn" href="login.html" aria-label="Sign out"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M15 4h4v16h-4M10 8l-4 4 4 4M6 12h10"/></svg></a></div></div>
+    <div class="mobile-head"><img src="assets/crest.svg" alt="" /><b>St. John&#x27;s School<small>Parent</small></b><div class="right"><span data-bell></span><button class="icon-btn" data-go="messages" aria-label="Messages"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5h16v11H9l-5 4z"/></svg></button><a class="icon-btn" href="login.html" aria-label="Sign out"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M15 4h4v16h-4M10 8l-4 4 4 4M6 12h10"/></svg></a></div></div>
 
     <!-- HOME -->
     <section data-view="home">
-      <div class="topbar"><div><h1 id="hello">Good morning, Rohit</h1><div class="sub" id="today-line"></div></div>
-        <div class="right"><div class="chips kids"><button class="chip on"><span class="avatar">AS</span>Aarav · VII-B</button><button class="chip" id="sib"><span class="avatar green">AS</span>Ananya · III-A</button></div></div>
+      <div class="topbar"><div><h1 id="hello">Good morning, Rohit</h1><div class="sub" id="today-line"></div></div></div>
+      <div class="card kid">
+        <div class="kid-id">
+          <span class="avatar kid-av">AS</span>
+          <div class="kid-t"><h2>Aarav Sharma</h2><span>Class VII-B · Roll 01 · Class teacher Ms. Neha Mathew</span></div>
+          <div class="seg kid-sw" role="group" aria-label="Choose a child"><button class="on" type="button" aria-pressed="true">Aarav · VII-B</button><button type="button" id="sib" aria-pressed="false">Ananya · III-A</button></div>
+        </div>
+        <dl class="kid-kpis" id="home-stats"></dl>
       </div>
-      <div class="install" id="install" hidden>
-        <img src="assets/icons/icon-192.png" alt="" width="44" height="44" />
-        <div><b>Keep St. John's on your home screen</b><span id="install-how">It opens straight to Aarav's day, like an app.</span></div>
-        <button class="btn btn-primary btn-sm" id="install-go" type="button">Add</button>
-        <button class="icon-btn" id="install-x" type="button" aria-label="Not now"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
+      <div class="today-row">
+        <div id="today-status" class="status"></div>
+        <div class="card now-card" id="now-card"></div>
+        <div class="card bus-card">
+          <div class="card-h"><h2>Bus · Route 14</h2><span class="right pill green" id="bus-pill">Live</span></div>
+          <div id="bus-text" style="font-size:14.5px"></div>
+          <div class="route" id="route"></div>
+          <div class="route-labels" id="route-labels"></div>
+        </div>
       </div>
       <div class="home-grid">
         <aside class="card tt-rail" aria-labelledby="tt-h">
@@ -58,19 +68,20 @@
           <div class="tt-sum"><table class="pivot pivot-sum" id="tt-sum"></table></div>
         </aside>
         <div class="home-main">
-          <div id="today-status" class="status"></div>
-          <div class="grid g4" id="home-stats"></div>
+          <div class="card">
+            <div class="card-h"><h2>Due soon</h2><button class="right link-btn" type="button" data-go="homework">All homework</button></div>
+            <div class="list" id="due"></div>
+          </div>
           <div class="ai-card">
-            <div class="card-h" style="margin:0"><span class="ai-tag"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l1.9 5.3L19 10l-5.1 1.7L12 17l-1.9-5.3L5 10l5.1-1.7z"/></svg>This week for Aarav · AI summary</span><div class="right seg" id="lang"><button class="on" data-l="en">English</button><button data-l="hi">हिंदी</button></div></div>
+            <div class="card-h" style="margin:0"><span class="ai-tag"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l1.9 5.3L19 10l-5.1 1.7L12 17l-1.9-5.3L5 10l5.1-1.7z"/></svg>This week for Aarav · AI summary</span></div>
             <div class="body" id="weekly"></div>
             <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:16px"><button class="btn btn-primary btn-sm" onclick="SJS.ask('What should we work on?')">What should we work on?</button><button class="btn btn-ghost btn-sm" onclick="SJS.openAI()">Ask anything about Aarav</button></div>
           </div>
-          <div class="card">
-            <div class="card-h"><h2>School bus · Route 14</h2><span class="right pill green" id="bus-pill">Live</span></div>
-            <div id="bus-text" style="font-size:15px"></div>
-            <div class="route" id="route"></div>
-            <div class="route-labels" id="route-labels"></div>
-            <p class="muted" style="font-size:12px;margin-top:14px">Simulated in the prototype. Live version uses the bus driver's phone GPS.</p>
+          <div class="install" id="install" hidden>
+            <img src="assets/icons/icon-192.png" alt="" width="44" height="44" />
+            <div><b>Keep St. John's on your home screen</b><span id="install-how">It opens straight to Aarav's day, like an app.</span></div>
+            <button class="btn btn-primary btn-sm" id="install-go" type="button">Add</button>
+            <button class="icon-btn" id="install-x" type="button" aria-label="Not now"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
           </div>
         </div>
       </div>
@@ -84,7 +95,7 @@
         <div class="card">
           <div class="card-h"><h2 id="cal-title"></h2><div class="right" style="display:flex;gap:6px"><button class="icon-btn" id="cal-prev" aria-label="Previous month" style="width:34px;height:34px">‹</button><button class="icon-btn" id="cal-next" aria-label="Next month" style="width:34px;height:34px">›</button></div></div>
           <div class="cal" id="cal"></div>
-          <div class="legend"><span><i style="background:var(--green-soft);border:1px solid var(--green)"></i>Present</span><span><i style="background:var(--accent)"></i>Absent</span><span><i style="background:var(--warn-soft);border:1px solid var(--warn)"></i>Leave</span><span><i style="border:1px dashed var(--muted)"></i>Holiday / weekend</span></div>
+          <div class="legend"><span><i style="background:var(--green-soft);border:1px solid var(--green)"></i>Present</span><span><i style="background:var(--accent)"></i>Absent</span><span><i style="background:var(--warn-soft);border:1px solid var(--warn)"></i>Leave</span><span><i style="border:1px dashed var(--muted)"></i>Holiday / Sunday</span></div>
         </div>
         <div class="card"><div class="card-h"><h2>Days away this session</h2></div><div class="list" id="absences"></div></div>
       </div>
@@ -175,7 +186,7 @@
   S.$("#nav-bottom").innerHTML = nav.filter(([k]) => k !== "messages").map(([k, l]) => btn(k, l)).join("");
 
   const statusLabel = { P: "Present", A: "Absent", L: "Leave" };
-  let lang = "en", exam = "hy", calMonth = new Date(S.today.getFullYear(), S.today.getMonth(), 1);
+  let exam = "hy", calMonth = new Date(S.today.getFullYear(), S.today.getMonth(), 1);
 
   function renderHome() {
     S.$("#hello").textContent = S.greet() + ", Rohit";
@@ -190,12 +201,20 @@
     else { box.className = "status bad"; box.innerHTML = `<span class="sq red">${alert}</span><div><b>Aarav is marked ${statusLabel[st].toLowerCase()} today</b><span>Marked at ${rec.at} by Ms. Neha Mathew. Not expected? <a href="#messages" data-go="messages" style="color:var(--accent)">Message the teacher</a></span></div>`; }
 
     const pend = S.state.homework.filter((h) => !h.done), fee = S.state.fees.find((f) => !f.paid);
+    const nextPtm = S.state.notices.filter((n) => n.tag === "PTM" && n.date >= S.todayKey).sort((x, y) => (x.date < y.date ? -1 : 1))[0];
     S.$("#home-stats").innerHTML = `
-      <div class="card stat"><span class="lbl">Attendance</span><div class="num">${S.attendancePct(me.roll)}<small>%</small></div><div class="foot">This session</div></div>
-      <div class="card stat"><span class="lbl">Homework</span><div class="num">${pend.length}<small> pending</small></div><div class="foot">${pend[0] ? "Next: " + S.esc(pend[0].subj) + ", " + S.fmt(pend[0].due) : "All done"}</div></div>
-      <div class="card stat"><span class="lbl">Half-yearly</span><div class="num">${S.avgOf(me.hy)}<small>%</small></div><div class="foot">Up from ${S.avgOf(me.ut1)}% in UT 1</div></div>
-      <div class="card stat ${fee ? "hl" : ""}"><span class="lbl">Fees</span><div class="num">${fee ? S.rupee(fee.amount) : "Paid"}</div><div class="foot">${fee ? "Due " + S.fmt(fee.due) : "Nothing due"}</div></div>`;
-    S.$("#weekly").innerHTML = S.weekly(lang).replace(/\n/g, "<br />");
+      <div><dt>Attendance</dt><dd>${S.attendancePct(me.roll)}<small>%</small></dd><span>This session · CBSE needs 75%</span></div>
+      <div><dt>Half-yearly</dt><dd>${S.avgOf(me.hy)}<small>%</small></dd><span>Up from ${S.avgOf(me.ut1)}% in Unit Test 1</span></div>
+      <div><dt>Homework</dt><dd>${pend.length}<small> pending</small></dd><span>${pend[0] ? "Next: " + S.esc(pend[0].subj) + ", " + S.fmt(pend[0].due) : "All done"}</span></div>
+      <div class="${fee ? "due" : ""}"><dt>Fees</dt><dd>${fee ? S.rupee(fee.amount) : "Paid"}</dd><span>${fee ? "Due " + S.fmt(fee.due, { day: "numeric", month: "long" }) : "Nothing due"}</span></div>`;
+    // Due soon: homework, the next fee and the next PTM, soonest first.
+    const due = pend.map((h) => ({ d: h.due, tone: "warn", icon: "hw", t: `${h.subj}: ${h.title}`, sub: "Set by " + h.by, go: "homework" }));
+    if (fee) due.push({ d: fee.due, tone: "red", icon: "fee", t: `Fee instalment, ${S.rupee(fee.amount)}`, sub: fee.q + " · pay by UPI", go: "fees" });
+    if (nextPtm) due.push({ d: nextPtm.date, tone: "royal", icon: "nt", t: nextPtm.title, sub: "Half-yearly answer sheets will be shown" });
+    due.sort((x, y) => (x.d < y.d ? -1 : 1));
+    S.$("#due").innerHTML = due.length ? due.map((x) => `<${x.go ? `button type="button" data-go="${x.go}"` : "div"} class="li due-li"><span class="sq ${x.tone}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">${NI[x.icon]}</svg></span><div class="t"><b>${S.esc(x.t)}</b><span>${S.esc(x.sub)}</span></div><span class="end due-d"><b>${S.fmt(x.d, { day: "numeric", month: "short" })}</b><small>${S.fmt(x.d, { weekday: "short" })}</small></span></${x.go ? "button" : "div"}>`).join("") : '<p class="muted" style="font-size:14.5px">Nothing due. Enjoy the evening.</p>';
+    renderNow();
+    S.$("#weekly").innerHTML = S.weekly().replace(/\n/g, "<br />");
 
     renderNotes();
 
@@ -208,27 +227,43 @@
 
   // ---------- Timetable: the week as a grid, periods down and days across ----------
   // Cells are tinted by subject; pointing at one (or tabbing to it) shows who teaches it.
-  const SHORT = { Mathematics: "Maths", English: "English", Hindi: "Hindi", Science: "Science", "Social Science": "SSt", Computer: "Comp.", Games: "Games", Art: "Art", Library: "Library", Music: "Music", "Value Education": "Values", "Assembly Activity": "Assembly" };
+  const SHORT = { "Club Activities": "Clubs", Mathematics: "Maths", English: "English", Hindi: "Hindi", Science: "Science", "Social Science": "SSt", Computer: "Comp.", Games: "Games", Art: "Art", Library: "Library", Music: "Music", "Value Education": "Values", "Assembly Activity": "Assembly" };
   const HUE = { Mathematics: "brick", Science: "green", English: "royal", Hindi: "gold", "Social Science": "teal", Computer: "slate" };
-  const DAYS = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"];
+  const DAYS = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
   const ENDS = ["8:40", "9:20", "10:00", "10:40", "11:30", "12:10", "12:50", "1:30"];
   const mins = (t) => { let [h, m] = t.split(":").map(Number); if (h < 7) h += 12; return h * 60 + m; };
+  // What Aarav has now, or next: today's current period, else the next one to start.
+  function renderNow() {
+    const real = new Date(); real.setHours(0, 0, 0, 0);
+    const now = new Date().getHours() * 60 + new Date().getMinutes();
+    let day = S.today, list = S.timetable[day.getDay()] || [], i = -1, label = "Now";
+    if (real.getTime() === S.today.getTime()) {
+      i = S.periodTimes.findIndex((t, k) => list[k] && now >= mins(t) && now < mins(ENDS[k]));
+      if (i < 0) { i = S.periodTimes.findIndex((t, k) => list[k] && now < mins(t)); label = "Next"; }
+    } else label = "First";
+    if (i < 0) { day = S.nextSchoolDay(S.today, 1); list = S.timetable[day.getDay()]; i = 0; label = "First"; }
+    const sub = list[i], when = real.getTime() === day.getTime() ? "today" : S.fmt(day, { weekday: "long" });
+    S.$("#now-card").innerHTML = `<div class="card-h"><h2>${label === "Now" ? "In class now" : label === "Next" ? "Next class" : "First class " + when}</h2><span class="right muted" style="font-size:12.5px">Period ${i + 1} · ${S.periodTimes[i]}–${ENDS[i]}</span></div>
+      <div class="now-sub c-${HUE[sub] || "none"}"><b>${sub}</b><span>${S.ttTeachers[sub] || ""}</span></div>
+      <p class="muted" style="font-size:13px;margin-top:10px">${list.length < 8 ? "Saturday is a half day, home by 11:30." : "School ends at 1:30 PM."}</p>`;
+  }
   function renderPivot() {
     const real = new Date(); real.setHours(0, 0, 0, 0);
     const today = S.today.getDay() - 1, isToday = real.getTime() === S.today.getTime();
     const now = new Date().getHours() * 60 + new Date().getMinutes();
     const cur = isToday ? S.periodTimes.findIndex((t, i) => now >= mins(t) && now < mins(ENDS[i])) : -1;
-    let h = `<thead><tr><th class="corner" scope="col">Period</th>${DAYS.map((d, i) => `<th scope="col" class="${i === today ? "today" : ""}" data-d="${i}">${d.slice(0, 3)}</th>`).join("")}</tr></thead><tbody>`;
+    let h = `<thead><tr><th class="corner" scope="col">Period</th>${DAYS.map((d, i) => `<th scope="col" class="${i === today ? "today" : ""}" data-d="${i}"${i === 5 ? ' title="Half day"' : ""}>${d.slice(0, 3)}</th>`).join("")}</tr></thead><tbody>`;
     S.periodTimes.forEach((t, p) => {
-      if (p === 4) h += `<tr class="brk"><th scope="row"><span>10:40</span></th><td colspan="5">Break</td></tr>`;
+      if (p === 4) h += `<tr class="brk"><th scope="row"><span>10:40</span></th><td colspan="6">Break</td></tr>`;
       h += `<tr><th scope="row" data-p="${p}"><b>${p + 1}</b><span>${t}</span></th>` + DAYS.map((d, i) => {
         const sub = S.timetable[i + 1][p];
+        if (!sub) return p === 5 ? `<td class="off" rowspan="3" aria-label="Saturday: half day, home by 11:30">Half day</td>` : "";
         return `<td tabindex="0" class="c-${HUE[sub] || "none"}${i === today ? " today" : ""}${i === today && p === cur ? " now" : ""}" data-d="${i}" data-p="${p}" aria-label="${d}, period ${p + 1}: ${sub}, ${S.ttTeachers[sub] || ""}">${SHORT[sub] || sub}</td>`;
       }).join("") + "</tr>";
     });
     S.$("#pivot").innerHTML = h + "</tbody>";
     // The pivot's summary: periods a week by subject, with the teacher, for anyone who can't hover.
-    const count = {}; Object.values(S.timetable).flat().forEach((x) => (count[x] = (count[x] || 0) + 1));
+    const count = {}; Object.values(S.timetable).flat().filter(Boolean).forEach((x) => (count[x] = (count[x] || 0) + 1));
     S.$("#tt-sum").innerHTML = `<thead><tr><th scope="col">Subject</th><th scope="col">Teacher</th><th scope="col" class="n">A week</th></tr></thead><tbody>` +
       Object.entries(count).sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0])).map(([x, n]) => `<tr><td class="c-${HUE[x] || "none"} sw">${x}</td><td>${S.ttTeachers[x] || ""}</td><td class="n">${n}</td></tr>`).join("") +
       `<tr class="tot"><td>Total</td><td></td><td class="n">${Object.values(count).reduce((a, b) => a + b, 0)}</td></tr></tbody>`;
@@ -330,7 +365,7 @@
     for (let d = 1; d <= days; d++) {
       const k = S.iso(new Date(y, m, d)), st = S.statusOn(me.roll, k);
       const cls = st === "H" ? "H" : st || "";
-      const label = st === "H" ? (S.HOLIDAYS[k] || "Weekend") : st ? statusLabel[st] : "Not yet";
+      const label = st === "H" ? (S.HOLIDAYS[k] || "Sunday") : st ? statusLabel[st] : "Not yet";
       html += `<span class="d ${cls} ${k === S.todayKey ? "T" : ""}" title="${S.fmt(k)}: ${label}">${d}</span>`;
     }
     S.$("#cal").innerHTML = html;
@@ -410,7 +445,6 @@
   });
   S.$("#l-from").value = S.iso(S.nextSchoolDay(S.today, 3)); S.$("#l-to").value = S.iso(S.nextSchoolDay(S.today, 4));
 
-  S.$("#lang").addEventListener("click", (e) => { const b = e.target.closest("button"); if (!b) return; lang = b.dataset.l; S.$("#lang").querySelectorAll("button").forEach((x) => x.classList.toggle("on", x === b)); S.$("#weekly").innerHTML = S.weekly(lang).replace(/\n/g, "<br />"); });
   S.$("#sib").addEventListener("click", () => S.toast("In the demo, only Aarav's records are filled in"));
   S.$("#cal-prev").addEventListener("click", () => { calMonth = new Date(calMonth.getFullYear(), calMonth.getMonth() - 1, 1); renderCal(); });
   S.$("#cal-next").addEventListener("click", () => { calMonth = new Date(calMonth.getFullYear(), calMonth.getMonth() + 1, 1); renderCal(); });

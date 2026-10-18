@@ -24,16 +24,13 @@
 <meta name="apple-mobile-web-app-title" content="St. John's" />
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-<link href="https://fonts.googleapis.com/css2?family=Figtree:wght@400..800&family=Mukta:wght@400;600;700&display=swap" rel="stylesheet" />
+<link href="https://fonts.googleapis.com/css2?family=Figtree:wght@400..800&display=swap" rel="stylesheet" />
 <link rel="stylesheet" href="css/school.css" />
 <meta name="theme-color" content="#1C1F24" media="(prefers-color-scheme: light)" />
 <meta name="theme-color" content="#1B1D22" media="(prefers-color-scheme: dark)" />
 <script>
 /* Before the first paint: fade photos in as they load, and hold headline motion until the fonts arrive. */
 (function (d) { var h = d.documentElement, done = function () { h.classList.add("fonts"); }; h.classList.add("js");
-  /* Hindi: keep the page hidden for the moment it takes to swap in the Hindi text. */
-  var L; try { L = new URLSearchParams(location.search).get("lang") || localStorage.getItem("sjs-lang"); } catch (e) {}
-  if (L === "hi") { h.lang = "hi"; h.classList.add("tr-wait"); setTimeout(function () { h.classList.remove("tr-wait"); }, 2500); }
   var m = function (e) { if (e.target.tagName === "IMG") e.target.classList.add("is-loaded"); };
   d.addEventListener("load", m, true); d.addEventListener("error", m, true);
   if (d.fonts && d.fonts.load) Promise.all([d.fonts.load("700 1em Figtree"), d.fonts.load("400 1em Figtree")]).then(done, done); else done();
@@ -42,7 +39,6 @@
 </head>
 <body data-page="contact">
 <script src="js/shell.js"></script>
-<script src="js/lang.js"></script>
 <main id="main">
   <header class="phero">
     <div class="wrap phero-in">
@@ -64,7 +60,7 @@
         <div><dt>Office phone</dt><dd><span class="tbc" title="To be provided" data-fact="phone">To be added</span></dd></div>
         <div><dt>Email</dt><dd><span class="tbc" title="To be provided" data-fact="email">To be added</span></dd></div>
         <div><dt>Office hours</dt><dd><span class="tbc" title="To be provided" data-fact="hours">To be added</span></dd></div>
-        <div><dt>Follow us</dt><dd style="font-size:21px">Facebook, Instagram, YouTube</dd></div>
+        <div><dt>Follow us</dt><dd><span class="tbc" title="Links to be added">Facebook, Instagram, YouTube</span></dd></div>
       </dl>
       <div>
         <div class="map"><iframe title="Map showing St. John's School, Sector 7A, Faridabad" loading="lazy" referrerpolicy="no-referrer-when-downgrade" src="https://www.google.com/maps?q=St.+John%27s+School,+Sector+7A,+Faridabad&output=embed"></iframe></div>

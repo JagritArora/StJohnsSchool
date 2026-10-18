@@ -24,16 +24,13 @@
 <meta name="apple-mobile-web-app-title" content="St. John's" />
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-<link href="https://fonts.googleapis.com/css2?family=Figtree:wght@400..800&family=Mukta:wght@400;600;700&display=swap" rel="stylesheet" />
+<link href="https://fonts.googleapis.com/css2?family=Figtree:wght@400..800&display=swap" rel="stylesheet" />
 <link rel="stylesheet" href="css/school.css" />
 <meta name="theme-color" content="#1C1F24" media="(prefers-color-scheme: light)" />
 <meta name="theme-color" content="#1B1D22" media="(prefers-color-scheme: dark)" />
 <script>
 /* Before the first paint: fade photos in as they load, and hold headline motion until the fonts arrive. */
 (function (d) { var h = d.documentElement, done = function () { h.classList.add("fonts"); }; h.classList.add("js");
-  /* Hindi: keep the page hidden for the moment it takes to swap in the Hindi text. */
-  var L; try { L = new URLSearchParams(location.search).get("lang") || localStorage.getItem("sjs-lang"); } catch (e) {}
-  if (L === "hi") { h.lang = "hi"; h.classList.add("tr-wait"); setTimeout(function () { h.classList.remove("tr-wait"); }, 2500); }
   var m = function (e) { if (e.target.tagName === "IMG") e.target.classList.add("is-loaded"); };
   d.addEventListener("load", m, true); d.addEventListener("error", m, true);
   if (d.fonts && d.fonts.load) Promise.all([d.fonts.load("700 1em Figtree"), d.fonts.load("400 1em Figtree")]).then(done, done); else done();
@@ -42,7 +39,6 @@
 </head>
 <body data-page="home">
 <script src="js/shell.js"></script>
-<script src="js/lang.js"></script>
 <main id="main">
 
   <section class="hero" aria-label="Welcome">
@@ -145,13 +141,12 @@
     <div class="wrap ask">
       <div>
         <h2 class="t-l">Questions at eleven at night? Ask St. John's.</h2>
-        <p class="lead mt-m" style="opacity:.88">The school's assistant answers questions about admissions, documents and school life, in English or Hindi. Parents who sign in can ask about their own child.</p>
+        <p class="lead mt-m" style="opacity:.88">The school's assistant answers questions about admissions, documents and school life, at any hour. Parents who sign in can ask about their own child.</p>
       </div>
       <div class="ask-qs">
         <button class="ask-q" data-ask="How do I apply for Nursery?"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l1.9 5.3L19 10l-5.1 1.7L12 17l-1.9-5.3L5 10l5.1-1.7z"/></svg>How do I apply for Nursery?</button>
         <button class="ask-q" data-ask="What documents do I need?"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l1.9 5.3L19 10l-5.1 1.7L12 17l-1.9-5.3L5 10l5.1-1.7z"/></svg>Which documents do I need?</button>
         <button class="ask-q" data-ask="Class XI admission"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l1.9 5.3L19 10l-5.1 1.7L12 17l-1.9-5.3L5 10l5.1-1.7z"/></svg>How does Class XI admission work?</button>
-        <button class="ask-q" data-ask="दाख़िला कैसे होगा?" lang="hi"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l1.9 5.3L19 10l-5.1 1.7L12 17l-1.9-5.3L5 10l5.1-1.7z"/></svg>दाख़िला कैसे होगा?</button>
       </div>
     </div>
   </section>

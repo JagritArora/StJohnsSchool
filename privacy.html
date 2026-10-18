@@ -23,16 +23,13 @@
 <meta name="apple-mobile-web-app-title" content="St. John's" />
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-<link href="https://fonts.googleapis.com/css2?family=Figtree:wght@400..800&family=Mukta:wght@400;600;700&display=swap" rel="stylesheet" />
+<link href="https://fonts.googleapis.com/css2?family=Figtree:wght@400..800&display=swap" rel="stylesheet" />
 <link rel="stylesheet" href="css/school.css" />
 <meta name="theme-color" content="#1C1F24" media="(prefers-color-scheme: light)" />
 <meta name="theme-color" content="#1B1D22" media="(prefers-color-scheme: dark)" />
 <script>
 /* Before the first paint: fade photos in as they load, and hold headline motion until the fonts arrive. */
 (function (d) { var h = d.documentElement, done = function () { h.classList.add("fonts"); }; h.classList.add("js");
-  /* Hindi: keep the page hidden for the moment it takes to swap in the Hindi text. */
-  var L; try { L = new URLSearchParams(location.search).get("lang") || localStorage.getItem("sjs-lang"); } catch (e) {}
-  if (L === "hi") { h.lang = "hi"; h.classList.add("tr-wait"); setTimeout(function () { h.classList.remove("tr-wait"); }, 2500); }
   var m = function (e) { if (e.target.tagName === "IMG") e.target.classList.add("is-loaded"); };
   d.addEventListener("load", m, true); d.addEventListener("error", m, true);
   if (d.fonts && d.fonts.load) Promise.all([d.fonts.load("700 1em Figtree"), d.fonts.load("400 1em Figtree")]).then(done, done); else done();
@@ -41,7 +38,6 @@
 </head>
 <body data-page="privacy">
 <script src="js/shell.js"></script>
-<script src="js/lang.js"></script>
 <main id="main">
   <header class="phero">
     <div class="wrap">
@@ -57,13 +53,13 @@
   <section class="sec" id="collect">
     <div class="wrap cols">
       <h2 class="t-l">What we collect, and why</h2>
-      <div class="tbl-wrap"><table class="tbl">
+      <div class="tbl-wrap"><table class="tbl stack">
         <thead><tr><th>Where</th><th>What</th><th>Why</th></tr></thead>
         <tbody>
-          <tr><td>Admission enquiry</td><td>Child's name and class, parent's name, mobile number, the visit day you pick</td><td>To call you back and arrange your campus visit</td></tr>
-          <tr><td>Contact and request forms</td><td>Your name, mobile number and message</td><td>To answer you, or prepare the certificate you asked for</td></tr>
-          <tr><td>Parent app</td><td>Attendance, homework, marks, fees, bus location during the route, messages with teachers</td><td>To keep you informed about your own child, as the school already does on paper</td></tr>
-          <tr><td>The school's assistant</td><td>The questions you type or speak</td><td>To answer them. Questions are not used to build a profile of you</td></tr>
+          <tr><td>Admission enquiry</td><td data-label="What">Child's name and class, parent's name, mobile number, the visit day you pick</td><td data-label="Why">To call you back and arrange your campus visit</td></tr>
+          <tr><td>Contact and request forms</td><td data-label="What">Your name, mobile number and message</td><td data-label="Why">To answer you, or prepare the certificate you asked for</td></tr>
+          <tr><td>Parent app</td><td data-label="What">Attendance, homework, marks, fees, bus location during the route, messages with teachers</td><td data-label="Why">To keep you informed about your own child, as the school already does on paper</td></tr>
+          <tr><td>The school's assistant</td><td data-label="What">The questions you type or speak</td><td data-label="Why">To answer them. Questions are not used to build a profile of you</td></tr>
         </tbody>
       </table></div>
     </div>

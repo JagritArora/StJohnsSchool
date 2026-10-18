@@ -23,7 +23,9 @@
     ["contact", "Contact", "contact.html", []]
   ];
   const PAGES = [["home", "Home", "index.html"], ...NAV.map(([k, l, h]) => [k, l, h])];
-  const pageName = page === "home" ? "St. John's" : (PAGES.find(([k]) => k === page) || [, "St. John's"])[1];
+  // The name shown on the section button once you scroll (the school's name sits beside it already).
+  const OTHER = { home: "Home", disclosure: "Disclosure", privacy: "Privacy", notfound: "Home" };
+  const pageName = OTHER[page] || (PAGES.find(([k]) => k === page) || [, "Home"])[1];
   const I = (S.ICONS = {
     user: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg>',
     down: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 10l5 5 5-5"/></svg>',
@@ -127,7 +129,7 @@
   const label = $(".now-t", hdr);
   const setNow = (text) => {
     const old = $("b", label);
-    // Compared by key, not by what it shows: the Hindi pass may have translated the shown text.
+    // Compared by key, so the same section never re-animates.
     if (old && old.dataset.k === text) return;
     const sn = $(".sec-now", hdr); if (sn) sn.textContent = text;
     const b = document.createElement("b"); b.textContent = text; b.dataset.k = text;

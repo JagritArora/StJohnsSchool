@@ -15,7 +15,7 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="default" />
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-<link href="https://fonts.googleapis.com/css2?family=Figtree:wght@400..800&family=Mukta:wght@400;600;700&display=swap" rel="stylesheet" />
+<link href="https://fonts.googleapis.com/css2?family=Figtree:wght@400..800&display=swap" rel="stylesheet" />
 <link rel="stylesheet" href="css/site.css" />
 <script>
 /* Before the first paint: fade photos in as they load. */
@@ -40,8 +40,7 @@
       <p class="muted">Choose who you are.</p>
       <div class="role-tabs" role="tablist">
         <button class="role-tab on" data-role="parent" role="tab" aria-selected="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="7" r="3.2"/><circle cx="17" cy="9" r="2.4"/><path d="M3 20c.8-3.6 3.2-5.5 6-5.5s5.2 1.9 6 5.5M15 15c2.6-.4 4.8 1 5.6 4"/></svg>Parent</button>
-        <button class="role-tab" data-role="teacher" role="tab" aria-selected="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="12" rx="2"/><path d="M8 20h8M12 16v4M7 9l3 2 3-3 4 3"/></svg>Teacher</button>
-        <button class="role-tab" data-role="principal" role="tab" aria-selected="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21h18M5 21V10l7-5 7 5v11M10 21v-5h4v5"/></svg>Principal</button>
+        <button class="role-tab" data-role="staff" role="tab" aria-selected="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="3" width="16" height="18" rx="2"/><circle cx="12" cy="10" r="3"/><path d="M7.5 17.5c.9-2 2.5-3 4.5-3s3.6 1 4.5 3"/></svg>Staff</button>
       </div>
 
       <form id="f-parent" data-for="parent">
@@ -51,23 +50,22 @@
         <p class="muted" style="font-size:13px;margin-top:14px">Signing in as the parent of <b style="color:var(--ink)">Aarav Sharma (VII-B)</b> and <b style="color:var(--ink)">Ananya Sharma (III-A)</b>.</p>
       </form>
 
-      <form id="f-teacher" data-for="teacher" hidden>
-        <div class="field"><label for="t-id">Staff ID</label><input id="t-id" value="SJS-T-0412" /></div>
-        <div class="field"><label for="t-pw">Password</label><input id="t-pw" type="password" value="demo-password" /></div>
+      <form id="f-staff" data-for="staff" hidden novalidate>
+        <div class="field"><label for="s-id">Staff ID</label><input id="s-id" autocomplete="username" autocapitalize="characters" spellcheck="false" placeholder="e.g. SJS-T-0412" /></div>
+        <div class="field"><label for="s-pw">Password</label><input id="s-pw" type="password" autocomplete="current-password" value="demo-password" /></div>
+        <p class="form-err" id="s-err" role="alert" hidden></p>
         <button class="btn btn-primary btn-block" style="margin-top:22px" type="submit">Sign in</button>
-        <p class="muted" style="font-size:13px;margin-top:14px">Signing in as <b style="color:var(--ink)">Ms. Neha Mathew</b>, class teacher of VII-B.</p>
-      </form>
-
-      <form id="f-principal" data-for="principal" hidden>
-        <div class="field"><label for="a-id">Staff ID</label><input id="a-id" value="SJS-ADMIN-01" /></div>
-        <div class="field"><label for="a-pw">Password</label><input id="a-pw" type="password" value="demo-password" /></div>
-        <button class="btn btn-primary btn-block" style="margin-top:22px" type="submit">Sign in</button>
-        <p class="muted" style="font-size:13px;margin-top:14px">Whole-school view for the principal and office.</p>
+        <div class="demo-ids">
+          <span class="muted">Demo staff IDs. The ID decides what you see.</span>
+          <button type="button" data-id="SJS-T-0412"><b>SJS-T-0412</b><span>Teacher · Ms. Neha Mathew, VII-B</span></button>
+          <button type="button" data-id="SJS-A-0107"><b>SJS-A-0107</b><span>Office admin · Mrs. Anita Joseph</span></button>
+          <button type="button" data-id="SJS-P-0001"><b>SJS-P-0001</b><span>Principal</span></button>
+        </div>
       </form>
 
       <div class="card" style="margin-top:28px;background:var(--sunken);border-style:dashed">
         <b style="font-size:14px">Try the full loop</b>
-        <p class="muted" style="font-size:13.5px;margin-top:6px">Open the <b>teacher</b> view and mark Aarav absent, then open the <b>parent</b> view — the absence shows up there straight away. Works best with the two views in side-by-side tabs.</p>
+        <p class="muted" style="font-size:13.5px;margin-top:6px">Sign in as the <b>teacher</b> (SJS-T-0412) and mark Aarav absent, then open the <b>parent</b> view — the absence shows up there straight away. Works best with the two views in side-by-side tabs.</p>
       </div>
     </div>
   </main>
@@ -90,8 +88,17 @@
     if (!otpSent) { otpSent = true; document.getElementById("otp-wrap").hidden = false; document.getElementById("p-btn").textContent = "Verify & sign in"; SJS.toast("OTP sent to 98765 43210"); return; }
     location.href = "parent.html";
   });
-  document.getElementById("f-teacher").addEventListener("submit", (e) => { e.preventDefault(); location.href = "teacher.html"; });
-  document.getElementById("f-principal").addEventListener("submit", (e) => { e.preventDefault(); location.href = "principal.html"; });
+  // Staff: one sign-in; the staff ID decides the view on the staff page.
+  const sid = document.getElementById("s-id"), err = document.getElementById("s-err");
+  document.querySelectorAll(".demo-ids [data-id]").forEach((b) => b.addEventListener("click", () => { sid.value = b.dataset.id; err.hidden = true; sid.focus(); }));
+  document.getElementById("f-staff").addEventListener("submit", (e) => {
+    e.preventDefault();
+    const id = sid.value.trim().toUpperCase();
+    if (!SJS.STAFF[id]) { err.textContent = id ? `No staff member has the ID ${id}. Check it, or pick a demo ID below.` : "Enter your staff ID."; err.hidden = false; sid.focus(); return; }
+    try { localStorage.setItem("sjs-staff", id); } catch (err2) {}
+    location.href = "staff.html?id=" + encodeURIComponent(id);
+  });
+  if (q === "teacher" || q === "principal") pick("staff");
 })();
 </script>
 </body>

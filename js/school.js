@@ -19,14 +19,13 @@
       <div><h4>Families</h4><ul><li><a href="admissions.html">Admissions</a></li><li><a href="parents.html">Parent corner</a></li><li><a href="news.html">News and events</a></li><li><a href="login.html">Parent app login</a></li></ul></div>
       <div><h4>Information</h4><ul><li><a href="disclosure.html">Mandatory public disclosure</a></li><li><a href="contact.html">Contact</a></li><li><a href="contact.html#careers">Careers</a></li><li><a href="privacy.html">Privacy</a></li><li><a href="plan.html">About this prototype</a></li></ul></div>
     </div>
-    <div class="wrap ftr-base"><span>© ${new Date().getFullYear()} St. John's School, Faridabad</span><span>Facebook, Instagram, YouTube</span></div>`;
+    <div class="wrap ftr-base"><span>© ${new Date().getFullYear()} St. John's School, Faridabad</span><span class="tbc" title="Links to be added">Facebook, Instagram, YouTube</span></div>`;
   document.body.append(ftr);
 
   // ---------- Content from the principal's Website tab ----------
-  const site = S.state && S.state.site, hi = S.lang === "hi";
-  // Text written here is already in the page's language, so the Hindi pass leaves it alone.
-  const put = (el, html) => { el.innerHTML = html; if (hi) el.dataset.noTr = ""; };
-  const adm = site ? S.admText(S.lang) : null;
+  const site = S.state && S.state.site;
+  const put = (el, html) => { el.innerHTML = html; };
+  const adm = site ? S.admText() : null;
   if (adm) {
     $$("[data-site]").forEach((el) => { const k = el.dataset.site.replace("adm-", ""); if (adm[k]) put(el, esc(adm[k]).replace(esc(adm.session), `<span class="nw">${esc(adm.session)}</span>`)); });
     if (!adm.open) $$('[data-site="adm-btn"]').forEach((a) => (a.href = "admissions.html#process"));
@@ -48,7 +47,7 @@
     if (media && shown.length && !same) media.innerHTML = shown.map((p, i) => `<img ${i ? "data-src" : 'class="on" fetchpriority="high" src'}="${esc(S.photo(p.src))}" alt="" style="object-position:${esc(p.pos || "50% 50%")}" />`).join("");
     // Gallery uploads go first, newest at the top.
     const galEl = $(".gal");
-    if (galEl && site.gallery.length) galEl.insertAdjacentHTML("afterbegin", site.gallery.filter((g) => S.photo(g.src)).map((g) => `<button data-cat="${esc(g.cat)}"${hi ? " data-no-tr" : ""}><img src="${esc(S.photo(g.src))}" alt="${esc(g.alt || g.caption)}" loading="lazy" decoding="async" /><figcaption>${esc(g.caption)}</figcaption></button>`).join(""));
+    if (galEl && site.gallery.length) galEl.insertAdjacentHTML("afterbegin", site.gallery.filter((g) => S.photo(g.src)).map((g) => `<button data-cat="${esc(g.cat)}"><img src="${esc(S.photo(g.src))}" alt="${esc(g.alt || g.caption)}" loading="lazy" decoding="async" /><figcaption>${esc(g.caption)}</figcaption></button>`).join(""));
   }
 
   // ---------- Phones: admissions stay one tap away ----------
@@ -57,8 +56,7 @@
   // the admissions band is already on screen.
   const bar = document.createElement("div");
   bar.className = "mbar";
-  bar.innerHTML = adm ? `<span><b>${esc(adm.btn)}</b><small>${esc(adm.list)}</small></span><a class="btn btn--sm" href="admissions.html#enquire">${hi ? "कैंपस देखें" : "Book a visit"}</a>` : "";
-  if (hi) bar.dataset.noTr = "";
+  bar.innerHTML = adm ? `<span><b>${esc(adm.btn)}</b><small>${esc(adm.list)}</small></span><a class="btn btn--sm" href="admissions.html#enquire">Book a visit</a>` : "";
   document.body.append(bar);
   const covers = $$("#enquire, #admissions");
   const inView = new Set();
@@ -114,10 +112,8 @@
     const limit = +ul.dataset.limit || 99;
     const items = [...(S.state ? S.state.notices : [])].sort((a, b) => (a.date < b.date ? -1 : 1)).filter((n) => n.web !== false && n.date >= (S.todayKey || "")).slice(0, limit);
     const tone = { Holiday: "", PTM: "tag--brick", Event: "tag--hedge", Notice: "tag--gold" };
-    const tagHi = { Holiday: "छुट्टी", PTM: "अभिभावक बैठक", Event: "कार्यक्रम", Notice: "सूचना" };
-    const loc = S.locale || "en-IN";
-    if (hi) ul.dataset.noTr = "";
-    ul.innerHTML = items.map((n) => { const d = new Date(n.date + "T00:00"); return `<li><div class="day">${d.getDate()}<small>${d.toLocaleDateString(loc, { month: "long" })}, ${d.toLocaleDateString(loc, { weekday: "short" })}</small></div><div><h3>${esc(hi && n.titleHi ? n.titleHi : n.title)}</h3><p>${esc(hi && n.textHi ? n.textHi : n.text)}</p></div><span class="tag ${tone[n.tag] || ""}">${esc(hi ? tagHi[n.tag] || n.tag : n.tag)}</span></li>`; }).join("") || `<li><div></div><p class="muted">${hi ? "अभी कोई आने वाला कार्यक्रम नहीं है।" : "Nothing coming up right now. New events appear here as the school posts them."}</p></li>`;
+    const loc = "en-IN";
+    ul.innerHTML = items.map((n) => { const d = new Date(n.date + "T00:00"); return `<li><div class="day">${d.getDate()}<small>${d.toLocaleDateString(loc, { month: "long" })}, ${d.toLocaleDateString(loc, { weekday: "short" })}</small></div><div><h3>${esc(n.title)}</h3><p>${esc(n.text)}</p></div><span class="tag ${tone[n.tag] || ""}">${esc(n.tag)}</span></li>`; }).join("") || `<li><div></div><p class="muted">${"Nothing coming up right now. New events appear here as the school posts them."}</p></li>`;
   });
 
   // ---------- Gallery: filters + lightbox ----------
@@ -151,8 +147,8 @@
   const slots = $(".slots");
   if (slots && S.today) {
     let d = new Date(S.today), html = "", n = 0;
-    while (n < 8) { d = S.addDays(d, 1); if (d.getDay() === 0 || S.HOLIDAYS[S.iso(d)]) continue; html += `<button type="button" class="slot" aria-pressed="${n === 0}" data-date="${S.iso(d)}"><span>${d.toLocaleDateString(S.locale || "en-IN", { weekday: "short" })}</span><b>${d.getDate()}</b><span>${d.toLocaleDateString(S.locale || "en-IN", { month: "short" })}</span></button>`; n++; }
-    slots.innerHTML = html; if (hi) slots.dataset.noTr = "";
+    while (n < 8) { d = S.addDays(d, 1); if (d.getDay() === 0 || S.HOLIDAYS[S.iso(d)]) continue; html += `<button type="button" class="slot" aria-pressed="${n === 0}" data-date="${S.iso(d)}"><span>${d.toLocaleDateString("en-IN", { weekday: "short" })}</span><b>${d.getDate()}</b><span>${d.toLocaleDateString("en-IN", { month: "short" })}</span></button>`; n++; }
+    slots.innerHTML = html;
     slots.addEventListener("click", (e) => { const b = e.target.closest(".slot"); if (!b) return; $$(".slot", slots).forEach((x) => x.setAttribute("aria-pressed", x === b)); });
   }
 
@@ -167,11 +163,10 @@
     }
     const done = f.nextElementSibling;
     if (done && done.classList.contains("done")) {
-      if (kind === "enquiry") { const slot = $(".slot[aria-pressed='true']", f); const msg = $("[data-slot-msg]", done), when = slot ? new Date(slot.dataset.date + "T00:00").toLocaleDateString(S.locale || "en-IN", { weekday: "long", day: "numeric", month: "long" }) : "";
-        msg.textContent = hi ? (slot ? `आपका कैंपस विज़िट ${when} के लिए तय कर लिया गया है। समय पक्का करने के लिए दफ़्तर से फ़ोन आएगा।` : "दाख़िला दफ़्तर से आपको फ़ोन आएगा, आम तौर पर उसी कामकाजी दिन।") : (slot ? `Your campus visit is pencilled in for ${when}. The office will call to confirm the time.` : "The admissions office will call you, usually the same working day.");
-        if (hi) msg.dataset.noTr = ""; }
+      if (kind === "enquiry") { const slot = $(".slot[aria-pressed='true']", f); const msg = $("[data-slot-msg]", done), when = slot ? new Date(slot.dataset.date + "T00:00").toLocaleDateString("en-IN", { weekday: "long", day: "numeric", month: "long" }) : "";
+        msg.textContent = slot ? `Your campus visit is pencilled in for ${when}. The office will call to confirm the time.` : "The admissions office will call you, usually the same working day."; }
       f.hidden = true; done.hidden = false; done.scrollIntoView({ behavior: reduce ? "auto" : "smooth", block: "center" });
-    } else S.toast(hi ? "भेज दिया गया। दफ़्तर आपसे संपर्क करेगा।" : "Sent. The office will get back to you.");
+    } else S.toast("Sent. The office will get back to you.");
   }));
 
   // ---------- AI assistant ----------
@@ -191,9 +186,9 @@
     const ready = (im) => im.getAttribute("src") && im.complete && im.naturalWidth;
     const go = (n) => { if (n === k || !ready(imgs[n])) return; imgs[k].classList.remove("on"); imgs[n].classList.add("on"); k = n; $$("button", dots).forEach((d, i) => d.setAttribute("aria-current", i === k)); };
     if (imgs.length > 1 && ctl) {
-      dots.innerHTML = imgs.map((_, i) => `<button type="button" aria-label="${hi ? `${imgs.length} में से फ़ोटो ${i + 1}` : `Photo ${i + 1} of ${imgs.length}`}" aria-current="${i === 0}"></button>`).join("");
+      dots.innerHTML = imgs.map((_, i) => `<button type="button" aria-label="Photo ${i + 1} of ${imgs.length}" aria-current="${i === 0}"></button>`).join("");
       $$("button", dots).forEach((d, i) => d.addEventListener("click", () => { if (!ready(imgs[i])) { imgs[i].addEventListener("load", () => go(i), { once: true }); return; } go(i); }));
-      const setPause = (p) => { paused = p; pause.setAttribute("aria-pressed", p); pause.setAttribute("aria-label", hi ? (p ? "स्लाइडशो चलाएँ" : "स्लाइडशो रोकें") : (p ? "Play the slideshow" : "Pause the slideshow")); };
+      const setPause = (p) => { paused = p; pause.setAttribute("aria-pressed", p); pause.setAttribute("aria-label", p ? "Play the slideshow" : "Pause the slideshow"); };
       setPause(paused);
       pause.addEventListener("click", () => setPause(!paused));
       ctl.hidden = false;

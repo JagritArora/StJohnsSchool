@@ -45,8 +45,8 @@
   --scrim: rgba(25, 28, 34, .3);
   --ind: var(--brick-soft);
   --photo-shade: rgba(16, 18, 22, .74);
-  --display: "Figtree", "Mukta", system-ui, -apple-system, sans-serif;
-  --body: "Figtree", "Mukta", system-ui, -apple-system, sans-serif;
+  --display: "Figtree", system-ui, -apple-system, sans-serif;
+  --body: "Figtree", system-ui, -apple-system, sans-serif;
   --ease: cubic-bezier(.2, .8, .2, 1);
   --ease-out: cubic-bezier(.16, 1, .3, 1);
   --gutter: clamp(16px, 4vw, 40px);
@@ -220,11 +220,9 @@ h1, h2, h3, h4 { font-family: var(--display); margin: 0; font-weight: 650; lette
 .sheet-foot .btn { flex: 1 1 200px; }
 
 /* The school's name stays in the header at every width; the links tighten a little to make room. */
-.lang-btn .l-short { display: none; }
 @media (max-width: 1200px) {
   .nav > li > a { padding-inline: 7px; font-size: 14px; } .chips a { padding-inline: 9px; font-size: 14px; } .pill { gap: 6px; }
   .logo b { font-size: 15.5px; } .logo small { font-size: 11.5px; } .logo-t { margin-left: 8px; }
-  .hdr-act .lang-btn { padding: 0 11px; } .lang-btn .l-long { display: none; } .lang-btn .l-short { display: inline; }
 }
 .logo-t .sec-now { display: none; }
 @media (max-width: 1000px) {
@@ -388,7 +386,7 @@ a.step:hover { box-shadow: inset 0 0 0 1.5px var(--acc); }
 .phero .lead { margin-top: 22px; color: var(--ink-2); animation-delay: .12s; }
 @keyframes fade { from { opacity: 0; transform: translateY(8px); } }
 .phero .arch { aspect-ratio: 4 / 4.6; width: 100%; max-width: 400px; justify-self: end; }
-@media (max-width: 860px) { .phero-in { grid-template-columns: 1fr; } .phero .arch { justify-self: start; max-width: 260px; aspect-ratio: 4 / 4.4; } }
+@media (max-width: 860px) { .phero-in { grid-template-columns: 1fr; } .phero .arch { justify-self: stretch; max-width: none; aspect-ratio: 16 / 10; } }
 
 /* In-page section list: the floating header shows these, so it only
    appears in the page itself when scripts are off. */
@@ -445,6 +443,14 @@ a.step:hover { box-shadow: inset 0 0 0 1.5px var(--acc); }
 .tbl td { padding: 15px 14px 15px 0; border-bottom: 1px solid var(--line); vertical-align: top; }
 .tbl td:first-child { font-weight: 600; }
 .tbl caption { text-align: left; font: 650 23px/1.15 var(--display); padding-bottom: 16px; }
+
+/* On phones, a .stack table becomes one block per row. */
+@media (max-width: 600px) {
+  .tbl.stack thead { display: none; }
+  .tbl.stack tr { display: block; padding: 14px 0; border-bottom: 1px solid var(--line); }
+  .tbl.stack td { display: block; border: 0; padding: 3px 0; }
+  .tbl.stack td[data-label]::before { content: attr(data-label) ": "; font-weight: 600; color: var(--ink-2); }
+}
 
 /* FAQ */
 .faq { border-top: 1.5px solid var(--ink); }
@@ -548,7 +554,7 @@ a.step:hover { box-shadow: inset 0 0 0 1.5px var(--acc); }
 .ftr a:hover { opacity: 1; text-decoration: underline; text-underline-offset: 3px; }
 .ftr .motto { font: 700 clamp(26px, 2.6vw, 34px)/1.1 var(--display); letter-spacing: -.02em; color: #fff; margin-bottom: 16px; }
 .ftr p { opacity: .82; font-size: 15.5px; }
-.ftr-base { border-top: 1px solid rgba(255,255,255,.14); padding-block: 22px 32px; display: flex; flex-wrap: wrap; justify-content: space-between; gap: 14px; font-size: 14px; opacity: .75; }
+.ftr-base { border-top: 1px solid rgba(255,255,255,.14); padding-block: 22px 96px; display: flex; flex-wrap: wrap; justify-content: space-between; gap: 14px; font-size: 14px; opacity: .75; }
 @media (max-width: 900px) { .ftr-in { grid-template-columns: 1fr 1fr; } .ftr-in > div:first-child { grid-column: 1 / -1; } }
 
 /* ---------- Toast ---------- */
@@ -676,18 +682,16 @@ a.step:hover { box-shadow: inset 0 0 0 1.5px var(--acc); }
   .lane, .ind, .sheet, .sheet li, .logo-t, .now-t b, .prog { transition: none !important; }
 }
 
-/* ---------- हिंदी ---------- */
-/* While the Hindi text is swapped in (a moment), the page stays hidden. */
-.tr-wait .proto, .tr-wait .hdr, .tr-wait main, .tr-wait .ftr, .tr-wait .mbar { visibility: hidden; }
-/* Devanagari has marks above and below the line: no negative tracking, more leading. */
-html[lang="hi"] h1, html[lang="hi"] h2, html[lang="hi"] h3, html[lang="hi"] h4, html[lang="hi"] .t-xl, html[lang="hi"] .t-l, html[lang="hi"] .t-m, html[lang="hi"] .paths b, html[lang="hi"] .step b, html[lang="hi"] .month p, html[lang="hi"] .bigq, html[lang="hi"] .faq summary, html[lang="hi"] .kv dd, html[lang="hi"] .facts dd, html[lang="hi"] .process b, html[lang="hi"] .sheet li a, html[lang="hi"] .now-t b { letter-spacing: 0; line-height: 1.38; }
-html[lang="hi"] body { line-height: 1.8; }
-html[lang="hi"] .now-t { height: 24px; } html[lang="hi"] .now-t b { line-height: 24px; }
-html[lang="hi"] .hero h1, html[lang="hi"] .phero h1 { line-height: 1.3; }
-.hdr-act .lang-btn { height: 40px; padding: 0 14px; border: 0; border-radius: 999px; background: var(--hover); color: var(--ink); font: 600 15px/1 var(--body); cursor: pointer; transition: background .25s; }
-.hdr-act .lang-btn:hover { background: color-mix(in srgb, var(--ink) 11%, transparent); }
-.hdr-act .lang-btn[lang="hi"] { font-family: "Mukta", var(--body); font-size: 16px; }
-.sheet-foot .lang-btn[lang="hi"] { font-family: "Mukta", var(--body); font-size: 17px; }
+/* Houses: soft tint cards in the house colour, like the five stages. */
+.houses { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
+.house { border-radius: 16px; padding: 26px 20px 24px; background: var(--hb); box-shadow: inset 0 4px 0 var(--hc); display: grid; gap: 6px; }
+.house b { font: 650 21px/1.2 var(--display); letter-spacing: -.01em; color: var(--hi); }
+.house span { font-size: 14.5px; color: var(--ink-2); }
+.h-red { --hb: var(--brick-soft); --hc: var(--brick); --hi: var(--brick-ink); }
+.h-blue { --hb: var(--sky); --hc: var(--royal); --hi: var(--royal-ink); }
+.h-green { --hb: var(--hedge-soft); --hc: var(--hedge); --hi: var(--hedge-ink); }
+.h-yellow { --hb: var(--gold-soft); --hc: var(--marigold); --hi: var(--gold-ink); }
+@media (max-width: 760px) { .houses { grid-template-columns: 1fr 1fr; } }
 
 /* ---------- A little more colour ---------- */
 /* Each inner page opens on its own soft tint from the school's four colours. */

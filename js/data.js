@@ -13,7 +13,8 @@
     "2026-11-06": "Diwali break", "2026-11-09": "Diwali break", "2026-11-10": "Diwali break",
     "2026-12-25": "Christmas"
   };
-  const isSchoolDay = (d) => d.getDay() !== 0 && d.getDay() !== 6 && !HOLIDAYS[iso(d)];
+  // Monday to Saturday; Saturday is a half day (five periods, home by 11:30).
+  const isSchoolDay = (d) => d.getDay() !== 0 && !HOLIDAYS[iso(d)];
   // Demo "today": the real date, moved forward to the next school day.
   const today = new Date(); today.setHours(0, 0, 0, 0);
   while (!isSchoolDay(today)) today.setDate(today.getDate() + 1);
@@ -39,7 +40,6 @@
   };
 
   S.subjects = ["English", "Hindi", "Mathematics", "Science", "Social Science", "Computer"];
-  S.subjectsHi = { English: "अंग्रेज़ी", Hindi: "हिंदी", Mathematics: "गणित", Science: "विज्ञान", "Social Science": "सामाजिक विज्ञान", Computer: "कंप्यूटर" };
 
   // ---- Class VII-B -------------------------------------------------------
   const names = ["Aarav Sharma", "Aditi Rao", "Arjun Mehta", "Avni Gupta", "Ayaan Siddiqui", "Dev Khanna", "Diya Bansal", "Farhan Qureshi",
@@ -92,20 +92,28 @@
     2: ["English", "Mathematics", "Hindi", "Science", "Library", "Social Science", "Music", "Mathematics"],
     3: ["Science", "Hindi", "Mathematics", "English", "Computer", "Social Science", "Games", "Value Education"],
     4: ["Hindi", "Science", "English", "Mathematics", "Art", "Social Science", "Mathematics", "Library"],
-    5: ["Mathematics", "Social Science", "Science", "English", "Hindi", "Computer", "Assembly Activity", "Games"]
+    5: ["Mathematics", "Social Science", "Science", "English", "Hindi", "Computer", "Assembly Activity", "Games"],
+    6: ["English", "Mathematics", "Science", "Hindi", "Club Activities"]
   };
   S.periodTimes = ["8:00", "8:40", "9:20", "10:00", "10:50", "11:30", "12:10", "12:50"];
   // Who teaches what in VII-B (sample names), for the timetable's hover.
   S.ttTeachers = {
     Mathematics: "Ms. Neha Mathew", English: "Mrs. Rekha Menon", Hindi: "Mrs. Sunita Rawat", Science: "Mr. Joseph Varghese",
     "Social Science": "Mr. Vikram Chauhan", Computer: "Mr. Rahul Kapoor", Games: "Mr. Satish Malik", Art: "Ms. Farah Ahmed",
-    Library: "Mrs. Kavita Bedi", Music: "Mr. Paul D'Cruz", "Value Education": "Mrs. Lalitha Krishnan", "Assembly Activity": "Ms. Neha Mathew"
+    Library: "Mrs. Kavita Bedi", Music: "Mr. Paul D'Cruz", "Value Education": "Mrs. Lalitha Krishnan", "Assembly Activity": "Ms. Neha Mathew", "Club Activities": "House teachers, by club"
   };
 
   // Whole-school attendance today (sample); VII is filled in from VII-B's live register.
   S.sample = { classes: ["Nur", "LKG", "UKG", "I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX", "X", "XI", "XII"], attendance: [91, 89, 94, 95, 96, 93, 95, 94, 92, 0, 94, 86, 95, 92, 90] };
 
   S.teacher = { name: "Ms. Neha Mathew", initials: "NM", role: "Class Teacher · VII-B", subject: "Mathematics" };
+  // Staff sign-in: one staff page, and the ID decides what it shows.
+  S.STAFF = {
+    "SJS-T-0412": { role: "teacher", name: "Ms. Neha Mathew", first: "Neha", initials: "NM", title: "Class teacher · VII-B", tone: "green" },
+    "SJS-A-0107": { role: "admin", name: "Mrs. Anita Joseph", first: "Anita", initials: "AJ", title: "School office", tone: "" },
+    "SJS-P-0001": { role: "principal", name: "The Principal", first: "", initials: "P", title: "Principal", tone: "" }
+  };
+  S.ROLE_LABEL = { teacher: "Teacher", admin: "Office admin", principal: "Principal" };
   S.sibling = { name: "Ananya Sharma", initials: "AS", cls: "III-A", teacher: "Mrs. Priya Nair" };
 
   // ---- Shared, mutable state --------------------------------------------
@@ -114,7 +122,7 @@
     homework: [
       { id: "h1", subj: "Mathematics", title: "Integers — Worksheet 3", detail: "Questions 1–15 on adding and subtracting integers. Show working in the notebook.", due: iso(nextSchoolDay(today, 1)), by: "Ms. Neha Mathew", done: false },
       { id: "h2", subj: "Science", title: "Project: Nutrition in Plants", detail: "A chart (A3) on photosynthesis with a labelled leaf diagram. Group of 3.", due: iso(nextSchoolDay(today, 4)), by: "Mr. Joseph Varghese", done: false },
-      { id: "h3", subj: "Hindi", title: "पाठ 5 — प्रश्न-उत्तर", detail: "पाठ 5 'मिठाईवाला' के प्रश्न 1 से 6 लिखें।", due: iso(nextSchoolDay(today, 2)), by: "Mrs. Sunita Rawat", done: true }
+      { id: "h3", subj: "Hindi", title: "Chapter 5 — Questions and answers", detail: "Write the answers to questions 1 to 6 of chapter 5, 'Mithaiwala', in the Hindi notebook.", due: iso(nextSchoolDay(today, 2)), by: "Mrs. Sunita Rawat", done: true }
     ],
     leaves: [],
     messages: [
@@ -160,7 +168,7 @@
     { src: "assets/photos/slide-8.webp", alt: "Pre-primary children in red tracksuits on an outing" },
     { src: "assets/photos/slide-11.webp", alt: "Students and teachers holding up a trophy on stage" }
   ];
-  S.ADM_CLASSES = [["Nursery", "नर्सरी"], ["LKG", "एलकेजी"], ["UKG", "यूकेजी"], ["Class I", "कक्षा I"], ["Classes II to IX, where seats are free", "कक्षा II से IX, जहाँ सीटें ख़ाली हों"], ["Class XI", "कक्षा XI"]];
+  S.ADM_CLASSES = [["Nursery"], ["LKG"], ["UKG"], ["Class I"], ["Classes II to IX, where seats are free"], ["Class XI"]];
   // Facts the school still has to give us. Each one fills every "to be added" marked data-fact="key".
   S.FACTS = [
     ["phone", "Office phone", "0129 xxx xxxx"], ["email", "Office email", "office@stjohnsschool.co.in"], ["hours", "Office hours", "8:00 AM to 2:00 PM, Monday to Saturday"],
@@ -175,22 +183,21 @@
     gallery: [], facts: {}, log: [], undo: []
   });
   const listJoin = (a, and) => a.length < 2 ? a.join("") : a.slice(0, -1).join(", ") + " " + and + " " + a[a.length - 1];
-  // The admissions wording, in either language, from the Website tab's settings.
-  S.admText = (lang) => {
-    const a = S.state.site.adm, hi = lang === "hi";
-    const list = listJoin(a.classes.map((c) => { const m = S.ADM_CLASSES.find((x) => x[0] === c); return m ? m[hi ? 1 : 0] : c; }), hi ? "और" : "and");
+  // The admissions wording, from the Website tab's settings.
+  S.admText = () => {
+    const a = S.state.site.adm, list = listJoin(a.classes, "and");
     return a.open ? {
       open: true, session: a.session, list,
-      btn: hi ? `दाख़िले ${a.session}` : `Admissions ${a.session}`,
-      title: hi ? `${a.session} के लिए दाख़िले शुरू हैं।` : `Admissions for ${a.session} are open.`,
-      text: hi ? `${list} के लिए पूछताछ शुरू है। अपने बच्चे के बारे में थोड़ा बताइए और कैंपस देखने का दिन चुनिए।` : `Enquiries are open for ${list}. Tell us a little about your child and pick a day to see the campus.`,
-      lead: hi ? `${a.session} के लिए ${list} में दाख़िले शुरू हैं। पहले सवाल से लेकर बच्चे के स्कूल के पहले दिन तक, पूरा तरीक़ा यहाँ है।` : `Admissions for ${a.session} are open for ${list}. Here is how it works, from your first question to your child's first day.`
+      btn: `Admissions ${a.session}`,
+      title: `Admissions for ${a.session} are open.`,
+      text: `Enquiries are open for ${list}. Tell us a little about your child and pick a day to see the campus.`,
+      lead: `Admissions for ${a.session} are open for ${list}. Here is how it works, from your first question to your child's first day.`
     } : {
       open: false, session: a.session, list,
-      btn: hi ? "दाख़िला कैसे होता है" : "How admission works",
-      title: hi ? `${a.session} के दाख़िले अभी बंद हैं।` : `Admissions for ${a.session} are closed for now.`,
-      text: hi ? "अपना नंबर छोड़ दीजिए, अगला पंजीकरण शुरू होते ही स्कूल का दफ़्तर आपको फ़ोन करेगा। कैंपस देखने कभी भी आ सकते हैं।" : "Leave your number and the office will call you when registration opens. You are welcome to visit the campus at any time.",
-      lead: hi ? `${a.session} के दाख़िले अभी बंद हैं। नीचे पूरा तरीक़ा है, ताकि अगली बार आप तैयार रहें।` : `Admissions for ${a.session} are closed for now. Here is how it works, so you are ready when registration opens.`
+      btn: "How admission works",
+      title: `Admissions for ${a.session} are closed for now.`,
+      text: "Leave your number and the office will call you when registration opens. You are welcome to visit the campus at any time.",
+      lead: `Admissions for ${a.session} are closed for now. Here is how it works, so you are ready when registration opens.`
     };
   };
   S.photo = (src) => (src && src.startsWith("up:") ? (S.state.photos[src.slice(3)] || "") : src);
@@ -199,14 +206,6 @@
   try { state = JSON.parse(localStorage.getItem(KEY)) || seed(); } catch (e) { state = seed(); }
   if (!state.site) state.site = S.siteSeed();
   if (!state.photos) state.photos = {};
-  // Notices from before the event date and Hindi existed.
-  const HI_SEED = {
-    n1: ["अभिभावक–शिक्षक बैठक", "कक्षा VI–VIII की अभिभावक–शिक्षक बैठक शनिवार, 31 अक्टूबर को सुबह 9:00 से 12:30 बजे तक। अर्धवार्षिक उत्तर-पुस्तिकाएँ दिखाई जाएँगी।"],
-    n2: ["दशहरे की छुट्टी", "दशहरे के कारण मंगलवार, 20 अक्टूबर को स्कूल बंद रहेगा।"],
-    n3: ["बाल दिवस समारोह", "शनिवार, 14 नवंबर को विशेष सभा और शिक्षकों की प्रस्तुति। विद्यार्थी रंगीन कपड़ों में आ सकते हैं।"],
-    n4: ["दिवाली की छुट्टियाँ", "6 से 10 नवंबर तक स्कूल बंद। बुधवार, 11 नवंबर को फिर खुलेगा।"]
-  };
-  state.notices.forEach((n) => { if (HI_SEED[n.id] && !n.titleHi) [n.titleHi, n.textHi] = HI_SEED[n.id]; });
   S.state = state;
   // Returns false when the browser's storage is full (big photos), so the caller can say so.
   S.save = () => { try { localStorage.setItem(KEY, JSON.stringify(S.state)); return true; } catch (e) { return false; } };

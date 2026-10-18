@@ -23,16 +23,13 @@
 <meta name="apple-mobile-web-app-title" content="St. John's" />
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-<link href="https://fonts.googleapis.com/css2?family=Figtree:wght@400..800&family=Mukta:wght@400;600;700&display=swap" rel="stylesheet" />
+<link href="https://fonts.googleapis.com/css2?family=Figtree:wght@400..800&display=swap" rel="stylesheet" />
 <link rel="stylesheet" href="css/school.css" />
 <meta name="theme-color" content="#1C1F24" media="(prefers-color-scheme: light)" />
 <meta name="theme-color" content="#1B1D22" media="(prefers-color-scheme: dark)" />
 <script>
 /* Before the first paint: fade photos in as they load, and hold headline motion until the fonts arrive. */
 (function (d) { var h = d.documentElement, done = function () { h.classList.add("fonts"); }; h.classList.add("js");
-  /* Hindi: keep the page hidden for the moment it takes to swap in the Hindi text. */
-  var L; try { L = new URLSearchParams(location.search).get("lang") || localStorage.getItem("sjs-lang"); } catch (e) {}
-  if (L === "hi") { h.lang = "hi"; h.classList.add("tr-wait"); setTimeout(function () { h.classList.remove("tr-wait"); }, 2500); }
   var m = function (e) { if (e.target.tagName === "IMG") e.target.classList.add("is-loaded"); };
   d.addEventListener("load", m, true); d.addEventListener("error", m, true);
   if (d.fonts && d.fonts.load) Promise.all([d.fonts.load("700 1em Figtree"), d.fonts.load("400 1em Figtree")]).then(done, done); else done();
@@ -41,7 +38,6 @@
 </head>
 <body data-page="admissions">
 <script src="js/shell.js"></script>
-<script src="js/lang.js"></script>
 <main id="main">
   <header class="phero">
     <div class="wrap phero-in">
@@ -131,7 +127,6 @@
         <details><summary>How will I know if my child has been selected?</summary><div class="a">Selected Nursery names are put up on the notice board at reception. With the new website, families who enquire online also get an SMS and can check here.</div></details>
         <details><summary>What happens if my child does not pass Class X after provisional admission to XI?</summary><div class="a">The provisional admission is cancelled automatically. It becomes regular once the CBSE Class X result and documents are submitted.</div></details>
         <details><summary>Does the school run buses?</summary><div class="a">Yes. Route details are shared at admission, and parents can follow the bus live in the parent app. See <a class="textlink" href="campus.html#transport">school transport</a>.</div></details>
-        <details><summary>Can I ask questions in Hindi?</summary><div class="a">हाँ, बिल्कुल। The office and the school's assistant both answer in Hindi or English. Try the assistant in the corner of this page.</div></details>
         <details><summary>Does submitting the form guarantee admission?</summary><div class="a">No. Submitting a form does not guarantee a seat. Provisional and regular admission are at the school's discretion.</div></details>
       </div>
     </div>
@@ -164,7 +159,7 @@
           <div class="tick"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></div>
           <h3 class="t-m">Visit booked.</h3>
           <p class="muted mt-s" data-slot-msg></p>
-          <p class="note mt-m">In this prototype, the enquiry now shows up in the <a class="textlink" href="login.html?role=principal">principal's view</a>.</p>
+          <p class="note mt-m">In this prototype, the enquiry now shows up in the <a class="textlink" href="staff.html?id=SJS-A-0107">school office view</a>.</p>
         </div>
       </div>
     </div>
