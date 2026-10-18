@@ -23,29 +23,31 @@
 <meta name="apple-mobile-web-app-title" content="St. John's" />
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wdth,wght@12..96,75..100,400..800&family=Figtree:wght@400;500;600;700&family=Mukta:wght@400;600&display=swap" rel="stylesheet" />
+<link href="https://fonts.googleapis.com/css2?family=Figtree:wght@400..800&family=Mukta:wght@400;600;700&display=swap" rel="stylesheet" />
 <link rel="stylesheet" href="css/school.css" />
 <meta name="theme-color" content="#1C1F24" media="(prefers-color-scheme: light)" />
 <meta name="theme-color" content="#1B1D22" media="(prefers-color-scheme: dark)" />
 <script>
 /* Before the first paint: fade photos in as they load, and hold headline motion until the fonts arrive. */
 (function (d) { var h = d.documentElement, done = function () { h.classList.add("fonts"); }; h.classList.add("js");
+  /* Hindi: keep the page hidden for the moment it takes to swap in the Hindi text. */
+  var L; try { L = new URLSearchParams(location.search).get("lang") || localStorage.getItem("sjs-lang"); } catch (e) {}
+  if (L === "hi") { h.lang = "hi"; h.classList.add("tr-wait"); setTimeout(function () { h.classList.remove("tr-wait"); }, 2500); }
   var m = function (e) { if (e.target.tagName === "IMG") e.target.classList.add("is-loaded"); };
   d.addEventListener("load", m, true); d.addEventListener("error", m, true);
-  if (d.fonts && d.fonts.load) Promise.all([d.fonts.load('800 1em "Bricolage Grotesque"'), d.fonts.load("400 1em Figtree")]).then(done, done); else done();
+  if (d.fonts && d.fonts.load) Promise.all([d.fonts.load("700 1em Figtree"), d.fonts.load("400 1em Figtree")]).then(done, done); else done();
   setTimeout(done, 1500); })(document);
 </script>
-<script defer src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
-<script defer src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
 </head>
 <body data-page="academics">
 <script src="js/shell.js"></script>
+<script src="js/lang.js"></script>
 <main id="main">
   <header class="phero">
     <div class="wrap phero-in">
       <div>
         <nav class="crumbs" aria-label="Breadcrumb"><a href="index.html">Home</a> / Academics</nav>
-        <h1><span class="ln"><span style="--i:0">Nursery</span></span><span class="ln"><span style="--i:1">to Class XII.</span></span></h1>
+        <h1>Nursery to Class XII</h1>
         <p class="lead">One CBSE school, five stages. What your child learns at each stage, how we teach it, and how progress is measured.</p>
       </div>
       <figure class="arch clip" style="margin:0"><img fetchpriority="high" src="assets/photos/slide-9.webp" width="1600" height="666" alt="Primary students in school sweaters grinning at the camera" style="object-position:62% 50%" /></figure>
@@ -56,13 +58,13 @@
 
   <section class="sec" id="stages">
     <div class="wrap">
-      <div class="sec-title"><h2 class="t-l">The five stages.</h2><p>Subjects follow the CBSE scheme of studies for each class. The lists below are <span class="tbc" title="The school will confirm its exact subject offer">indicative</span>; the school will publish its exact subject offer every year.</p></div>
+      <div class="sec-title"><h2 class="t-l">The five stages</h2><p>Subjects follow the CBSE scheme of studies for each class. The lists below are <span class="tbc" title="The school will confirm its exact subject offer">indicative</span>; the school will publish its exact subject offer every year.</p></div>
       <div class="stairs" style="margin-bottom:64px">
-        <div class="step" style="--h:40%;--i:0"><small>Nursery to UKG</small><b>Pre-primary</b><p>Ages 3 to 6</p><span class="step-n" aria-hidden="true">N</span></div>
-        <div class="step" style="--h:54%;--i:1"><small>Classes I to V</small><b>Primary</b><p>Foundations</p><span class="step-n" aria-hidden="true">I</span></div>
-        <div class="step" style="--h:68%;--i:2"><small>Classes VI to VIII</small><b>Middle</b><p>Widening out</p><span class="step-n" aria-hidden="true">VI</span></div>
-        <div class="step" style="--h:84%;--i:3"><small>Classes IX and X</small><b>Secondary</b><p>Board years</p><span class="step-n" aria-hidden="true">IX</span></div>
-        <div class="step" style="--h:100%;--i:4"><small>Classes XI and XII</small><b>Senior secondary</b><p>Streams</p><span class="step-n" aria-hidden="true">XI</span></div>
+        <div class="step" style="--h:40%;--i:0"><small>Nursery to UKG</small><b>Pre-primary</b><p>Ages 3 to 6</p></div>
+        <div class="step" style="--h:54%;--i:1"><small>Classes I to V</small><b>Primary</b><p>Foundations</p></div>
+        <div class="step" style="--h:68%;--i:2"><small>Classes VI to VIII</small><b>Middle</b><p>Widening out</p></div>
+        <div class="step" style="--h:84%;--i:3"><small>Classes IX and X</small><b>Secondary</b><p>Board years</p></div>
+        <div class="step" style="--h:100%;--i:4"><small>Classes XI and XII</small><b>Senior secondary</b><p>Streams</p></div>
       </div>
       <div class="faq">
         <details open><summary>Pre-primary: Nursery, LKG and UKG</summary><div class="a"><p>Children learn through play, stories, rhymes, music and movement. We build early language in English and Hindi, number sense, fine motor skills and the confidence to be away from home. No homework, no exams.</p><div class="pill-row mt-s"><span class="tag">English and Hindi through stories</span><span class="tag">Numbers</span><span class="tag">The world around us</span><span class="tag">Art and craft</span><span class="tag">Music and movement</span><span class="tag">Free play</span></div></div></details>
@@ -76,7 +78,7 @@
 
   <section class="sec sec--hedge" id="approach">
     <div class="wrap">
-      <h2 class="t-xl" style="max-width:9em;margin-bottom:56px">How we teach.</h2>
+      <h2 class="t-xl" style="max-width:9em;margin-bottom:56px">How we teach</h2>
       <div class="trio">
         <div><h3>Activity first</h3><p>In the early years, children learn by doing: counting real things, acting out stories, singing and moving. It follows the foundational stage of the National Education Policy 2020.</p></div>
         <div><h3>Read every day</h3><p>Library periods, reading aloud and class libraries in every stage. Children who read widely do better in every subject, not just English.</p></div>
@@ -87,7 +89,7 @@
 
   <section class="sec" id="assessment">
     <div class="wrap">
-      <div class="sec-title"><h2 class="t-l">Exams and assessment.</h2><p>We assess to help children improve, not just to rank them. Parents see every mark in the parent app the day it is published.</p></div>
+      <div class="sec-title"><h2 class="t-l">Exams and assessment</h2><p>We assess to help children improve, not just to rank them. Parents see every mark in the parent app the day it is published.</p></div>
       <div class="tbl-wrap">
         <table class="tbl">
           <thead><tr><th>Stage</th><th>How progress is measured</th><th>Reports</th></tr></thead>
@@ -107,7 +109,7 @@
   <section class="sec sec--tint" id="senior">
     <div class="wrap split">
       <div>
-        <h2 class="t-l">Senior secondary.</h2>
+        <h2 class="t-l">Senior secondary</h2>
         <p class="lead mt-m">Admission to Class XI is offered on the basis of the Class IX result and confirmed once the Class X result is out.</p>
         <p class="mt-m"><a class="btn" href="admissions.html#enquire">Enquire for Class XI</a></p>
       </div>

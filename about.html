@@ -23,29 +23,31 @@
 <meta name="apple-mobile-web-app-title" content="St. John's" />
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wdth,wght@12..96,75..100,400..800&family=Figtree:wght@400;500;600;700&family=Mukta:wght@400;600&display=swap" rel="stylesheet" />
+<link href="https://fonts.googleapis.com/css2?family=Figtree:wght@400..800&family=Mukta:wght@400;600;700&display=swap" rel="stylesheet" />
 <link rel="stylesheet" href="css/school.css" />
 <meta name="theme-color" content="#1C1F24" media="(prefers-color-scheme: light)" />
 <meta name="theme-color" content="#1B1D22" media="(prefers-color-scheme: dark)" />
 <script>
 /* Before the first paint: fade photos in as they load, and hold headline motion until the fonts arrive. */
 (function (d) { var h = d.documentElement, done = function () { h.classList.add("fonts"); }; h.classList.add("js");
+  /* Hindi: keep the page hidden for the moment it takes to swap in the Hindi text. */
+  var L; try { L = new URLSearchParams(location.search).get("lang") || localStorage.getItem("sjs-lang"); } catch (e) {}
+  if (L === "hi") { h.lang = "hi"; h.classList.add("tr-wait"); setTimeout(function () { h.classList.remove("tr-wait"); }, 2500); }
   var m = function (e) { if (e.target.tagName === "IMG") e.target.classList.add("is-loaded"); };
   d.addEventListener("load", m, true); d.addEventListener("error", m, true);
-  if (d.fonts && d.fonts.load) Promise.all([d.fonts.load('800 1em "Bricolage Grotesque"'), d.fonts.load("400 1em Figtree")]).then(done, done); else done();
+  if (d.fonts && d.fonts.load) Promise.all([d.fonts.load("700 1em Figtree"), d.fonts.load("400 1em Figtree")]).then(done, done); else done();
   setTimeout(done, 1500); })(document);
 </script>
-<script defer src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
-<script defer src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
 </head>
 <body data-page="about">
 <script src="js/shell.js"></script>
+<script src="js/lang.js"></script>
 <main id="main">
   <header class="phero">
     <div class="wrap phero-in">
       <div>
         <nav class="crumbs" aria-label="Breadcrumb"><a href="index.html">Home</a> / About</nav>
-        <h1><span class="ln"><span style="--i:0">Sixty years</span></span><span class="ln"><span style="--i:1">and counting.</span></span></h1>
+        <h1>Sixty years and counting</h1>
         <p class="lead">In 1965 Shri T.I. John opened a school in Sector 7A. This is what it stands for, who runs it, and who leads it today.</p>
       </div>
       <figure class="arch clip" style="margin:0"><img fetchpriority="high" src="assets/photos/slide-5.webp" width="1600" height="666" alt="Students singing on stage with live musicians" style="object-position:50% 40%" /></figure>
@@ -56,7 +58,7 @@
 
   <section class="sec" id="story">
     <div class="wrap cols">
-      <h2 class="t-l">Since 1965.</h2>
+      <h2 class="t-l">Since 1965</h2>
       <div class="prose lead" style="max-width:36em">
         <p>St. John's School was founded in 1965 by <b>Shri T.I. John</b>, and is run by the <b>Idicula Trust Society (Regd.)</b>. From the start the idea was simple: a school that gives children a sound education and a sound character, in equal measure.</p>
         <p>The school stands on a four-acre campus in Sector 7A, Faridabad: red-brick buildings, wide lawns, trees and hedges, and enough open ground for assemblies, sport and the march-past. Families describe it as calm. We work hard to keep it that way.</p>
@@ -68,7 +70,7 @@
 
   <section class="sec sec--brick" id="vision">
     <div class="wrap">
-      <h2 class="t-xl" style="max-width:10em;margin-bottom:56px">What we stand for.</h2>
+      <h2 class="t-xl" style="max-width:10em;margin-bottom:56px">What we stand for</h2>
       <div class="trio">
         <div><h3>Vision</h3><p>To nurture the potential in every child, and to bring up lifelong learners and global citizens with innovation and strong values, working hand in hand with parents and partners. Vision with action can build the future.</p></div>
         <div><h3>Mission</h3><p>To instil honesty, compassion, secularism, tolerance and respect for others; to honour our country's heritage and take pride in it; and to contribute to humanity by working together.</p></div>
@@ -79,7 +81,7 @@
 
   <section class="sec" id="objectives">
     <div class="wrap cols">
-      <h2 class="t-l">What we aim for.</h2>
+      <h2 class="t-l">What we aim for</h2>
       <div>
         <p class="lead" style="margin-bottom:24px">Our objectives have been the same for decades. They shape how we teach, how we celebrate and how we treat each other.</p>
         <ul class="ticks">
@@ -97,7 +99,7 @@
     <div class="wrap letter">
       <figure class="arch" style="margin:0"><img src="assets/crest.svg" alt="School crest, in place of the Principal's photograph" /></figure>
       <div>
-        <h2 class="t-l" style="margin-bottom:28px">From the Principal.</h2>
+        <h2 class="t-l" style="margin-bottom:28px">From the Principal</h2>
         <div class="prose lead">
           <p>Dear parents and students,</p>
           <p>Every morning our gates open to children who will one day be doctors, teachers, engineers, artists and citizens. Our job is to help each of them find what they are good at, and to make sure they leave us kind as well as capable.</p>
@@ -111,12 +113,12 @@
 
   <section class="sec" id="management">
     <div class="wrap">
-      <div class="sec-title"><h2 class="t-l">Management.</h2><p>St. John's is run by a registered trust, the Idicula Trust Society.</p></div>
+      <div class="sec-title"><h2 class="t-l">Management</h2><p>St. John's is run by a registered trust, the Idicula Trust Society.</p></div>
       <dl class="kv">
         <div><dt>Founder</dt><dd>Shri T.I. John</dd></div>
         <div><dt>Managed by</dt><dd>Idicula Trust Society (Regd.)</dd></div>
-        <div><dt>Affiliation</dt><dd>CBSE<small>Affiliation no. <span class="tbc" title="To be provided">to be added</span></small></dd></div>
-        <div><dt>Chairperson and manager</dt><dd><span class="tbc" title="To be provided">To be added</span></dd></div>
+        <div><dt>Affiliation</dt><dd>CBSE<small>Affiliation no. <span class="tbc" title="To be provided" data-fact="affil">to be added</span></small></dd></div>
+        <div><dt>Chairperson and manager</dt><dd><span class="tbc" title="To be provided" data-fact="chair">To be added</span></dd></div>
       </dl>
       <p class="mt-m">Registration, affiliation and safety certificates are published on our <a class="textlink" href="disclosure.html">mandatory public disclosure</a> page.</p>
     </div>

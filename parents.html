@@ -23,29 +23,31 @@
 <meta name="apple-mobile-web-app-title" content="St. John's" />
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wdth,wght@12..96,75..100,400..800&family=Figtree:wght@400;500;600;700&family=Mukta:wght@400;600&display=swap" rel="stylesheet" />
+<link href="https://fonts.googleapis.com/css2?family=Figtree:wght@400..800&family=Mukta:wght@400;600;700&display=swap" rel="stylesheet" />
 <link rel="stylesheet" href="css/school.css" />
 <meta name="theme-color" content="#1C1F24" media="(prefers-color-scheme: light)" />
 <meta name="theme-color" content="#1B1D22" media="(prefers-color-scheme: dark)" />
 <script>
 /* Before the first paint: fade photos in as they load, and hold headline motion until the fonts arrive. */
 (function (d) { var h = d.documentElement, done = function () { h.classList.add("fonts"); }; h.classList.add("js");
+  /* Hindi: keep the page hidden for the moment it takes to swap in the Hindi text. */
+  var L; try { L = new URLSearchParams(location.search).get("lang") || localStorage.getItem("sjs-lang"); } catch (e) {}
+  if (L === "hi") { h.lang = "hi"; h.classList.add("tr-wait"); setTimeout(function () { h.classList.remove("tr-wait"); }, 2500); }
   var m = function (e) { if (e.target.tagName === "IMG") e.target.classList.add("is-loaded"); };
   d.addEventListener("load", m, true); d.addEventListener("error", m, true);
-  if (d.fonts && d.fonts.load) Promise.all([d.fonts.load('800 1em "Bricolage Grotesque"'), d.fonts.load("400 1em Figtree")]).then(done, done); else done();
+  if (d.fonts && d.fonts.load) Promise.all([d.fonts.load("700 1em Figtree"), d.fonts.load("400 1em Figtree")]).then(done, done); else done();
   setTimeout(done, 1500); })(document);
 </script>
-<script defer src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
-<script defer src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
 </head>
 <body data-page="parents">
 <script src="js/shell.js"></script>
+<script src="js/lang.js"></script>
 <main id="main">
   <header class="phero">
     <div class="wrap phero-in">
       <div>
         <nav class="crumbs" aria-label="Breadcrumb"><a href="index.html">Home</a> / Parents</nav>
-        <h1><span class="ln"><span style="--i:0">Parent</span></span><span class="ln"><span style="--i:1">corner.</span></span></h1>
+        <h1>Parent corner</h1>
         <p class="lead">Everything St. John's families look for in one place: timings, uniform, fees, certificates and downloads. For your own child's day, use the parent app.</p>
         <div class="row-btns mt-m" style="opacity:0;animation:fade .9s .6s var(--ease-out) forwards"><a class="btn" href="login.html?role=parent">Open the parent app</a></div>
       </div>
@@ -58,16 +60,16 @@
   <section class="sec" id="timings">
     <div class="wrap split">
       <div>
-        <h2 class="t-l">Timings.</h2>
+        <h2 class="t-l">Timings</h2>
         <p class="lead mt-m">If your child will be absent, tell the class teacher through the app before 8 in the morning.</p>
       </div>
       <div class="tbl-wrap">
         <table class="tbl">
           <thead><tr><th>Who</th><th>Summer</th><th>Winter</th></tr></thead>
           <tbody>
-            <tr><td>Nursery to UKG</td><td><span class="tbc" title="To be confirmed">To be added</span></td><td><span class="tbc" title="To be confirmed">To be added</span></td></tr>
-            <tr><td>Classes I to XII</td><td><span class="tbc" title="To be confirmed">To be added</span></td><td><span class="tbc" title="To be confirmed">To be added</span></td></tr>
-            <tr><td>School office</td><td colspan="2"><span class="tbc" title="To be confirmed">To be added</span></td></tr>
+            <tr><td>Nursery to UKG</td><td><span class="tbc" title="To be confirmed" data-fact="tPreS">To be added</span></td><td><span class="tbc" title="To be confirmed" data-fact="tPreW">To be added</span></td></tr>
+            <tr><td>Classes I to XII</td><td><span class="tbc" title="To be confirmed" data-fact="tSchS">To be added</span></td><td><span class="tbc" title="To be confirmed" data-fact="tSchW">To be added</span></td></tr>
+            <tr><td>School office</td><td colspan="2"><span class="tbc" title="To be confirmed" data-fact="hours">To be added</span></td></tr>
           </tbody>
         </table>
       </div>
@@ -76,7 +78,7 @@
 
   <section class="sec sec--tint" id="uniform">
     <div class="wrap">
-      <div class="sec-title"><h2 class="t-l">Uniform.</h2><p>As seen around school. The full uniform list, with where to buy it, will be <span class="tbc" title="To be provided by the school">published by the school</span>.</p></div>
+      <div class="sec-title"><h2 class="t-l">Uniform</h2><p>As seen around school. The full uniform list, with where to buy it, will be <span class="tbc" title="To be provided by the school">published by the school</span>.</p></div>
       <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:28px">
         <figure style="margin:0"><div class="arch clip" style="aspect-ratio:4/5"><img src="assets/photos/slide-8.webp" width="1600" height="666" alt="Pre-primary children in red tracksuits and caps" style="object-position:84% 50%" loading="lazy" decoding="async" /></div><figcaption class="mt-s"><b>Pre-primary</b><br /><span class="muted">Red tracksuit and cap in winter.</span></figcaption></figure>
         <figure style="margin:0"><div class="arch clip" style="aspect-ratio:4/5"><img src="assets/photos/slide-9.webp" width="1600" height="666" alt="Primary students in grey school sweatshirts with ID cards" style="object-position:50% 50%" loading="lazy" decoding="async" /></div><figcaption class="mt-s"><b>Primary and middle</b><br /><span class="muted">Grey sweatshirt with the school crest in winter, with ID card.</span></figcaption></figure>
@@ -87,7 +89,7 @@
 
   <section class="sec" id="fees">
     <div class="wrap cols">
-      <h2 class="t-l">Fees and payment.</h2>
+      <h2 class="t-l">Fees and payment</h2>
       <div>
         <p class="lead" style="margin-bottom:24px">Fees follow CBSE norms and are paid in instalments. The fee structure for the session is published in Downloads.</p>
         <ol class="process process--3">
@@ -103,7 +105,7 @@
   <section class="sec sec--sky" id="requests">
     <div class="wrap split">
       <div>
-        <h2 class="t-l">Requests.</h2>
+        <h2 class="t-l">Requests</h2>
         <p class="lead mt-m">Ask the office for a certificate or a change without a trip to school. You'll get an SMS when it's ready.</p>
       </div>
       <div>
@@ -124,7 +126,7 @@
 
   <section class="sec" id="downloads">
     <div class="wrap cols">
-      <h2 class="t-l">Downloads.</h2>
+      <h2 class="t-l">Downloads</h2>
       <ul class="docs">
         <li><a href="#downloads"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3h9l4 4v14H6z"/><path d="M14 3v5h5"/></svg><div><b>School prospectus</b><span>About the school, admission and rules</span></div><em>PDF</em></a></li>
         <li><a href="#downloads"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="5" width="16" height="15" rx="2"/><path d="M4 10h16M9 3v4M15 3v4"/></svg><div><b>Academic calendar 2026–27</b><span>Terms, exams, holidays and events</span></div><em>Coming soon</em></a></li>
@@ -138,7 +140,7 @@
   <section class="sec sec--hedge" id="app">
     <div class="wrap split" style="align-items:center">
       <div>
-        <h2 class="t-xl">Your child's day, on your phone.</h2>
+        <h2 class="t-xl">Your child's day, on your phone</h2>
         <ul class="ticks mt-m" style="max-width:32em">
           <li>A message within minutes if your child is marked absent</li>
           <li>Homework, marks and report cards as soon as teachers post them</li>

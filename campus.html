@@ -23,29 +23,31 @@
 <meta name="apple-mobile-web-app-title" content="St. John's" />
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wdth,wght@12..96,75..100,400..800&family=Figtree:wght@400;500;600;700&family=Mukta:wght@400;600&display=swap" rel="stylesheet" />
+<link href="https://fonts.googleapis.com/css2?family=Figtree:wght@400..800&family=Mukta:wght@400;600;700&display=swap" rel="stylesheet" />
 <link rel="stylesheet" href="css/school.css" />
 <meta name="theme-color" content="#1C1F24" media="(prefers-color-scheme: light)" />
 <meta name="theme-color" content="#1B1D22" media="(prefers-color-scheme: dark)" />
 <script>
 /* Before the first paint: fade photos in as they load, and hold headline motion until the fonts arrive. */
 (function (d) { var h = d.documentElement, done = function () { h.classList.add("fonts"); }; h.classList.add("js");
+  /* Hindi: keep the page hidden for the moment it takes to swap in the Hindi text. */
+  var L; try { L = new URLSearchParams(location.search).get("lang") || localStorage.getItem("sjs-lang"); } catch (e) {}
+  if (L === "hi") { h.lang = "hi"; h.classList.add("tr-wait"); setTimeout(function () { h.classList.remove("tr-wait"); }, 2500); }
   var m = function (e) { if (e.target.tagName === "IMG") e.target.classList.add("is-loaded"); };
   d.addEventListener("load", m, true); d.addEventListener("error", m, true);
-  if (d.fonts && d.fonts.load) Promise.all([d.fonts.load('800 1em "Bricolage Grotesque"'), d.fonts.load("400 1em Figtree")]).then(done, done); else done();
+  if (d.fonts && d.fonts.load) Promise.all([d.fonts.load("700 1em Figtree"), d.fonts.load("400 1em Figtree")]).then(done, done); else done();
   setTimeout(done, 1500); })(document);
 </script>
-<script defer src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
-<script defer src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
 </head>
 <body data-page="campus">
 <script src="js/shell.js"></script>
+<script src="js/lang.js"></script>
 <main id="main">
   <header class="phero">
     <div class="wrap phero-in">
       <div>
         <nav class="crumbs" aria-label="Breadcrumb"><a href="index.html">Home</a> / Campus</nav>
-        <h1><span class="ln"><span style="--i:0">Four</span></span><span class="ln"><span style="--i:1">green acres.</span></span></h1>
+        <h1>Four green acres</h1>
         <p class="lead">Red-brick buildings, lawns and hedges, a stage for every Annual Day, and the space every child needs to run.</p>
       </div>
       <figure class="arch clip" style="margin:0"><img fetchpriority="high" src="assets/photos/slide-6.webp" width="1600" height="666" alt="The school band lined up on the red carpet along the campus walk" style="object-position:28% 50%" /></figure>
@@ -56,7 +58,7 @@
 
   <section class="sec" id="facilities" style="padding-bottom:0">
     <div class="wrap">
-      <div class="sec-title"><h2 class="t-l">Facilities.</h2><p>Where we have photographs, you can see them. The full list of rooms and equipment will be <span class="tbc" title="To be confirmed by the school">confirmed by the school</span>.</p></div>
+      <div class="sec-title"><h2 class="t-l">Facilities</h2><p>Where we have photographs, you can see them. The full list of rooms and equipment will be <span class="tbc" title="To be confirmed by the school">confirmed by the school</span>.</p></div>
 
       <article class="fac">
         <figure class="frame clip" style="margin:0"><img src="assets/photos/slide-5.webp" width="1600" height="666" alt="Students singing on the decorated stage with musicians" style="object-position:50% 50%" loading="lazy" decoding="async" /></figure>
@@ -93,7 +95,7 @@
 
   <section class="sec sec--tint" id="safety">
     <div class="wrap cols">
-      <h2 class="t-l">Safety and wellbeing.</h2>
+      <h2 class="t-l">Safety and wellbeing</h2>
       <div>
         <p class="lead" style="margin-bottom:24px">Parents should never have to wonder whether their child is safe at school. These are the arrangements the website will publish once the school confirms them.</p>
         <ul class="ticks">
@@ -112,7 +114,7 @@
   <section class="sec" id="transport">
     <div class="wrap split">
       <div>
-        <h2 class="t-l">School transport.</h2>
+        <h2 class="t-l">School transport</h2>
         <p class="lead mt-m">School buses cover routes across Faridabad. With the new parent app, families can follow their child's bus stop by stop and get a message two stops before home.</p>
         <p class="mt-m"><a class="btn" href="login.html?role=parent">See the bus in the parent app</a></p>
       </div>

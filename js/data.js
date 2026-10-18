@@ -95,6 +95,12 @@
     5: ["Mathematics", "Social Science", "Science", "English", "Hindi", "Computer", "Assembly Activity", "Games"]
   };
   S.periodTimes = ["8:00", "8:40", "9:20", "10:00", "10:50", "11:30", "12:10", "12:50"];
+  // Who teaches what in VII-B (sample names), for the timetable's hover.
+  S.ttTeachers = {
+    Mathematics: "Ms. Neha Mathew", English: "Mrs. Rekha Menon", Hindi: "Mrs. Sunita Rawat", Science: "Mr. Joseph Varghese",
+    "Social Science": "Mr. Vikram Chauhan", Computer: "Mr. Rahul Kapoor", Games: "Mr. Satish Malik", Art: "Ms. Farah Ahmed",
+    Library: "Mrs. Kavita Bedi", Music: "Mr. Paul D'Cruz", "Value Education": "Mrs. Lalitha Krishnan", "Assembly Activity": "Ms. Neha Mathew"
+  };
 
   // Whole-school attendance today (sample); VII is filled in from VII-B's live register.
   S.sample = { classes: ["Nur", "LKG", "UKG", "I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX", "X", "XI", "XII"], attendance: [91, 89, 94, 95, 96, 93, 95, 94, 92, 0, 94, 86, 95, 92, 90] };
@@ -137,15 +143,80 @@
     ]
   });
 
+  // ---- Website content --------------------------------------------------
+  // What the principal's Website tab changes on the public site. Uploaded
+  // photos live apart from the content (state.photos, by id) so the undo
+  // history stays small; content refers to them as "up:<id>".
+  S.LIBRARY = [
+    { src: "assets/photos/slide-6.webp", alt: "The school band in red berets on the campus walk" },
+    { src: "assets/photos/slide-1.webp", alt: "The school choir on stage" },
+    { src: "assets/photos/slide-3.webp", alt: "Folk dance from the North-East" },
+    { src: "assets/photos/slide-9.webp", alt: "Junior students smiling for the camera" },
+    { src: "assets/photos/slide-4.webp", alt: "Students performing Garba" },
+    { src: "assets/photos/slide-10.webp", alt: "Students receiving a trophy" },
+    { src: "assets/photos/slide-2.webp", alt: "Folk dance in green and pink" },
+    { src: "assets/photos/slide-5.webp", alt: "Students singing on stage with live musicians" },
+    { src: "assets/photos/slide-7.webp", alt: "Junior band members on the campus path" },
+    { src: "assets/photos/slide-8.webp", alt: "Pre-primary children in red tracksuits on an outing" },
+    { src: "assets/photos/slide-11.webp", alt: "Students and teachers holding up a trophy on stage" }
+  ];
+  S.ADM_CLASSES = [["Nursery", "नर्सरी"], ["LKG", "एलकेजी"], ["UKG", "यूकेजी"], ["Class I", "कक्षा I"], ["Classes II to IX, where seats are free", "कक्षा II से IX, जहाँ सीटें ख़ाली हों"], ["Class XI", "कक्षा XI"]];
+  // Facts the school still has to give us. Each one fills every "to be added" marked data-fact="key".
+  S.FACTS = [
+    ["phone", "Office phone", "0129 xxx xxxx"], ["email", "Office email", "office@stjohnsschool.co.in"], ["hours", "Office hours", "8:00 AM to 2:00 PM, Monday to Saturday"],
+    ["pin", "PIN code", "121006"], ["affil", "CBSE affiliation number", ""], ["code", "CBSE school code", ""],
+    ["principal", "Principal's name and qualification", ""], ["chair", "Chairperson and manager", ""],
+    ["tPreS", "Pre-primary timings, summer", "8:00 AM to 12:00 PM"], ["tPreW", "Pre-primary timings, winter", "8:30 AM to 12:30 PM"],
+    ["tSchS", "Classes I to XII timings, summer", "7:50 AM to 1:50 PM"], ["tSchW", "Classes I to XII timings, winter", "8:20 AM to 2:20 PM"]
+  ];
+  S.siteSeed = () => ({
+    adm: { open: true, session: "2027–28", classes: ["Nursery", "Class XI"] },
+    slides: S.LIBRARY.map((p, i) => ({ src: p.src, alt: p.alt, on: i < 6, pos: "50% 50%" })),
+    gallery: [], facts: {}, log: [], undo: []
+  });
+  const listJoin = (a, and) => a.length < 2 ? a.join("") : a.slice(0, -1).join(", ") + " " + and + " " + a[a.length - 1];
+  // The admissions wording, in either language, from the Website tab's settings.
+  S.admText = (lang) => {
+    const a = S.state.site.adm, hi = lang === "hi";
+    const list = listJoin(a.classes.map((c) => { const m = S.ADM_CLASSES.find((x) => x[0] === c); return m ? m[hi ? 1 : 0] : c; }), hi ? "और" : "and");
+    return a.open ? {
+      open: true, session: a.session, list,
+      btn: hi ? `दाख़िले ${a.session}` : `Admissions ${a.session}`,
+      title: hi ? `${a.session} के लिए दाख़िले शुरू हैं।` : `Admissions for ${a.session} are open.`,
+      text: hi ? `${list} के लिए पूछताछ शुरू है। अपने बच्चे के बारे में थोड़ा बताइए और कैंपस देखने का दिन चुनिए।` : `Enquiries are open for ${list}. Tell us a little about your child and pick a day to see the campus.`,
+      lead: hi ? `${a.session} के लिए ${list} में दाख़िले शुरू हैं। पहले सवाल से लेकर बच्चे के स्कूल के पहले दिन तक, पूरा तरीक़ा यहाँ है।` : `Admissions for ${a.session} are open for ${list}. Here is how it works, from your first question to your child's first day.`
+    } : {
+      open: false, session: a.session, list,
+      btn: hi ? "दाख़िला कैसे होता है" : "How admission works",
+      title: hi ? `${a.session} के दाख़िले अभी बंद हैं।` : `Admissions for ${a.session} are closed for now.`,
+      text: hi ? "अपना नंबर छोड़ दीजिए, अगला पंजीकरण शुरू होते ही स्कूल का दफ़्तर आपको फ़ोन करेगा। कैंपस देखने कभी भी आ सकते हैं।" : "Leave your number and the office will call you when registration opens. You are welcome to visit the campus at any time.",
+      lead: hi ? `${a.session} के दाख़िले अभी बंद हैं। नीचे पूरा तरीक़ा है, ताकि अगली बार आप तैयार रहें।` : `Admissions for ${a.session} are closed for now. Here is how it works, so you are ready when registration opens.`
+    };
+  };
+  S.photo = (src) => (src && src.startsWith("up:") ? (S.state.photos[src.slice(3)] || "") : src);
+
   let state;
   try { state = JSON.parse(localStorage.getItem(KEY)) || seed(); } catch (e) { state = seed(); }
+  if (!state.site) state.site = S.siteSeed();
+  if (!state.photos) state.photos = {};
+  // Notices from before the event date and Hindi existed.
+  const HI_SEED = {
+    n1: ["अभिभावक–शिक्षक बैठक", "कक्षा VI–VIII की अभिभावक–शिक्षक बैठक शनिवार, 31 अक्टूबर को सुबह 9:00 से 12:30 बजे तक। अर्धवार्षिक उत्तर-पुस्तिकाएँ दिखाई जाएँगी।"],
+    n2: ["दशहरे की छुट्टी", "दशहरे के कारण मंगलवार, 20 अक्टूबर को स्कूल बंद रहेगा।"],
+    n3: ["बाल दिवस समारोह", "शनिवार, 14 नवंबर को विशेष सभा और शिक्षकों की प्रस्तुति। विद्यार्थी रंगीन कपड़ों में आ सकते हैं।"],
+    n4: ["दिवाली की छुट्टियाँ", "6 से 10 नवंबर तक स्कूल बंद। बुधवार, 11 नवंबर को फिर खुलेगा।"]
+  };
+  state.notices.forEach((n) => { if (HI_SEED[n.id] && !n.titleHi) [n.titleHi, n.textHi] = HI_SEED[n.id]; });
   S.state = state;
-  S.save = () => { try { localStorage.setItem(KEY, JSON.stringify(S.state)); } catch (e) {} };
+  // Returns false when the browser's storage is full (big photos), so the caller can say so.
+  S.save = () => { try { localStorage.setItem(KEY, JSON.stringify(S.state)); return true; } catch (e) { return false; } };
   S.reset = () => { try { localStorage.removeItem(KEY); } catch (e) {} location.reload(); };
   // Other tabs (teacher in one, parent in another) update live.
   window.addEventListener("storage", (e) => {
     if (e.key !== KEY) return;
     try { S.state = JSON.parse(e.newValue) || seed(); } catch (err) { S.state = seed(); }
+    if (!S.state.site) S.state.site = S.siteSeed();
+    if (!S.state.photos) S.state.photos = {};
     document.dispatchEvent(new CustomEvent("sjs:sync"));
   });
 

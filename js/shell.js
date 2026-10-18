@@ -34,7 +34,7 @@
   hdr.className = "hdr";
   hdr.innerHTML = `<div class="hdr-in">
     <div class="pill">
-      <a class="logo" href="index.html" aria-label="St. John's School, home"><img src="assets/crest.svg" alt="" width="40" height="40" /><span class="logo-t"><b>St. John's School</b><small>Sector 7A, Faridabad</small></span></a>
+      <a class="logo" href="index.html" aria-label="St. John's School, home"><img src="assets/crest.svg" alt="" width="40" height="40" /><span class="logo-t"><b>St. John's School</b><small><span class="where">Sector 7A, Faridabad</span><span class="sec-now"></span></small></span></a>
       <button class="now" type="button" aria-haspopup="true" aria-expanded="false"><small>${pageName}</small><span class="now-t"><b></b></span></button>
       <div class="lanes">
         <nav class="lane lane-main" aria-label="Main"><i class="ind" aria-hidden="true"></i><ul class="nav">${NAV.map(([k, l, href, subs]) => `<li><a href="${href}"${k === page ? ' aria-current="page"' : ""}>${l}</a>${subs.length ? `<div class="sub">${subs.map(([t, h, d]) => `<a href="${href}${h}">${t}${d ? `<span>${d}</span>` : ""}</a>`).join("")}</div>` : ""}</li>`).join("")}</ul></nav>
@@ -127,8 +127,10 @@
   const label = $(".now-t", hdr);
   const setNow = (text) => {
     const old = $("b", label);
-    if (old && old.textContent === text) return;
-    const b = document.createElement("b"); b.textContent = text;
+    // Compared by key, not by what it shows: the Hindi pass may have translated the shown text.
+    if (old && old.dataset.k === text) return;
+    const sn = $(".sec-now", hdr); if (sn) sn.textContent = text;
+    const b = document.createElement("b"); b.textContent = text; b.dataset.k = text;
     if (old && !reduce && old.textContent) { old.classList.add("out"); b.classList.add("in"); setTimeout(() => old.remove(), 420); requestAnimationFrame(() => requestAnimationFrame(() => b.classList.remove("in"))); }
     else if (old) old.remove();
     label.append(b);

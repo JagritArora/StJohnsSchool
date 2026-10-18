@@ -23,30 +23,32 @@
 <meta name="apple-mobile-web-app-title" content="St. John's" />
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wdth,wght@12..96,75..100,400..800&family=Figtree:wght@400;500;600;700&family=Mukta:wght@400;600&display=swap" rel="stylesheet" />
+<link href="https://fonts.googleapis.com/css2?family=Figtree:wght@400..800&family=Mukta:wght@400;600;700&display=swap" rel="stylesheet" />
 <link rel="stylesheet" href="css/school.css" />
 <meta name="theme-color" content="#1C1F24" media="(prefers-color-scheme: light)" />
 <meta name="theme-color" content="#1B1D22" media="(prefers-color-scheme: dark)" />
 <script>
 /* Before the first paint: fade photos in as they load, and hold headline motion until the fonts arrive. */
 (function (d) { var h = d.documentElement, done = function () { h.classList.add("fonts"); }; h.classList.add("js");
+  /* Hindi: keep the page hidden for the moment it takes to swap in the Hindi text. */
+  var L; try { L = new URLSearchParams(location.search).get("lang") || localStorage.getItem("sjs-lang"); } catch (e) {}
+  if (L === "hi") { h.lang = "hi"; h.classList.add("tr-wait"); setTimeout(function () { h.classList.remove("tr-wait"); }, 2500); }
   var m = function (e) { if (e.target.tagName === "IMG") e.target.classList.add("is-loaded"); };
   d.addEventListener("load", m, true); d.addEventListener("error", m, true);
-  if (d.fonts && d.fonts.load) Promise.all([d.fonts.load('800 1em "Bricolage Grotesque"'), d.fonts.load("400 1em Figtree")]).then(done, done); else done();
+  if (d.fonts && d.fonts.load) Promise.all([d.fonts.load("700 1em Figtree"), d.fonts.load("400 1em Figtree")]).then(done, done); else done();
   setTimeout(done, 1500); })(document);
 </script>
-<script defer src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
-<script defer src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
 </head>
 <body data-page="admissions">
 <script src="js/shell.js"></script>
+<script src="js/lang.js"></script>
 <main id="main">
   <header class="phero">
     <div class="wrap phero-in">
       <div>
         <nav class="crumbs" aria-label="Breadcrumb"><a href="index.html">Home</a> / Admissions</nav>
-        <h1><span class="ln"><span style="--i:0">Join</span></span><span class="ln"><span style="--i:1">St. John's.</span></span></h1>
-        <p class="lead">Admissions for 2027–28 are open for Nursery and Class XI. Here is how it works, from your first question to your child's first day.</p>
+        <h1>Join St. John's</h1>
+        <p class="lead" data-site="adm-lead">Admissions for 2027–28 are open for Nursery and Class XI. Here is how it works, from your first question to your child's first day.</p>
         <div class="row-btns mt-m" style="opacity:0;animation:fade .9s .6s var(--ease-out) forwards"><a class="btn" href="#enquire">Book a campus visit</a><a class="btn btn--ghost" href="#faq">Questions parents ask</a></div>
       </div>
       <figure class="arch clip" style="margin:0"><img fetchpriority="high" src="assets/photos/slide-8.webp" width="1600" height="666" alt="Pre-primary children in red school tracksuits on an outing" style="object-position:84% 50%" /></figure>
@@ -57,7 +59,7 @@
 
   <section class="sec" id="process">
     <div class="wrap">
-      <div class="sec-title"><h2 class="t-l">How to apply.</h2><p>Five steps, from first question to first day.</p></div>
+      <div class="sec-title"><h2 class="t-l">How to apply</h2><p>Five steps, from first question to first day.</p></div>
       <ol class="process">
         <li><b>Enquire</b><span>Fill the short form on this page. The office calls you back, usually the same working day.</span></li>
         <li><b>Visit</b><span>See the classrooms, grounds and stage, and meet the admissions team.</span></li>
@@ -71,7 +73,7 @@
   <section class="sec sec--tint" id="age">
     <div class="wrap split">
       <div>
-        <h2 class="t-l">Age criteria.</h2>
+        <h2 class="t-l">Age criteria</h2>
         <p class="lead mt-m">Ages follow Haryana government and CBSE norms for the session. Haryana requires a child to be six for admission to Class I.</p>
         <p class="note mt-s">The exact cut-off date for 2027–28 will be confirmed in the admission notice.</p>
       </div>
@@ -93,7 +95,7 @@
   <section class="sec" id="documents">
     <div class="wrap split">
       <div>
-        <h2 class="t-l">Documents.</h2>
+        <h2 class="t-l">Documents</h2>
         <p class="lead mt-m">Admission is valid only once the documents are submitted. Bring originals for verification with one set of photocopies.</p>
       </div>
       <div>
@@ -112,7 +114,7 @@
   <section class="sec sec--brick sec--tight" id="fees">
     <div class="wrap" style="display:flex;justify-content:space-between;align-items:end;gap:20px 28px;flex-wrap:wrap">
       <div>
-        <h2 class="t-l">Fees.</h2>
+        <h2 class="t-l">Fees</h2>
         <p class="lead mt-s" style="opacity:.9">St. John's follows CBSE norms for fees. The fee structure for 2027–28 is shared with every family that enquires, and published in the parent corner.</p>
       </div>
       <a class="btn btn--light" href="parents.html#fees">How fees are paid</a>
@@ -121,7 +123,7 @@
 
   <section class="sec" id="faq">
     <div class="wrap cols">
-      <h2 class="t-l">Questions parents ask.</h2>
+      <h2 class="t-l">Questions parents ask</h2>
       <div class="faq">
         <details><summary>When does the admission process begin?</summary><div class="a">Fill the enquiry form at any time. The office will tell you the registration dates for your child's class as soon as they are announced.</div></details>
         <details><summary>How are Nursery seats decided?</summary><div class="a">Admission is on merit, as per the school's admission criteria. The office explains the criteria for your child's class when you enquire.</div></details>

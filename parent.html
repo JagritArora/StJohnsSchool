@@ -15,7 +15,7 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="default" />
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wdth,wght@12..96,75..100,400..800&family=Figtree:wght@400;500;600;700&family=Mukta:wght@400;600&display=swap" rel="stylesheet" />
+<link href="https://fonts.googleapis.com/css2?family=Figtree:wght@400..800&family=Mukta:wght@400;600;700&display=swap" rel="stylesheet" />
 <link rel="stylesheet" href="css/site.css" />
 <script>
 /* Before the first paint: fade photos in as they load. */
@@ -38,14 +38,12 @@
   </aside>
 
   <main class="main">
-    <div class="mobile-head"><img src="assets/crest.svg" alt="" /><b>St. John's</b><div class="right"><button class="icon-btn" data-go="messages" aria-label="Messages"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5h16v11H9l-5 4z"/></svg></button><a class="icon-btn" href="login.html" aria-label="Sign out"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M15 4h4v16h-4M10 8l-4 4 4 4M6 12h10"/></svg></a></div></div>
+    <div class="mobile-head"><img src="assets/crest.svg" alt="" /><b>St. John's</b><div class="right"><span data-bell></span><button class="icon-btn" data-go="messages" aria-label="Messages"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5h16v11H9l-5 4z"/></svg></button><a class="icon-btn" href="login.html" aria-label="Sign out"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M15 4h4v16h-4M10 8l-4 4 4 4M6 12h10"/></svg></a></div></div>
 
     <!-- HOME -->
     <section data-view="home">
-      <div class="topbar"><div><h1 id="hello">Good morning, Rohit</h1><div class="sub" id="today-line"></div></div></div>
-      <div class="chips" style="margin-bottom:18px">
-        <button class="chip on"><span class="avatar">AS</span>Aarav · VII-B</button>
-        <button class="chip" id="sib"><span class="avatar green">AS</span>Ananya · III-A</button>
+      <div class="topbar"><div><h1 id="hello">Good morning, Rohit</h1><div class="sub" id="today-line"></div></div>
+        <div class="right"><div class="chips kids"><button class="chip on"><span class="avatar">AS</span>Aarav · VII-B</button><button class="chip" id="sib"><span class="avatar green">AS</span>Ananya · III-A</button></div></div>
       </div>
       <div class="install" id="install" hidden>
         <img src="assets/icons/icon-192.png" alt="" width="44" height="44" />
@@ -53,25 +51,28 @@
         <button class="btn btn-primary btn-sm" id="install-go" type="button">Add</button>
         <button class="icon-btn" id="install-x" type="button" aria-label="Not now"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
       </div>
-      <div id="today-status" class="status" style="margin-bottom:16px"></div>
-      <div class="grid g4" id="home-stats" style="margin-bottom:16px"></div>
-      <div class="grid g21" style="margin-bottom:16px">
-        <div class="ai-card">
-          <div class="card-h" style="margin:0"><span class="ai-tag"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l1.9 5.3L19 10l-5.1 1.7L12 17l-1.9-5.3L5 10l5.1-1.7z"/></svg>This week for Aarav · AI summary</span><div class="right seg" id="lang"><button class="on" data-l="en">English</button><button data-l="hi">हिंदी</button></div></div>
-          <div class="body" id="weekly"></div>
-          <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:16px"><button class="btn btn-primary btn-sm" onclick="SJS.ask('What should we work on?')">What should we work on?</button><button class="btn btn-ghost btn-sm" onclick="SJS.openAI()">Ask anything about Aarav</button></div>
+      <div class="home-grid">
+        <aside class="card tt-rail" aria-labelledby="tt-h">
+          <div class="card-h"><h2 id="tt-h">Timetable · VII-B</h2><span class="right muted" style="font-size:12.5px">Point at a period for the teacher</span></div>
+          <div class="pivot-wrap"><table class="pivot" id="pivot"></table></div>
+          <div class="tt-sum"><table class="pivot pivot-sum" id="tt-sum"></table></div>
+        </aside>
+        <div class="home-main">
+          <div id="today-status" class="status"></div>
+          <div class="grid g4" id="home-stats"></div>
+          <div class="ai-card">
+            <div class="card-h" style="margin:0"><span class="ai-tag"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l1.9 5.3L19 10l-5.1 1.7L12 17l-1.9-5.3L5 10l5.1-1.7z"/></svg>This week for Aarav · AI summary</span><div class="right seg" id="lang"><button class="on" data-l="en">English</button><button data-l="hi">हिंदी</button></div></div>
+            <div class="body" id="weekly"></div>
+            <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:16px"><button class="btn btn-primary btn-sm" onclick="SJS.ask('What should we work on?')">What should we work on?</button><button class="btn btn-ghost btn-sm" onclick="SJS.openAI()">Ask anything about Aarav</button></div>
+          </div>
+          <div class="card">
+            <div class="card-h"><h2>School bus · Route 14</h2><span class="right pill green" id="bus-pill">Live</span></div>
+            <div id="bus-text" style="font-size:15px"></div>
+            <div class="route" id="route"></div>
+            <div class="route-labels" id="route-labels"></div>
+            <p class="muted" style="font-size:12px;margin-top:14px">Simulated in the prototype. Live version uses the bus driver's phone GPS.</p>
+          </div>
         </div>
-        <div class="card">
-          <div class="card-h"><h2>School bus · Route 14</h2><span class="right pill green" id="bus-pill">Live</span></div>
-          <div id="bus-text" style="font-size:15px"></div>
-          <div class="route" id="route"></div>
-          <div class="route-labels" id="route-labels"></div>
-          <p class="muted" style="font-size:12px;margin-top:14px">Simulated in the prototype. Live version uses the bus driver's phone GPS.</p>
-        </div>
-      </div>
-      <div class="grid g2">
-        <div class="card"><div class="card-h"><h2 id="tt-title">Today's timetable</h2></div><div class="list" id="tt"></div></div>
-        <div class="card"><div class="card-h"><h2>Notices</h2></div><div class="list" id="notices"></div></div>
       </div>
     </section>
 
@@ -132,6 +133,12 @@
 </div>
 <nav class="bottom-nav" id="nav-bottom"></nav>
 
+<div class="notif" id="notif" role="dialog" aria-label="Notifications" hidden>
+  <div class="notif-h"><b>Notifications</b><div class="seg" id="nf-filter"><button class="on" data-f="all" type="button">All</button><button data-f="unread" type="button">Unread</button></div><button class="link-btn" id="nf-read" type="button">Mark all read</button></div>
+  <div class="notif-list" id="nf-list"></div>
+</div>
+<div class="tt-tip" id="tt-tip" role="tooltip" hidden></div>
+
 <div class="modal" id="leave-modal"><div class="modal-card">
   <h3>Apply for leave</h3><p class="muted">Goes straight to Ms. Neha Mathew.</p>
   <form id="leave-form">
@@ -190,13 +197,7 @@
       <div class="card stat ${fee ? "hl" : ""}"><span class="lbl">Fees</span><div class="num">${fee ? S.rupee(fee.amount) : "Paid"}</div><div class="foot">${fee ? "Due " + S.fmt(fee.due) : "Nothing due"}</div></div>`;
     S.$("#weekly").innerHTML = S.weekly(lang).replace(/\n/g, "<br />");
 
-    // Timetable — today, or tomorrow after 2 PM
-    const after = new Date().getHours() >= 14, day = after ? S.nextSchoolDay(S.today) : S.today;
-    S.$("#tt-title").textContent = after ? "Tomorrow's timetable · " + S.fmt(day, { weekday: "long" }) : "Today's timetable";
-    S.$("#tt").innerHTML = S.timetable[day.getDay()].map((p, i) => `<div class="li"><span class="sq">${i + 1}</span><div class="t"><b>${p}</b><span>${S.periodTimes[i]}</span></div></div>`).join("");
-
-    const ns = [...S.state.notices].sort((a, b) => (b.fresh ? 1 : 0) - (a.fresh ? 1 : 0) || (a.date < b.date ? -1 : 1)).slice(0, 5);
-    S.$("#notices").innerHTML = ns.map((n) => `<div class="li"><div class="date-chip" style="width:50px;padding:7px 0 8px;flex:none"><b style="font-size:19px">${new Date(n.date + "T00:00").getDate()}</b><span style="font-size:10px">${S.fmt(n.date, { month: "short" })}</span></div><div class="t"><b>${S.esc(n.title)} ${n.fresh ? '<span class="pill red" style="margin-left:4px">New</span>' : ""}</b><span>${S.esc(n.text)}</span></div></div>`).join("");
+    renderNotes();
 
     // badges
     const unreadHw = S.state.homework.filter((h) => h.fresh && !h.done).length;
@@ -204,6 +205,106 @@
     const unreadMsg = S.state.messages.filter((m) => m.from === "teacher" && m.fresh).length;
     document.querySelectorAll('[data-count="messages"]').forEach((c) => { c.hidden = !unreadMsg; c.textContent = unreadMsg; });
   }
+
+  // ---------- Timetable: the week as a grid, periods down and days across ----------
+  // Cells are tinted by subject; pointing at one (or tabbing to it) shows who teaches it.
+  const SHORT = { Mathematics: "Maths", English: "English", Hindi: "Hindi", Science: "Science", "Social Science": "SSt", Computer: "Comp.", Games: "Games", Art: "Art", Library: "Library", Music: "Music", "Value Education": "Values", "Assembly Activity": "Assembly" };
+  const HUE = { Mathematics: "brick", Science: "green", English: "royal", Hindi: "gold", "Social Science": "teal", Computer: "slate" };
+  const DAYS = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"];
+  const ENDS = ["8:40", "9:20", "10:00", "10:40", "11:30", "12:10", "12:50", "1:30"];
+  const mins = (t) => { let [h, m] = t.split(":").map(Number); if (h < 7) h += 12; return h * 60 + m; };
+  function renderPivot() {
+    const real = new Date(); real.setHours(0, 0, 0, 0);
+    const today = S.today.getDay() - 1, isToday = real.getTime() === S.today.getTime();
+    const now = new Date().getHours() * 60 + new Date().getMinutes();
+    const cur = isToday ? S.periodTimes.findIndex((t, i) => now >= mins(t) && now < mins(ENDS[i])) : -1;
+    let h = `<thead><tr><th class="corner" scope="col">Period</th>${DAYS.map((d, i) => `<th scope="col" class="${i === today ? "today" : ""}" data-d="${i}">${d.slice(0, 3)}</th>`).join("")}</tr></thead><tbody>`;
+    S.periodTimes.forEach((t, p) => {
+      if (p === 4) h += `<tr class="brk"><th scope="row"><span>10:40</span></th><td colspan="5">Break</td></tr>`;
+      h += `<tr><th scope="row" data-p="${p}"><b>${p + 1}</b><span>${t}</span></th>` + DAYS.map((d, i) => {
+        const sub = S.timetable[i + 1][p];
+        return `<td tabindex="0" class="c-${HUE[sub] || "none"}${i === today ? " today" : ""}${i === today && p === cur ? " now" : ""}" data-d="${i}" data-p="${p}" aria-label="${d}, period ${p + 1}: ${sub}, ${S.ttTeachers[sub] || ""}">${SHORT[sub] || sub}</td>`;
+      }).join("") + "</tr>";
+    });
+    S.$("#pivot").innerHTML = h + "</tbody>";
+    // The pivot's summary: periods a week by subject, with the teacher, for anyone who can't hover.
+    const count = {}; Object.values(S.timetable).flat().forEach((x) => (count[x] = (count[x] || 0) + 1));
+    S.$("#tt-sum").innerHTML = `<thead><tr><th scope="col">Subject</th><th scope="col">Teacher</th><th scope="col" class="n">A week</th></tr></thead><tbody>` +
+      Object.entries(count).sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0])).map(([x, n]) => `<tr><td class="c-${HUE[x] || "none"} sw">${x}</td><td>${S.ttTeachers[x] || ""}</td><td class="n">${n}</td></tr>`).join("") +
+      `<tr class="tot"><td>Total</td><td></td><td class="n">${Object.values(count).reduce((a, b) => a + b, 0)}</td></tr></tbody>`;
+  }
+  const tip = S.$("#tt-tip"), piv = S.$("#pivot");
+  const hlHeads = (td) => { piv.querySelectorAll(".hl").forEach((x) => x.classList.remove("hl")); if (!td) return; piv.querySelector(`thead th[data-d="${td.dataset.d}"]`).classList.add("hl"); piv.querySelector(`th[data-p="${td.dataset.p}"]`).classList.add("hl"); };
+  const showTip = (td) => {
+    const d = +td.dataset.d, p = +td.dataset.p, sub = S.timetable[d + 1][p];
+    tip.innerHTML = `<b>${sub}</b><span>${S.ttTeachers[sub] || ""}</span><small>${DAYS[d]} · Period ${p + 1} · ${S.periodTimes[p]}–${ENDS[p]}</small>`;
+    tip.hidden = false; hlHeads(td);
+    const r = td.getBoundingClientRect(), w = tip.offsetWidth, hh = tip.offsetHeight;
+    tip.style.left = Math.max(8, Math.min(innerWidth - w - 8, r.left + r.width / 2 - w / 2)) + "px";
+    tip.style.top = (r.top - hh - 8 < 8 ? r.bottom + 8 : r.top - hh - 8) + "px";
+  };
+  const hideTip = () => { tip.hidden = true; hlHeads(null); };
+  piv.addEventListener("mouseover", (e) => { const td = e.target.closest("td[data-d]"); if (td) showTip(td); });
+  piv.addEventListener("mouseleave", hideTip);
+  piv.addEventListener("focusin", (e) => { const td = e.target.closest("td[data-d]"); if (td) showTip(td); });
+  piv.addEventListener("focusout", hideTip);
+  addEventListener("scroll", hideTip, { passive: true, capture: true });
+
+  // ---------- Notification centre ----------
+  // Everything that needs a parent's eye, in one list behind the bell: attendance,
+  // messages, marks, homework, leave, fees and school notices. Read state is kept.
+  const BELL = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 16v-5a6 6 0 1 1 12 0v5l1.5 2h-15z"/><path d="M10 20.5a2 2 0 0 0 4 0"/></svg>';
+  const NI = {
+    att: '<path d="M5 12.5l4.5 4.5L19 7.5"/>', msg: '<path d="M4 5h16v11H9l-5 4z"/>', res: '<path d="M5 20V10M12 20V4M19 20v-7"/>',
+    hw: '<path d="M6 3h9l4 4v14H6z"/><path d="M14 3v5h5M9 13h7M9 17h5"/>', fee: '<rect x="3" y="6" width="18" height="13" rx="2"/><path d="M3 10h18M7 15h3"/>',
+    leave: '<rect x="4" y="5" width="16" height="15" rx="2"/><path d="M4 10h16M9 3v4M15 3v4"/>', nt: '<path d="M4 10v4h3l6 4V6L7 10z"/><path d="M17 9a4 4 0 0 1 0 6"/>'
+  };
+  const bellBtn = () => `<button class="icon-btn bell" type="button" aria-haspopup="dialog" aria-expanded="false" aria-controls="notif" aria-label="Notifications">${BELL}<span class="badge" hidden></span></button>`;
+  S.$$(".topbar").forEach((tb) => tb.insertAdjacentHTML("beforeend", `<div class="bell-wrap">${bellBtn()}</div>`));
+  S.$$("[data-bell]").forEach((x) => (x.outerHTML = bellBtn()));
+  if (!S.state.readNotes) S.state.readNotes = [];
+  let nfFilter = "all";
+  const notes = () => {
+    const out = [], rec = S.state.attendance[S.todayKey], st = S.statusOn(me.roll, S.todayKey);
+    if (rec && st) out.push({ id: "att-" + S.todayKey, kind: st === "P" ? "green" : "red", icon: "att", title: st === "P" ? "Aarav is in school" : `Aarav marked ${statusLabel[st].toLowerCase()} today`, text: `Roll call at ${rec.at} by Ms. Neha Mathew.`, when: "Today, " + rec.at, go: "attendance" });
+    S.state.messages.forEach((m, i) => { if (m.from === "teacher") out.push({ id: "msg-" + i, kind: "royal", icon: "msg", title: "Message from Ms. Neha Mathew", text: m.text, when: m.at, go: "messages" }); });
+    if (S.state.ut2Published && S.state.ut2[me.roll] != null) out.push({ id: "ut2", kind: "green", icon: "res", title: "Unit Test 2 marks are out", text: `Mathematics: ${S.state.ut2[me.roll]} / 20.`, when: "Today", go: "results" });
+    S.state.leaves.filter((l) => l.status !== "Waiting").forEach((l) => out.push({ id: "leave-" + l.from, kind: "green", icon: "leave", title: `Leave ${l.status.toLowerCase()}`, text: `${S.fmt(l.from)} to ${S.fmt(l.to)}: ${l.why}`, when: "Class teacher", go: "attendance" }));
+    S.state.homework.filter((h) => !h.done).forEach((h) => out.push({ id: "hw-" + h.id, kind: "warn", icon: "hw", title: `Homework: ${h.subj}`, text: `${h.title}. Due ${S.fmt(h.due, { weekday: "short", day: "numeric", month: "short" })}.`, when: "Set by " + h.by, go: "homework" }));
+    const fee = S.state.fees.find((f) => !f.paid);
+    if (fee) out.push({ id: "fee-" + fee.q, kind: "red", icon: "fee", title: `Fee due ${S.fmt(fee.due, { day: "numeric", month: "long" })}`, text: `${S.rupee(fee.amount)} for ${fee.q}. Pay by UPI from the Fees tab.`, when: "Reminder", go: "fees" });
+    const tone = { Holiday: "slate", PTM: "red", Event: "green", Notice: "gold" };
+    [...S.state.notices].filter((n) => n.date >= S.todayKey || n.fresh).sort((a, b) => (a.date < b.date ? -1 : 1))
+      .forEach((n) => out.push({ id: "nt-" + n.id, kind: tone[n.tag] || "gold", icon: "nt", title: n.title, text: n.text, when: `${n.tag} · ${S.fmt(n.date, { weekday: "short", day: "numeric", month: "short" })}` }));
+    return out;
+  };
+  function renderNotes() {
+    const all = notes(), read = new Set(S.state.readNotes), unread = all.filter((n) => !read.has(n.id));
+    S.$$(".bell .badge").forEach((b) => { b.hidden = !unread.length; b.textContent = unread.length > 9 ? "9+" : unread.length; });
+    S.$$(".bell").forEach((b) => b.setAttribute("aria-label", unread.length ? `Notifications, ${unread.length} unread` : "Notifications"));
+    const list = (nfFilter === "unread" ? unread : [...unread, ...all.filter((n) => read.has(n.id))]);
+    S.$("#nf-list").innerHTML = list.length ? list.map((n) => `<button class="nf ${read.has(n.id) ? "" : "unread"}" type="button" data-id="${n.id}" ${n.go ? `data-to="${n.go}"` : ""}><span class="sq ${n.kind}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">${NI[n.icon]}</svg></span><span class="nf-t"><b>${S.esc(n.title)}</b><span class="tx">${S.esc(n.text)}</span><span class="wh">${S.esc(n.when)}</span></span></button>`).join("") : `<p class="notif-empty">You're all caught up.</p>`;
+    S.$("#nf-read").disabled = !unread.length;
+  }
+  const panel = S.$("#notif");
+  const openNotes = (btn) => {
+    // Hangs just below whichever bell was pressed.
+    if (btn) { const r = btn.getBoundingClientRect(); panel.style.top = Math.round(r.bottom + 10) + "px"; panel.style.right = Math.max(12, Math.round(innerWidth - r.right - 4)) + "px"; }
+    panel.hidden = false; S.$$(".bell").forEach((b) => b.setAttribute("aria-expanded", "true")); renderNotes(); (S.$(".nf", panel) || S.$("#nf-read")).focus({ preventScroll: true }); panel.dataset.from = btn ? "1" : ""; };
+  const closeNotes = () => { if (panel.hidden) return; panel.hidden = true; S.$$(".bell").forEach((b) => b.setAttribute("aria-expanded", "false")); };
+  document.addEventListener("click", (e) => {
+    const b = e.target.closest(".bell");
+    if (b) { panel.hidden ? openNotes(b) : closeNotes(); return; }
+    if (!e.target.closest("#notif")) closeNotes();
+  });
+  document.addEventListener("keydown", (e) => { if (e.key === "Escape" && !panel.hidden) { closeNotes(); const v = S.$$(".bell").find((x) => x.offsetParent); v && v.focus(); } });
+  S.$("#nf-filter").addEventListener("click", (e) => { const b = e.target.closest("button"); if (!b) return; nfFilter = b.dataset.f; S.$$("#nf-filter button").forEach((x) => x.classList.toggle("on", x === b)); renderNotes(); });
+  S.$("#nf-read").addEventListener("click", () => { S.state.readNotes = [...new Set([...S.state.readNotes, ...notes().map((n) => n.id)])]; S.save(); renderNotes(); });
+  S.$("#nf-list").addEventListener("click", (e) => {
+    const b = e.target.closest(".nf"); if (!b) return;
+    if (!S.state.readNotes.includes(b.dataset.id)) { S.state.readNotes.push(b.dataset.id); S.save(); }
+    if (b.dataset.to) { closeNotes(); S.go(b.dataset.to); } else renderNotes();
+  });
 
   // Bus: loops through the stops so it looks live in a demo.
   const stops = ["Sector 9", "Sec 8 Market", "Sec 7C", "Your stop", "School"];
@@ -318,9 +419,10 @@
     if (e.detail === "messages") { S.state.messages.forEach((m) => { if (m.from === "teacher") m.fresh = false; }); S.save(); }
     renderAll();
   });
-  function renderAll() { renderHome(); renderBus(); renderAttendance(); renderHomework(); renderResults(); renderFees(); renderThread(); }
+  function renderAll() { renderPivot(); renderHome(); renderBus(); renderAttendance(); renderHomework(); renderResults(); renderFees(); renderThread(); }
   renderAll();
   setInterval(renderBus, 7000);
+  setInterval(renderPivot, 60000);
 
   // Live updates from the teacher's tab
   let lastAtt = JSON.stringify(S.state.attendance[S.todayKey] || null);

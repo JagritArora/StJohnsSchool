@@ -24,48 +24,43 @@
 <meta name="apple-mobile-web-app-title" content="St. John's" />
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wdth,wght@12..96,75..100,400..800&family=Figtree:wght@400;500;600;700&family=Mukta:wght@400;600&display=swap" rel="stylesheet" />
+<link href="https://fonts.googleapis.com/css2?family=Figtree:wght@400..800&family=Mukta:wght@400;600;700&display=swap" rel="stylesheet" />
 <link rel="stylesheet" href="css/school.css" />
 <meta name="theme-color" content="#1C1F24" media="(prefers-color-scheme: light)" />
 <meta name="theme-color" content="#1B1D22" media="(prefers-color-scheme: dark)" />
 <script>
 /* Before the first paint: fade photos in as they load, and hold headline motion until the fonts arrive. */
 (function (d) { var h = d.documentElement, done = function () { h.classList.add("fonts"); }; h.classList.add("js");
+  /* Hindi: keep the page hidden for the moment it takes to swap in the Hindi text. */
+  var L; try { L = new URLSearchParams(location.search).get("lang") || localStorage.getItem("sjs-lang"); } catch (e) {}
+  if (L === "hi") { h.lang = "hi"; h.classList.add("tr-wait"); setTimeout(function () { h.classList.remove("tr-wait"); }, 2500); }
   var m = function (e) { if (e.target.tagName === "IMG") e.target.classList.add("is-loaded"); };
   d.addEventListener("load", m, true); d.addEventListener("error", m, true);
-  if (d.fonts && d.fonts.load) Promise.all([d.fonts.load('800 1em "Bricolage Grotesque"'), d.fonts.load("400 1em Figtree")]).then(done, done); else done();
+  if (d.fonts && d.fonts.load) Promise.all([d.fonts.load("700 1em Figtree"), d.fonts.load("400 1em Figtree")]).then(done, done); else done();
   setTimeout(done, 1500); })(document);
 </script>
-<script defer src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
-<script defer src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
 </head>
 <body data-page="home">
 <script src="js/shell.js"></script>
+<script src="js/lang.js"></script>
 <main id="main">
 
   <section class="hero" aria-label="Welcome">
-    <div class="hero-pin">
-      <div class="hero-media">
-        <img class="on" fetchpriority="high" src="assets/photos/slide-6.webp" width="1600" height="666" alt="" />
-        <img data-src="assets/photos/slide-1.webp" width="1600" height="666" alt="" />
-        <img data-src="assets/photos/slide-3.webp" width="1600" height="666" alt="" />
-        <img data-src="assets/photos/slide-9.webp" width="1600" height="666" alt="" />
-        <img data-src="assets/photos/slide-4.webp" width="1600" height="666" alt="" />
-        <img data-src="assets/photos/slide-10.webp" width="1600" height="666" alt="" />
-      </div>
-      <div class="knock" aria-hidden="true">
-        <p class="knock-word"><span><i class="zoom">L</i>earn</span><span class="l2">to <br class="m-br" />serve.</span></p>
-      </div>
-      <div class="hero-intro">
-        <p><b>St. John's School, Sector 7A, Faridabad.</b> A CBSE school for Nursery to Class XII, on a green four-acre campus since 1965.</p>
-        <span class="hero-cue"><i></i>Scroll to step inside</span>
-      </div>
-      <div class="hero-after">
-        <h1>Sixty years of children learning to serve.</h1>
-        <p>Founded in 1965 by Shri T.I. John, St. John's is a CBSE school for Nursery to Class XII on four green acres in Sector 7A.</p>
-        <div class="row"><a class="btn btn--light" href="admissions.html">Admissions 2027–28</a><a class="btn btn--line-light" href="#look">Look around</a></div>
-      </div>
+    <div class="hero-media">
+      <img class="on" fetchpriority="high" src="assets/photos/slide-6.webp" width="1600" height="666" alt="" />
+      <img data-src="assets/photos/slide-1.webp" width="1600" height="666" alt="" />
+      <img data-src="assets/photos/slide-3.webp" width="1600" height="666" alt="" />
+      <img data-src="assets/photos/slide-9.webp" width="1600" height="666" alt="" />
+      <img data-src="assets/photos/slide-4.webp" width="1600" height="666" alt="" />
+      <img data-src="assets/photos/slide-10.webp" width="1600" height="666" alt="" />
     </div>
+    <div class="wrap hero-body">
+      <p class="hero-where">St. John's School, Sector 7A, Faridabad</p>
+      <h1>Sixty years of children learning to serve</h1>
+      <p class="hero-sub">Founded in 1965 by Shri T.I. John, St. John's is a CBSE school for Nursery to Class XII on four green acres in Sector 7A.</p>
+      <div class="row"><a class="btn btn--light" href="admissions.html" data-site="adm-btn">Admissions 2027–28</a><a class="btn btn--line-light" href="#look">Look around</a></div>
+    </div>
+    <div class="hero-ctl" hidden><div class="hero-dots"></div><button class="hero-pause" type="button" aria-label="Pause the slideshow"></button></div>
   </section>
 
   <nav class="subnav" aria-label="On this page"><div class="wrap"><a href="#look">Our school</a><a href="#start">Start here</a><a href="#stages">Nursery to XII</a><a href="#year">The year</a><a href="#upcoming">Coming up</a><a href="#ask">Ask us</a><a href="#admissions">Admissions</a></div></nav>
@@ -73,7 +68,7 @@
   <section class="sec" id="look">
     <div class="wrap intro">
       <div>
-        <h2 class="t-l">Red brick, green lawns, and room to grow.</h2>
+        <h2 class="t-l">Red brick, green lawns, and room to grow</h2>
         <p class="lead mt-m">St. John's was founded by <b>Shri T.I. John</b> and is run by the <b>Idicula Trust Society</b>. For six decades it has brought up children who are thoughtful, spiritually grounded and proud of their country, on a calm campus where there is space to learn, play and perform.</p>
         <dl class="facts">
           <div><dt>Founded</dt><dd>1965</dd></div>
@@ -103,13 +98,13 @@
 
   <section class="sec" id="stages">
     <div class="wrap">
-      <div class="sec-title"><h2 class="t-l">From first steps to Class XII.</h2><p>Five stages under one roof, all following the CBSE curriculum, so a child can grow up in one school with teachers who know them.</p></div>
+      <div class="sec-title"><h2 class="t-l">From first steps to Class XII</h2><p>Five stages under one roof, all following the CBSE curriculum, so a child can grow up in one school with teachers who know them.</p></div>
       <div class="stairs">
-        <a class="step" href="academics.html#stages" style="--h:40%;--i:0"><small>Nursery to UKG</small><b>Pre-primary</b><p>Learning through play, stories and songs.</p><span class="step-n" aria-hidden="true">N</span></a>
-        <a class="step" href="academics.html#stages" style="--h:54%;--i:1"><small>Classes I to V</small><b>Primary</b><p>Reading, writing and numbers, done properly.</p><span class="step-n" aria-hidden="true">I</span></a>
-        <a class="step" href="academics.html#stages" style="--h:68%;--i:2"><small>Classes VI to VIII</small><b>Middle</b><p>Science, social science and computers open up.</p><span class="step-n" aria-hidden="true">VI</span></a>
-        <a class="step" href="academics.html#stages" style="--h:84%;--i:3"><small>Classes IX and X</small><b>Secondary</b><p>Steady preparation for the CBSE board exam.</p><span class="step-n" aria-hidden="true">IX</span></a>
-        <a class="step" href="academics.html#senior" style="--h:100%;--i:4"><small>Classes XI and XII</small><b>Senior secondary</b><p>Subject streams and guidance for college.</p><span class="step-n" aria-hidden="true">XI</span></a>
+        <a class="step" href="academics.html#stages" style="--h:40%;--i:0"><small>Nursery to UKG</small><b>Pre-primary</b><p>Learning through play, stories and songs.</p></a>
+        <a class="step" href="academics.html#stages" style="--h:54%;--i:1"><small>Classes I to V</small><b>Primary</b><p>Reading, writing and numbers, done properly.</p></a>
+        <a class="step" href="academics.html#stages" style="--h:68%;--i:2"><small>Classes VI to VIII</small><b>Middle</b><p>Science, social science and computers open up.</p></a>
+        <a class="step" href="academics.html#stages" style="--h:84%;--i:3"><small>Classes IX and X</small><b>Secondary</b><p>Steady preparation for the CBSE board exam.</p></a>
+        <a class="step" href="academics.html#senior" style="--h:100%;--i:4"><small>Classes XI and XII</small><b>Senior secondary</b><p>Subject streams and guidance for college.</p></a>
       </div>
     </div>
   </section>
@@ -117,8 +112,7 @@
   <section class="year" id="year" aria-label="A year at St. John's">
     <div class="year-pin">
       <div class="wrap year-head">
-        <h2 class="t-l">A year at St. John's.</h2>
-        <p class="muted" style="max-width:26em">July to March in a <span class="tbc" title="The school will confirm its own calendar">typical school year</span>. Keep scrolling.</p>
+        <div><h2 class="t-l">A year at St. John's</h2><p class="muted" style="max-width:26em">July to March in a <span class="tbc" title="The school will confirm its own calendar">typical school year</span>.</p></div>
       </div>
       <div class="year-track">
         <article class="month"><div class="arch"><img src="assets/photos/slide-7.webp" width="1600" height="666" alt="Junior band in red berets" loading="lazy" decoding="async" style="object-position:20% 50%" /></div><div><h3>July</h3><p>Investiture ceremony</p><small>New prefects and house captains take their oath.</small></div></article>
@@ -136,13 +130,13 @@
 
   <section class="sec sec--sky">
     <div class="wrap">
-      <blockquote class="bigq" data-words>Vision with action can build the future.<cite>From the vision of St. John's School</cite></blockquote>
+      <blockquote class="bigq">Vision with action can build the future.<cite>From the vision of St. John's School</cite></blockquote>
     </div>
   </section>
 
   <section class="sec" id="upcoming">
     <div class="wrap">
-      <div class="year-head" style="display:flex;justify-content:space-between;align-items:end;gap:20px;flex-wrap:wrap;margin-bottom:34px"><h2 class="t-l">Coming up.</h2><a class="textlink" href="news.html">All news and events</a></div>
+      <div class="year-head" style="display:flex;justify-content:space-between;align-items:end;gap:20px;flex-wrap:wrap;margin-bottom:34px"><h2 class="t-l">Coming up</h2><a class="textlink" href="news.html">All news and events</a></div>
       <ul class="news" data-news data-limit="4"></ul>
     </div>
   </section>
@@ -165,8 +159,8 @@
   <section class="sec sec--butter cta" id="admissions">
     <div class="wrap cta-in">
       <div>
-        <h2 class="t-xl">Admissions for 2027–28 are open.</h2>
-        <p class="lead mt-m muted">Enquiries are open for Nursery and Class XI. Tell us a little about your child and pick a day to see the campus.</p>
+        <h2 class="t-xl" data-site="adm-title">Admissions for 2027–28 are open.</h2>
+        <p class="lead mt-m muted" data-site="adm-text">Enquiries are open for Nursery and Class XI. Tell us a little about your child and pick a day to see the campus.</p>
         <div class="row"><a class="btn" href="admissions.html#enquire">Book a campus visit</a><a class="btn btn--ghost" href="admissions.html">How admission works</a></div>
       </div>
       <figure class="arch clip" style="margin:0"><img src="assets/photos/p-seniors.webp" width="255" height="255" alt="Senior students cheering on the lawn" loading="lazy" decoding="async" /></figure>

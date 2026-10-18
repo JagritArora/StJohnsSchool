@@ -13,15 +13,43 @@
   // ---------- Footer ----------
   const ftr = document.createElement("footer");
   ftr.className = "ftr";
-  ftr.innerHTML = `<div class="tartan ftr-check" aria-hidden="true"></div>
-    <div class="wrap ftr-in">
-      <div><p class="motto">Learn<br />to serve.</p><p>St. John's School, Sector 7A, Faridabad, Haryana.<br />A CBSE school for Nursery to Class XII, founded in 1965 by Shri T.I. John and run by the Idicula Trust Society (Regd.).</p></div>
+  ftr.innerHTML = `<div class="wrap ftr-in">
+      <div><p class="motto">Learn to serve</p><p>St. John's School, Sector 7A, Faridabad, Haryana.<br />A CBSE school for Nursery to Class XII, founded in 1965 by Shri T.I. John and run by the Idicula Trust Society (Regd.).</p></div>
       <div><h4>The school</h4><ul><li><a href="about.html">About us</a></li><li><a href="academics.html">Academics</a></li><li><a href="campus.html">Campus</a></li><li><a href="life.html">Student life</a></li></ul></div>
       <div><h4>Families</h4><ul><li><a href="admissions.html">Admissions</a></li><li><a href="parents.html">Parent corner</a></li><li><a href="news.html">News and events</a></li><li><a href="login.html">Parent app login</a></li></ul></div>
-      <div><h4>Information</h4><ul><li><a href="disclosure.html">Mandatory public disclosure</a></li><li><a href="contact.html">Contact</a></li><li><a href="contact.html#careers">Careers</a></li><li><a href="plan.html">About this prototype</a></li></ul></div>
+      <div><h4>Information</h4><ul><li><a href="disclosure.html">Mandatory public disclosure</a></li><li><a href="contact.html">Contact</a></li><li><a href="contact.html#careers">Careers</a></li><li><a href="privacy.html">Privacy</a></li><li><a href="plan.html">About this prototype</a></li></ul></div>
     </div>
     <div class="wrap ftr-base"><span>© ${new Date().getFullYear()} St. John's School, Faridabad</span><span>Facebook, Instagram, YouTube</span></div>`;
   document.body.append(ftr);
+
+  // ---------- Content from the principal's Website tab ----------
+  const site = S.state && S.state.site, hi = S.lang === "hi";
+  // Text written here is already in the page's language, so the Hindi pass leaves it alone.
+  const put = (el, html) => { el.innerHTML = html; if (hi) el.dataset.noTr = ""; };
+  const adm = site ? S.admText(S.lang) : null;
+  if (adm) {
+    $$("[data-site]").forEach((el) => { const k = el.dataset.site.replace("adm-", ""); if (adm[k]) put(el, esc(adm[k]).replace(esc(adm.session), `<span class="nw">${esc(adm.session)}</span>`)); });
+    if (!adm.open) $$('[data-site="adm-btn"]').forEach((a) => (a.href = "admissions.html#process"));
+  }
+  if (site) {
+    $$("[data-fact]").forEach((el) => {
+      const k = el.dataset.fact, v = (site.facts[k] || "").trim();
+      if (!v) return;
+      el.classList.remove("tbc"); el.removeAttribute("title");
+      if (k === "phone") put(el, `<a href="tel:${esc(v.replace(/[^0-9+]/g, ""))}">${esc(v)}</a>`);
+      else if (k === "email") put(el, `<a href="mailto:${esc(v)}">${esc(v)}</a>`);
+      else put(el, esc(v));
+    });
+    // Home page photos: rebuilt only when the Website tab has changed them.
+    const media = $(".hero-media");
+    const shown = site.slides.filter((p) => p.on && S.photo(p.src));
+    const dflt = S.siteSeed().slides.filter((p) => p.on);
+    const same = shown.length === dflt.length && shown.every((p, i) => p.src === dflt[i].src && (p.pos || "50% 50%") === "50% 50%");
+    if (media && shown.length && !same) media.innerHTML = shown.map((p, i) => `<img ${i ? "data-src" : 'class="on" fetchpriority="high" src'}="${esc(S.photo(p.src))}" alt="" style="object-position:${esc(p.pos || "50% 50%")}" />`).join("");
+    // Gallery uploads go first, newest at the top.
+    const galEl = $(".gal");
+    if (galEl && site.gallery.length) galEl.insertAdjacentHTML("afterbegin", site.gallery.filter((g) => S.photo(g.src)).map((g) => `<button data-cat="${esc(g.cat)}"${hi ? " data-no-tr" : ""}><img src="${esc(S.photo(g.src))}" alt="${esc(g.alt || g.caption)}" loading="lazy" decoding="async" /><figcaption>${esc(g.caption)}</figcaption></button>`).join(""));
+  }
 
   // ---------- Phones: admissions stay one tap away ----------
   // A slim bar along the bottom once you're past the first screen. The Ask
@@ -29,14 +57,15 @@
   // the admissions band is already on screen.
   const bar = document.createElement("div");
   bar.className = "mbar";
-  bar.innerHTML = `<span><b>Admissions 2027–28</b><small>Nursery and Class XI</small></span><a class="btn btn--sm" href="admissions.html#enquire">Book a visit</a>`;
+  bar.innerHTML = adm ? `<span><b>${esc(adm.btn)}</b><small>${esc(adm.list)}</small></span><a class="btn btn--sm" href="admissions.html#enquire">${hi ? "कैंपस देखें" : "Book a visit"}</a>` : "";
+  if (hi) bar.dataset.noTr = "";
   document.body.append(bar);
   const covers = $$("#enquire, #admissions");
   const inView = new Set();
   const barTick = () => {
     const heroEl = $(".hero");
-    const past = heroEl ? scrollY > heroEl.offsetHeight - innerHeight : scrollY > innerHeight * 0.5;
-    bar.classList.toggle("on", past && !inView.size);
+    const past = scrollY > (heroEl ? heroEl.offsetHeight * 0.7 : innerHeight * 0.5);
+    bar.classList.toggle("on", past && !inView.size && !!adm && adm.open);
   };
   if ("IntersectionObserver" in window) { const bio = new IntersectionObserver((es) => { es.forEach((e) => (e.isIntersecting ? inView.add(e.target) : inView.delete(e.target))); barTick(); }); covers.forEach((c) => bio.observe(c)); }
   addEventListener("scroll", barTick, { passive: true }); barTick();
@@ -54,16 +83,16 @@
   const markLoaded = (img) => img.classList.add("is-loaded");
   $$("main img").forEach((img) => { if (img.complete) markLoaded(img); else { img.addEventListener("load", () => markLoaded(img), { once: true }); img.addEventListener("error", () => markLoaded(img), { once: true }); } });
 
-  // ---------- Arched photos open as they scroll in ----------
+  // ---------- Photos below the first screen fade in as they scroll in ----------
   const io = "IntersectionObserver" in window && !reduce ? new IntersectionObserver((es) => es.forEach((e) => { if (e.isIntersecting) { e.target.classList.add("in"); io.unobserve(e.target); } }), { rootMargin: "0px 0px -5% 0px" }) : null;
   $$(".clip").forEach((el) => (io ? io.observe(el) : el.classList.add("in")));
 
   // ---------- Gentle reveal for content below the first screen ----------
-  const RV = ".sec-title, .sec h2, .sec .lead, .trio > div, .facgrid > div, .process li, .news li, .kv > div, .faq details, .ticks li, .story, .fac, .docs li, .paths li, .letter, .form, .tbl-wrap, .facts > div, .cta .row, .gal button, .filters, .pill-row";
+  const RV = ".sec-title, .sec h2, .sec .lead, .stairs, .month, .year-head, .trio > div, .facgrid > div, .process li, .news li, .kv > div, .faq details, .ticks li, .story, .fac, .docs li, .paths li, .letter, .form, .tbl-wrap, .facts > div, .cta .row, .gal button, .filters, .pill-row";
   if (io) {
     const seen = new Set();
     $$(RV, $("main")).forEach((el) => {
-      if (seen.has(el) || el.closest(".hero, .year, .stairs, .rv, [data-words]") || el.getBoundingClientRect().top < innerHeight) return;
+      if (seen.has(el) || el.closest(".hero, .rv") || el.getBoundingClientRect().top < innerHeight) return;
       seen.add(el); el.classList.add("rv");
       const sibs = [...el.parentElement.children].filter((c) => c.matches(RV));
       el.style.setProperty("--rv-i", Math.max(0, sibs.indexOf(el)));
@@ -83,9 +112,12 @@
   // ---------- News lists (from the same notices the app uses) ----------
   $$("[data-news]").forEach((ul) => {
     const limit = +ul.dataset.limit || 99;
-    const items = [...(S.state ? S.state.notices : [])].sort((a, b) => (a.date < b.date ? -1 : 1)).filter((n) => n.date >= (S.todayKey || "")).slice(0, limit);
+    const items = [...(S.state ? S.state.notices : [])].sort((a, b) => (a.date < b.date ? -1 : 1)).filter((n) => n.web !== false && n.date >= (S.todayKey || "")).slice(0, limit);
     const tone = { Holiday: "", PTM: "tag--brick", Event: "tag--hedge", Notice: "tag--gold" };
-    ul.innerHTML = items.map((n) => { const d = new Date(n.date + "T00:00"); return `<li><div class="day">${d.getDate()}<small>${d.toLocaleDateString("en-IN", { month: "long" })}, ${d.toLocaleDateString("en-IN", { weekday: "short" })}</small></div><div><h3>${esc(n.title)}</h3><p>${esc(n.text)}</p></div><span class="tag ${tone[n.tag] || ""}">${esc(n.tag)}</span></li>`; }).join("");
+    const tagHi = { Holiday: "छुट्टी", PTM: "अभिभावक बैठक", Event: "कार्यक्रम", Notice: "सूचना" };
+    const loc = S.locale || "en-IN";
+    if (hi) ul.dataset.noTr = "";
+    ul.innerHTML = items.map((n) => { const d = new Date(n.date + "T00:00"); return `<li><div class="day">${d.getDate()}<small>${d.toLocaleDateString(loc, { month: "long" })}, ${d.toLocaleDateString(loc, { weekday: "short" })}</small></div><div><h3>${esc(hi && n.titleHi ? n.titleHi : n.title)}</h3><p>${esc(hi && n.textHi ? n.textHi : n.text)}</p></div><span class="tag ${tone[n.tag] || ""}">${esc(hi ? tagHi[n.tag] || n.tag : n.tag)}</span></li>`; }).join("") || `<li><div></div><p class="muted">${hi ? "अभी कोई आने वाला कार्यक्रम नहीं है।" : "Nothing coming up right now. New events appear here as the school posts them."}</p></li>`;
   });
 
   // ---------- Gallery: filters + lightbox ----------
@@ -119,8 +151,8 @@
   const slots = $(".slots");
   if (slots && S.today) {
     let d = new Date(S.today), html = "", n = 0;
-    while (n < 8) { d = S.addDays(d, 1); if (d.getDay() === 0 || S.HOLIDAYS[S.iso(d)]) continue; html += `<button type="button" class="slot" aria-pressed="${n === 0}" data-date="${S.iso(d)}"><span>${d.toLocaleDateString("en-IN", { weekday: "short" })}</span><b>${d.getDate()}</b><span>${d.toLocaleDateString("en-IN", { month: "short" })}</span></button>`; n++; }
-    slots.innerHTML = html;
+    while (n < 8) { d = S.addDays(d, 1); if (d.getDay() === 0 || S.HOLIDAYS[S.iso(d)]) continue; html += `<button type="button" class="slot" aria-pressed="${n === 0}" data-date="${S.iso(d)}"><span>${d.toLocaleDateString(S.locale || "en-IN", { weekday: "short" })}</span><b>${d.getDate()}</b><span>${d.toLocaleDateString(S.locale || "en-IN", { month: "short" })}</span></button>`; n++; }
+    slots.innerHTML = html; if (hi) slots.dataset.noTr = "";
     slots.addEventListener("click", (e) => { const b = e.target.closest(".slot"); if (!b) return; $$(".slot", slots).forEach((x) => x.setAttribute("aria-pressed", x === b)); });
   }
 
@@ -135,84 +167,53 @@
     }
     const done = f.nextElementSibling;
     if (done && done.classList.contains("done")) {
-      if (kind === "enquiry") { const slot = $(".slot[aria-pressed='true']", f); $("[data-slot-msg]", done).textContent = slot ? `Your campus visit is pencilled in for ${new Date(slot.dataset.date + "T00:00").toLocaleDateString("en-IN", { weekday: "long", day: "numeric", month: "long" })}. The office will call to confirm the time.` : "The admissions office will call you, usually the same working day."; }
+      if (kind === "enquiry") { const slot = $(".slot[aria-pressed='true']", f); const msg = $("[data-slot-msg]", done), when = slot ? new Date(slot.dataset.date + "T00:00").toLocaleDateString(S.locale || "en-IN", { weekday: "long", day: "numeric", month: "long" }) : "";
+        msg.textContent = hi ? (slot ? `आपका कैंपस विज़िट ${when} के लिए तय कर लिया गया है। समय पक्का करने के लिए दफ़्तर से फ़ोन आएगा।` : "दाख़िला दफ़्तर से आपको फ़ोन आएगा, आम तौर पर उसी कामकाजी दिन।") : (slot ? `Your campus visit is pencilled in for ${when}. The office will call to confirm the time.` : "The admissions office will call you, usually the same working day.");
+        if (hi) msg.dataset.noTr = ""; }
       f.hidden = true; done.hidden = false; done.scrollIntoView({ behavior: reduce ? "auto" : "smooth", block: "center" });
-    } else S.toast("Sent. The office will get back to you.");
+    } else S.toast(hi ? "भेज दिया गया। दफ़्तर आपसे संपर्क करेगा।" : "Sent. The office will get back to you.");
   }));
 
   // ---------- AI assistant ----------
-  if (S.mountAI) { S.mountAI("public"); $$("[data-ask]").forEach((b) => b.addEventListener("click", () => S.ask(b.dataset.ask))); }
+  if (S.mountAI) { S.mountAI("public"); $$("[data-ask]").forEach((b) => b.addEventListener("click", () => S.ask(b.dataset.ask, b.textContent))); }
 
-  // ---------- Hero slideshow (behind the motto) ----------
-  // Moves on only to a photo that has loaded, and holds still once the visitor
-  // starts scrolling, so the zoom never lands on two photos mid-crossfade.
+  // ---------- Hero slideshow ----------
+  // Moves on only to a photo that has loaded. The dots jump to a photo; the
+  // pause button stops it for good (moving pictures must be stoppable).
   const hero = $(".hero");
   if (hero) {
-    // Measure the intro line so the motto can size itself to the space above it.
-    const intro = $(".hero-intro", hero);
-    const fit = () => { hero.style.setProperty("--intro-h", intro.offsetHeight + "px"); hero.classList.add("sized"); };
-    fit();
-    if ("ResizeObserver" in window) new ResizeObserver(fit).observe(intro); else addEventListener("resize", fit);
-    const imgs = $$(".hero-media img", hero); let k = 0, seen = true;
+    const imgs = $$(".hero-media img", hero), ctl = $(".hero-ctl", hero), dots = $(".hero-dots", hero), pause = $(".hero-pause", hero);
+    let k = 0, seen = true, paused = reduce;
     if ("IntersectionObserver" in window) new IntersectionObserver(([e]) => (seen = e.isIntersecting)).observe(hero);
     // Only the first photo loads with the page; the rest follow once it has settled.
-    const later = () => setTimeout(() => imgs.forEach((im) => { if (im.dataset.src) { im.src = im.dataset.src; im.removeAttribute("data-src"); } }), 1200);
-    if (!reduce) { if (document.readyState === "complete") later(); else addEventListener("load", later, { once: true }); }
-    if (imgs.length > 1 && !reduce) setInterval(() => {
-      if (!seen || document.hidden || scrollY > 40) return;
-      const n = (k + 1) % imgs.length;
-      if (!imgs[n].getAttribute("src") || !imgs[n].complete || !imgs[n].naturalWidth) return;
-      imgs[k].classList.remove("on"); imgs[n].classList.add("on"); k = n;
-    }, 5200);
+    const later = () => setTimeout(() => imgs.forEach((im) => { if (im.dataset.src) { im.src = im.dataset.src; im.removeAttribute("data-src"); } }), reduce ? 0 : 1200);
+    if (document.readyState === "complete") later(); else addEventListener("load", later, { once: true });
+    const ready = (im) => im.getAttribute("src") && im.complete && im.naturalWidth;
+    const go = (n) => { if (n === k || !ready(imgs[n])) return; imgs[k].classList.remove("on"); imgs[n].classList.add("on"); k = n; $$("button", dots).forEach((d, i) => d.setAttribute("aria-current", i === k)); };
+    if (imgs.length > 1 && ctl) {
+      dots.innerHTML = imgs.map((_, i) => `<button type="button" aria-label="${hi ? `${imgs.length} में से फ़ोटो ${i + 1}` : `Photo ${i + 1} of ${imgs.length}`}" aria-current="${i === 0}"></button>`).join("");
+      $$("button", dots).forEach((d, i) => d.addEventListener("click", () => { if (!ready(imgs[i])) { imgs[i].addEventListener("load", () => go(i), { once: true }); return; } go(i); }));
+      const setPause = (p) => { paused = p; pause.setAttribute("aria-pressed", p); pause.setAttribute("aria-label", hi ? (p ? "स्लाइडशो चलाएँ" : "स्लाइडशो रोकें") : (p ? "Play the slideshow" : "Pause the slideshow")); };
+      setPause(paused);
+      pause.addEventListener("click", () => setPause(!paused));
+      ctl.hidden = false;
+      setInterval(() => { if (!paused && seen && !document.hidden) go((k + 1) % imgs.length); }, 6000);
+    }
   }
 
-  // ---------- Scroll choreography (GSAP, loaded with defer) ----------
-  const choreograph = () => {
-  const gsap = window.gsap, ST = window.ScrollTrigger;
-  const canAnimate = gsap && ST && !reduce;
-  if (!canAnimate) {
-    if (hero) hero.classList.add("hero--static");
-    $$(".year").forEach((y) => y.classList.add("year--scroll"));
-    return;
-  }
-  gsap.registerPlugin(ST);
-  ST.config({ ignoreMobileResize: true });
-
-  if (hero) {
-    const knock = $(".knock", hero), after = $(".hero-after", hero), intro = $(".hero-intro", hero), zoom = $(".zoom", hero);
-    const origin = () => `${zoom.offsetLeft + zoom.offsetWidth * 0.3}px ${zoom.offsetTop + zoom.offsetHeight * 0.55}px`;
-    gsap.set(after.children, { y: 40 });
-    const tl = gsap.timeline({
-      scrollTrigger: { trigger: hero, start: "top top", end: "bottom bottom", scrub: 1, invalidateOnRefresh: true,
-        onUpdate: (st) => after.classList.toggle("live", st.progress > 0.7) },
-      defaults: { ease: "none" }
-    });
-    tl.to(intro, { opacity: 0, y: 30, duration: 0.12 }, 0)
-      .fromTo(knock, { scale: 1, transformOrigin: origin }, { scale: 110, ease: "power2.in", duration: 0.62 }, 0.04)
-      .to(knock, { opacity: 0, duration: 0.06 }, 0.6)
-      .to(after, { opacity: 1, duration: 0.18 }, 0.64)
-      .to(after.children, { y: 0, stagger: 0.03, duration: 0.2, ease: "power2.out" }, 0.64);
-  }
-
+  // ---------- The year: swipe, scroll or step through the months ----------
   $$(".year").forEach((year) => {
-    const pin = $(".year-pin", year), track = $(".year-track", year);
-    const dist = () => Math.max(0, track.scrollWidth - innerWidth);
-    gsap.to(track, { x: () => -dist(), ease: "none", scrollTrigger: { trigger: pin, start: "top top", end: () => "+=" + dist(), pin: true, scrub: 1, invalidateOnRefresh: true } });
+    const track = $(".year-track", year), head = $(".year-head", year);
+    if (!track || !head) return;
+    const nav = document.createElement("div");
+    nav.className = "year-nav";
+    nav.innerHTML = `<button class="ibtn" type="button" aria-label="Earlier months"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 6l-6 6 6 6"/></svg></button><button class="ibtn" type="button" aria-label="Later months"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg></button>`;
+    head.append(nav);
+    const [prev, next] = $$("button", nav);
+    const step = () => { const m = $(".month", track); return m ? (m.offsetWidth + 18) * Math.max(1, Math.floor((track.clientWidth - 40) / (m.offsetWidth + 18))) : track.clientWidth * 0.8; };
+    const sync = () => { prev.disabled = track.scrollLeft < 8; next.disabled = track.scrollLeft > track.scrollWidth - track.clientWidth - 8; };
+    prev.addEventListener("click", () => track.scrollBy({ left: -step(), behavior: reduce ? "auto" : "smooth" }));
+    next.addEventListener("click", () => track.scrollBy({ left: step(), behavior: reduce ? "auto" : "smooth" }));
+    track.addEventListener("scroll", sync, { passive: true }); addEventListener("resize", sync); sync();
   });
-
-  $$(".stairs").forEach((st) => {
-    if (innerWidth < 900) return;
-    gsap.fromTo($$(".step", st), { clipPath: "inset(100% 0% 0% 0% round 22px 22px 6px 6px)" }, { clipPath: "inset(0% 0% 0% 0% round 22px 22px 6px 6px)", duration: 1.3, ease: "power3.out", stagger: 0.08, scrollTrigger: { trigger: st, start: "top 78%" } });
-  });
-
-  // Big quote words light up as you read
-  $$("[data-words]").forEach((q) => {
-    const words = q.firstChild.textContent.trim().split(/\s+/);
-    q.firstChild.replaceWith(...words.flatMap((w, i) => { const s = document.createElement("span"); s.textContent = w; s.style.opacity = ".18"; return i < words.length - 1 ? [s, " "] : [s]; }));
-    gsap.to($$("span", q), { opacity: 1, stagger: 0.08, ease: "none", scrollTrigger: { trigger: q, start: "top 80%", end: "bottom 45%", scrub: true } });
-  });
-
-  addEventListener("load", () => ST.refresh());
-  };
-  if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", choreograph); else choreograph();
 })();

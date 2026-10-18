@@ -23,26 +23,30 @@
 <meta name="apple-mobile-web-app-title" content="St. John's" />
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wdth,wght@12..96,75..100,400..800&family=Figtree:wght@400;500;600;700&family=Mukta:wght@400;600&display=swap" rel="stylesheet" />
+<link href="https://fonts.googleapis.com/css2?family=Figtree:wght@400..800&family=Mukta:wght@400;600;700&display=swap" rel="stylesheet" />
 <link rel="stylesheet" href="css/school.css" />
 <meta name="theme-color" content="#1C1F24" media="(prefers-color-scheme: light)" />
 <meta name="theme-color" content="#1B1D22" media="(prefers-color-scheme: dark)" />
 <script>
 /* Before the first paint: fade photos in as they load, and hold headline motion until the fonts arrive. */
 (function (d) { var h = d.documentElement, done = function () { h.classList.add("fonts"); }; h.classList.add("js");
+  /* Hindi: keep the page hidden for the moment it takes to swap in the Hindi text. */
+  var L; try { L = new URLSearchParams(location.search).get("lang") || localStorage.getItem("sjs-lang"); } catch (e) {}
+  if (L === "hi") { h.lang = "hi"; h.classList.add("tr-wait"); setTimeout(function () { h.classList.remove("tr-wait"); }, 2500); }
   var m = function (e) { if (e.target.tagName === "IMG") e.target.classList.add("is-loaded"); };
   d.addEventListener("load", m, true); d.addEventListener("error", m, true);
-  if (d.fonts && d.fonts.load) Promise.all([d.fonts.load('800 1em "Bricolage Grotesque"'), d.fonts.load("400 1em Figtree")]).then(done, done); else done();
+  if (d.fonts && d.fonts.load) Promise.all([d.fonts.load("700 1em Figtree"), d.fonts.load("400 1em Figtree")]).then(done, done); else done();
   setTimeout(done, 1500); })(document);
 </script>
 </head>
 <body data-page="disclosure">
 <script src="js/shell.js"></script>
+<script src="js/lang.js"></script>
 <main id="main">
   <header class="phero">
     <div class="wrap">
       <nav class="crumbs" aria-label="Breadcrumb"><a href="index.html">Home</a> / Mandatory public disclosure</nav>
-      <h1><span class="ln"><span style="--i:0">Mandatory public</span></span><span class="ln"><span style="--i:1">disclosure.</span></span></h1>
+      <h1>Mandatory public disclosure</h1>
       <p class="lead">Every CBSE school publishes these details on its website, in the format of Appendix IX of the CBSE Affiliation Bye-Laws. Items underlined in yellow are waiting for the school's documents.</p>
     </div>
   </header>
@@ -55,12 +59,12 @@
         <caption>A. General information</caption>
         <tbody>
           <tr><td>Name of the school</td><td>St. John's School</td></tr>
-          <tr><td>Affiliation number</td><td><span class="tbc" title="To be provided">To be added</span></td></tr>
-          <tr><td>School code</td><td><span class="tbc" title="To be provided">To be added</span></td></tr>
-          <tr><td>Complete address with PIN code</td><td>Sector 7A, Faridabad, Haryana <span class="tbc" title="To be provided">(full address and PIN)</span></td></tr>
-          <tr><td>Principal's name and qualification</td><td><span class="tbc" title="To be provided">To be added</span></td></tr>
-          <tr><td>School email</td><td><span class="tbc" title="To be provided">To be added</span></td></tr>
-          <tr><td>Contact numbers</td><td><span class="tbc" title="To be provided">To be added</span></td></tr>
+          <tr><td>Affiliation number</td><td><span class="tbc" title="To be provided" data-fact="affil">To be added</span></td></tr>
+          <tr><td>School code</td><td><span class="tbc" title="To be provided" data-fact="code">To be added</span></td></tr>
+          <tr><td>Complete address with PIN code</td><td>Sector 7A, Faridabad, Haryana <span class="tbc" title="To be provided" data-fact="pin">(full address and PIN)</span></td></tr>
+          <tr><td>Principal's name and qualification</td><td><span class="tbc" title="To be provided" data-fact="principal">To be added</span></td></tr>
+          <tr><td>School email</td><td><span class="tbc" title="To be provided" data-fact="email">To be added</span></td></tr>
+          <tr><td>Contact numbers</td><td><span class="tbc" title="To be provided" data-fact="phone">To be added</span></td></tr>
         </tbody>
       </table></div>
     </div>
