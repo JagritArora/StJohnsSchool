@@ -49,6 +49,22 @@
   // Reset demo
   document.querySelectorAll("[data-reset]").forEach((b) => b.addEventListener("click", () => { if (confirm("Reset all demo data (attendance, homework, messages, enquiries)?")) S.reset(); }));
 
+  // Add to home screen: Chrome and Edge offer an install prompt; iPhone and
+  // iPad need Share, then Add to Home Screen. Hidden once installed or dismissed.
+  const inst = document.getElementById("install");
+  if (inst) {
+    const standalone = matchMedia("(display-mode: standalone)").matches || navigator.standalone;
+    let no = false; try { no = localStorage.getItem("sjs-install") === "no"; } catch (e) {}
+    const ios = /iPhone|iPad|iPod/.test(navigator.userAgent) || (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
+    let ask = null;
+    const show = () => { if (!standalone && !no) inst.hidden = false; };
+    addEventListener("beforeinstallprompt", (e) => { e.preventDefault(); ask = e; show(); });
+    addEventListener("appinstalled", () => (inst.hidden = true));
+    if (ios) { document.getElementById("install-how").textContent = "Tap the Share button, then Add to Home Screen."; document.getElementById("install-go").hidden = true; show(); }
+    document.getElementById("install-go").addEventListener("click", () => { if (!ask) return; ask.prompt(); ask.userChoice.then((c) => { if (c.outcome === "accepted") inst.hidden = true; ask = null; }); });
+    document.getElementById("install-x").addEventListener("click", () => { inst.hidden = true; try { localStorage.setItem("sjs-install", "no"); } catch (e) {} });
+  }
+
   S.$ = (sel, root = document) => root.querySelector(sel);
   S.esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
   S.greet = () => { const h = new Date().getHours(); return h < 12 ? "Good morning" : h < 17 ? "Good afternoon" : "Good evening"; };

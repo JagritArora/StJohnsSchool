@@ -96,6 +96,9 @@
   };
   S.periodTimes = ["8:00", "8:40", "9:20", "10:00", "10:50", "11:30", "12:10", "12:50"];
 
+  // Whole-school attendance today (sample); VII is filled in from VII-B's live register.
+  S.sample = { classes: ["Nur", "LKG", "UKG", "I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX", "X", "XI", "XII"], attendance: [91, 89, 94, 95, 96, 93, 95, 94, 92, 0, 94, 86, 95, 92, 90] };
+
   S.teacher = { name: "Ms. Neha Mathew", initials: "NM", role: "Class Teacher · VII-B", subject: "Mathematics" };
   S.sibling = { name: "Ananya Sharma", initials: "AS", cls: "III-A", teacher: "Mrs. Priya Nair" };
 

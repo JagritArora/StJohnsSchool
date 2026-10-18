@@ -1,0 +1,15 @@
+{
+  "name": "St. John's School",
+  "short_name": "St. John's",
+  "description": "Attendance, homework, marks, fees and notices for St. John's School families.",
+  "lang": "en-IN",
+  "start_url": "parent.html",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#FAFAFA",
+  "theme_color": "#1C1F24",
+  "icons": [
+    { "src": "assets/icons/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any maskable" },
+    { "src": "assets/icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable" }
+  ]
+}

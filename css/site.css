@@ -312,7 +312,20 @@ footer.site-foot a:hover { color: var(--ink); }
 .ai-form input:focus { border-color: var(--accent); }
 .ai-form button { width: 44px; height: 44px; border-radius: 50%; border: 0; background: var(--accent); color: var(--accent-ink); display: grid; place-items: center; cursor: pointer; flex: none; }
 .ai-form button svg { width: 18px; height: 18px; }
-.ai-foot { font-size: 11px; color: var(--muted); text-align: center; padding: 0 14px 10px; }
+.ai-foot { font-size: 12px; color: var(--muted); text-align: center; padding: 0 14px 10px; }
+.ai-foot button { border: 0; background: none; padding: 2px 0; font: inherit; color: var(--accent-text); text-decoration: underline; text-underline-offset: 2px; cursor: pointer; }
+.ai-foot .seg { white-space: nowrap; }
+.ai-live { color: var(--green-text); } .ai-live i { display: inline-block; width: 7px; height: 7px; border-radius: 50%; background: currentColor; margin-right: 6px; vertical-align: 1px; }
+.ai-key { display: flex; gap: 6px; margin-bottom: 6px; }
+.ai-key input { flex: 1; min-width: 0; height: 34px; border-radius: 999px; border: 1px solid var(--line); background: var(--bg); padding: 0 14px; font-size: 13px; outline: none; }
+.ai-key input:focus { border-color: var(--accent); }
+.ai-key button { text-decoration: none; padding: 0 12px; border-radius: 999px; border: 1px solid var(--line); }
+.ai-key button[type=submit] { background: var(--accent); border-color: var(--accent); color: var(--accent-ink); }
+.ai-form .ai-mic { background: transparent; border: 1px solid var(--line); color: var(--muted); transition: color .25s, border-color .25s; }
+.ai-form .ai-mic:hover { color: var(--accent-text); border-color: var(--accent); }
+.ai-form .ai-mic.rec { color: var(--accent-text); border-color: var(--accent); animation: mic-rec 1.6s ease-in-out infinite; }
+@keyframes mic-rec { 50% { box-shadow: 0 0 0 6px color-mix(in srgb, var(--accent) 16%, transparent); } }
+.msg .note { display: block; margin-top: 8px; font-size: 12px; color: var(--muted); }
 @media (max-width: 560px) { .ai-panel { right: 12px; bottom: 12px; } .ai-fab { right: 14px; bottom: 14px; } .ai-fab span { display: none; } .ai-fab { padding: 0; width: 54px; justify-content: center; } }
 
 /* ---------- Portal (app) ---------- */
@@ -450,6 +463,9 @@ body.app { background: var(--sunken); }
 .col .c.pending { border: 1.5px dashed var(--line); background: transparent; transition: none; }
 .col:hover .tip { opacity: 1; }
 .col .tip { left: 50%; transform: translateX(-50%); bottom: auto; top: -8px; }
+/* Tips at either end of a chart open inwards, so they never push past the screen edge. */
+.col:nth-child(-n+2) .tip { left: 0; transform: none; }
+.col:nth-last-child(-n+2) .tip { left: auto; right: 0; transform: none; }
 .col-labels { display: flex; gap: 6px; margin-top: 8px; }
 .col-labels span { flex: 1; text-align: center; font: 500 10.5px/1.2 var(--mono); color: var(--muted); min-width: 0; overflow: hidden; }
 
@@ -564,3 +580,13 @@ table.tbl { width: 100%; border-collapse: collapse; font-size: 14px; }
   *, *::before, *::after { animation: none !important; transition: none !important; }
   .reveal { opacity: 1; transform: none; }
 }
+
+/* Add to home screen (parent app) */
+.install { display: flex; align-items: center; gap: 14px; padding: 14px 14px 14px 16px; margin-bottom: 16px; border-radius: var(--radius); border: 1px solid var(--line); background: var(--surface); }
+.install[hidden] { display: none; }
+.install img { width: 44px; height: 44px; border-radius: 12px; flex: none; }
+.install > div { flex: 1; min-width: 0; }
+.install b { display: block; font-size: 15.5px; }
+.install span { display: block; font-size: 13.5px; color: var(--muted); }
+.install .icon-btn { width: 36px; height: 36px; flex: none; }
+@media (max-width: 560px) { .install { gap: 10px; padding: 12px; } .install img { width: 38px; height: 38px; border-radius: 10px; } .install b { font-size: 14.5px; line-height: 1.3; } .install span { font-size: 12.5px; } }

@@ -13,7 +13,7 @@
   // ---------- Footer ----------
   const ftr = document.createElement("footer");
   ftr.className = "ftr";
-  ftr.innerHTML = `<div class="bricks" aria-hidden="true"></div>
+  ftr.innerHTML = `<div class="tartan ftr-check" aria-hidden="true"></div>
     <div class="wrap ftr-in">
       <div><p class="motto">Learn<br />to serve.</p><p>St. John's School, Sector 7A, Faridabad, Haryana.<br />A CBSE school for Nursery to Class XII, founded in 1965 by Shri T.I. John and run by the Idicula Trust Society (Regd.).</p></div>
       <div><h4>The school</h4><ul><li><a href="about.html">About us</a></li><li><a href="academics.html">Academics</a></li><li><a href="campus.html">Campus</a></li><li><a href="life.html">Student life</a></li></ul></div>
@@ -22,6 +22,24 @@
     </div>
     <div class="wrap ftr-base"><span>© ${new Date().getFullYear()} St. John's School, Faridabad</span><span>Facebook, Instagram, YouTube</span></div>`;
   document.body.append(ftr);
+
+  // ---------- Phones: admissions stay one tap away ----------
+  // A slim bar along the bottom once you're past the first screen. The Ask
+  // button sits in its right end. It steps aside wherever the visit form or
+  // the admissions band is already on screen.
+  const bar = document.createElement("div");
+  bar.className = "mbar";
+  bar.innerHTML = `<span><b>Admissions 2027–28</b><small>Nursery and Class XI</small></span><a class="btn btn--sm" href="admissions.html#enquire">Book a visit</a>`;
+  document.body.append(bar);
+  const covers = $$("#enquire, #admissions");
+  const inView = new Set();
+  const barTick = () => {
+    const heroEl = $(".hero");
+    const past = heroEl ? scrollY > heroEl.offsetHeight - innerHeight : scrollY > innerHeight * 0.5;
+    bar.classList.toggle("on", past && !inView.size);
+  };
+  if ("IntersectionObserver" in window) { const bio = new IntersectionObserver((es) => { es.forEach((e) => (e.isIntersecting ? inView.add(e.target) : inView.delete(e.target))); barTick(); }); covers.forEach((c) => bio.observe(c)); }
+  addEventListener("scroll", barTick, { passive: true }); barTick();
 
   // ---------- Toast ----------
   let toastEl, toastT;
@@ -37,7 +55,7 @@
   $$("main img").forEach((img) => { if (img.complete) markLoaded(img); else { img.addEventListener("load", () => markLoaded(img), { once: true }); img.addEventListener("error", () => markLoaded(img), { once: true }); } });
 
   // ---------- Arched photos open as they scroll in ----------
-  const io = "IntersectionObserver" in window && !reduce ? new IntersectionObserver((es) => es.forEach((e) => { if (e.isIntersecting) { e.target.classList.add("in"); io.unobserve(e.target); } }), { rootMargin: "0px 0px -12% 0px" }) : null;
+  const io = "IntersectionObserver" in window && !reduce ? new IntersectionObserver((es) => es.forEach((e) => { if (e.isIntersecting) { e.target.classList.add("in"); io.unobserve(e.target); } }), { rootMargin: "0px 0px -5% 0px" }) : null;
   $$(".clip").forEach((el) => (io ? io.observe(el) : el.classList.add("in")));
 
   // ---------- Gentle reveal for content below the first screen ----------
@@ -137,10 +155,13 @@
     if ("ResizeObserver" in window) new ResizeObserver(fit).observe(intro); else addEventListener("resize", fit);
     const imgs = $$(".hero-media img", hero); let k = 0, seen = true;
     if ("IntersectionObserver" in window) new IntersectionObserver(([e]) => (seen = e.isIntersecting)).observe(hero);
+    // Only the first photo loads with the page; the rest follow once it has settled.
+    const later = () => setTimeout(() => imgs.forEach((im) => { if (im.dataset.src) { im.src = im.dataset.src; im.removeAttribute("data-src"); } }), 1200);
+    if (!reduce) { if (document.readyState === "complete") later(); else addEventListener("load", later, { once: true }); }
     if (imgs.length > 1 && !reduce) setInterval(() => {
       if (!seen || document.hidden || scrollY > 40) return;
       const n = (k + 1) % imgs.length;
-      if (!imgs[n].complete) return;
+      if (!imgs[n].getAttribute("src") || !imgs[n].complete || !imgs[n].naturalWidth) return;
       imgs[k].classList.remove("on"); imgs[n].classList.add("on"); k = n;
     }, 5200);
   }

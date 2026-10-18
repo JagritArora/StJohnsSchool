@@ -5,6 +5,12 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
 <title>Principal | St. John's School</title>
 <link rel="icon" href="assets/crest.svg" type="image/svg+xml" />
+<link rel="manifest" href="manifest.webmanifest" />
+<link rel="apple-touch-icon" href="assets/icons/apple-touch-icon.png" />
+<meta name="apple-mobile-web-app-title" content="St. John's" />
+<meta name="mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-status-bar-style" content="default" />
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wdth,wght@12..96,75..100,400..800&family=Figtree:wght@400;500;600;700&family=Mukta:wght@400;600&display=swap" rel="stylesheet" />
@@ -107,8 +113,7 @@
   S.$("#nav-side").innerHTML = nav.map(([k, l]) => btn(k, l)).join("");
   S.$("#nav-bottom").innerHTML = nav.map(([k, l]) => btn(k, l)).join("");
 
-  const classes = ["Nur", "LKG", "UKG", "I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX", "X", "XI", "XII"];
-  const sample = [91, 89, 94, 95, 96, 93, 95, 94, 92, 0, 94, 86, 95, 92, 90];
+  const classes = S.sample.classes, sample = S.sample.attendance;
 
   function render() {
     S.$("#hello").textContent = S.greet();

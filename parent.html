@@ -5,6 +5,12 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
 <title>Parent | St. John's School</title>
 <link rel="icon" href="assets/crest.svg" type="image/svg+xml" />
+<link rel="manifest" href="manifest.webmanifest" />
+<link rel="apple-touch-icon" href="assets/icons/apple-touch-icon.png" />
+<meta name="apple-mobile-web-app-title" content="St. John's" />
+<meta name="mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-status-bar-style" content="default" />
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wdth,wght@12..96,75..100,400..800&family=Figtree:wght@400;500;600;700&family=Mukta:wght@400;600&display=swap" rel="stylesheet" />
@@ -38,6 +44,12 @@
       <div class="chips" style="margin-bottom:18px">
         <button class="chip on"><span class="avatar">AS</span>Aarav · VII-B</button>
         <button class="chip" id="sib"><span class="avatar green">AS</span>Ananya · III-A</button>
+      </div>
+      <div class="install" id="install" hidden>
+        <img src="assets/icons/icon-192.png" alt="" width="44" height="44" />
+        <div><b>Keep St. John's on your home screen</b><span id="install-how">It opens straight to Aarav's day, like an app.</span></div>
+        <button class="btn btn-primary btn-sm" id="install-go" type="button">Add</button>
+        <button class="icon-btn" id="install-x" type="button" aria-label="Not now"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
       </div>
       <div id="today-status" class="status" style="margin-bottom:16px"></div>
       <div class="grid g4" id="home-stats" style="margin-bottom:16px"></div>

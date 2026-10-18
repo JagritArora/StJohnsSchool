@@ -129,11 +129,24 @@ h1, h2, h3, h4 { font-family: var(--display); margin: 0; font-weight: 650; lette
 /* Arch frame — the building's windows */
 .arch { border-radius: 999px 999px 18px 18px; overflow: hidden; background: var(--paper-2); }
 .arch img { width: 100%; height: 100%; object-fit: cover; }
+/* Rounded rectangle — for photos of places rather than people */
+.frame { border-radius: 22px; overflow: hidden; background: var(--paper-2); }
+.frame img { width: 100%; height: 100%; object-fit: cover; }
 .clip { opacity: 0; clip-path: inset(6% 6% 0 6% round 999px 999px 18px 18px); transition: clip-path 1.2s var(--ease-out), opacity .9s ease; }
 .clip.in { opacity: 1; clip-path: inset(0 0 0 0 round 999px 999px 18px 18px); }
 .clip img { transform: scale(1.06); transition: transform 1.6s var(--ease-out), opacity .7s ease; }
 .clip.in img { transform: none; }
+.clip.frame { clip-path: inset(6% 6% 0 6% round 22px); }
+.clip.frame.in { clip-path: inset(0 round 22px); }
 
+/* The red check of the school uniform, drawn in CSS. Used sparingly, as the
+   footer's top edge on every page (and on the link-preview cards), never
+   behind text. */
+.tartan { background-color: #B3282B; background-image:
+  repeating-linear-gradient(90deg, transparent 0 5px, rgba(18, 16, 24, .55) 5px 11px, transparent 11px 14px, rgba(255, 255, 255, .5) 14px 15.5px, transparent 15.5px 20px),
+  repeating-linear-gradient(0deg, transparent 0 5px, rgba(18, 16, 24, .55) 5px 11px, transparent 11px 14px, rgba(255, 255, 255, .5) 14px 15.5px, transparent 15.5px 20px); }
+.ftr-check { height: 20px; }
+@media (prefers-color-scheme: dark) { .tartan { background-color: #9E2629; } }
 /* Brick courses (decorative) */
 .bricks { height: 44px; background-color: var(--band-brick); background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='88' height='44'%3E%3Cg fill='none' stroke='%23000' stroke-opacity='.22' stroke-width='2'%3E%3Cpath d='M0 1h88M0 23h88M22 1v22M66 1v22M0 23v21M44 23v21'/%3E%3C/g%3E%3C/svg%3E"); }
 
@@ -344,7 +357,9 @@ h1, h2, h3, h4 { font-family: var(--display); margin: 0; font-weight: 650; lette
 }
 
 /* A year at St. John's (horizontal) */
-.year { overflow: hidden; --yp: clamp(28px, 7vh, 96px); }
+.year { overflow: hidden; --yp: clamp(24px, 4.5vh, 64px); }
+/* The section before the pinned year ends tight; the year brings its own space. */
+.sec:has(+ .year) { padding-bottom: clamp(28px, 3vw, 48px); }
 /* The pinned year must fit one screen: cards take their size from whatever
    height is left after the heading and the captions (about 330px). */
 .year-pin { padding-block: var(--yp); min-height: 100vh; min-height: 100svh; display: flex; flex-direction: column; justify-content: center; }
@@ -499,13 +514,14 @@ h1, h2, h3, h4 { font-family: var(--display); margin: 0; font-weight: 650; lette
 
 /* Facility rows */
 .fac { display: grid; grid-template-columns: repeat(12, 1fr); gap: clamp(20px, 3vw, 36px); align-items: center; padding-block: clamp(36px, 5vw, 64px); border-top: 1px solid var(--line); }
-.fac .arch { grid-column: span 5; aspect-ratio: 4 / 4.6; }
+.fac .arch, .fac .frame { grid-column: span 5; aspect-ratio: 4 / 4.6; }
+.fac .frame { aspect-ratio: 4 / 3.4; }
 .fac .txt { grid-column: 7 / span 6; }
-.fac:nth-of-type(even) .arch { grid-column: 8 / span 5; order: 2; }
+.fac:nth-of-type(even) .arch, .fac:nth-of-type(even) .frame { grid-column: 8 / span 5; order: 2; }
 .fac:nth-of-type(even) .txt { grid-column: 1 / span 6; }
 .fac h3 { font-size: clamp(25px, 2.6vw, 34px); margin-bottom: 14px; }
 .fac ul { margin: 16px 0 0; padding-left: 20px; color: var(--ink-2); display: grid; gap: 6px; }
-@media (max-width: 860px) { .fac .arch, .fac .txt, .fac:nth-of-type(even) .arch, .fac:nth-of-type(even) .txt { grid-column: 1 / -1; order: 0; } .fac .arch { max-width: 360px; } }
+@media (max-width: 860px) { .fac .arch, .fac .frame, .fac .txt, .fac:nth-of-type(even) .arch, .fac:nth-of-type(even) .frame, .fac:nth-of-type(even) .txt { grid-column: 1 / -1; order: 0; } .fac .arch { max-width: 360px; } }
 .facgrid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0; border-top: 1.5px solid var(--ink); }
 .facgrid > div { padding: 26px 26px 30px 0; border-bottom: 1px solid var(--line); }
 .facgrid > div:not(:nth-child(3n+1)) { padding-left: 26px; border-left: 1px solid var(--line); }
@@ -607,7 +623,35 @@ h1, h2, h3, h4 { font-family: var(--display); margin: 0; font-weight: 650; lette
 .ai-form button { width: 48px; height: 48px; border-radius: 50%; border: 0; background: var(--brick); color: var(--on-brick); display: grid; place-items: center; cursor: pointer; flex: none; }
 .ai-form button svg { width: 18px; height: 18px; }
 .ai-foot { font-size: 12px; color: var(--ink-2); text-align: center; padding: 0 14px 12px; }
+.ai-foot button { border: 0; background: none; padding: 2px 0; font: inherit; color: var(--brick-ink); text-decoration: underline; text-underline-offset: 2px; cursor: pointer; }
+.ai-foot .seg { white-space: nowrap; }
+.ai-live { color: var(--hedge-ink); } .ai-live i { display: inline-block; width: 7px; height: 7px; border-radius: 50%; background: currentColor; margin-right: 6px; vertical-align: 1px; }
+.ai-key { display: flex; gap: 6px; margin-bottom: 6px; }
+.ai-key input { flex: 1; min-width: 0; height: 36px; border-radius: 999px; border: 1.5px solid var(--line); background: var(--paper); padding: 0 14px; font-size: 13.5px; outline: none; }
+.ai-key input:focus { border-color: var(--brick); }
+.ai-key button { text-decoration: none; padding: 0 12px; border-radius: 999px; border: 1.5px solid var(--line); }
+.ai-key button[type=submit] { background: var(--brick); border-color: var(--brick); color: var(--on-brick); }
+.ai-form .ai-mic { background: transparent; border: 1.5px solid var(--line); color: var(--ink-2); transition: color .25s, border-color .25s; }
+.ai-form .ai-mic:hover { color: var(--brick-ink); border-color: var(--brick); }
+.ai-form .ai-mic.rec { color: var(--brick-ink); border-color: var(--brick); animation: mic-rec 1.6s ease-in-out infinite; }
+@keyframes mic-rec { 50% { box-shadow: 0 0 0 6px color-mix(in srgb, var(--brick) 16%, transparent); } }
+.msg .note { display: block; margin-top: 8px; font-size: 12.5px; color: var(--ink-2); }
 @media (max-width: 560px) { .ai-panel { right: 12px; bottom: 12px; } .ai-fab { right: 14px; bottom: 14px; width: 56px; padding: 0; justify-content: center; } .ai-fab span { display: none; } }
+
+/* Phones: the admissions bar. The round Ask button sits in its right end. */
+.mbar { display: none; }
+@media (max-width: 700px) {
+  .mbar { position: fixed; z-index: 70; left: 12px; right: 12px; bottom: calc(12px + env(safe-area-inset-bottom)); height: 60px; display: flex; align-items: center; gap: 10px; padding: 0 76px 0 18px; border-radius: 999px; background: var(--glass); backdrop-filter: blur(18px) saturate(1.4); -webkit-backdrop-filter: blur(18px) saturate(1.4); border: 1px solid var(--glass-line); box-shadow: var(--float); transform: translateY(calc(100% + 24px)); opacity: 0; pointer-events: none; transition: transform .5s var(--ease-out), opacity .3s ease; }
+  .mbar.on { transform: none; opacity: 1; pointer-events: auto; }
+  .mbar > span { flex: 1; min-width: 0; line-height: 1.25; }
+  .mbar b { display: block; font-size: 14.5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .mbar small { display: block; font-size: 12.5px; color: var(--ink-2); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .mbar .btn { flex: none; min-height: 40px; padding: 0 16px; font-size: 14.5px; }
+  .ai-fab { right: 14px; bottom: calc(14px + env(safe-area-inset-bottom)); width: 56px; padding: 0; justify-content: center; }
+  .ai-fab span { display: none; }
+  .ftr-base { padding-bottom: 96px; }
+}
+@media (max-width: 700px) and (prefers-reduced-motion: reduce) { .mbar { transition: none; } }
 
 /* Utilities */
 .mt-s { margin-top: 18px; } .mt-m { margin-top: 32px; } .mt-l { margin-top: 56px; }
@@ -622,6 +666,7 @@ h1, h2, h3, h4 { font-family: var(--display); margin: 0; font-weight: 650; lette
   .clip { clip-path: none; opacity: 1; } .clip img { transform: none; }
   ::view-transition-new(root) { animation: none; }
   .phero h1 .ln > span { transform: none; } .phero .lead { opacity: 1; }
+  .ai-form .ai-mic.rec { animation: none; }
 }
 @media print { .hdr, .proto, .ai-fab, .ai-panel { display: none !important; } }
 .zoom { font-style: normal; }
@@ -629,7 +674,7 @@ h1, h2, h3, h4 { font-family: var(--display); margin: 0; font-weight: 650; lette
 .m-br { display: none; }
 @media (max-width: 700px) {
   .m-br { display: inline; }
-  .hero { --intro-h: 150px; --lines: 2.55; }
+  .hero { --intro-h: 150px; --lines: 2.55; height: 205vh; height: 205svh; }
   .knock-word { font-size: min(calc((100vw - 2 * var(--gutter)) / 2.05), calc((100svh - var(--hdr-h) - var(--proto-h, 0px) - var(--intro-h) - 32px) / var(--lines))); }
   .knock-word .l2 { padding-left: 0; }
   .hero-cue { display: none; }
@@ -666,8 +711,10 @@ h1, h2, h3, h4 { font-family: var(--display); margin: 0; font-weight: 650; lette
 .rv.in { opacity: 1; transform: none; }
 @media (prefers-reduced-motion: reduce) { .rv { opacity: 1; transform: none; } }
 
-/* Dark mode stairs: each stage keeps its own hue, just a whisper of it. */
+/* Dark mode stairs: each stage keeps its own hue, just a whisper of it.
+   Photos dim a little so they don't glare against the charcoal. */
 @media (prefers-color-scheme: dark) {
+  main img:not([src$=".svg"]), .ftr img { filter: brightness(.86) saturate(.95); }
   .step:nth-child(-n+4) { background: color-mix(in srgb, var(--acc) 9%, var(--paper)); }
 }
 @media (prefers-reduced-motion: reduce) {

@@ -5,6 +5,12 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
 <title>Teacher | St. John's School</title>
 <link rel="icon" href="assets/crest.svg" type="image/svg+xml" />
+<link rel="manifest" href="manifest.webmanifest" />
+<link rel="apple-touch-icon" href="assets/icons/apple-touch-icon.png" />
+<meta name="apple-mobile-web-app-title" content="St. John's" />
+<meta name="mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-status-bar-style" content="default" />
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wdth,wght@12..96,75..100,400..800&family=Figtree:wght@400;500;600;700&family=Mukta:wght@400;600&display=swap" rel="stylesheet" />
@@ -269,7 +275,16 @@
   // AI assist
   S.$("#rm-s").innerHTML = S.students.map((s) => `<option value="${s.roll}">${s.name}</option>`).join("");
   S.$("#rm-s").value = 11;
-  S.$("#rm-go").addEventListener("click", () => { S.$("#rm-out").value = S.remarkFor(S.student(S.$("#rm-s").value)); });
+  // With Claude connected the remark is written live; otherwise the built-in draft.
+  let rmRun = 0;
+  S.$("#rm-go").addEventListener("click", async () => {
+    const st = S.student(S.$("#rm-s").value), out = S.$("#rm-out"), run = ++rmRun;
+    if (!S.claude.on) { out.value = S.remarkFor(st); return; }
+    out.value = "Drafting…";
+    try {
+      await S.claude.stream({ system: S.aiSystem("teacher"), max: 300, messages: [{ role: "user", content: `Draft the half-yearly report-card remark for ${st.name} (Roll ${st.roll}). Plain text only: no bold, no preamble.` }], onText: (t) => { if (run === rmRun) out.value = t; } });
+    } catch (e) { if (run === rmRun) out.value = S.remarkFor(st); }
+  });
   S.$("#rm-s").addEventListener("change", () => S.$("#rm-go").click());
   S.$("#rm-save").addEventListener("click", () => S.toast("Saved to " + S.student(S.$("#rm-s").value).name + "'s report card"));
   S.$("#rm-all").addEventListener("click", () => {
@@ -312,7 +327,7 @@
     renderHome(); renderThread();
   });
   document.addEventListener("sjs:sync", () => { renderHome(); renderHw(); renderThread(); if (S.state.messages.at(-1)?.from === "parent" && S.state.messages.at(-1).fresh) S.toast("New message from Aarav's parent"); });
-  renderHome(); renderAtt(); renderHw(); renderMarks(); renderThread(); S.$("#ps-go").click(); S.$("#rm-go").click();
+  renderHome(); renderAtt(); renderHw(); renderMarks(); renderThread(); S.$("#ps-go").click(); S.$("#rm-out").value = S.remarkFor(S.student(S.$("#rm-s").value));
   S.mountAI("teacher");
 })();
 </script>
