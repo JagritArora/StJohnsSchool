@@ -714,7 +714,7 @@ h1, h2, h3, h4 { font-family: var(--display); margin: 0; font-weight: 650; lette
 /* Dark mode stairs: each stage keeps its own hue, just a whisper of it.
    Photos dim a little so they don't glare against the charcoal. */
 @media (prefers-color-scheme: dark) {
-  main img:not([src$=".svg"]), .ftr img { filter: brightness(.86) saturate(.95); }
+  main img:not([src$=".svg"]):not(.hero-media img) { filter: brightness(.86) saturate(.95); }
   .step:nth-child(-n+4) { background: color-mix(in srgb, var(--acc) 9%, var(--paper)); }
 }
 @media (prefers-reduced-motion: reduce) {
