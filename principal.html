@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+<title>Principal | St. John's School</title>
+<link rel="icon" href="assets/crest.svg" type="image/svg+xml" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wdth,wght@12..96,75..100,400..800&family=Figtree:wght@400;500;600;700&family=Mukta:wght@400;600&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="css/site.css" />
+<script>
+/* Before the first paint: fade photos in as they load. */
+(function (d) { d.documentElement.classList.add("js");
+  var m = function (e) { if (e.target.tagName === "IMG") e.target.classList.add("is-loaded"); };
+  d.addEventListener("load", m, true); d.addEventListener("error", m, true); })(document);
+</script>
+</head>
+<body class="app">
+<div class="proto-bar"><b>Prototype</b> · Principal view. School-wide numbers are samples; VII-B and admissions are live from the demo.</div>
+<div class="app-shell">
+  <aside class="side">
+    <a href="index.html" class="brand"><img src="assets/crest.svg" alt="" width="40" height="40" /><span><span class="brand-name">St. John's</span><span class="brand-sub">Principal</span></span></a>
+    <nav id="nav-side"></nav>
+    <div class="side-foot">
+      
+      <a class="side-btn" href="login.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M15 4h4v16h-4M10 8l-4 4 4 4M6 12h10"/></svg>Sign out</a>
+      <div class="who"><span class="avatar">P</span><div><b>Principal</b><span>St. John's School</span></div></div>
+    </div>
+  </aside>
+
+  <main class="main">
+    <div class="mobile-head"><img src="assets/crest.svg" alt="" /><b>St. John's · Principal</b><div class="right"><a class="icon-btn" href="login.html" aria-label="Sign out"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M15 4h4v16h-4M10 8l-4 4 4 4M6 12h10"/></svg></a></div></div>
+
+    <!-- HOME -->
+    <section data-view="home">
+      <div class="topbar"><div><h1 id="hello">Good morning</h1><div class="sub" id="today-line"></div></div><div class="right"><button class="btn btn-primary btn-sm" data-go="notices">Send a notice</button></div></div>
+      <div class="ai-card" style="margin-bottom:16px">
+        <span class="ai-tag"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l1.9 5.3L19 10l-5.1 1.7L12 17l-1.9-5.3L5 10l5.1-1.7z"/></svg>Morning brief · written by AI at 9:00 AM</span>
+        <div class="body" id="brief"></div>
+      </div>
+      <div class="grid g4" id="kpis" style="margin-bottom:16px"></div>
+      <div class="grid g21" style="margin-bottom:16px">
+        <div class="card">
+          <div class="card-h"><h2>Attendance by class · today (%)</h2><span class="right muted" style="font-size:12.5px">Hover a bar for the number</span></div>
+          <div class="cols" id="cols"></div>
+          <div class="col-labels" id="col-labels"></div>
+          <div class="legend"><span><i style="background:var(--accent)"></i>90% or more</span><span><i style="background:var(--warn)"></i>Below 90% — follow up</span></div>
+        </div>
+        <div class="card">
+          <div class="card-h"><h2>Q3 fee collection</h2></div>
+          <div class="stat"><div class="num">₹1.92 Cr <small>of ₹2.74 Cr</small></div></div>
+          <div class="track" style="height:12px;border-radius:4px;background:var(--sunken);margin:16px 0 8px;position:relative"><span style="position:absolute;inset:0 30% 0 0;background:var(--green);border-radius:0 4px 4px 0"></span></div>
+          <div class="muted" style="font-size:13px;display:flex;justify-content:space-between"><span>70% collected</span><span id="fee-due"></span></div>
+          <div class="list" style="margin-top:16px">
+            <div class="li"><span class="sq green">UPI</span><div class="t"><b>Paid online</b><span>58% of payments this quarter</span></div></div>
+            <div class="li"><span class="sq warn">612</span><div class="t"><b>Families yet to pay</b><span>Auto-reminders 7 days and 1 day before</span></div></div>
+          </div>
+        </div>
+      </div>
+      <div class="grid g2">
+        <div class="card"><div class="card-h"><h2>Admission enquiries</h2><button class="right link-btn" data-go="admissions">All →</button></div><div class="list" id="enq-mini"></div></div>
+        <div class="card"><div class="card-h"><h2>Students needing support · VII-B</h2></div><div class="list" id="risk"></div></div>
+      </div>
+    </section>
+
+    <!-- ADMISSIONS -->
+    <section data-view="admissions">
+      <div class="topbar"><div><h1>Admissions 2027–28</h1><div class="sub">Every enquiry from the website lands here.</div></div></div>
+      <div class="grid g4" id="adm-kpis" style="margin-bottom:16px"></div>
+      <div class="card"><div class="tbl-wrap"><table class="tbl" id="adm-tbl"></table></div></div>
+    </section>
+
+    <!-- NOTICES -->
+    <section data-view="notices">
+      <div class="topbar"><div><h1>Notices</h1><div class="sub">One notice reaches the app, SMS, WhatsApp and the website.</div></div></div>
+      <div class="grid g21">
+        <form class="card" id="nt-form">
+          <div class="card-h"><h2>New notice</h2></div>
+          <div class="field" style="margin-top:0"><label for="nt-title">Title</label><input id="nt-title" required value="Winter uniform from 2 November" /></div>
+          <div class="field"><label for="nt-text">Message</label><textarea id="nt-text" required style="min-height:130px">Students will wear the full winter uniform (blazer and maroon sweater) from Monday, 2 November.</textarea></div>
+          <div class="row2"><div class="field"><label for="nt-to">Send to</label><select id="nt-to"><option>All parents</option><option>Classes VI–VIII</option><option>Staff only</option></select></div><div class="field"><label for="nt-tag">Type</label><select id="nt-tag"><option>Notice</option><option>Event</option><option>Holiday</option><option>PTM</option></select></div></div>
+          <label style="display:flex;gap:10px;align-items:center;margin-top:16px;font-size:14.5px"><input type="checkbox" checked id="nt-hi" /> Also send in Hindi (AI-translated, you can check it first)</label>
+          <label style="display:flex;gap:10px;align-items:center;margin-top:10px;font-size:14.5px"><input type="checkbox" checked id="nt-web" /> Show on the website's News section</label>
+          <button class="btn btn-primary btn-block" type="submit" style="margin-top:20px">Send notice</button>
+        </form>
+        <div class="card"><div class="card-h"><h2>Sent</h2></div><div class="list" id="nt-list"></div></div>
+      </div>
+    </section>
+  </main>
+</div>
+<nav class="bottom-nav" id="nav-bottom"></nav>
+
+<script src="js/data.js"></script>
+<script src="js/common.js"></script>
+<script src="js/ai.js"></script>
+<script>
+(function () {
+  const S = SJS;
+  const I = {
+    home: '<path d="M4 11l8-7 8 7v9H4z"/><path d="M10 20v-5h4v5"/>',
+    admissions: '<circle cx="10" cy="8" r="4"/><path d="M3 21c1-4 4-6 7-6 1.5 0 3 .4 4.2 1.3M17 14v6M14 17h6"/>',
+    notices: '<path d="M4 10v4h3l6 4V6L7 10z"/><path d="M17 9a4 4 0 0 1 0 6"/>'
+  };
+  const nav = [["home", "Overview"], ["admissions", "Admissions"], ["notices", "Notices"]];
+  const btn = (k, l) => `<button class="side-btn" data-go="${k}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">${I[k]}</svg>${l}<span class="count" data-count="${k}" hidden></span></button>`;
+  S.$("#nav-side").innerHTML = nav.map(([k, l]) => btn(k, l)).join("");
+  S.$("#nav-bottom").innerHTML = nav.map(([k, l]) => btn(k, l)).join("");
+
+  const classes = ["Nur", "LKG", "UKG", "I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX", "X", "XI", "XII"];
+  const sample = [91, 89, 94, 95, 96, 93, 95, 94, 92, 0, 94, 86, 95, 92, 90];
+
+  function render() {
+    S.$("#hello").textContent = S.greet();
+    S.$("#today-line").textContent = S.fmtLong(S.today) + " · St. John's School, Sector 7A";
+    S.$("#brief").innerHTML = S.brief();
+    const enq = S.state.enquiries, fresh = enq.filter((e) => e.status === "New").length;
+    S.$("#kpis").innerHTML = `
+      <div class="card stat"><span class="lbl">Present today</span><div class="num">93.4<small>%</small></div><div class="foot">Sample · all classes</div></div>
+      <div class="card stat"><span class="lbl">Staff present</span><div class="num">84<small> / 88</small></div><div class="foot">2 on leave, 2 on duty</div></div>
+      <div class="card stat"><span class="lbl">Q3 fees</span><div class="num">70<small>%</small></div><div class="foot">Collected so far</div></div>
+      <div class="card stat hl"><span class="lbl">New enquiries</span><div class="num">${fresh}</div><div class="foot">${enq.length} total this season</div></div>`;
+    const rec = S.state.attendance[S.todayKey];
+    const vals = sample.map((v, i) => classes[i] === "VII" ? (rec ? Math.round(((32 - Object.keys(rec.marks).length) / 32) * 100) : null) : v);
+    // Build the columns once; after that only move them, so a refresh never replays the whole chart.
+    const cols = S.$("#cols");
+    if (cols.children.length !== vals.length) {
+      cols.innerHTML = vals.map(() => `<div class="col"><span class="tip"></span><span class="c"></span></div>`).join("");
+      S.$("#col-labels").innerHTML = classes.map((c) => `<span>${c}</span>`).join("");
+      cols.getBoundingClientRect(); // let the zero height land before the first grow
+    }
+    vals.forEach((v, i) => {
+      const col = cols.children[i], c = col.querySelector(".c");
+      col.classList.toggle("low", v !== null && v < 90);
+      col.querySelector(".tip").textContent = `Class ${classes[i]}: ${v === null ? "not marked yet" : v + "% present"}`;
+      c.classList.toggle("pending", v === null);
+      c.style.height = v === null ? "100%" : v + "%";
+    });
+    S.$("#fee-due").textContent = "Due " + S.fmt(S.state.fees[2].due);
+    S.$("#enq-mini").innerHTML = enq.slice(0, 4).map((e) => `<div class="li"><span class="avatar soft">${e.child.split(" ").map((p) => p[0]).join("").slice(0, 2)}</span><div class="t"><b>${S.esc(e.child)} · ${S.esc(e.cls)}</b><span>${S.esc(e.parent)} · ${S.fmt(e.at)}</span></div><span class="end pill ${e.status === "New" ? "red" : e.status === "Visit booked" ? "green" : ""}">${e.status}</span></div>`).join("");
+    S.$("#risk").innerHTML = S.atRisk().map((x) => `<div class="li"><span class="avatar soft">${x.s.initials}</span><div class="t"><b>${x.s.name}</b><span>${x.why.join(" · ")}</span></div></div>`).join("");
+    document.querySelectorAll('[data-count="admissions"]').forEach((c) => { c.hidden = !fresh; c.textContent = fresh; });
+
+    // Admissions
+    const byCls = (c) => enq.filter((e) => e.cls === c).length;
+    S.$("#adm-kpis").innerHTML = `
+      <div class="card stat"><span class="lbl">Enquiries</span><div class="num">${enq.length}</div></div>
+      <div class="card stat"><span class="lbl">Nursery</span><div class="num">${byCls("Nursery")}</div></div>
+      <div class="card stat"><span class="lbl">Class XI</span><div class="num">${byCls("Class XI")}</div></div>
+      <div class="card stat hl"><span class="lbl">To call</span><div class="num">${fresh}</div></div>`;
+    S.$("#adm-tbl").innerHTML = `<thead><tr><th>Child</th><th>Class</th><th>Parent</th><th>Phone</th><th>Received</th><th>Status</th></tr></thead><tbody>` + enq.map((e, i) => `<tr><td><b>${S.esc(e.child)}</b>${e.fresh ? ' <span class="pill red">From website</span>' : ""}${e.note ? `<div class="muted" style="font-size:12.5px">${S.esc(e.note)}</div>` : ""}</td><td>${S.esc(e.cls)}</td><td>${S.esc(e.parent)}</td><td class="mono" style="font-size:13px">${S.esc(e.phone)}</td><td>${S.fmt(e.at)}</td><td><select class="input" data-enq="${i}" style="min-height:36px;padding:4px 10px;font-size:13.5px;width:auto">${["New", "Called", "Visit booked", "Form given", "Admitted"].map((s) => `<option ${s === e.status ? "selected" : ""}>${s}</option>`).join("")}</select></td></tr>`).join("") + "</tbody>";
+
+    // Notices
+    S.$("#nt-list").innerHTML = [...S.state.notices].reverse().map((n) => `<div class="li"><span class="sq ${n.fresh ? "red" : ""}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 10v4h3l6 4V6L7 10z"/></svg></span><div class="t"><b>${S.esc(n.title)}</b><span>${S.esc(n.text)}</span></div><span class="end pill">${S.esc(n.tag)}</span></div>`).join("");
+  }
+  S.$("#adm-tbl").addEventListener("change", (e) => { const s = e.target.closest("[data-enq]"); if (!s) return; S.state.enquiries[+s.dataset.enq].status = s.value; S.save(); render(); S.toast("Status updated"); });
+  S.$("#nt-form").addEventListener("submit", (e) => {
+    e.preventDefault();
+    S.state.notices.push({ id: "n" + Date.now(), title: S.$("#nt-title").value.trim(), text: S.$("#nt-text").value.trim(), date: S.todayKey, tag: S.$("#nt-tag").value, fresh: true });
+    S.save(); render(); S.toast(`Sent to ${S.$("#nt-to").value.toLowerCase()} · app, SMS and WhatsApp`);
+  });
+  let seen = S.state.enquiries.length;
+  document.addEventListener("sjs:sync", () => { const n = S.state.enquiries.length; render(); if (n > seen) S.toast("New admission enquiry from the website"); seen = n; });
+  render();
+  S.mountAI("principal");
+})();
+</script>
+</body>
+</html>

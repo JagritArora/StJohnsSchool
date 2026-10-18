@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>The Proposal | St. John's School</title>
+<link rel="icon" href="assets/crest.svg" type="image/svg+xml" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wdth,wght@12..96,75..100,400..800&family=Figtree:wght@400;500;600;700&family=Mukta:wght@400;600&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="css/site.css" />
+<script>
+/* Before the first paint: fade photos in as they load. */
+(function (d) { d.documentElement.classList.add("js");
+  var m = function (e) { if (e.target.tagName === "IMG") e.target.classList.add("is-loaded"); };
+  d.addEventListener("load", m, true); d.addEventListener("error", m, true); })(document);
+</script>
+</head>
+<body>
+<nav class="site-nav">
+  <div class="wrap">
+    <a href="index.html" class="brand"><img src="assets/crest.svg" alt="" width="40" height="40" /><span><span class="brand-name">St. John's School</span><span class="brand-sub">Website &amp; app proposal</span></span></a>
+    <div class="nav-actions">
+      
+      <button class="btn btn-ghost btn-sm" onclick="print()">Print</button>
+      <a href="index.html" class="btn btn-primary btn-sm">Open the prototype</a>
+    </div>
+  </div>
+</nav>
+
+<main>
+  <header class="prop-hero">
+    <div class="wrap">
+      <span class="eyebrow">Proposal · October 2026</span>
+      <h1>A website parents use every day, not once at admission time.</h1>
+      <p>A new public website for St. John's School, with an app behind it that connects parents, teachers and the principal — and an AI assistant that saves teachers time and answers parents in Hindi or English.</p>
+      <div class="hero-cta">
+        <a href="index.html" class="btn btn-primary">See the new website</a>
+        <a href="login.html?role=parent" class="btn btn-ghost">Parent view</a>
+        <a href="login.html?role=teacher" class="btn btn-ghost">Teacher view</a>
+        <a href="login.html?role=principal" class="btn btn-ghost">Principal view</a>
+      </div>
+    </div>
+  </header>
+
+  <section class="block" style="padding-top:48px">
+    <div class="wrap">
+      <div class="sec-head"><span class="eyebrow">Today vs. tomorrow</span><h2>What changes.</h2><p>Based on the current site at stjohnsschool.co.in, checked in October 2026.</p></div>
+      <div class="compare">
+        <div class="before">
+          <h3>The current website</h3>
+          <ul>
+            <li>Latest News, Upcoming Events and Photo Gallery come up empty on the homepage.</li>
+            <li>No phone number, email or full address on the homepage.</li>
+            <li>The browser tab reads “India's Best School ERP Software” — the software vendor's line, not the school's name. This is also what Google shows.</li>
+            <li>Admissions is a page of rules with no way to enquire online.</li>
+            <li>Photos sit only in a slider, without descriptions — invisible to Google and to screen readers.</li>
+            <li>We could not find the CBSE Mandatory Public Disclosure from the homepage.</li>
+          </ul>
+        </div>
+        <div class="after">
+          <h3>The new website and app</h3>
+          <ul>
+            <li>Sixty years of St. John's told properly: founder, values, campus, the stage and the field.</li>
+            <li>Ten clear pages: About, Academics, Admissions, Campus, Student life, Parent corner, News, Contact, and the CBSE disclosure page.</li>
+            <li>Online admission enquiry, straight to the principal's dashboard.</li>
+            <li>News and events posted from the same app teachers use — never empty again.</li>
+            <li>A login for every parent, teacher and the principal: attendance, homework, marks, fees and messages.</li>
+            <li>An AI assistant that answers parents at any hour, in Hindi or English.</li>
+            <li>Works on any phone, loads fast, light and dark mode, and is easy to find on Google.</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="block tint">
+    <div class="wrap">
+      <div class="sec-head"><span class="eyebrow">How it's used</span><h2>One school day, in the app.</h2><p>Teachers enter something once. Parents and the principal see it straight away. Nobody types the same thing twice.</p></div>
+      <div class="day">
+        <div class="day-row"><span class="time">7:20</span><div><span class="who-l g">Parent</span><p>Sees the school bus on its route and gets a notification two stops before home.</p></div><div class="muted">No more calls to the driver or the office.</div></div>
+        <div class="day-row"><span class="time">8:00</span><div><span class="who-l">Teacher</span><p>Takes roll call on the phone: everyone is present by default, tap the two who aren't. Thirty seconds.</p></div><div class="muted">Replaces the paper register, and the monthly totals add themselves.</div></div>
+        <div class="day-row"><span class="time">8:05</span><div><span class="who-l g">Parent</span><p>The parent of an absent child gets an app notification and SMS: “Aarav is marked absent today.”</p></div><div class="muted">A child who left home but didn't reach school is noticed within minutes.</div></div>
+        <div class="day-row"><span class="time">11:30</span><div><span class="who-l">Teacher</span><p>Posts homework in a free period. AI drafts the practice questions from a topic; the teacher edits and sends.</p></div><div class="muted">Every parent sees it. No “my child didn't write it down”.</div></div>
+        <div class="day-row"><span class="time">2:30</span><div><span class="who-l">Teacher</span><p>Enters Unit Test marks once and taps Publish.</p></div><div class="muted">Parents see the mark with the class average. Report cards fill in automatically.</div></div>
+        <div class="day-row"><span class="time">8:00 PM</span><div><span class="who-l g">Parent</span><p>Asks the assistant “कल क्या ले जाना है?” and gets tomorrow's subjects and pending homework.</p></div><div class="muted">The assistant only knows that parent's own child.</div></div>
+        <div class="day-row"><span class="time">Friday</span><div><span class="who-l g">Parent</span><p>Gets a short weekly summary: attendance, marks, what's due, what to work on — in English or Hindi.</p></div><div class="muted">Fewer surprises at the PTM.</div></div>
+        <div class="day-row"><span class="time">9:00 AM</span><div><span class="who-l">Principal</span><p>Reads a morning brief: attendance by class, classes that haven't marked, new admission enquiries, fees, students who need support.</p></div><div class="muted">The whole school on one screen, without asking for reports.</div></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="block">
+    <div class="wrap">
+      <div class="sec-head"><span class="eyebrow">AI features</span><h2>AI that drafts, people who decide.</h2><p>Built on Claude by Anthropic. Every feature below is in the prototype and can be tried.</p></div>
+      <div class="feat">
+        <div><span class="who-l">Website visitors</span><h3>Admissions assistant</h3><p>Answers questions about admission, documents, Class XI rules and the campus, in Hindi or English. If it doesn't know, it passes the question to the office.</p></div>
+        <div><span class="who-l">Parents</span><h3>“Ask about my child”</h3><p>Attendance, marks, homework, fees, bus and notices — for their own child only. A weekly summary arrives on Friday.</p></div>
+        <div><span class="who-l">Parents</span><h3>What to work on</h3><p>Spots the subject that slipped since the last test and suggests simple steps at home before the PTM.</p></div>
+        <div><span class="who-l">Teachers</span><h3>Report-card remarks</h3><p>A personal draft for each student from marks and attendance — all 32 at once. The teacher edits before saving.</p></div>
+        <div><span class="who-l">Teachers</span><h3>Practice sets &amp; lesson plans</h3><p>Worksheets and a 40-minute plan on any topic, sent as homework in one tap.</p></div>
+        <div><span class="who-l">Teachers &amp; office</span><h3>Notices in Hindi</h3><p>Every notice can go out in both languages, checked by a person before sending.</p></div>
+        <div><span class="who-l">Teachers</span><h3>Early warning</h3><p>Flags students with attendance under 85%, a sharp drop in marks, or a subject under 50% — before it shows up in the board result.</p></div>
+        <div><span class="who-l">Principal</span><h3>Morning brief</h3><p>A short daily summary of attendance, admissions, fees and students needing support.</p></div>
+        <div><span class="who-l">Principal</span><h3>Ask the school</h3><p>“Which class has the lowest attendance this month?” — answered from live records.</p></div>
+      </div>
+      <div class="card" style="margin-top:22px;padding:26px">
+        <h3 style="font-size:22px;margin-bottom:12px">Safeguards</h3>
+        <ul style="margin:0;padding-left:18px;display:grid;gap:8px;font-size:15.5px">
+          <li><b>Drafts, not decisions.</b> Nothing written by AI reaches a parent or a report card until a teacher approves it.</li>
+          <li><b>Each person sees only their own part.</b> A parent's assistant can only read that parent's child; a teacher's, only their classes.</li>
+          <li><b>No training on student data.</b> Data sent to Claude through Anthropic's commercial service is not used to train their models.</li>
+          <li><b>It says when it doesn't know,</b> and passes the question to the office instead of guessing.</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <section class="block tint">
+    <div class="wrap">
+      <div class="sec-head"><span class="eyebrow">Children's data</span><h2>Privacy built in from day one.</h2><p>India's Digital Personal Data Protection Act, 2023 sets stricter rules for children's data. The system is designed around them.</p></div>
+      <div class="feat">
+        <div><h3 style="margin-top:0">Parent consent</h3><p>Parents give consent when they first sign in, and can see what is stored about their child.</p></div>
+        <div><h3 style="margin-top:0">No ads, no tracking</h3><p>No advertising, no third-party trackers and no behavioural profiling of children anywhere in the app or website.</p></div>
+        <div><h3 style="margin-top:0">Stored in India</h3><p>Records live on servers in India, with role-based access and a log of who changed what.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="block">
+    <div class="wrap">
+      <div class="sec-head"><span class="eyebrow">Existing software</span><h2>Works with what the school already has.</h2><p>Today's website runs on Entab's CampusCare. There are two ways forward, and the school can choose after Phase 1.</p></div>
+      <div class="compare">
+        <div><h3>Connect</h3><p class="muted" style="font-size:15.5px">Keep CampusCare for fees and records; the new website and app read from it. Least disruption for the office. Depends on Entab giving access to the data.</p></div>
+        <div><h3>Replace</h3><p class="muted" style="font-size:15.5px">Move everything into the new system: one login and one place for every record, and no separate software subscription.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="block tint">
+    <div class="wrap">
+      <div class="sec-head"><span class="eyebrow">Rollout</span><h2>Live in about twelve weeks.</h2><p>Each phase is usable on its own, so the school sees value from the first month.</p></div>
+      <div class="phases">
+        <div><span class="wk">Weeks 1–3</span><h3>New website</h3><p>All pages, photos, news, admission enquiry form, Google listing, CBSE disclosure page.</p></div>
+        <div><span class="wk">Weeks 4–7</span><h3>Parent &amp; teacher app</h3><p>Attendance, homework, notices, messages, leave requests. Teacher training sessions.</p></div>
+        <div><span class="wk">Weeks 8–10</span><h3>Marks &amp; fees</h3><p>Marks entry, report cards, online fee payment by UPI with instant receipts.</p></div>
+        <div><span class="wk">Weeks 11–12</span><h3>AI assistant</h3><p>Ask St. John's, weekly summaries, remarks, practice sets, morning brief.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="block">
+    <div class="wrap">
+      <div class="sec-head"><span class="eyebrow">To begin</span><h2>What we need from the school.</h2></div>
+      <ul class="checklist">
+        <li>School logo in high resolution</li>
+        <li>Office phone, email and timings</li>
+        <li>Principal's message and photograph</li>
+        <li>Recent photos of campus, events and classrooms</li>
+        <li>CBSE affiliation number and Mandatory Public Disclosure documents</li>
+        <li>Fee structure for 2026–27</li>
+        <li>Holiday calendar and exam schedule</li>
+        <li>Class and section list with class teachers</li>
+        <li>Student list with parents' mobile numbers</li>
+        <li>Bus routes and stops</li>
+        <li>One person in the office to coordinate</li>
+        <li>A decision on CampusCare: connect or replace</li>
+      </ul>
+    </div>
+  </section>
+</main>
+
+<footer class="site-foot"><div class="wrap"><div>Prototype for discussion. Names, marks, fees and school-wide numbers in the demo are samples.</div><nav><a href="index.html">Website</a><a href="login.html">Login</a></nav></div></footer>
+<script src="js/data.js"></script>
+<script src="js/common.js"></script>
+</body>
+</html>

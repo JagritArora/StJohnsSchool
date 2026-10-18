@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Parent corner | St. John's School, Faridabad</title>
+<meta name="description" content="For St. John's families: school timings, uniform, fees and payment, requests for certificates and TC, downloads, and the parent app." />
+<link rel="icon" href="assets/crest.svg" type="image/svg+xml" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wdth,wght@12..96,75..100,400..800&family=Figtree:wght@400;500;600;700&family=Mukta:wght@400;600&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="css/school.css" />
+<meta name="theme-color" content="#1C1F24" media="(prefers-color-scheme: light)" />
+<meta name="theme-color" content="#1B1D22" media="(prefers-color-scheme: dark)" />
+<script>
+/* Before the first paint: fade photos in as they load, and hold headline motion until the fonts arrive. */
+(function (d) { var h = d.documentElement, done = function () { h.classList.add("fonts"); }; h.classList.add("js");
+  var m = function (e) { if (e.target.tagName === "IMG") e.target.classList.add("is-loaded"); };
+  d.addEventListener("load", m, true); d.addEventListener("error", m, true);
+  if (d.fonts && d.fonts.load) Promise.all([d.fonts.load('800 1em "Bricolage Grotesque"'), d.fonts.load("400 1em Figtree")]).then(done, done); else done();
+  setTimeout(done, 1500); })(document);
+</script>
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+</head>
+<body data-page="parents">
+<script src="js/shell.js"></script>
+<main id="main">
+  <header class="phero">
+    <div class="wrap phero-in">
+      <div>
+        <nav class="crumbs" aria-label="Breadcrumb"><a href="index.html">Home</a> / Parents</nav>
+        <h1><span class="ln"><span style="--i:0">Parent</span></span><span class="ln"><span style="--i:1">corner.</span></span></h1>
+        <p class="lead">Everything St. John's families look for in one place: timings, uniform, fees, certificates and downloads. For your own child's day, use the parent app.</p>
+        <div class="row-btns mt-m" style="opacity:0;animation:fade .9s .6s var(--ease-out) forwards"><a class="btn" href="login.html?role=parent">Open the parent app</a></div>
+      </div>
+      <figure class="arch clip" style="margin:0"><img src="assets/photos/slide-9.jpg" width="1600" height="666" alt="Primary students in school sweaters" style="object-position:40% 50%" /></figure>
+    </div>
+  </header>
+
+  <nav class="subnav" aria-label="On this page"><div class="wrap"><a href="#timings">Timings</a><a href="#uniform">Uniform</a><a href="#fees">Fees and payment</a><a href="#requests">Requests</a><a href="#downloads">Downloads</a><a href="#app">The parent app</a></div></nav>
+
+  <section class="sec" id="timings">
+    <div class="wrap split">
+      <div>
+        <h2 class="t-l">Timings.</h2>
+        <p class="lead mt-m">If your child will be absent, tell the class teacher through the app before 8 in the morning.</p>
+      </div>
+      <div class="tbl-wrap">
+        <table class="tbl">
+          <thead><tr><th>Who</th><th>Summer</th><th>Winter</th></tr></thead>
+          <tbody>
+            <tr><td>Nursery to UKG</td><td><span class="tbc" title="To be confirmed">To be added</span></td><td><span class="tbc" title="To be confirmed">To be added</span></td></tr>
+            <tr><td>Classes I to XII</td><td><span class="tbc" title="To be confirmed">To be added</span></td><td><span class="tbc" title="To be confirmed">To be added</span></td></tr>
+            <tr><td>School office</td><td colspan="2"><span class="tbc" title="To be confirmed">To be added</span></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <section class="sec sec--tint" id="uniform">
+    <div class="wrap">
+      <div class="sec-title"><h2 class="t-l">Uniform.</h2><p>As seen around school. The full uniform list, with where to buy it, will be <span class="tbc" title="To be provided by the school">published by the school</span>.</p></div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:28px">
+        <figure style="margin:0"><div class="arch clip" style="aspect-ratio:4/5"><img src="assets/photos/slide-8.jpg" width="1600" height="666" alt="Pre-primary children in red tracksuits and caps" style="object-position:84% 50%" loading="lazy" /></div><figcaption class="mt-s"><b>Pre-primary</b><br /><span class="muted">Red tracksuit and cap in winter.</span></figcaption></figure>
+        <figure style="margin:0"><div class="arch clip" style="aspect-ratio:4/5"><img src="assets/photos/slide-9.jpg" width="1600" height="666" alt="Primary students in grey school sweatshirts with ID cards" style="object-position:50% 50%" loading="lazy" /></div><figcaption class="mt-s"><b>Primary and middle</b><br /><span class="muted">Grey sweatshirt with the school crest in winter, with ID card.</span></figcaption></figure>
+        <figure style="margin:0"><div class="arch clip" style="aspect-ratio:4/5"><img src="assets/photos/slide-10.jpg" width="1600" height="666" alt="Senior students in grey blazers, white shirts and ties" style="object-position:62% 40%" loading="lazy" /></div><figcaption class="mt-s"><b>Seniors</b><br /><span class="muted">Grey blazer, white shirt and school tie.</span></figcaption></figure>
+      </div>
+    </div>
+  </section>
+
+  <section class="sec" id="fees">
+    <div class="wrap cols">
+      <h2 class="t-l">Fees and payment.</h2>
+      <div>
+        <p class="lead" style="margin-bottom:24px">Fees follow CBSE norms and are paid in instalments. The fee structure for the session is published in Downloads.</p>
+        <ol class="process process--3">
+          <li><b>See what's due</b><span>The parent app shows each instalment, its due date and what's been paid.</span></li>
+          <li><b>Pay by UPI</b><span>GPay, PhonePe, Paytm or any bank app, straight from the app.</span></li>
+          <li><b>Get the receipt</b><span>A receipt arrives at once, on WhatsApp and email, and stays in the app.</span></li>
+        </ol>
+        <p class="note mt-m">Instalment dates and amounts: <span class="tbc" title="To be provided by the school">to be added by the accounts office</span>.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="sec sec--sky" id="requests">
+    <div class="wrap split">
+      <div>
+        <h2 class="t-l">Requests.</h2>
+        <p class="lead mt-m">Ask the office for a certificate or a change without a trip to school. You'll get an SMS when it's ready.</p>
+      </div>
+      <div>
+        <form class="form" data-form="request">
+          <div class="field" style="margin-top:0"><label for="r-type">I need</label><select id="r-type" name="type"><option>Bonafide certificate</option><option>Transfer certificate (TC)</option><option>Character certificate</option><option>Change of address or phone number</option><option>Bus route or stop change</option><option>Duplicate ID card</option></select></div>
+          <div class="row2"><div class="field"><label for="r-child">Child's name</label><input id="r-child" name="child" required /></div><div class="field"><label for="r-cls">Class and section</label><input id="r-cls" name="cls" required placeholder="e.g. VII-B" /></div></div>
+          <div class="field"><label for="r-phone">Your mobile number</label><input id="r-phone" name="phone" required inputmode="tel" autocomplete="tel" /></div>
+          <button class="btn mt-m" type="submit" style="width:100%">Send request</button>
+        </form>
+        <div class="form done" hidden>
+          <div class="tick"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></div>
+          <h3 class="t-m">Request sent.</h3>
+          <p class="muted mt-s">The office will send you an SMS when it's ready to collect.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="sec" id="downloads">
+    <div class="wrap cols">
+      <h2 class="t-l">Downloads.</h2>
+      <ul class="docs">
+        <li><a href="#downloads"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3h9l4 4v14H6z"/><path d="M14 3v5h5"/></svg><div><b>School prospectus</b><span>About the school, admission and rules</span></div><em>PDF</em></a></li>
+        <li><a href="#downloads"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="5" width="16" height="15" rx="2"/><path d="M4 10h16M9 3v4M15 3v4"/></svg><div><b>Academic calendar 2026–27</b><span>Terms, exams, holidays and events</span></div><em>Coming soon</em></a></li>
+        <li><a href="#downloads"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3h9l4 4v14H6z"/><path d="M9 12h6M9 16h6"/></svg><div><b>Fee structure 2026–27</b><span>Class-wise fees and instalment dates</span></div><em>Coming soon</em></a></li>
+        <li><a href="#downloads"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19V5a1 1 0 0 1 1-1h5v15H5a1 1 0 0 1-1-1zM10 4h4v15h-4z"/></svg><div><b>Book and stationery lists</b><span>For every class</span></div><em>Coming soon</em></a></li>
+        <li><a href="#downloads"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3h9l4 4v14H6z"/><path d="M9 13l2 2 4-4"/></svg><div><b>Rules and code of conduct</b><span>Attendance, uniform, discipline and safety</span></div><em>Coming soon</em></a></li>
+      </ul>
+    </div>
+  </section>
+
+  <section class="sec sec--hedge" id="app">
+    <div class="wrap split" style="align-items:center">
+      <div>
+        <h2 class="t-xl">Your child's day, on your phone.</h2>
+        <ul class="ticks mt-m" style="max-width:32em">
+          <li>A message within minutes if your child is marked absent</li>
+          <li>Homework, marks and report cards as soon as teachers post them</li>
+          <li>The school bus, stop by stop</li>
+          <li>Fees by UPI, with instant receipts</li>
+          <li>Message the class teacher, apply for leave</li>
+          <li>A weekly summary in English or Hindi, and an assistant that answers questions about your child</li>
+        </ul>
+        <div class="row-btns mt-m"><a class="btn btn--light" href="login.html?role=parent">Try the parent app</a><a class="btn btn--line-light" href="login.html?role=teacher">See the teacher's side</a></div>
+      </div>
+      <div class="phone" aria-hidden="true">
+        <div class="phone-scr">
+          <h4>Good evening, Rohit</h4>
+          <div class="phone-row ok"><b>Aarav is in school today</b><span>8:41</span></div>
+          <div class="phone-row"><span>Maths worksheet</span><b>Due tomorrow</b></div>
+          <div class="phone-row"><span>Maths, Unit Test 2</span><b>17 / 20</b></div>
+          <div class="phone-row ai"><b>This week:</b> present 5 of 5 days. Strongest in Computer and Science. Hindi needs 15 minutes of reading aloud each day.</div>
+          <div class="phone-row"><span>Bus, Route 14</span><b>2 stops away</b></div>
+          <div class="phone-row"><span>Fee, October to December</span><b>Pay by UPI</b></div>
+          <div class="phone-row"><span>Parent–teacher meeting</span><b>Sat, 31 Oct</b></div>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+<script src="js/data.js"></script>
+<script src="js/ai.js"></script>
+<script src="js/school.js"></script>
+</body>
+</html>

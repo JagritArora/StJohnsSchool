@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>News and events | St. John's School, Faridabad</title>
+<meta name="description" content="Upcoming events, holidays, parent-teacher meetings and stories from St. John's School, Sector 7A, Faridabad." />
+<link rel="icon" href="assets/crest.svg" type="image/svg+xml" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wdth,wght@12..96,75..100,400..800&family=Figtree:wght@400;500;600;700&family=Mukta:wght@400;600&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="css/school.css" />
+<meta name="theme-color" content="#1C1F24" media="(prefers-color-scheme: light)" />
+<meta name="theme-color" content="#1B1D22" media="(prefers-color-scheme: dark)" />
+<script>
+/* Before the first paint: fade photos in as they load, and hold headline motion until the fonts arrive. */
+(function (d) { var h = d.documentElement, done = function () { h.classList.add("fonts"); }; h.classList.add("js");
+  var m = function (e) { if (e.target.tagName === "IMG") e.target.classList.add("is-loaded"); };
+  d.addEventListener("load", m, true); d.addEventListener("error", m, true);
+  if (d.fonts && d.fonts.load) Promise.all([d.fonts.load('800 1em "Bricolage Grotesque"'), d.fonts.load("400 1em Figtree")]).then(done, done); else done();
+  setTimeout(done, 1500); })(document);
+</script>
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+</head>
+<body data-page="news">
+<script src="js/shell.js"></script>
+<main id="main">
+  <header class="phero">
+    <div class="wrap phero-in">
+      <div>
+        <nav class="crumbs" aria-label="Breadcrumb"><a href="index.html">Home</a> / News</nav>
+        <h1><span class="ln"><span style="--i:0">News</span></span><span class="ln"><span style="--i:1">and events.</span></span></h1>
+        <p class="lead">What's coming up at school, and what happened. Posted by the school office from the same app teachers use, so it is always current.</p>
+      </div>
+      <figure class="arch clip" style="margin:0"><img src="assets/photos/slide-10.jpg" width="1600" height="666" alt="Students receiving a trophy from a guest of honour" style="object-position:40% 40%" /></figure>
+    </div>
+  </header>
+
+  <nav class="subnav" aria-label="On this page"><div class="wrap"><a href="#upcoming">Coming up</a><a href="#stories">From the school</a><a href="#app">Notices on your phone</a></div></nav>
+
+  <section class="sec" id="upcoming" style="padding-top:24px">
+    <div class="wrap">
+      <h2 class="t-l" style="margin-bottom:34px">Coming up.</h2>
+      <ul class="news" data-news></ul>
+      <p class="note mt-s">Dates shown are samples for the prototype.</p>
+    </div>
+  </section>
+
+  <section class="sec sec--tint" id="stories">
+    <div class="wrap">
+      <div class="sec-title"><h2 class="t-l">From the school.</h2><p>Stories and photos from recent events. <span class="tbc" title="Sample stories for the prototype">Sample stories</span>, to be replaced with the school's own.</p></div>
+      <div class="stories">
+        <a class="story story--big" href="life.html#gallery"><div class="ph"><img src="assets/photos/slide-1.jpg" width="1600" height="666" alt="The school choir in pink and white on stage" loading="lazy" /></div><span class="tag tag--brick mt-s">Annual Day</span><h3>The choir at Annual Day</h3><p>The senior and junior choirs closed the evening together on the main stage.</p></a>
+        <div class="side">
+          <a class="story" href="life.html#gallery"><div class="ph"><img src="assets/photos/slide-6.jpg" width="1600" height="666" alt="School band in formation" loading="lazy" /></div><span class="tag tag--hedge mt-s">Independence Day</span><h3>The band leads the march-past</h3></a>
+          <a class="story" href="life.html#gallery"><div class="ph"><img src="assets/photos/slide-9.jpg" width="1600" height="666" alt="Primary students in school sweaters grinning at the camera" loading="lazy" style="object-position:60% 40%" /></div><span class="tag tag--gold mt-s">Primary</span><h3>Big smiles in the primary wing</h3></a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="sec sec--hedge sec--tight" id="app">
+    <div class="wrap" style="display:flex;justify-content:space-between;align-items:end;gap:28px;flex-wrap:wrap">
+      <div><h2 class="t-l" style="max-width:14em">Get every notice on your phone.</h2><p class="lead mt-s" style="opacity:.88">Parents get notices in the app and by SMS, in English or Hindi.</p></div>
+      <a class="btn btn--light" href="parents.html#app">About the parent app</a>
+    </div>
+  </section>
+</main>
+<script src="js/data.js"></script>
+<script src="js/ai.js"></script>
+<script src="js/school.js"></script>
+</body>
+</html>

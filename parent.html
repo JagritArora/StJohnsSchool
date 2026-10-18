@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+<title>Parent | St. John's School</title>
+<link rel="icon" href="assets/crest.svg" type="image/svg+xml" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wdth,wght@12..96,75..100,400..800&family=Figtree:wght@400;500;600;700&family=Mukta:wght@400;600&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="css/site.css" />
+<script>
+/* Before the first paint: fade photos in as they load. */
+(function (d) { d.documentElement.classList.add("js");
+  var m = function (e) { if (e.target.tagName === "IMG") e.target.classList.add("is-loaded"); };
+  d.addEventListener("load", m, true); d.addEventListener("error", m, true); })(document);
+</script>
+</head>
+<body class="app">
+<div class="proto-bar"><b>Prototype</b> · Parent view with sample data. <a href="teacher.html" target="_blank">Open teacher view in a new tab →</a></div>
+<div class="app-shell">
+  <aside class="side">
+    <a href="index.html" class="brand"><img src="assets/crest.svg" alt="" width="40" height="40" /><span><span class="brand-name">St. John's</span><span class="brand-sub">Parent</span></span></a>
+    <nav id="nav-side"></nav>
+    <div class="side-foot">
+      
+      <a class="side-btn" href="login.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M15 4h4v16h-4M10 8l-4 4 4 4M6 12h10"/></svg>Sign out</a>
+      <div class="who"><span class="avatar">RS</span><div><b>Rohit Sharma</b><span>Parent</span></div></div>
+    </div>
+  </aside>
+
+  <main class="main">
+    <div class="mobile-head"><img src="assets/crest.svg" alt="" /><b>St. John's</b><div class="right"><button class="icon-btn" data-go="messages" aria-label="Messages"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5h16v11H9l-5 4z"/></svg></button><a class="icon-btn" href="login.html" aria-label="Sign out"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M15 4h4v16h-4M10 8l-4 4 4 4M6 12h10"/></svg></a></div></div>
+
+    <!-- HOME -->
+    <section data-view="home">
+      <div class="topbar"><div><h1 id="hello">Good morning, Rohit</h1><div class="sub" id="today-line"></div></div></div>
+      <div class="chips" style="margin-bottom:18px">
+        <button class="chip on"><span class="avatar">AS</span>Aarav · VII-B</button>
+        <button class="chip" id="sib"><span class="avatar green">AS</span>Ananya · III-A</button>
+      </div>
+      <div id="today-status" class="status" style="margin-bottom:16px"></div>
+      <div class="grid g4" id="home-stats" style="margin-bottom:16px"></div>
+      <div class="grid g21" style="margin-bottom:16px">
+        <div class="ai-card">
+          <div class="card-h" style="margin:0"><span class="ai-tag"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l1.9 5.3L19 10l-5.1 1.7L12 17l-1.9-5.3L5 10l5.1-1.7z"/></svg>This week for Aarav · AI summary</span><div class="right seg" id="lang"><button class="on" data-l="en">English</button><button data-l="hi">हिंदी</button></div></div>
+          <div class="body" id="weekly"></div>
+          <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:16px"><button class="btn btn-primary btn-sm" onclick="SJS.ask('What should we work on?')">What should we work on?</button><button class="btn btn-ghost btn-sm" onclick="SJS.openAI()">Ask anything about Aarav</button></div>
+        </div>
+        <div class="card">
+          <div class="card-h"><h2>School bus · Route 14</h2><span class="right pill green" id="bus-pill">Live</span></div>
+          <div id="bus-text" style="font-size:15px"></div>
+          <div class="route" id="route"></div>
+          <div class="route-labels" id="route-labels"></div>
+          <p class="muted" style="font-size:12px;margin-top:14px">Simulated in the prototype. Live version uses the bus driver's phone GPS.</p>
+        </div>
+      </div>
+      <div class="grid g2">
+        <div class="card"><div class="card-h"><h2 id="tt-title">Today's timetable</h2></div><div class="list" id="tt"></div></div>
+        <div class="card"><div class="card-h"><h2>Notices</h2></div><div class="list" id="notices"></div></div>
+      </div>
+    </section>
+
+    <!-- ATTENDANCE -->
+    <section data-view="attendance">
+      <div class="topbar"><div><h1>Attendance</h1><div class="sub">Aarav Sharma · VII-B · Session 2026–27</div></div><div class="right"><button class="btn btn-primary btn-sm" onclick="SJS.openModal('leave-modal')">Apply for leave</button></div></div>
+      <div class="grid g3" id="att-stats" style="margin-bottom:16px"></div>
+      <div class="grid g21">
+        <div class="card">
+          <div class="card-h"><h2 id="cal-title"></h2><div class="right" style="display:flex;gap:6px"><button class="icon-btn" id="cal-prev" aria-label="Previous month" style="width:34px;height:34px">‹</button><button class="icon-btn" id="cal-next" aria-label="Next month" style="width:34px;height:34px">›</button></div></div>
+          <div class="cal" id="cal"></div>
+          <div class="legend"><span><i style="background:var(--green-soft);border:1px solid var(--green)"></i>Present</span><span><i style="background:var(--accent)"></i>Absent</span><span><i style="background:var(--warn-soft);border:1px solid var(--warn)"></i>Leave</span><span><i style="border:1px dashed var(--muted)"></i>Holiday / weekend</span></div>
+        </div>
+        <div class="card"><div class="card-h"><h2>Days away this session</h2></div><div class="list" id="absences"></div></div>
+      </div>
+    </section>
+
+    <!-- HOMEWORK -->
+    <section data-view="homework">
+      <div class="topbar"><div><h1>Homework</h1><div class="sub">Posted by Aarav's teachers. Tick when done.</div></div></div>
+      <div class="grid" id="hw"></div>
+    </section>
+
+    <!-- RESULTS -->
+    <section data-view="results">
+      <div class="topbar"><div><h1>Results</h1><div class="sub">Aarav Sharma · VII-B</div></div><div class="right seg" id="exam"><button class="on" data-e="hy">Half-yearly</button><button data-e="ut1">Unit Test 1</button></div></div>
+      <div id="ut2-card"></div>
+      <div class="grid g21">
+        <div class="card">
+          <div class="card-h"><h2 id="res-title">Half-yearly · marks by subject</h2></div>
+          <div class="bars" id="bars"></div>
+          <div class="legend"><span><i style="background:var(--accent)"></i>Aarav</span><span><i style="background:var(--ink);width:3px;border-radius:1px"></i>Class average</span></div>
+        </div>
+        <div class="card">
+          <div class="card-h"><h2>Table</h2></div>
+          <div class="tbl-wrap"><table class="tbl" id="res-tbl"></table></div>
+        </div>
+      </div>
+      <div class="ai-card" style="margin-top:16px"><span class="ai-tag"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l1.9 5.3L19 10l-5.1 1.7L12 17l-1.9-5.3L5 10l5.1-1.7z"/></svg>What the numbers say</span><div class="body" id="res-ai"></div></div>
+    </section>
+
+    <!-- FEES -->
+    <section data-view="fees">
+      <div class="topbar"><div><h1>Fees</h1><div class="sub">Aarav Sharma · Session 2026–27 · amounts are samples</div></div></div>
+      <div id="fee-due" style="margin-bottom:16px"></div>
+      <div class="card"><div class="card-h"><h2>Instalments</h2></div><div class="tbl-wrap"><table class="tbl" id="fee-tbl"></table></div></div>
+    </section>
+
+    <!-- MESSAGES -->
+    <section data-view="messages">
+      <div class="topbar"><div><h1>Messages</h1><div class="sub">With Ms. Neha Mathew, class teacher VII-B</div></div></div>
+      <div class="card" style="max-width:720px">
+        <div class="thread" id="thread"></div>
+        <form id="msg-form" class="ai-form" style="padding:14px 0 0;margin-top:12px"><input placeholder="Write to the class teacher…" aria-label="Message" /><button type="submit" aria-label="Send"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button></form>
+      </div>
+    </section>
+  </main>
+</div>
+<nav class="bottom-nav" id="nav-bottom"></nav>
+
+<div class="modal" id="leave-modal"><div class="modal-card">
+  <h3>Apply for leave</h3><p class="muted">Goes straight to Ms. Neha Mathew.</p>
+  <form id="leave-form">
+    <div class="row2"><div class="field"><label for="l-from">From</label><input type="date" id="l-from" required /></div><div class="field"><label for="l-to">To</label><input type="date" id="l-to" required /></div></div>
+    <div class="field"><label for="l-why">Reason</label><textarea id="l-why" required>Family function out of town.</textarea></div>
+    <div style="display:flex;gap:10px;margin-top:20px"><button type="button" class="btn btn-ghost" data-close>Cancel</button><button class="btn btn-primary" type="submit" style="flex:1">Send to teacher</button></div>
+  </form>
+</div></div>
+
+<div class="modal" id="pay-modal"><div class="modal-card" style="text-align:center">
+  <h3>Pay by UPI</h3><p class="muted" id="pay-amt"></p>
+  <svg viewBox="0 0 21 21" width="170" height="170" style="margin:20px auto;display:block;border-radius:12px;background:#fff;padding:10px" shape-rendering="crispEdges" id="qr"></svg>
+  <p class="muted" style="font-size:13px">Scan with any UPI app — GPay, PhonePe, Paytm, BHIM.</p>
+  <div style="display:flex;gap:10px;margin-top:20px"><button type="button" class="btn btn-ghost" data-close>Cancel</button><button class="btn btn-green" id="pay-done" style="flex:1">I've paid (demo)</button></div>
+</div></div>
+
+<script src="js/data.js"></script>
+<script src="js/common.js"></script>
+<script src="js/ai.js"></script>
+<script>
+(function () {
+  const S = SJS, me = S.me;
+  const I = {
+    home: '<path d="M4 11l8-7 8 7v9H4z"/><path d="M10 20v-5h4v5"/>',
+    attendance: '<rect x="4" y="5" width="16" height="15" rx="2"/><path d="M4 10h16M9 3v4M15 3v4M9 15l2 2 4-4"/>',
+    homework: '<path d="M6 3h9l4 4v14H6z"/><path d="M14 3v5h5M9 13h7M9 17h5"/>',
+    results: '<path d="M5 20V10M12 20V4M19 20v-7"/>',
+    fees: '<rect x="3" y="6" width="18" height="13" rx="2"/><path d="M3 10h18M7 15h3"/>',
+    messages: '<path d="M4 5h16v11H9l-5 4z"/>'
+  };
+  const nav = [["home", "Home"], ["attendance", "Attendance"], ["homework", "Homework"], ["results", "Results"], ["fees", "Fees"], ["messages", "Messages"]];
+  const btn = (k, l) => `<button class="side-btn" data-go="${k}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">${I[k]}</svg>${l}<span class="count" data-count="${k}" hidden></span></button>`;
+  S.$("#nav-side").innerHTML = nav.map(([k, l]) => btn(k, l)).join("");
+  S.$("#nav-bottom").innerHTML = nav.filter(([k]) => k !== "messages").map(([k, l]) => btn(k, l)).join("");
+
+  const statusLabel = { P: "Present", A: "Absent", L: "Leave" };
+  let lang = "en", exam = "hy", calMonth = new Date(S.today.getFullYear(), S.today.getMonth(), 1);
+
+  function renderHome() {
+    S.$("#hello").textContent = S.greet() + ", Rohit";
+    S.$("#today-line").textContent = S.fmtLong(S.today) + " · Aarav is in VII-B";
+    const st = S.statusOn(me.roll, S.todayKey), rec = S.state.attendance[S.todayKey];
+    const box = S.$("#today-status");
+    const tick = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>';
+    const clock = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>';
+    const alert = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M12 7v6M12 17h.01"/><circle cx="12" cy="12" r="9"/></svg>';
+    if (st === null) { box.className = "status wait"; box.innerHTML = `<span class="sq warn">${clock}</span><div><b>Attendance not marked yet</b><span>Ms. Neha Mathew takes roll call at 8:00 AM. You'll get a notification.</span></div>`; }
+    else if (st === "P") { box.className = "status ok"; box.innerHTML = `<span class="sq green">${tick}</span><div><b>Aarav is in school today</b><span>Marked present at ${rec.at} by Ms. Neha Mathew</span></div>`; }
+    else { box.className = "status bad"; box.innerHTML = `<span class="sq red">${alert}</span><div><b>Aarav is marked ${statusLabel[st].toLowerCase()} today</b><span>Marked at ${rec.at} by Ms. Neha Mathew. Not expected? <a href="#messages" data-go="messages" style="color:var(--accent)">Message the teacher</a></span></div>`; }
+
+    const pend = S.state.homework.filter((h) => !h.done), fee = S.state.fees.find((f) => !f.paid);
+    S.$("#home-stats").innerHTML = `
+      <div class="card stat"><span class="lbl">Attendance</span><div class="num">${S.attendancePct(me.roll)}<small>%</small></div><div class="foot">This session</div></div>
+      <div class="card stat"><span class="lbl">Homework</span><div class="num">${pend.length}<small> pending</small></div><div class="foot">${pend[0] ? "Next: " + S.esc(pend[0].subj) + ", " + S.fmt(pend[0].due) : "All done"}</div></div>
+      <div class="card stat"><span class="lbl">Half-yearly</span><div class="num">${S.avgOf(me.hy)}<small>%</small></div><div class="foot">Up from ${S.avgOf(me.ut1)}% in UT 1</div></div>
+      <div class="card stat ${fee ? "hl" : ""}"><span class="lbl">Fees</span><div class="num">${fee ? S.rupee(fee.amount) : "Paid"}</div><div class="foot">${fee ? "Due " + S.fmt(fee.due) : "Nothing due"}</div></div>`;
+    S.$("#weekly").innerHTML = S.weekly(lang).replace(/\n/g, "<br />");
+
+    // Timetable — today, or tomorrow after 2 PM
+    const after = new Date().getHours() >= 14, day = after ? S.nextSchoolDay(S.today) : S.today;
+    S.$("#tt-title").textContent = after ? "Tomorrow's timetable · " + S.fmt(day, { weekday: "long" }) : "Today's timetable";
+    S.$("#tt").innerHTML = S.timetable[day.getDay()].map((p, i) => `<div class="li"><span class="sq">${i + 1}</span><div class="t"><b>${p}</b><span>${S.periodTimes[i]}</span></div></div>`).join("");
+
+    const ns = [...S.state.notices].sort((a, b) => (b.fresh ? 1 : 0) - (a.fresh ? 1 : 0) || (a.date < b.date ? -1 : 1)).slice(0, 5);
+    S.$("#notices").innerHTML = ns.map((n) => `<div class="li"><div class="date-chip" style="width:50px;padding:7px 0 8px;flex:none"><b style="font-size:19px">${new Date(n.date + "T00:00").getDate()}</b><span style="font-size:10px">${S.fmt(n.date, { month: "short" })}</span></div><div class="t"><b>${S.esc(n.title)} ${n.fresh ? '<span class="pill red" style="margin-left:4px">New</span>' : ""}</b><span>${S.esc(n.text)}</span></div></div>`).join("");
+
+    // badges
+    const unreadHw = S.state.homework.filter((h) => h.fresh && !h.done).length;
+    document.querySelectorAll('[data-count="homework"]').forEach((c) => { c.hidden = !unreadHw; c.textContent = unreadHw; });
+    const unreadMsg = S.state.messages.filter((m) => m.from === "teacher" && m.fresh).length;
+    document.querySelectorAll('[data-count="messages"]').forEach((c) => { c.hidden = !unreadMsg; c.textContent = unreadMsg; });
+  }
+
+  // Bus: loops through the stops so it looks live in a demo.
+  const stops = ["Sector 9", "Sec 8 Market", "Sec 7C", "Your stop", "School"];
+  function renderBus() {
+    const morning = new Date().getHours() < 12;
+    const list = morning ? stops : [...stops].reverse();
+    const home = list.indexOf("Your stop");
+    const pos = Math.floor(Date.now() / 7000) % list.length;
+    S.$("#route").innerHTML = list.map((s, i) => `${i ? `<span class="seg-l ${i <= pos ? "done" : ""}"></span>` : ""}<span class="stop ${i <= pos ? "done" : ""} ${s === "Your stop" ? "home" : ""}" title="${s}"></span>`).join("");
+    S.$("#route-labels").innerHTML = list.map((s) => `<span>${s}</span>`).join("");
+    const left = home - pos;
+    S.$("#bus-text").innerHTML = (morning ? "<b>Morning pick-up.</b> " : "<b>Afternoon drop.</b> ") +
+      (left > 0 ? `${left} stop${left > 1 ? "s" : ""} away · about ${left * 4} min` : left === 0 ? "At your stop now" : morning ? "Aarav is on the bus to school" : "Dropped off at your stop ✓");
+  }
+
+  function renderCal() {
+    const y = calMonth.getFullYear(), m = calMonth.getMonth();
+    S.$("#cal-title").textContent = calMonth.toLocaleDateString("en-IN", { month: "long", year: "numeric" });
+    let html = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"].map((d) => `<span class="dow">${d}</span>`).join("");
+    const first = (new Date(y, m, 1).getDay() + 6) % 7;
+    html += "<span></span>".repeat(first);
+    const days = new Date(y, m + 1, 0).getDate();
+    for (let d = 1; d <= days; d++) {
+      const k = S.iso(new Date(y, m, d)), st = S.statusOn(me.roll, k);
+      const cls = st === "H" ? "H" : st || "";
+      const label = st === "H" ? (S.HOLIDAYS[k] || "Weekend") : st ? statusLabel[st] : "Not yet";
+      html += `<span class="d ${cls} ${k === S.todayKey ? "T" : ""}" title="${S.fmt(k)}: ${label}">${d}</span>`;
+    }
+    S.$("#cal").innerHTML = html;
+    S.$("#cal-next").disabled = y === S.today.getFullYear() && m === S.today.getMonth();
+  }
+
+  function renderAttendance() {
+    const pct = S.attendancePct(me.roll);
+    const away = Object.keys(S.history).filter((k) => S.history[k][me.roll]).map((k) => [k, S.history[k][me.roll]]);
+    const t = S.state.attendance[S.todayKey]; if (t && t.marks[me.roll]) away.push([S.todayKey, t.marks[me.roll]]);
+    S.$("#att-stats").innerHTML = `
+      <div class="card stat"><span class="lbl">This session</span><div class="num">${pct}<small>%</small></div><div class="foot">CBSE minimum is 75%</div></div>
+      <div class="card stat"><span class="lbl">Days away</span><div class="num">${away.length}</div><div class="foot">${away.filter((a) => a[1] === "L").length} on approved leave</div></div>
+      <div class="card stat"><span class="lbl">Class average</span><div class="num">${Math.round(S.students.reduce((a, s) => a + S.attendancePct(s.roll), 0) / S.students.length * 10) / 10}<small>%</small></div><div class="foot">VII-B</div></div>`;
+    S.$("#absences").innerHTML = away.length ? away.reverse().map(([k, s]) => `<div class="li"><span class="sq ${s === "A" ? "red" : "warn"}">${s}</span><div class="t"><b>${S.fmt(k, { weekday: "long", day: "numeric", month: "long" })}</b><span>${statusLabel[s]}</span></div></div>`).join("") : '<p class="muted">No days away. 🎉</p>';
+    const leaves = S.state.leaves;
+    if (leaves.length) S.$("#absences").insertAdjacentHTML("afterbegin", leaves.map((l) => `<div class="li"><span class="sq warn">L</span><div class="t"><b>Leave requested: ${S.fmt(l.from)} – ${S.fmt(l.to)}</b><span>${S.esc(l.why)}</span></div><span class="end pill ${l.status === "Approved" ? "green" : "warn"}">${l.status}</span></div>`).join(""));
+    renderCal();
+  }
+
+  function renderHomework() {
+    const hw = [...S.state.homework].sort((a, b) => a.done - b.done || (a.due < b.due ? -1 : 1));
+    S.$("#hw").innerHTML = hw.map((h) => `<div class="card" style="display:flex;gap:16px;align-items:flex-start;${h.done ? "opacity:.6" : ""}">
+      <label style="display:grid;place-items:center;width:40px;height:40px;border-radius:12px;border:1.5px solid ${h.done ? "var(--green)" : "var(--line)"};background:${h.done ? "var(--green-soft)" : "transparent"};cursor:pointer;flex:none;color:var(--green)">
+        <input type="checkbox" data-hw="${h.id}" ${h.done ? "checked" : ""} class="sr-only" />${h.done ? '<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>' : ""}</label>
+      <div style="flex:1;min-width:0"><div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center"><span class="pill">${S.esc(h.subj)}</span>${h.fresh ? '<span class="pill red">New</span>' : ""}<span class="pill ${h.done ? "green" : "warn"}">${h.done ? "Done" : "Due " + S.fmt(h.due, { weekday: "short", day: "numeric", month: "short" })}</span></div>
+      <h3 style="font:600 17px/1.35 var(--sans);margin:10px 0 6px">${S.esc(h.title)}</h3><p class="muted" style="font-size:14.5px">${S.esc(h.detail)}</p><p class="muted" style="font-size:12.5px;margin-top:8px">Set by ${S.esc(h.by)}</p></div></div>`).join("");
+  }
+  S.$("#hw").addEventListener("change", (e) => { const id = e.target.dataset.hw; const h = S.state.homework.find((x) => x.id === id); if (!h) return; h.done = e.target.checked; h.fresh = false; S.save(); renderHomework(); renderHome(); });
+
+  function renderResults() {
+    const marks = me[exam];
+    S.$("#res-title").textContent = (exam === "hy" ? "Half-yearly" : "Unit Test 1") + " · marks by subject (%)";
+    // Build the bars once; after that only move them, so a refresh never replays the whole chart.
+    const bars = S.$("#bars");
+    if (bars.children.length !== S.subjects.length) {
+      bars.innerHTML = S.subjects.map((s) => `<div class="bar-row"><span>${s}</span><div class="track" tabindex="0"><span class="fill" style="width:0"></span><span class="ref"></span><span class="tip"></span></div><span class="v"></span></div>`).join("");
+      bars.getBoundingClientRect(); // let the zero width land before the first grow
+    }
+    S.subjects.forEach((s, i) => { const row = bars.children[i], avg = S.classAvg(exam, s); row.querySelector(".fill").style.width = marks[s] + "%"; row.querySelector(".ref").style.left = avg + "%"; row.querySelector(".tip").textContent = `${s}: Aarav ${marks[s]}% · class average ${avg}%`; row.querySelector(".v").textContent = marks[s]; });
+    S.$("#res-tbl").innerHTML = `<thead><tr><th>Subject</th><th class="num">UT 1</th><th class="num">Half-yearly</th><th class="num">Class avg</th></tr></thead><tbody>` +
+      S.subjects.map((s) => `<tr><td>${s}</td><td class="num">${me.ut1[s]}</td><td class="num"><b>${me.hy[s]}</b></td><td class="num muted">${S.classAvg("hy", s)}</td></tr>`).join("") +
+      `<tr><td><b>Average</b></td><td class="num">${S.avgOf(me.ut1)}</td><td class="num"><b>${S.avgOf(me.hy)}</b></td><td class="num muted">${Math.round(S.subjects.reduce((a, s) => a + S.classAvg("hy", s), 0) / S.subjects.length)}</td></tr></tbody>`;
+    const best = [...S.subjects].sort((a, b) => me.hy[b] - me.hy[a])[0];
+    const up = [...S.subjects].sort((a, b) => (me.hy[b] - me.ut1[b]) - (me.hy[a] - me.ut1[a]))[0];
+    const weak = S.subjects.map((x) => ({ x, gap: S.classAvg("hy", x) - me.hy[x] })).sort((a, b) => b.gap - a.gap)[0];
+    S.$("#res-ai").innerHTML = `Aarav's strongest subject is <b>${best}</b> (${me.hy[best]}%). The biggest improvement since Unit Test 1 is in <b>${up}</b> (+${me.hy[up] - me.ut1[up]} points). <b>${weak.x}</b> is the one to watch: ${me.hy[weak.x]}%, against a class average of ${S.classAvg("hy", weak.x)}%, and it has dropped since Unit Test 1. Bring this up at the PTM on Saturday, 31 October.`;
+    const u2 = S.state.ut2Published ? S.state.ut2[me.roll] : null;
+    S.$("#ut2-card").innerHTML = u2 != null ? `<div class="status ok" style="margin-bottom:16px"><span class="sq green"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M5 20V10M12 20V4M19 20v-7"/></svg></span><div><b>New: Unit Test 2 · Mathematics — ${u2} / 20</b><span>Published by Ms. Neha Mathew · class average ${(Object.values(S.state.ut2).reduce((a, b) => a + +b, 0) / Object.values(S.state.ut2).length).toFixed(1)} / 20</span></div></div>` : "";
+  }
+  S.$("#exam").addEventListener("click", (e) => { const b = e.target.closest("button"); if (!b) return; exam = b.dataset.e; S.$("#exam").querySelectorAll("button").forEach((x) => x.classList.toggle("on", x === b)); renderResults(); });
+
+  function renderFees() {
+    const due = S.state.fees.find((f) => !f.paid);
+    S.$("#fee-due").innerHTML = due ? `<div class="card stat hl" style="display:flex;align-items:center;gap:18px;flex-wrap:wrap"><div><span class="lbl">Due ${S.fmt(due.due, { day: "numeric", month: "long" })}</span><div class="num">${S.rupee(due.amount)}</div><div class="foot">${due.q}</div></div><button class="btn" style="margin-left:auto;background:var(--accent-ink);color:var(--accent)" id="pay-btn">Pay now by UPI</button></div>` : `<div class="status ok"><span class="sq green">✓</span><div><b>All fees paid</b><span>Thank you!</span></div></div>`;
+    S.$("#fee-tbl").innerHTML = `<thead><tr><th>Instalment</th><th>Due date</th><th class="num">Amount</th><th>Status</th><th></th></tr></thead><tbody>` + S.state.fees.map((f, i) => `<tr><td>${f.q}</td><td>${S.fmt(f.due, { day: "numeric", month: "short", year: "numeric" })}</td><td class="num">${S.rupee(f.amount)}</td><td>${f.paid ? `<span class="pill green">Paid ${S.fmt(f.paid)}</span>` : f === due ? '<span class="pill red">Due</span>' : '<span class="pill">Upcoming</span>'}</td><td>${f.paid ? `<button class="link-btn" onclick="SJS.toast('Receipt downloaded (demo)')">Receipt</button>` : ""}</td></tr>`).join("") + "</tbody>";
+    const pb = S.$("#pay-btn"); if (pb) pb.onclick = () => { S.$("#pay-amt").textContent = `${S.rupee(due.amount)} · ${due.q} · St. John's School`; S.openModal("pay-modal"); };
+  }
+  // A decorative QR pattern
+  (function () { let r = 7, h = '<rect width="21" height="21" fill="#fff"/>'; const rnd = () => ((r = (r * 1103515245 + 12345) >>> 0) / 4294967296); for (let y = 0; y < 21; y++) for (let x = 0; x < 21; x++) { const f = (x < 7 && y < 7) || (x > 13 && y < 7) || (x < 7 && y > 13); if (f) { const a = x > 13 ? x - 14 : x, b = y > 13 ? y - 14 : y; if (a === 0 || a === 6 || b === 0 || b === 6 || (a > 1 && a < 5 && b > 1 && b < 5)) h += `<rect x="${x}" y="${y}" width="1" height="1" fill="#111"/>`; } else if (rnd() > 0.52) h += `<rect x="${x}" y="${y}" width="1" height="1" fill="#111"/>`; } S.$("#qr").innerHTML = h; })();
+  S.$("#pay-done").addEventListener("click", () => { const f = S.state.fees.find((x) => !x.paid); f.paid = S.todayKey; S.save(); S.$("#pay-modal").classList.remove("open"); renderFees(); renderHome(); S.toast("Payment received · receipt sent on WhatsApp and email"); });
+
+  function renderThread() {
+    S.$("#thread").innerHTML = S.state.messages.map((m) => `<div class="msg ${m.from === "parent" ? "me" : "bot"}">${S.esc(m.text)}<span class="when">${m.from === "teacher" ? "Ms. Neha Mathew · " : ""}${S.esc(m.at)}</span></div>`).join("");
+    S.$("#thread").scrollTop = 1e6;
+  }
+  S.$("#msg-form").addEventListener("submit", (e) => {
+    e.preventDefault(); const i = e.target.querySelector("input"); if (!i.value.trim()) return;
+    S.state.messages.push({ from: "parent", text: i.value.trim(), at: "Today, " + S.timeNow(), fresh: true }); i.value = ""; S.save(); renderThread();
+    S.toast("Sent to Ms. Neha Mathew");
+  });
+
+  S.$("#leave-form").addEventListener("submit", (e) => {
+    e.preventDefault();
+    S.state.leaves.unshift({ roll: me.roll, from: S.$("#l-from").value, to: S.$("#l-to").value, why: S.$("#l-why").value, status: "Waiting", fresh: true });
+    S.save(); S.$("#leave-modal").classList.remove("open"); renderAttendance(); S.toast("Leave request sent to the class teacher");
+  });
+  S.$("#l-from").value = S.iso(S.nextSchoolDay(S.today, 3)); S.$("#l-to").value = S.iso(S.nextSchoolDay(S.today, 4));
+
+  S.$("#lang").addEventListener("click", (e) => { const b = e.target.closest("button"); if (!b) return; lang = b.dataset.l; S.$("#lang").querySelectorAll("button").forEach((x) => x.classList.toggle("on", x === b)); S.$("#weekly").innerHTML = S.weekly(lang).replace(/\n/g, "<br />"); });
+  S.$("#sib").addEventListener("click", () => S.toast("In the demo, only Aarav's records are filled in"));
+  S.$("#cal-prev").addEventListener("click", () => { calMonth = new Date(calMonth.getFullYear(), calMonth.getMonth() - 1, 1); renderCal(); });
+  S.$("#cal-next").addEventListener("click", () => { calMonth = new Date(calMonth.getFullYear(), calMonth.getMonth() + 1, 1); renderCal(); });
+
+  document.addEventListener("sjs:view", (e) => {
+    if (e.detail === "messages") { S.state.messages.forEach((m) => { if (m.from === "teacher") m.fresh = false; }); S.save(); }
+    renderAll();
+  });
+  function renderAll() { renderHome(); renderBus(); renderAttendance(); renderHomework(); renderResults(); renderFees(); renderThread(); }
+  renderAll();
+  setInterval(renderBus, 7000);
+
+  // Live updates from the teacher's tab
+  let lastAtt = JSON.stringify(S.state.attendance[S.todayKey] || null);
+  document.addEventListener("sjs:sync", () => {
+    const now = JSON.stringify(S.state.attendance[S.todayKey] || null);
+    if (now !== lastAtt) { lastAtt = now; const st = S.statusOn(me.roll, S.todayKey); S.toast(st === "P" ? "Aarav marked present at school" : "Aarav marked " + statusLabel[st].toLowerCase() + " today"); }
+    renderAll();
+  });
+  S.mountAI("parent");
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Campus and facilities | St. John's School, Faridabad</title>
+<meta name="description" content="The four-acre campus of St. John's School, Sector 7A, Faridabad: stage, lawns, classrooms, labs, library, sports, safety and school transport." />
+<link rel="icon" href="assets/crest.svg" type="image/svg+xml" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wdth,wght@12..96,75..100,400..800&family=Figtree:wght@400;500;600;700&family=Mukta:wght@400;600&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="css/school.css" />
+<meta name="theme-color" content="#1C1F24" media="(prefers-color-scheme: light)" />
+<meta name="theme-color" content="#1B1D22" media="(prefers-color-scheme: dark)" />
+<script>
+/* Before the first paint: fade photos in as they load, and hold headline motion until the fonts arrive. */
+(function (d) { var h = d.documentElement, done = function () { h.classList.add("fonts"); }; h.classList.add("js");
+  var m = function (e) { if (e.target.tagName === "IMG") e.target.classList.add("is-loaded"); };
+  d.addEventListener("load", m, true); d.addEventListener("error", m, true);
+  if (d.fonts && d.fonts.load) Promise.all([d.fonts.load('800 1em "Bricolage Grotesque"'), d.fonts.load("400 1em Figtree")]).then(done, done); else done();
+  setTimeout(done, 1500); })(document);
+</script>
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+</head>
+<body data-page="campus">
+<script src="js/shell.js"></script>
+<main id="main">
+  <header class="phero">
+    <div class="wrap phero-in">
+      <div>
+        <nav class="crumbs" aria-label="Breadcrumb"><a href="index.html">Home</a> / Campus</nav>
+        <h1><span class="ln"><span style="--i:0">Four</span></span><span class="ln"><span style="--i:1">green acres.</span></span></h1>
+        <p class="lead">Red-brick buildings, lawns and hedges, a stage for every Annual Day, and the space every child needs to run.</p>
+      </div>
+      <figure class="arch clip" style="margin:0"><img src="assets/photos/slide-6.jpg" width="1600" height="666" alt="The school band lined up on the red carpet along the campus walk" style="object-position:28% 50%" /></figure>
+    </div>
+  </header>
+
+  <nav class="subnav" aria-label="On this page"><div class="wrap"><a href="#facilities">Facilities</a><a href="#safety">Safety and wellbeing</a><a href="#transport">School transport</a></div></nav>
+
+  <section class="sec" id="facilities" style="padding-bottom:0">
+    <div class="wrap">
+      <div class="sec-title"><h2 class="t-l">Facilities.</h2><p>Where we have photographs, you can see them. The full list of rooms and equipment will be <span class="tbc" title="To be confirmed by the school">confirmed by the school</span>.</p></div>
+
+      <article class="fac">
+        <figure class="arch clip" style="margin:0"><img src="assets/photos/slide-5.jpg" width="1600" height="666" alt="Students singing on the decorated stage with musicians" style="object-position:50% 50%" loading="lazy" /></figure>
+        <div class="txt"><h3>The stage</h3><p class="lead">Annual Day, folk dances from across India and prize days all happen here, in front of the whole school.</p><ul><li>Room for full-class choirs and dance troupes</li></ul></div>
+      </article>
+      <article class="fac">
+        <figure class="arch clip" style="margin:0"><img src="assets/photos/slide-7.jpg" width="1600" height="666" alt="Junior band members on the paved courtyard under the trees" style="object-position:40% 50%" loading="lazy" /></figure>
+        <div class="txt"><h3>Lawns and courtyards</h3><p class="lead">Wide lawns, shady trees and paved courtyards for assemblies, band practice, the march-past and recess.</p><ul><li>Open ground for sport and outdoor play</li><li>Shade for recess on hot days</li></ul></div>
+      </article>
+      <article class="fac">
+        <figure class="arch clip" style="margin:0"><img src="assets/photos/p-painting.jpg" width="235" height="225" alt="A student painting a bright sunset silhouette" loading="lazy" /></figure>
+        <div class="txt"><h3>Art and craft</h3><p class="lead">Painting, sketching and craft are part of every week, from Nursery onwards. The best work goes up on the corridor walls.</p></div>
+      </article>
+    </div>
+  </section>
+
+  <section class="sec">
+    <div class="wrap">
+      <h2 class="t-m" style="margin-bottom:28px">Also on campus</h2>
+      <div class="facgrid">
+        <div><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="12" rx="1.5"/><path d="M8 20h8M12 16v4"/></svg><h3>Classrooms</h3><p>Bright, ventilated rooms with boards and projection for every section.</p></div>
+        <div><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M9 3h6M10 3v6l-5 9a2 2 0 0 0 1.7 3h10.6A2 2 0 0 0 19 18l-5-9V3"/><path d="M7.5 15h9"/></svg><h3>Science labs</h3><p>Physics, chemistry and biology labs for practical work in the senior classes.</p></div>
+        <div><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="5" width="16" height="11" rx="1.5"/><path d="M2 19h20"/></svg><h3>Computer lab</h3><p>Computers for every child in the lab period, from the primary classes up.</p></div>
+        <div><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19V5a1 1 0 0 1 1-1h5v15H5a1 1 0 0 1-1-1zM10 4h4v15h-4zM14 6l4-1 3 13-4 1z"/></svg><h3>Library</h3><p>Books for every age, weekly library periods and a quiet place to read.</p></div>
+        <div><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 3c3 3 3 15 0 18M3 12h18M5 6c4 2 10 2 14 0M5 18c4-2 10-2 14 0"/></svg><h3>Sports</h3><p>Ground for athletics, team games and Sports Day, and space for indoor games.</p></div>
+        <div><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18V6l10-2v12"/><circle cx="6" cy="18" r="3"/><circle cx="16" cy="16" r="3"/></svg><h3>Music and dance</h3><p>Space for the choir, the school band and dance practice.</p></div>
+        <div><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="16" height="16" rx="3"/><path d="M12 8v8M8 12h8"/></svg><h3>Medical room</h3><p>First aid on site and a quiet room for children who feel unwell.</p></div>
+        <div><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3c4 5 6 8 6 11a6 6 0 0 1-12 0c0-3 2-6 6-11z"/></svg><h3>Drinking water</h3><p>Purified drinking water and clean toilets on every floor.</p></div>
+        <div><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M7 20c2-3 2-6 0-9 3 1 6 1 10-1-1 4-1 7 0 10"/><path d="M12 4v4"/></svg><h3>Green campus</h3><p>Trees, hedges and lawns across four acres.</p></div>
+      </div>
+      <p class="note mt-m">Details on this page are drafted for the school to check and correct.</p>
+    </div>
+  </section>
+
+  <section class="sec sec--tint" id="safety">
+    <div class="wrap cols">
+      <h2 class="t-l">Safety and wellbeing.</h2>
+      <div>
+        <p class="lead" style="margin-bottom:24px">Parents should never have to wonder whether their child is safe at school. These are the arrangements the website will publish once the school confirms them.</p>
+        <ul class="ticks">
+          <li>CCTV at gates, corridors and common areas</li>
+          <li>Visitor passes and a register at the main gate</li>
+          <li>Children handed over only to registered guardians</li>
+          <li>Trained staff for first aid and fire drills</li>
+          <li>A counsellor and a committee for the protection of children, as CBSE requires</li>
+          <li>Fire, building and water safety certificates, published on the <a class="textlink" href="disclosure.html">disclosure page</a></li>
+          <li>Absence alerts to parents within minutes of roll call, through the parent app</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <section class="sec" id="transport">
+    <div class="wrap split">
+      <div>
+        <h2 class="t-l">School transport.</h2>
+        <p class="lead mt-m">School buses cover routes across Faridabad. With the new parent app, families can follow their child's bus stop by stop and get a message two stops before home.</p>
+        <p class="mt-m"><a class="btn" href="login.html?role=parent">See the bus in the parent app</a></p>
+      </div>
+      <div class="tbl-wrap">
+        <table class="tbl">
+          <thead><tr><th>Route</th><th>Areas</th></tr></thead>
+          <tbody>
+            <tr><td>Route list</td><td><span class="tbc" title="To be provided by the school">To be added by the transport office</span></td></tr>
+            <tr><td>Pick-up</td><td>Times are shared with each family when the route is assigned</td></tr>
+            <tr><td>Changes</td><td>Request a route or stop change from the parent app</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+</main>
+<script src="js/data.js"></script>
+<script src="js/ai.js"></script>
+<script src="js/school.js"></script>
+</body>
+</html>

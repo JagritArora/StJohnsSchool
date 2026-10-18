@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>About us | St. John's School, Faridabad</title>
+<meta name="description" content="The story of St. John's School, Sector 7A, Faridabad: founded in 1965 by Shri T.I. John, run by the Idicula Trust Society. Our vision, mission, motto and leadership." />
+<link rel="icon" href="assets/crest.svg" type="image/svg+xml" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wdth,wght@12..96,75..100,400..800&family=Figtree:wght@400;500;600;700&family=Mukta:wght@400;600&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="css/school.css" />
+<meta name="theme-color" content="#1C1F24" media="(prefers-color-scheme: light)" />
+<meta name="theme-color" content="#1B1D22" media="(prefers-color-scheme: dark)" />
+<script>
+/* Before the first paint: fade photos in as they load, and hold headline motion until the fonts arrive. */
+(function (d) { var h = d.documentElement, done = function () { h.classList.add("fonts"); }; h.classList.add("js");
+  var m = function (e) { if (e.target.tagName === "IMG") e.target.classList.add("is-loaded"); };
+  d.addEventListener("load", m, true); d.addEventListener("error", m, true);
+  if (d.fonts && d.fonts.load) Promise.all([d.fonts.load('800 1em "Bricolage Grotesque"'), d.fonts.load("400 1em Figtree")]).then(done, done); else done();
+  setTimeout(done, 1500); })(document);
+</script>
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+</head>
+<body data-page="about">
+<script src="js/shell.js"></script>
+<main id="main">
+  <header class="phero">
+    <div class="wrap phero-in">
+      <div>
+        <nav class="crumbs" aria-label="Breadcrumb"><a href="index.html">Home</a> / About</nav>
+        <h1><span class="ln"><span style="--i:0">Sixty years</span></span><span class="ln"><span style="--i:1">and counting.</span></span></h1>
+        <p class="lead">In 1965 Shri T.I. John opened a school in Sector 7A. This is what it stands for, who runs it, and who leads it today.</p>
+      </div>
+      <figure class="arch clip" style="margin:0"><img src="assets/photos/slide-5.jpg" width="1600" height="666" alt="Students singing on stage with live musicians" style="object-position:50% 40%" /></figure>
+    </div>
+  </header>
+
+  <nav class="subnav" aria-label="On this page"><div class="wrap"><a href="#story">Our story</a><a href="#vision">Vision and mission</a><a href="#objectives">What we aim for</a><a href="#principal">Principal's message</a><a href="#management">Management</a></div></nav>
+
+  <section class="sec" id="story">
+    <div class="wrap cols">
+      <h2 class="t-l">Since 1965.</h2>
+      <div class="prose lead" style="max-width:36em">
+        <p>St. John's School was founded in 1965 by <b>Shri T.I. John</b>, and is run by the <b>Idicula Trust Society (Regd.)</b>. From the start the idea was simple: a school that gives children a sound education and a sound character, in equal measure.</p>
+        <p>The school stands on a four-acre campus in Sector 7A, Faridabad: red-brick buildings, wide lawns, trees and hedges, and enough open ground for assemblies, sport and the march-past. Families describe it as calm. We work hard to keep it that way.</p>
+        <p>Today St. John's is a CBSE school from Nursery to Class XII. What has not changed is the motto every child learns on the first day: <b>learn to serve</b>.</p>
+        <figure style="margin:36px 0 0"><img src="assets/photos/campus.jpg" width="492" height="222" alt="The red-brick school building behind clipped hedges and palms" style="border-radius:18px;width:100%;max-width:492px" loading="lazy" /><figcaption class="note" style="margin-top:10px">The main building, Sector 7A.</figcaption></figure>
+      </div>
+    </div>
+  </section>
+
+  <section class="sec sec--brick" id="vision">
+    <div class="wrap">
+      <h2 class="t-xl" style="max-width:10em;margin-bottom:56px">What we stand for.</h2>
+      <div class="trio">
+        <div><h3>Vision</h3><p>To nurture the potential in every child, and to bring up lifelong learners and global citizens with innovation and strong values, working hand in hand with parents and partners. Vision with action can build the future.</p></div>
+        <div><h3>Mission</h3><p>To instil honesty, compassion, secularism, tolerance and respect for others; to honour our country's heritage and take pride in it; and to contribute to humanity by working together.</p></div>
+        <div><h3>Motto</h3><p style="font:700 clamp(32px,3.4vw,48px)/1.02 var(--display);letter-spacing:-.012em;font-variation-settings:'wdth' 88;color:var(--brick-ink);opacity:1">Learn to serve.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="sec" id="objectives">
+    <div class="wrap cols">
+      <h2 class="t-l">What we aim for.</h2>
+      <div>
+        <p class="lead" style="margin-bottom:24px">Our objectives have been the same for decades. They shape how we teach, how we celebrate and how we treat each other.</p>
+        <ul class="ticks">
+          <li>Students who grow into mature, spiritually oriented young people.</li>
+          <li>A strong sense of national integration: one school, many states, languages and faiths.</li>
+          <li>Love of country, built through understanding rather than slogans.</li>
+          <li>Honesty, compassion and respect for others, practised every day.</li>
+          <li>Holistic development in an eco-friendly, pleasant campus.</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <section class="sec sec--tint" id="principal">
+    <div class="wrap letter">
+      <figure class="arch" style="margin:0"><img src="assets/crest.svg" alt="School crest, in place of the Principal's photograph" /></figure>
+      <div>
+        <h2 class="t-l" style="margin-bottom:28px">From the Principal.</h2>
+        <div class="prose lead">
+          <p>Dear parents and students,</p>
+          <p>Every morning our gates open to children who will one day be doctors, teachers, engineers, artists and citizens. Our job is to help each of them find what they are good at, and to make sure they leave us kind as well as capable.</p>
+          <p>That is what our motto asks of all of us. We learn so that we can serve: our families, our country and the people around us. I invite you to visit, meet our teachers and see the school for yourself.</p>
+        </div>
+        <p class="sig"><span class="tbc" title="Name and message to be provided by the school">The Principal</span><span>St. John's School, Faridabad</span></p>
+        <p class="note mt-s">This message is a draft for the Principal to rewrite in their own words.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="sec" id="management">
+    <div class="wrap">
+      <div class="sec-title"><h2 class="t-l">Management.</h2><p>St. John's is run by a registered trust, the Idicula Trust Society.</p></div>
+      <dl class="kv">
+        <div><dt>Founder</dt><dd>Shri T.I. John</dd></div>
+        <div><dt>Managed by</dt><dd>Idicula Trust Society (Regd.)</dd></div>
+        <div><dt>Affiliation</dt><dd>CBSE<small>Affiliation no. <span class="tbc" title="To be provided">to be added</span></small></dd></div>
+        <div><dt>Chairperson and manager</dt><dd><span class="tbc" title="To be provided">To be added</span></dd></div>
+      </dl>
+      <p class="mt-m">Registration, affiliation and safety certificates are published on our <a class="textlink" href="disclosure.html">mandatory public disclosure</a> page.</p>
+    </div>
+  </section>
+
+  <section class="sec sec--hedge">
+    <div class="wrap" style="display:flex;justify-content:space-between;align-items:end;gap:28px;flex-wrap:wrap">
+      <h2 class="t-l" style="max-width:12em">The best way to know a school is to walk through it.</h2>
+      <a class="btn btn--light" href="admissions.html#enquire">Book a campus visit</a>
+    </div>
+  </section>
+</main>
+<script src="js/data.js"></script>
+<script src="js/ai.js"></script>
+<script src="js/school.js"></script>
+</body>
+</html>

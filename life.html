@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Student life | St. John's School, Faridabad</title>
+<meta name="description" content="Music, choir, the school band, folk dance, sport and Fit India at St. John's School, Faridabad. Photo gallery and the school year." />
+<link rel="icon" href="assets/crest.svg" type="image/svg+xml" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wdth,wght@12..96,75..100,400..800&family=Figtree:wght@400;500;600;700&family=Mukta:wght@400;600&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="css/school.css" />
+<meta name="theme-color" content="#1C1F24" media="(prefers-color-scheme: light)" />
+<meta name="theme-color" content="#1B1D22" media="(prefers-color-scheme: dark)" />
+<script>
+/* Before the first paint: fade photos in as they load, and hold headline motion until the fonts arrive. */
+(function (d) { var h = d.documentElement, done = function () { h.classList.add("fonts"); }; h.classList.add("js");
+  var m = function (e) { if (e.target.tagName === "IMG") e.target.classList.add("is-loaded"); };
+  d.addEventListener("load", m, true); d.addEventListener("error", m, true);
+  if (d.fonts && d.fonts.load) Promise.all([d.fonts.load('800 1em "Bricolage Grotesque"'), d.fonts.load("400 1em Figtree")]).then(done, done); else done();
+  setTimeout(done, 1500); })(document);
+</script>
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+</head>
+<body data-page="life">
+<script src="js/shell.js"></script>
+<main id="main">
+  <header class="phero">
+    <div class="wrap phero-in">
+      <div>
+        <nav class="crumbs" aria-label="Breadcrumb"><a href="index.html">Home</a> / Student life</nav>
+        <h1><span class="ln"><span style="--i:0">Stage, field</span></span><span class="ln"><span style="--i:1">and band.</span></span></h1>
+        <p class="lead">At St. John's, the day doesn't end at the last bell. Choir, band, dance from every state, sport and a stage that every child gets to stand on.</p>
+      </div>
+      <figure class="arch clip" style="margin:0"><img src="assets/photos/slide-3.jpg" width="1600" height="666" alt="Students performing a North-Eastern folk dance in traditional dress" style="object-position:58% 50%" /></figure>
+    </div>
+  </header>
+
+  <nav class="subnav" aria-label="On this page"><div class="wrap"><a href="#activities">Activities</a><a href="#houses">Houses</a><a href="#gallery">Photo gallery</a><a href="#calendar">The school year</a></div></nav>
+
+  <section class="sec" id="activities" style="padding-bottom:0">
+    <div class="wrap">
+      <div class="sec-title"><h2 class="t-l">Activities.</h2><p>Every child takes part in something. Most take part in several.</p></div>
+      <article class="fac">
+        <figure class="arch clip" style="margin:0"><img src="assets/photos/slide-1.jpg" width="1600" height="666" alt="The school choir in pink and white on stage" style="object-position:40% 50%" loading="lazy" /></figure>
+        <div class="txt"><h3>Choir and music</h3><p class="lead">From devotional songs with live tabla and sitar to the full Annual Day choir, music is a big part of school life, all the way to carols at Christmas.</p></div>
+      </article>
+      <article class="fac">
+        <figure class="arch clip" style="margin:0"><img src="assets/photos/slide-6.jpg" width="1600" height="666" alt="Band members in red berets and tartan waistcoats" style="object-position:35% 50%" loading="lazy" /></figure>
+        <div class="txt"><h3>The school band</h3><p class="lead">Red berets, tartan waistcoats and drums. The band plays at assemblies, leads the march-past on Independence and Republic Day, and welcomes guests on prize days.</p></div>
+      </article>
+      <article class="fac">
+        <figure class="arch clip" style="margin:0"><img src="assets/photos/slide-4.jpg" width="1600" height="666" alt="Students in mirror-work costumes performing Garba" style="object-position:45% 35%" loading="lazy" /></figure>
+        <div class="txt"><h3>Dance from every state</h3><p class="lead">Garba from Gujarat, folk dances from the North-East, and more every year. Our celebrations of India's many cultures are how national integration is taught here.</p></div>
+      </article>
+      <article class="fac">
+        <figure class="arch clip" style="margin:0"><img src="assets/photos/slide-11.jpg" width="1600" height="666" alt="Students and teachers holding up a trophy on stage" style="object-position:45% 40%" loading="lazy" /></figure>
+        <div class="txt"><h3>Sport and Fit India</h3><p class="lead">Athletics, team games and Sports Day, and the Fit India movement for everyday fitness. Trophies won are shown off at the prize day.</p></div>
+      </article>
+    </div>
+  </section>
+
+  <section class="sec" id="houses">
+    <div class="wrap">
+      <div class="sec-title"><h2 class="t-l">Houses.</h2><p>Every student belongs to a house, competing in sport, debates and cultural events across the year. House names and colours: <span class="tbc" title="To be provided by the school">to be added</span>.</p></div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px">
+        <div style="background:var(--band-brick);color:#fff;border-radius:999px 999px 16px 16px;padding:56px 22px 24px;font:650 22px/1.1 var(--display);font-variation-settings:'wdth' 85">Red house</div>
+        <div style="background:var(--royal);color:#fff;border-radius:999px 999px 16px 16px;padding:56px 22px 24px;font:650 22px/1.1 var(--display);font-variation-settings:'wdth' 85">Blue house</div>
+        <div style="background:var(--hedge);color:#fff;border-radius:999px 999px 16px 16px;padding:56px 22px 24px;font:650 22px/1.1 var(--display);font-variation-settings:'wdth' 85">Green house</div>
+        <div style="background:var(--marigold);color:#2A1408;border-radius:999px 999px 16px 16px;padding:56px 22px 24px;font:650 22px/1.1 var(--display);font-variation-settings:'wdth' 85">Yellow house</div>
+      </div>
+    </div>
+  </section>
+
+  <section class="sec sec--tint" id="gallery">
+    <div class="wrap">
+      <div class="sec-title"><h2 class="t-l">Photo gallery.</h2><p>Tap a photo to see it larger. The school office adds new albums from the same app teachers use.</p></div>
+      <div class="filters" role="group" aria-label="Filter photos">
+        <button data-f="all" aria-pressed="true">All</button><button data-f="stage" aria-pressed="false">On stage</button><button data-f="band" aria-pressed="false">Band</button><button data-f="juniors" aria-pressed="false">Juniors</button><button data-f="prizes" aria-pressed="false">Prizes</button>
+      </div>
+      <div class="gal">
+        <button data-cat="stage"><img src="assets/photos/slide-1.jpg" width="1600" height="666" alt="The school choir on stage" loading="lazy" /><figcaption>Annual Day choir</figcaption></button>
+        <button data-cat="band"><img src="assets/photos/slide-6.jpg" width="1600" height="666" alt="The school band in formation" loading="lazy" /><figcaption>The school band</figcaption></button>
+        <button data-cat="stage"><img src="assets/photos/slide-2.jpg" width="1600" height="666" alt="Folk dance in green and pink" loading="lazy" /><figcaption>Folk dance</figcaption></button>
+        <button data-cat="juniors"><img src="assets/photos/slide-9.jpg" width="1600" height="666" alt="Primary students grinning" loading="lazy" /><figcaption>Primary</figcaption></button>
+        <button data-cat="prizes"><img src="assets/photos/slide-10.jpg" width="1600" height="666" alt="Students receiving a large trophy" loading="lazy" /><figcaption>Prize day</figcaption></button>
+        <button data-cat="stage"><img src="assets/photos/slide-4.jpg" width="1600" height="666" alt="Garba performance" loading="lazy" /><figcaption>Garba</figcaption></button>
+        <button data-cat="band juniors"><img src="assets/photos/slide-7.jpg" width="1600" height="666" alt="Junior band in the courtyard" loading="lazy" /><figcaption>Junior band</figcaption></button>
+        <button data-cat="stage"><img src="assets/photos/slide-3.jpg" width="1600" height="666" alt="North-Eastern folk dance" loading="lazy" /><figcaption>Folk dance</figcaption></button>
+        <button data-cat="juniors"><img src="assets/photos/slide-8.jpg" width="1600" height="666" alt="Pre-primary children on an outing" loading="lazy" /><figcaption>Pre-primary outing</figcaption></button>
+        <button data-cat="prizes"><img src="assets/photos/slide-11.jpg" width="1600" height="666" alt="Students and teachers with a trophy" loading="lazy" /><figcaption>Trophy</figcaption></button>
+        <button data-cat="stage"><img src="assets/photos/slide-5.jpg" width="1600" height="666" alt="Devotional choir with musicians" loading="lazy" /><figcaption>Devotional music</figcaption></button>
+        <button data-cat="juniors"><img src="assets/photos/p-seniors.jpg" width="255" height="255" alt="Senior students cheering on the lawn" loading="lazy" /><figcaption>Seniors</figcaption></button>
+      </div>
+    </div>
+  </section>
+
+  <section class="year" id="calendar" aria-label="The school year">
+    <div class="year-pin" style="padding-block:clamp(72px,9vw,120px);min-height:100vh;display:flex;flex-direction:column;justify-content:center">
+      <div class="wrap year-head">
+        <h2 class="t-l">The school year.</h2>
+        <p class="muted" style="max-width:26em">A <span class="tbc" title="The school will confirm its own calendar">typical year</span>, July to March.</p>
+      </div>
+      <div class="year-track">
+        <article class="month"><div class="arch"><img src="assets/photos/slide-7.jpg" width="1600" height="666" alt="" loading="lazy" style="object-position:20% 50%" /></div><div><h3>July</h3><p>Investiture ceremony</p><small>New prefects and house captains take their oath.</small></div></article>
+        <article class="month"><div class="arch"><img src="assets/photos/slide-6.jpg" width="1600" height="666" alt="" loading="lazy" style="object-position:30% 50%" /></div><div><h3>August</h3><p>Independence Day</p><small>The band leads the march past.</small></div></article>
+        <article class="month"><div class="month-ph m1">Thank you, teachers</div><div><h3>September</h3><p>Teachers' Day</p><small>Senior students run the classrooms for a day.</small></div></article>
+        <article class="month"><div class="arch"><img src="assets/photos/slide-4.jpg" width="1600" height="666" alt="" loading="lazy" style="object-position:45% 40%" /></div><div><h3>October</h3><p>Navratri and Dussehra</p><small>Garba before the autumn break.</small></div></article>
+        <article class="month"><div class="arch"><img src="assets/photos/slide-9.jpg" width="1600" height="666" alt="" loading="lazy" style="object-position:60% 50%" /></div><div><h3>November</h3><p>Children's Day</p><small>The teachers perform for the children.</small></div></article>
+        <article class="month"><div class="arch"><img src="assets/photos/slide-1.jpg" width="1600" height="666" alt="" loading="lazy" style="object-position:40% 50%" /></div><div><h3>December</h3><p>Annual Day and Christmas</p><small>The choir, carols and a full hall.</small></div></article>
+        <article class="month"><div class="arch"><img src="assets/photos/slide-3.jpg" width="1600" height="666" alt="" loading="lazy" style="object-position:55% 50%" /></div><div><h3>January</h3><p>Republic Day</p><small>Folk dances from every corner of India.</small></div></article>
+        <article class="month"><div class="month-ph m2">On your marks</div><div><h3>February</h3><p>Sports Day</p><small>The houses compete on the main ground.</small></div></article>
+        <article class="month"><div class="arch"><img src="assets/photos/slide-10.jpg" width="1600" height="666" alt="" loading="lazy" style="object-position:40% 40%" /></div><div><h3>March</h3><p>Results and prize day</p><small>Report cards, trophies and goodbyes.</small></div></article>
+      </div>
+    </div>
+  </section>
+</main>
+<script src="js/data.js"></script>
+<script src="js/ai.js"></script>
+<script src="js/school.js"></script>
+</body>
+</html>
