@@ -72,6 +72,7 @@
           <div class="tt-sum"><table class="pivot pivot-sum" id="tt-sum"></table></div>
         </aside>
         <div class="home-main">
+          <div id="phase-card" hidden></div>
           <div class="card">
             <div class="card-h"><h2>Due soon</h2><button class="right link-btn" type="button" data-go="homework">All homework</button></div>
             <div class="list" id="due"></div>
@@ -120,8 +121,9 @@
 
     <!-- RESULTS -->
     <section data-view="results">
-      <div class="topbar"><div><h1>Results</h1><div class="sub">Aarav Sharma · VII-B</div></div><div class="right seg" id="exam"><button class="on" data-e="hy">Half-yearly</button><button data-e="ut1">Unit Test 1</button></div></div>
+      <div class="topbar"><div><h1>Results</h1><div class="sub">Aarav Sharma · VII-B</div></div><div class="right seg" id="exam"></div></div>
       <div id="ut2-card"></div>
+      <div id="res-phase"></div>
       <div class="grid g21">
         <div class="card">
           <div class="card-h"><h2 id="res-title">Half-yearly · marks by subject</h2><div class="seg vt" data-vt="res" aria-label="Chart type"><button data-v="bars">Bars</button><button data-v="profile">Profile</button><button data-v="change">Change</button></div></div>
@@ -191,12 +193,34 @@
 </div></div>
 
 <script src="js/data.js"></script>
+<script src="js/classes.js"></script>
 <script src="js/common.js"></script>
 <script src="js/charts.js"></script>
+<script src="js/demo.js"></script>
 <script src="js/ai.js"></script>
 <script>
 (function () {
-  const S = SJS, me = S.me;
+  const S = SJS;
+  // Which child: from the demo picker (?kid=), else the last one opened, else Aarav.
+  let kidKey = new URLSearchParams(location.search).get("kid");
+  try { if (kidKey) localStorage.setItem("sjs-kid", kidKey); else kidKey = localStorage.getItem("sjs-kid"); } catch (e) {}
+  if (!S.PARENTS.some((p) => p.key === kidKey)) kidKey = "VII-B-1";
+  const me = S.useKid(kidKey);
+  const fees = () => S.kidFees(S.kidKey), thread = () => S.thread(S.kidKey);
+  const C = S.EX.cur, P = S.EX.prev, L = (k) => S.exLabel(k, me.cls);
+  const parentInitials = me.parent.split(" ").map((x) => x[0]).join("").slice(0, 2);
+  // The page was written for Aarav; put this child's names in its place.
+  (function swap(root) {
+    const pairs = [["Aarav Sharma", me.name], ["Aarav", me.first], ["Rohit Sharma", me.parent], ["Rohit", me.parentFirst], ["Ms. Neha Mathew", S.teacher.name], ["VII-B", me.label]];
+    const w = document.createTreeWalker(root, NodeFilter.SHOW_TEXT);
+    for (let n = w.nextNode(); n; n = w.nextNode()) { if (n.parentElement.closest(".proto-bar")) continue; let t = n.nodeValue; pairs.forEach(([a, b]) => (t = t.split(a).join(b))); if (t !== n.nodeValue) n.nodeValue = t; }
+  })(document.body);
+  S.$(".who .avatar").textContent = parentInitials;
+  S.$(".kid-av").textContent = me.initials;
+  S.$(".kid-t span").textContent = `Class ${me.label}${me.sec.stream ? " · " + me.sec.stream : ""} · Roll ${String(me.roll).padStart(2, "0")} · Class teacher ${S.teacher.name}`;
+  if (me.key !== "VII-B-1") S.$("#sib").remove();
+  S.$(".bus-card h2").textContent = me.bus === "Own transport" ? "Getting to school" : "Bus · " + me.bus;
+  S.mountDemo("kid:" + me.key);
   const I = {
     home: '<path d="M4 11l8-7 8 7v9H4z"/><path d="M10 20v-5h4v5"/>',
     attendance: '<rect x="4" y="5" width="16" height="15" rx="2"/><path d="M4 10h16M9 3v4M15 3v4M9 15l2 2 4-4"/>',
@@ -211,51 +235,51 @@
   S.$("#nav-bottom").innerHTML = nav.filter(([k]) => k !== "messages").map(([k, l]) => btn(k, l)).join("");
 
   const statusLabel = { P: "Present", A: "Absent", L: "Leave" };
-  const feeStack = () => { const due = S.state.fees.find((f) => !f.paid); return S.stack(S.state.fees.map((f) => ({ v: 1, tone: f.paid ? "var(--green)" : f === due ? "var(--accent)" : "var(--line)", tip: f.paid ? "Paid " + S.fmt(f.paid) : "Due " + S.fmt(f.due, { day: "numeric", month: "short", year: "numeric" }), tipT: f.q }))); };
-  let exam = "hy", calMonth = new Date(S.today.getFullYear(), S.today.getMonth(), 1);
+  const feeStack = () => { const due = fees().find((f) => !f.paid); return S.stack(fees().map((f) => ({ v: 1, tone: f.paid ? "var(--green)" : f === due ? "var(--accent)" : "var(--line)", tip: f.paid ? "Paid " + S.fmt(f.paid) : "Due " + S.fmt(f.due, { day: "numeric", month: "short", year: "numeric" }), tipT: f.q }))); };
+  let exam = C, calMonth = new Date(S.today.getFullYear(), S.today.getMonth(), 1);
 
   function renderHome() {
-    S.$("#hello").textContent = S.greet() + ", Rohit";
-    S.$("#today-line").textContent = S.fmtLong(S.today) + " · Aarav is in VII-B";
-    const st = S.statusOn(me.roll, S.todayKey), rec = S.state.attendance[S.todayKey];
+    S.$("#hello").textContent = S.greet() + ", " + me.parentFirst;
+    S.$("#today-line").textContent = S.fmtLong(S.today) + " · " + me.first + " is in " + me.label;
+    const st = S.statusOn(me.roll, S.todayKey), rec = S.cs.attendance[S.todayKey];
     const box = S.$("#today-status");
     const tick = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>';
     const clock = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>';
     const alert = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M12 7v6M12 17h.01"/><circle cx="12" cy="12" r="9"/></svg>';
-    if (st === null) { box.className = "status wait"; box.innerHTML = `<span class="sq warn">${clock}</span><div><b>Attendance not marked yet</b><span>Ms. Neha Mathew takes roll call at 8:00 AM. You'll get a notification.</span></div>`; }
-    else if (st === "P") { box.className = "status ok"; box.innerHTML = `<span class="sq green">${tick}</span><div><b>Aarav is in school today</b><span>Marked present at ${rec.at} by Ms. Neha Mathew</span></div>`; }
-    else { box.className = "status bad"; box.innerHTML = `<span class="sq red">${alert}</span><div><b>Aarav is marked ${statusLabel[st].toLowerCase()} today</b><span>Marked at ${rec.at} by Ms. Neha Mathew. Not expected? <a href="#messages" data-go="messages" style="color:var(--accent)">Message the teacher</a></span></div>`; }
+    if (st === null) { box.className = "status wait"; box.innerHTML = `<span class="sq warn">${clock}</span><div><b>Attendance not marked yet</b><span>${S.teacher.name} takes roll call at 8:00 AM. You'll get a notification.</span></div>`; }
+    else if (st === "P") { box.className = "status ok"; box.innerHTML = `<span class="sq green">${tick}</span><div><b>${me.first} is in school today</b><span>Marked present at ${rec.at} by ${S.teacher.name}</span></div>`; }
+    else { box.className = "status bad"; box.innerHTML = `<span class="sq red">${alert}</span><div><b>${me.first} is marked ${statusLabel[st].toLowerCase()} today</b><span>Marked at ${rec.at} by ${S.teacher.name}. Not expected? <a href="#messages" data-go="messages" style="color:var(--accent)">Message the teacher</a></span></div>`; }
 
-    const pend = S.state.homework.filter((h) => !h.done), fee = S.state.fees.find((f) => !f.paid);
-    const hwAll = S.state.homework.length, classHy = Math.round(S.subjects.reduce((a, x) => a + S.classAvg("hy", x), 0) / S.subjects.length);
+    const pend = S.cs.homework.filter((h) => !h.done), fee = fees().find((f) => !f.paid);
+    const hwAll = S.cs.homework.length, classHy = Math.round(S.subjects.reduce((a, x) => a + S.classAvg(C, x), 0) / S.subjects.length);
     const nextPtm = S.state.notices.filter((n) => n.tag === "PTM" && n.date >= S.todayKey).sort((x, y) => (x.date < y.date ? -1 : 1))[0];
     S.paint(S.$("#home-stats"), `
       <div><dt>Attendance</dt><dd>${S.attendancePct(me.roll)}<small>%</small></dd><span>This session · CBSE needs 75%</span>${S.meter(S.attendancePct(me.roll), { tone: "var(--green)", mark: 75, tip: "The line marks CBSE's 75% minimum" })}</div>
-      <div><dt>Half-yearly</dt><dd>${S.avgOf(me.hy)}<small>%</small></dd><span>Up from ${S.avgOf(me.ut1)}% in Unit Test 1</span>${S.meter(S.avgOf(me.hy), { tone: "var(--accent)", mark: classHy, tip: `The line marks the class average, ${classHy}%` })}</div>
+      <div><dt>${L(C)}</dt><dd>${S.avgOf(me[C])}<small>%</small></dd><span>${P ? `${S.avgOf(me[C]) >= S.avgOf(me[P]) ? "Up" : "Down"} from ${S.avgOf(me[P])}% in ${L(P)}` : "From last session · class " + classHy + "%"}</span>${S.meter(S.avgOf(me[C]), { tone: "var(--accent)", mark: classHy, tip: `The line marks the class average, ${classHy}%` })}</div>
       <div><dt>Homework</dt><dd>${pend.length}<small> pending</small></dd><span>${pend[0] ? "Next: " + S.esc(pend[0].subj) + ", " + S.fmt(pend[0].due) : "All done"}</span>${S.meter(hwAll ? ((hwAll - pend.length) / hwAll) * 100 : 100, { tone: "var(--royal)", tip: `${hwAll - pend.length} of ${hwAll} done` })}</div>
       <div class="${fee ? "due" : ""}"><dt>Fees</dt><dd>${fee ? S.rupee(fee.amount) : "Paid"}</dd><span>${fee ? "Due " + S.fmt(fee.due, { day: "numeric", month: "long" }) : "Nothing due"}</span><span class="meter-wrap">${feeStack()}</span></div>`);
     // Due soon: homework, the next fee and the next PTM, soonest first.
     const due = pend.map((h) => ({ d: h.due, tone: "warn", icon: "hw", t: `${h.subj}: ${h.title}`, sub: "Set by " + h.by, go: "homework" }));
     if (fee) due.push({ d: fee.due, tone: "red", icon: "fee", t: `Fee instalment, ${S.rupee(fee.amount)}`, sub: fee.q + " · pay by UPI", go: "fees" });
-    if (nextPtm) due.push({ d: nextPtm.date, tone: "royal", icon: "nt", t: nextPtm.title, sub: "Half-yearly answer sheets will be shown" });
+    if (nextPtm) due.push({ d: nextPtm.date, tone: "royal", icon: "nt", t: nextPtm.title, sub: nextPtm.text.split(". ")[0] });
     due.sort((x, y) => (x.d < y.d ? -1 : 1));
     S.$("#due").innerHTML = due.length ? due.map((x) => `<${x.go ? `button type="button" data-go="${x.go}"` : "div"} class="li due-li"><span class="sq ${x.tone}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">${NI[x.icon]}</svg></span><div class="t"><b>${S.esc(x.t)}</b><span>${S.esc(x.sub)}</span></div><span class="end due-d"><b>${S.fmt(x.d, { day: "numeric", month: "short" })}</b><small>${S.fmt(x.d, { weekday: "short" })}</small></span></${x.go ? "button" : "div"}>`).join("") : '<p class="muted" style="font-size:14.5px">Nothing due. Enjoy the evening.</p>';
-    renderNow();
+    renderNow(); renderPhaseHome();
     S.$("#weekly").innerHTML = S.weekly().replace(/\n/g, "<br />");
 
     renderNotes();
 
     // badges
-    const unreadHw = S.state.homework.filter((h) => h.fresh && !h.done).length;
+    const unreadHw = S.cs.homework.filter((h) => h.fresh && !h.done).length;
     document.querySelectorAll('[data-count="homework"]').forEach((c) => { c.hidden = !unreadHw; c.textContent = unreadHw; });
-    const unreadMsg = S.state.messages.filter((m) => m.from === "teacher" && m.fresh).length;
+    const unreadMsg = thread().filter((m) => m.from === "teacher" && m.fresh).length;
     document.querySelectorAll('[data-count="messages"]').forEach((c) => { c.hidden = !unreadMsg; c.textContent = unreadMsg; });
   }
 
   // ---------- Timetable: the week as a grid, periods down and days across ----------
   // Cells are tinted by subject; pointing at one (or tabbing to it) shows who teaches it.
-  const SHORT = { "Club Activities": "Clubs", Mathematics: "Maths", English: "English", Hindi: "Hindi", Science: "Science", "Social Science": "SSt", Computer: "Comp.", Games: "Games", Art: "Art", Library: "Library", Music: "Music", "Value Education": "Values", "Assembly Activity": "Assembly" };
-  const HUE = { Mathematics: "brick", Science: "green", English: "royal", Hindi: "gold", "Social Science": "teal", Computer: "slate" };
+  const SHORT = { "Club Activities": "Clubs", Mathematics: "Maths", English: "English", Hindi: "Hindi", Science: "Science", "Social Science": "SSt", Computer: "Comp.", Games: "Games", Art: "Art", Library: "Library", Music: "Music", "Value Education": "Values", "Assembly Activity": "Assembly", Physics: "Physics", Chemistry: "Chem.", Biology: "Bio.", Accountancy: "Accounts", "Business Studies": "BSt", Economics: "Eco.", "Applied Mathematics": "App. Maths", "Physical Education": "Phys. Ed.", "Information Technology": "IT" };
+  const HUE = { Mathematics: "brick", Science: "green", English: "royal", Hindi: "gold", "Social Science": "teal", Computer: "slate", "Information Technology": "slate", Physics: "teal", Chemistry: "green", Biology: "gold", Accountancy: "brick", "Business Studies": "teal", Economics: "gold", "Applied Mathematics": "green", "Physical Education": "slate" };
   const DAYS = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
   const ENDS = ["8:40", "9:20", "10:00", "10:40", "11:30", "12:10", "12:50", "1:30"];
   const mins = (t) => { let [h, m] = t.split(":").map(Number); if (h < 7) h += 12; return h * 60 + m; };
@@ -331,13 +355,13 @@
   if (!S.state.readNotes) S.state.readNotes = [];
   let nfFilter = "all";
   const notes = () => {
-    const out = [], rec = S.state.attendance[S.todayKey], st = S.statusOn(me.roll, S.todayKey);
-    if (rec && st) out.push({ id: "att-" + S.todayKey, kind: st === "P" ? "green" : "red", icon: "att", title: st === "P" ? "Aarav is in school" : `Aarav marked ${statusLabel[st].toLowerCase()} today`, text: `Roll call at ${rec.at} by Ms. Neha Mathew.`, when: "Today, " + rec.at, go: "attendance" });
-    S.state.messages.forEach((m, i) => { if (m.from === "teacher") out.push({ id: "msg-" + i, kind: "royal", icon: "msg", title: "Message from Ms. Neha Mathew", text: m.text, when: m.at, go: "messages" }); });
-    if (S.state.ut2Published && S.state.ut2[me.roll] != null) out.push({ id: "ut2", kind: "green", icon: "res", title: "Unit Test 2 marks are out", text: `Mathematics: ${S.state.ut2[me.roll]} / 20.`, when: "Today", go: "results" });
-    S.state.leaves.filter((l) => l.status !== "Waiting").forEach((l) => out.push({ id: "leave-" + l.from, kind: "green", icon: "leave", title: `Leave ${l.status.toLowerCase()}`, text: `${S.fmt(l.from)} to ${S.fmt(l.to)}: ${l.why}`, when: "Class teacher", go: "attendance" }));
-    S.state.homework.filter((h) => !h.done).forEach((h) => out.push({ id: "hw-" + h.id, kind: "warn", icon: "hw", title: `Homework: ${h.subj}`, text: `${h.title}. Due ${S.fmt(h.due, { weekday: "short", day: "numeric", month: "short" })}.`, when: "Set by " + h.by, go: "homework" }));
-    const fee = S.state.fees.find((f) => !f.paid);
+    const out = [], rec = S.cs.attendance[S.todayKey], st = S.statusOn(me.roll, S.todayKey);
+    if (rec && st) out.push({ id: "att-" + S.todayKey, kind: st === "P" ? "green" : "red", icon: "att", title: st === "P" ? `${me.first} is in school` : `${me.first} marked ${statusLabel[st].toLowerCase()} today`, text: `Roll call at ${rec.at} by ${S.teacher.name}.`, when: "Today, " + rec.at, go: "attendance" });
+    thread().forEach((m, i) => { if (m.from === "teacher") out.push({ id: "msg-" + i, kind: "royal", icon: "msg", title: "Message from " + S.teacher.name, text: m.text, when: m.at, go: "messages" }); });
+    if (S.PHASE !== "end") published().forEach(([k, v]) => out.push({ id: "mk-" + S.PHASE + k, kind: "green", icon: "res", title: `${S.ENTRY.name} marks are out`, text: `${k}: ${v} / ${S.ENTRY.max}.`, when: "Today", go: "results" }));
+    S.cs.leaves.filter((l) => l.status !== "Waiting").forEach((l) => out.push({ id: "leave-" + l.from, kind: "green", icon: "leave", title: `Leave ${l.status.toLowerCase()}`, text: `${S.fmt(l.from)} to ${S.fmt(l.to)}: ${l.why}`, when: "Class teacher", go: "attendance" }));
+    S.cs.homework.filter((h) => !h.done).forEach((h) => out.push({ id: "hw-" + h.id, kind: "warn", icon: "hw", title: `Homework: ${h.subj}`, text: `${h.title}. Due ${S.fmt(h.due, { weekday: "short", day: "numeric", month: "short" })}.`, when: "Set by " + h.by, go: "homework" }));
+    const fee = fees().find((f) => !f.paid);
     if (fee) out.push({ id: "fee-" + fee.q, kind: "red", icon: "fee", title: `Fee due ${S.fmt(fee.due, { day: "numeric", month: "long" })}`, text: `${S.rupee(fee.amount)} for ${fee.q}. Pay by UPI from the Fees tab.`, when: "Reminder", go: "fees" });
     const tone = { Holiday: "slate", PTM: "red", Event: "green", Notice: "gold" };
     [...S.state.notices].filter((n) => n.date >= S.todayKey || n.fresh).sort((a, b) => (a.date < b.date ? -1 : 1))
@@ -375,6 +399,7 @@
   // Bus: loops through the stops so it looks live in a demo.
   const stops = ["Sector 9", "Sec 8 Market", "Sec 7C", "Your stop", "School"];
   function renderBus() {
+    if (me.bus === "Own transport") { S.$("#bus-pill").hidden = true; S.$("#route").hidden = S.$("#route-labels").hidden = true; S.$("#bus-text").innerHTML = `<b>Own transport.</b> ${me.first} is dropped and picked up by family. The office has the names of the adults who may collect ${me.first}.`; return; }
     const morning = new Date().getHours() < 12;
     const list = morning ? stops : [...stops].reverse();
     const home = list.indexOf("Your stop");
@@ -383,7 +408,7 @@
     S.$("#route-labels").innerHTML = list.map((s) => `<span>${s}</span>`).join("");
     const left = home - pos;
     S.$("#bus-text").innerHTML = (morning ? "<b>Morning pick-up.</b> " : "<b>Afternoon drop.</b> ") +
-      (left > 0 ? `${left} stop${left > 1 ? "s" : ""} away · about ${left * 4} min` : left === 0 ? "At your stop now" : morning ? "Aarav is on the bus to school" : "Dropped off at your stop ✓");
+      (left > 0 ? `${left} stop${left > 1 ? "s" : ""} away · about ${left * 4} min` : left === 0 ? "At your stop now" : morning ? me.first + " is on the bus to school" : "Dropped off at your stop ✓");
   }
 
   function renderCal() {
@@ -406,13 +431,13 @@
   function renderAttendance() {
     const pct = S.attendancePct(me.roll);
     const away = Object.keys(S.history).filter((k) => S.history[k][me.roll]).map((k) => [k, S.history[k][me.roll]]);
-    const t = S.state.attendance[S.todayKey]; if (t && t.marks[me.roll]) away.push([S.todayKey, t.marks[me.roll]]);
+    const t = S.cs.attendance[S.todayKey]; if (t && t.marks[me.roll]) away.push([S.todayKey, t.marks[me.roll]]);
     S.paint(S.$("#att-stats"), `
       <div class="card stat stat-ring">${S.ring(pct, { tone: pct >= 85 ? "var(--green)" : "var(--warn)", mark: 75, label: `${pct}% this session; CBSE minimum 75%` })}<div><span class="lbl">This session</span><div class="num">${pct}<small>%</small></div><div class="foot">The tick marks CBSE's 75% minimum</div></div></div>
       <div class="card stat"><span class="lbl">Days away</span><div class="num">${away.length}</div><div class="foot">${away.filter((a) => a[1] === "L").length} on approved leave</div></div>
       <div class="card stat"><span class="lbl">Class average</span><div class="num">${Math.round(S.students.reduce((a, s) => a + S.attendancePct(s.roll), 0) / S.students.length * 10) / 10}<small>%</small></div><div class="foot">VII-B</div></div>`);
     S.$("#absences").innerHTML = away.length ? away.reverse().map(([k, s]) => `<div class="li"><span class="sq ${s === "A" ? "red" : "warn"}">${s}</span><div class="t"><b>${S.fmt(k, { weekday: "long", day: "numeric", month: "long" })}</b><span>${statusLabel[s]}</span></div></div>`).join("") : '<p class="muted">No days away. 🎉</p>';
-    const leaves = S.state.leaves;
+    const leaves = S.cs.leaves;
     if (leaves.length) S.$("#absences").insertAdjacentHTML("afterbegin", leaves.map((l) => `<div class="li"><span class="sq warn">L</span><div class="t"><b>Leave requested: ${S.fmt(l.from)} – ${S.fmt(l.to)}</b><span>${S.esc(l.why)}</span></div><span class="end pill ${l.status === "Approved" ? "green" : "warn"}">${l.status}</span></div>`).join(""));
     renderCal(); renderSession();
   }
@@ -420,7 +445,7 @@
   // Every school day of the session, for Aarav and for the class.
   function sessionDays() {
     const days = Object.keys(S.history).sort();
-    if (S.state.attendance[S.todayKey]) days.push(S.todayKey);
+    if (S.cs.attendance[S.todayKey]) days.push(S.todayKey);
     return days;
   }
   function renderSession() {
@@ -441,7 +466,7 @@
     }
     g += ["Mon", "", "Wed", "", "Fri", ""].map((t, d) => (t ? `<text x="0" y="${T + d * step + 11}">${t}</text>` : "")).join("");
     const W = L + weeks * step, H = T + 6 * step;
-    S.paint(S.$("#att-heat"), `<svg class="chart heat" viewBox="0 0 ${W} ${H}" style="max-width:${Math.round(W * 1.7)}px" role="img" aria-label="Aarav's attendance, every school day this session">${g}</svg>`);
+    S.paint(S.$("#att-heat"), `<svg class="chart heat" viewBox="0 0 ${W} ${H}" style="max-width:${Math.round(W * 1.7)}px" role="img" aria-label="${me.first}'s attendance, every school day this session">${g}</svg>`);
     // Streaks: the run he is on now, and his longest.
     let run = 0, best = 0, cur = 0;
     days.forEach((k) => { if (S.statusOn(me.roll, k) === "P") { run++; best = Math.max(best, run); } else run = 0; });
@@ -466,13 +491,13 @@
     c += months.map((r, i) => `<text x="${x(i)}" y="${H2 - 8}" text-anchor="middle">${r.label}${r.m === S.todayKey.slice(0, 7) ? " (so far)" : ""}</text>`).join("");
     const line = (key) => months.map((r, i) => `${i ? "L" : "M"}${x(i).toFixed(1)},${y(r[key]).toFixed(1)}`).join("");
     c += `<path class="ln-path s2" d="${line("c")}" /><path class="ln-path s1" d="${line("me")}" />`;
-    c += months.map((r, i) => `<circle class="ln-dot s2" cx="${x(i)}" cy="${y(r.c)}" r="4" /><circle class="ln-dot s1" cx="${x(i)}" cy="${y(r.me)}" r="5" /><rect class="hit" x="${x(i) - 16}" y="${pt}" width="32" height="${H2 - pt - pb}"${S.tipAttr(`Aarav ${r.me}% · class ${r.c}% · ${r.n} school days`, S.fmt(r.m + "-01", { month: "long" }))} />`).join("");
+    c += months.map((r, i) => `<circle class="ln-dot s2" cx="${x(i)}" cy="${y(r.c)}" r="4" /><circle class="ln-dot s1" cx="${x(i)}" cy="${y(r.me)}" r="5" /><rect class="hit" x="${x(i) - 16}" y="${pt}" width="32" height="${H2 - pt - pb}"${S.tipAttr(`${me.first} ${r.me}% · class ${r.c}% · ${r.n} school days`, S.fmt(r.m + "-01", { month: "long" }))} />`).join("");
     const last = months[months.length - 1];
     let ya = y(last.me), yb = y(last.c);
     if (Math.abs(ya - yb) < 15) { const mid = (ya + yb) / 2, up = last.me >= last.c; ya = mid + (up ? -8 : 8); yb = mid + (up ? 8 : -8); }
-    c += `<text class="ln-lab s1" x="${x(months.length - 1) + 10}" y="${ya + 4}">Aarav ${last.me}%</text><text class="ln-lab s2" x="${x(months.length - 1) + 10}" y="${yb + 4}">Class ${last.c}%</text>`;
-    S.paint(S.$("#att-trend"), `<svg class="chart" viewBox="0 0 ${W2} ${H2}" role="img" aria-label="Attendance by month, Aarav and the class">${c}</svg><div class="legend"><span><i class="ln" style="background:var(--accent)"></i>Aarav</span><span><i class="ln" style="background:var(--royal)"></i>Class average</span><span><i class="dash"></i>CBSE minimum</span></div>`);
-    S.paint(S.$("#att-tbl"), `<thead><tr><th>Month</th><th class="num">School days</th><th class="num">Present</th><th class="num">Absent</th><th class="num">Leave</th><th class="num">Aarav</th><th class="num">Class</th></tr></thead><tbody>` +
+    c += `<text class="ln-lab s1" x="${x(months.length - 1) + 10}" y="${ya + 4}">${me.first} ${last.me}%</text><text class="ln-lab s2" x="${x(months.length - 1) + 10}" y="${yb + 4}">Class ${last.c}%</text>`;
+    S.paint(S.$("#att-trend"), `<svg class="chart" viewBox="0 0 ${W2} ${H2}" role="img" aria-label="Attendance by month, ${me.first} and the class">${c}</svg><div class="legend"><span><i class="ln" style="background:var(--accent)"></i>${me.first}</span><span><i class="ln" style="background:var(--royal)"></i>Class average</span><span><i class="dash"></i>CBSE minimum</span></div>`);
+    S.paint(S.$("#att-tbl"), `<thead><tr><th>Month</th><th class="num">School days</th><th class="num">Present</th><th class="num">Absent</th><th class="num">Leave</th><th class="num">${me.first}</th><th class="num">Class</th></tr></thead><tbody>` +
       months.map((r) => `<tr><td>${S.fmt(r.m + "-01", { month: "long" })}</td><td class="num">${r.n}</td><td class="num">${r.P}</td><td class="num">${r.A || "–"}</td><td class="num">${r.L || "–"}</td><td class="num"><b>${r.me}%</b></td><td class="num muted">${r.c}%</td></tr>`).join("") +
       `<tr><td><b>Session</b></td><td class="num">${days.length}</td><td class="num">${months.reduce((a, r) => a + r.P, 0)}</td><td class="num">${months.reduce((a, r) => a + r.A, 0)}</td><td class="num">${months.reduce((a, r) => a + r.L, 0)}</td><td class="num"><b>${S.attendancePct(me.roll)}%</b></td><td class="num muted">${Math.round((months.reduce((a, r) => a + r.cls, 0) / days.length) * 1000) / 10}%</td></tr></tbody>`);
   }
@@ -480,7 +505,7 @@
   document.addEventListener("sjs:vt", (e) => { if (e.detail.key === "att") S.$("#att-legend").hidden = !["month", "session"].includes(e.detail.v); if (e.detail.key === "hw") renderHomework(); if (e.detail.key === "res") renderResults(); });
 
   function renderHomework() {
-    const all = S.state.homework, done = all.filter((h) => h.done).length, f = S.vt.hw || "all";
+    const all = S.cs.homework, done = all.filter((h) => h.done).length, f = S.vt.hw || "all";
     S.paint(S.$("#hw-prog"), `<div class="lbl"><span><b>${done} of ${all.length}</b> done</span><span>${all.length - done} to do</span></div>` +
       S.stack(all.map((h) => ({ v: 1, tone: h.done ? "var(--green)" : "color-mix(in srgb, var(--warn) 45%, var(--surface))", tip: `${h.subj}: ${h.title}`, tipT: h.done ? "Done" : "Due " + S.fmt(h.due, { weekday: "short", day: "numeric", month: "short" }) }))));
     const hw = [...all].filter((h) => f === "all" || (f === "done") === h.done).sort((a, b) => a.done - b.done || (a.due < b.due ? -1 : 1));
@@ -491,83 +516,177 @@
       <div style="flex:1;min-width:0"><div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center"><span class="pill">${S.esc(h.subj)}</span>${h.fresh ? '<span class="pill red">New</span>' : ""}<span class="pill ${h.done ? "green" : "warn"}">${h.done ? "Done" : "Due " + S.fmt(h.due, { weekday: "short", day: "numeric", month: "short" })}</span></div>
       <h3 style="font:600 17px/1.35 var(--sans);margin:10px 0 6px">${S.esc(h.title)}</h3><p class="muted" style="font-size:14.5px">${S.esc(h.detail)}</p><p class="muted" style="font-size:12.5px;margin-top:8px">Set by ${S.esc(h.by)}</p></div></div>`).join("");
   }
-  S.$("#hw").addEventListener("change", (e) => { const id = e.target.dataset.hw; const h = S.state.homework.find((x) => x.id === id); if (!h) return; h.done = e.target.checked; h.fresh = false; S.save(); renderHomework(); renderHome(); });
+  S.$("#hw").addEventListener("change", (e) => { const id = e.target.dataset.hw; const h = S.cs.homework.find((x) => x.id === id); if (!h) return; h.done = e.target.checked; h.fresh = false; S.save(); renderHomework(); renderHome(); });
+
+  // Marks a teacher has published at this stage, subject by subject.
+  const published = () => S.subjects.map((k) => { const e = S.entry(S.focusKey, k); return e.published && e.marks[me.roll] != null ? [k, e.marks[me.roll]] : null; }).filter(Boolean);
+  const NEXT = (c) => S.sample.classes[S.sample.classes.indexOf(c) + 1];
+  const board = /^(X|XII)$/.test(me.cls);
+  const TICK = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>';
+
+  // Exams that have happened by this stage; "Change" needs two of them.
+  S.$("#exam").innerHTML = S.EX.list.map((k, i) => `<button class="${i ? "" : "on"}" data-e="${k}">${L(k)}</button>`).join("");
+  if (!P) S.$('[data-vt="res"] [data-v="change"]').remove();
 
   function renderResults() {
     const marks = me[exam];
-    S.$("#res-title").textContent = S.vt.res === "change" ? "Unit Test 1 to half-yearly · change by subject" : (exam === "hy" ? "Half-yearly" : "Unit Test 1") + " · marks by subject (%)";
+    S.$("#res-title").textContent = S.vt.res === "change" && P ? `${L(P)} to ${L(C).toLowerCase()} · change by subject` : L(exam) + " · marks by subject (%)";
     // Build the bars once; after that only move them, so a refresh never replays the whole chart.
     const bars = S.$("#bars");
     if (bars.children.length !== S.subjects.length) {
       bars.innerHTML = S.subjects.map((s) => `<div class="bar-row"><span>${s}</span><div class="track" tabindex="0"><span class="fill" style="width:0"></span><span class="ref"></span><span class="tip"></span></div><span class="v"></span></div>`).join("");
       bars.getBoundingClientRect(); // let the zero width land before the first grow
     }
-    S.subjects.forEach((s, i) => { const row = bars.children[i], avg = S.classAvg(exam, s); row.querySelector(".fill").style.width = marks[s] + "%"; row.querySelector(".ref").style.left = avg + "%"; row.querySelector(".tip").textContent = `${s}: Aarav ${marks[s]}% · class average ${avg}%`; row.querySelector(".v").textContent = marks[s]; });
-    const SH = { Mathematics: "Maths", "Social Science": "SSt" };
+    S.subjects.forEach((s, i) => { const row = bars.children[i], avg = S.classAvg(exam, s); row.querySelector(".fill").style.width = marks[s] + "%"; row.querySelector(".ref").style.left = avg + "%"; row.querySelector(".tip").textContent = `${s}: ${me.first} ${marks[s]}% · class average ${avg}%`; row.querySelector(".v").textContent = marks[s]; });
+    const SH = { Mathematics: "Maths", "Social Science": "SSt", "Information Technology": "IT", "Business Studies": "Business", "Applied Mathematics": "Applied Maths", "Physical Education": "Phys. Ed." };
     S.paint(S.$("#radar"), S.radar(S.subjects.map((x) => SH[x] || x), [
-      { name: "Aarav", values: S.subjects.map((x) => marks[x]), cls: "s1" },
+      { name: me.first, values: S.subjects.map((x) => marks[x]), cls: "s1" },
       { name: "Class average", values: S.subjects.map((x) => S.classAvg(exam, x)), cls: "s2" }
     ]));
-    // Change: Unit Test 1 to the half-yearly, per subject.
-    const allV = S.subjects.flatMap((x) => [me.ut1[x], me.hy[x]]), lo = Math.max(0, Math.floor((Math.min(...allV) - 5) / 10) * 10);
-    const pos = (v) => ((v - lo) / (100 - lo)) * 100;
-    S.paint(S.$("#dumb"), S.subjects.map((x) => {
-      const a = me.ut1[x], b = me.hy[x], d = b - a, t = d >= 0 ? "var(--green)" : "var(--accent)";
-      return `<div class="db-row"><span>${x}</span><div class="db-track" tabindex="0" style="--t:${t}"${S.tipAttr(`Unit Test 1 ${a}% → Half-yearly ${b}%`, x)}><span class="seg-b" style="left:${pos(Math.min(a, b))}%;width:${Math.abs(pos(b) - pos(a))}%"></span><span class="p0" style="left:${pos(a)}%"></span><span class="p1" style="left:${pos(b)}%"></span></div><span class="d ${d > 0 ? "up" : d < 0 ? "dn" : ""}">${d > 0 ? "+" : d < 0 ? "−" : ""}${Math.abs(d)}</span></div>`;
-    }).join("") + `<div class="db-axis"><span></span><div><span>${lo}%</span><span>${Math.round((lo + 100) / 2)}%</span><span>100%</span></div><span></span></div>`);
-    S.$("#res-tbl").innerHTML = `<thead><tr><th>Subject</th><th class="num">UT 1</th><th class="num">Half-yearly</th><th class="num">Class avg</th></tr></thead><tbody>` +
-      S.subjects.map((s) => `<tr><td>${s}</td><td class="num">${me.ut1[s]}</td><td class="num"><b>${me.hy[s]}</b></td><td class="num muted">${S.classAvg("hy", s)}</td></tr>`).join("") +
-      `<tr><td><b>Average</b></td><td class="num">${S.avgOf(me.ut1)}</td><td class="num"><b>${S.avgOf(me.hy)}</b></td><td class="num muted">${Math.round(S.subjects.reduce((a, s) => a + S.classAvg("hy", s), 0) / S.subjects.length)}</td></tr></tbody>`;
-    const best = [...S.subjects].sort((a, b) => me.hy[b] - me.hy[a])[0];
-    const up = [...S.subjects].sort((a, b) => (me.hy[b] - me.ut1[b]) - (me.hy[a] - me.ut1[a]))[0];
-    const weak = S.subjects.map((x) => ({ x, gap: S.classAvg("hy", x) - me.hy[x] })).sort((a, b) => b.gap - a.gap)[0];
-    S.$("#res-ai").innerHTML = `Aarav's strongest subject is <b>${best}</b> (${me.hy[best]}%). The biggest improvement since Unit Test 1 is in <b>${up}</b> (+${me.hy[up] - me.ut1[up]} points). <b>${weak.x}</b> is the one to watch: ${me.hy[weak.x]}%, against a class average of ${S.classAvg("hy", weak.x)}%, and it has dropped since Unit Test 1. Bring this up at the PTM on Saturday, 31 October.`;
-    const u2 = S.state.ut2Published ? S.state.ut2[me.roll] : null;
-    S.$("#ut2-card").innerHTML = u2 != null ? `<div class="status ok" style="margin-bottom:16px"><span class="sq green"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M5 20V10M12 20V4M19 20v-7"/></svg></span><div><b>New: Unit Test 2 · Mathematics — ${u2} / 20</b><span>Published by Ms. Neha Mathew · class average ${(Object.values(S.state.ut2).reduce((a, b) => a + +b, 0) / Object.values(S.state.ut2).length).toFixed(1)} / 20</span></div></div>` : "";
+    // Change: the exam before to the latest one, per subject.
+    if (P) {
+      const allV = S.subjects.flatMap((x) => [me[P][x], me[C][x]]), lo = Math.max(0, Math.floor((Math.min(...allV) - 5) / 10) * 10);
+      const pos = (v) => ((v - lo) / (100 - lo)) * 100;
+      S.paint(S.$("#dumb"), S.subjects.map((x) => {
+        const a = me[P][x], b = me[C][x], d = b - a, t = d >= 0 ? "var(--green)" : "var(--accent)";
+        return `<div class="db-row"><span>${x}</span><div class="db-track" tabindex="0" style="--t:${t}"${S.tipAttr(`${L(P)} ${a}% → ${L(C)} ${b}%`, x)}><span class="seg-b" style="left:${pos(Math.min(a, b))}%;width:${Math.abs(pos(b) - pos(a))}%"></span><span class="p0" style="left:${pos(a)}%"></span><span class="p1" style="left:${pos(b)}%"></span></div><span class="d ${d > 0 ? "up" : d < 0 ? "dn" : ""}">${d > 0 ? "+" : d < 0 ? "−" : ""}${Math.abs(d)}</span></div>`;
+      }).join("") + `<div class="db-axis"><span></span><div><span>${lo}%</span><span>${Math.round((lo + 100) / 2)}%</span><span>100%</span></div><span></span></div>`);
+      S.paint(S.$("#dumb").nextElementSibling, `<span><i class="dot" style="border:2px solid var(--muted);width:10px;height:10px"></i>${L(P)}</span><span><i class="dot" style="background:var(--green)"></i>${L(C)}, up</span><span><i class="dot" style="background:var(--accent)"></i>${L(C)}, down</span>`);
+    }
+    // Table: every exam so far, oldest first, and the class average for the latest.
+    const cols = [...S.EX.list].reverse(), short = (k) => ({ ly: "Last year", ut1: "UT 1", hy: "Half-yearly", fin: board ? "Pre-board" : "Final" }[k]);
+    const clsCur = (x) => S.classAvg(C, x);
+    S.$("#res-tbl").innerHTML = `<thead><tr><th>Subject</th>${cols.map((k) => `<th class="num">${short(k)}</th>`).join("")}<th class="num">Class avg</th>${S.PHASE === "end" ? '<th class="num">Grade</th>' : ""}</tr></thead><tbody>` +
+      S.subjects.map((s) => `<tr><td>${s}</td>${cols.map((k) => `<td class="num">${k === C ? `<b>${me[k][s]}</b>` : me[k][s]}</td>`).join("")}<td class="num muted">${clsCur(s)}</td>${S.PHASE === "end" ? `<td class="num"><b>${S.grade(me[C][s])}</b></td>` : ""}</tr>`).join("") +
+      `<tr><td><b>Average</b></td>${cols.map((k) => `<td class="num">${k === C ? `<b>${S.avgOf(me[k])}</b>` : S.avgOf(me[k])}</td>`).join("")}<td class="num muted">${Math.round(S.subjects.reduce((a, s) => a + clsCur(s), 0) / S.subjects.length)}</td>${S.PHASE === "end" ? `<td class="num"><b>${S.grade(S.avgOf(me[C]))}</b></td>` : ""}</tr></tbody>`;
+    const best = [...S.subjects].sort((a, b) => me[C][b] - me[C][a])[0];
+    const weak = S.subjects.map((x) => ({ x, gap: clsCur(x) - me[C][x] })).sort((a, b) => b.gap - a.gap)[0];
+    const tail = S.PHASE === "end" ? " The report card is given out at the PTM on Saturday, 27 March." : " Bring this up at the PTM on Saturday, 31 October.";
+    if (P) {
+      const up = [...S.subjects].sort((a, b) => (me[C][b] - me[P][b]) - (me[C][a] - me[P][a]))[0], d = me[C][up] - me[P][up];
+      S.$("#res-ai").innerHTML = `${me.first}'s strongest subject is <b>${best}</b> (${me[C][best]}%). The biggest ${d >= 0 ? "improvement" : "change"} since the ${L(P).toLowerCase()} is in <b>${up}</b> (${d >= 0 ? "+" : "−"}${Math.abs(d)} points). ` +
+        (weak.gap > 0 ? `<b>${weak.x}</b> is the one to watch: ${me[C][weak.x]}%, against a class average of ${clsCur(weak.x)}%.` : `Every subject is at or above the class average.`) + tail;
+    } else {
+      S.$("#res-ai").innerHTML = `Last session, ${me.first} did best in <b>${best}</b> (${me[C][best]}%). ` +
+        (weak.gap > 0 ? `<b>${weak.x}</b> was below the class average (${me[C][weak.x]}% against ${clsCur(weak.x)}%), so it's worth a word with ${S.ttTeachers[weak.x] || "the subject teacher"} at Meet the Teacher on Saturday, 18 April.` : "Every subject was at or above the class average.") +
+        ` Unit Test 1 is from 20 July.`;
+    }
+    const pub = S.PHASE === "end" ? [] : published();
+    S.$("#ut2-card").innerHTML = pub.map(([k, v]) => {
+      const e = S.entry(S.focusKey, k), vals = Object.values(e.marks).map(Number);
+      return `<div class="status ok" style="margin-bottom:16px"><span class="sq green"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M5 20V10M12 20V4M19 20v-7"/></svg></span><div><b>New: ${S.ENTRY.name} · ${k} — ${v} / ${S.ENTRY.max}</b><span>Published by ${S.esc(S.ttTeachers[k] || "the teacher")} · class average ${(vals.reduce((a, b) => a + b, 0) / vals.length).toFixed(1)} / ${S.ENTRY.max}</span></div></div>`;
+    }).join("");
+    renderPhaseResults();
   }
+
+  // ---------- What each stage of the session adds ----------
+  function renderPhaseResults() {
+    const box = S.$("#res-phase");
+    if (S.PHASE === "start") {
+      const exams = S.CALENDAR.filter(([d, t]) => /Unit Test|Half-yearly exams|Final|board/.test(t) && (board || !/board/.test(t)));
+      S.paint(box, `<div class="card" style="margin-bottom:16px"><div class="card-h"><h2>This session's exams</h2><span class="right muted" style="font-size:12.5px">Dates are on the school calendar</span></div><ol class="xcal">` +
+        exams.map(([d, t]) => { const n = Math.round((new Date(d + "T00:00") - S.today) / 864e5); return `<li><b>${S.esc(board && /Final/.test(t) ? "Pre-board exams" : t)}</b><span>${S.fmt(d, { weekday: "short", day: "numeric", month: "long", year: "numeric" })}</span><small>${n > 0 ? `in ${n} days` : "under way"}</small></li>`; }).join("") + `</ol></div>`);
+      return;
+    }
+    if (S.PHASE === "end") {
+      const avg = S.avgOf(me[C]), att = S.attendancePct(me.roll);
+      const remark = S.remarkFor ? S.remarkFor(me) : "";
+      S.paint(box, `<div class="card rc" style="margin-bottom:16px">
+        <div class="rc-h"><div><span class="lbl">Report card · Session 2026–27</span><h2>${S.esc(me.name)} · Class ${me.label}</h2><span class="muted">Roll ${String(me.roll).padStart(2, "0")} · Class teacher ${S.esc(S.teacher.name)}</span></div>
+          <div class="rc-res">${board ? `<span class="pill royal">CBSE board exam under way</span><small>Result expected in May</small>` : `<span class="pill green">Promoted to Class ${NEXT(me.cls)}</span><small>Results declared ${S.fmt(S.todayKey, { day: "numeric", month: "long" })}</small>`}</div></div>
+        <div class="rc-k"><div><b>${avg}%</b><span>${L(C)} average</span></div><div><b>${S.grade(avg)}</b><span>Overall grade</span></div><div><b>${att}%</b><span>Attendance</span></div><div><b>${S.subjects.filter((x) => me[C][x] >= 33).length} / ${S.subjects.length}</b><span>Subjects passed</span></div></div>
+        <div class="rc-g">${S.subjects.map((x) => `<span${S.tipAttr(`${me[C][x]}% · ${L("ut1")} ${me.ut1[x]}% · ${L("hy")} ${me.hy[x]}%`, x)} tabindex="0"><b>${S.grade(me[C][x])}</b>${x}</span>`).join("")}</div>
+        ${remark ? `<p class="rc-rm"><b>Class teacher's remark.</b> ${S.esc(remark)}</p>` : ""}
+        <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:14px"><button class="btn btn-primary btn-sm" type="button" onclick="SJS.toast('Report card saved as a PDF (demo)')">Download report card</button><button class="btn btn-ghost btn-sm" type="button" onclick="SJS.ask('How did the year go?')">Ask about the year</button></div>
+      </div>`);
+      return;
+    }
+    box.innerHTML = "";
+  }
+  // Grades on the CBSE eight-point scale.
+  S.grade = (v) => (v >= 91 ? "A1" : v >= 81 ? "A2" : v >= 71 ? "B1" : v >= 61 ? "B2" : v >= 51 ? "C1" : v >= 41 ? "C2" : v >= 33 ? "D" : "E");
+
+  // Home: the first week's checklist, or the year's result.
+  function renderPhaseHome() {
+    const box = S.$("#phase-card");
+    if (S.PHASE === "start") {
+      const done = S.state.checks[me.key] || {}, q1 = fees()[0];
+      const items = [
+        ["fee", "Pay the Q1 fee", q1.paid ? `Paid ${S.fmt(q1.paid)}` : `${S.rupee(q1.amount)} by Friday, 10 April`, !!q1.paid, "fees"],
+        ["books", "Collect books and notebooks", "School bookshop, 8:00 AM to 1:00 PM, until Saturday, 11 April"],
+        ["uniform", "Summer uniform", "From Wednesday, 1 April"],
+        ["photo", "ID-card photo", "Send one passport photo to the class teacher by 15 April"],
+        ["bus", me.bus === "Own transport" ? "Register who picks up" : `Bus pass for ${me.bus}`, me.bus === "Own transport" ? "Give the school office the names of up to two adults" : "Collect it from the transport desk"],
+        ["meet", "Meet the class teacher", "Saturday, 18 April, 9:00 AM to 11:30 AM"]
+      ].map(([id, t, sub, auto, go]) => ({ id, t, sub, on: auto != null ? auto : !!done[id], auto: auto != null, go }));
+      const n = items.filter((x) => x.on).length;
+      box.hidden = false;
+      S.paint(box, `<div class="card phase-card"><div class="card-h"><h2>Getting ready for Class ${me.label}</h2><span class="right muted" style="font-size:13px">${n} of ${items.length} done</span></div>${S.meter((n / items.length) * 100, { tone: "var(--green)" })}
+        <div class="chk">${items.map((x) => `<button type="button" class="chk-i${x.on ? " on" : ""}" ${x.auto ? `data-go="${x.go}"` : `data-chk="${x.id}"`} aria-pressed="${x.on}"><span class="box">${x.on ? TICK : ""}</span><span class="t"><b>${S.esc(x.t)}</b><span>${S.esc(x.sub)}</span></span></button>`).join("")}</div></div>`);
+      return;
+    }
+    if (S.PHASE === "end") {
+      const avg = S.avgOf(me[C]), nf = S.FEE_Q(me.sec.ci + 1) || S.FEE_Q(me.sec.ci);
+      box.hidden = false;
+      S.paint(box, `<div class="card phase-card result-hero">
+        <div class="rh-top"><div><span class="lbl">${board ? "Pre-board result" : "Final result · Session 2026–27"}</span><h2>${board ? "CBSE board exam under way" : `Promoted to Class ${NEXT(me.cls)}`}</h2><span class="muted">${avg}% overall · grade ${S.grade(avg)} · attendance ${S.attendancePct(me.roll)}%</span></div><button class="btn btn-primary btn-sm" type="button" data-go="results">See the report card</button></div>
+        <div class="list">
+          <div class="li"><span class="sq red">${S.fmt("2027-03-27", { day: "numeric" })}</span><div class="t"><b>Report-card PTM</b><span>Saturday, 27 March, 9:00 AM to 12:30 PM</span></div></div>
+          ${board ? `<div class="li"><span class="sq royal">4</span><div class="t"><b>Board exams end on 4 April</b><span>CBSE results are expected in May</span></div></div>` : `<div class="li"><span class="sq green">1</span><div class="t"><b>New session begins, Class ${NEXT(me.cls)}</b><span>Thursday, 1 April 2027</span></div></div>`}
+          <div class="li"><span class="sq gold">₹</span><div class="t"><b>Q1 2027–28 fee: ${S.rupee(nf)}</b><span>Due Saturday, 10 April 2027</span></div></div>
+        </div></div>`);
+      return;
+    }
+    box.hidden = true;
+  }
+  document.addEventListener("click", (e) => {
+    const b = e.target.closest("[data-chk]"); if (!b) return;
+    const d = S.state.checks[me.key] || (S.state.checks[me.key] = {});
+    d[b.dataset.chk] = !d[b.dataset.chk]; S.save(); renderPhaseHome();
+  });
   S.$("#exam").addEventListener("click", (e) => { const b = e.target.closest("button"); if (!b) return; exam = b.dataset.e; S.$("#exam").querySelectorAll("button").forEach((x) => x.classList.toggle("on", x === b)); renderResults(); });
 
   function renderFees() {
-    const due = S.state.fees.find((f) => !f.paid);
+    const due = fees().find((f) => !f.paid);
     S.$("#fee-due").innerHTML = due ? `<div class="card stat hl" style="display:flex;align-items:center;gap:18px;flex-wrap:wrap"><div><span class="lbl">Due ${S.fmt(due.due, { day: "numeric", month: "long" })}</span><div class="num">${S.rupee(due.amount)}</div><div class="foot">${due.q}</div></div><button class="btn" style="margin-left:auto;background:var(--accent-ink);color:var(--accent)" id="pay-btn">Pay now by UPI</button></div>` : `<div class="status ok"><span class="sq green">✓</span><div><b>All fees paid</b><span>Thank you!</span></div></div>`;
-    const fees = S.state.fees, paidN = fees.filter((f) => f.paid).length, paidAmt = fees.filter((f) => f.paid).reduce((a, f) => a + f.amount, 0), total = fees.reduce((a, f) => a + f.amount, 0);
+    const fl = fees(), paidN = fl.filter((f) => f.paid).length, paidAmt = fl.filter((f) => f.paid).reduce((a, f) => a + f.amount, 0), total = fl.reduce((a, f) => a + f.amount, 0);
     const tick = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>';
-    S.paint(S.$("#fee-tl"), `<div class="fee-sum"><div><b>${S.rupee(paidAmt)}</b> <span>paid of ${S.rupee(total)} this session</span></div><span>${paidN} of ${fees.length} instalments</span></div>` +
-      S.stack(fees.map((f) => ({ v: f.amount, tone: f.paid ? "var(--green)" : f === due ? "var(--accent)" : "var(--line)", tip: `${S.rupee(f.amount)} · ${f.paid ? "paid " + S.fmt(f.paid) : f === due ? "due " + S.fmt(f.due) : "due " + S.fmt(f.due, { day: "numeric", month: "short", year: "numeric" })}`, tipT: f.q }))) +
-      `<ol class="ftl" style="--done:${paidN ? ((paidN - 1) / (fees.length - 1)) * 100 : 0}%">` + fees.map((f, i) => {
+    S.paint(S.$("#fee-tl"), `<div class="fee-sum"><div><b>${S.rupee(paidAmt)}</b> <span>paid of ${S.rupee(total)} this session</span></div><span>${paidN} of ${fl.length} instalments</span></div>` +
+      S.stack(fl.map((f) => ({ v: f.amount, tone: f.paid ? "var(--green)" : f === due ? "var(--accent)" : "var(--line)", tip: `${S.rupee(f.amount)} · ${f.paid ? "paid " + S.fmt(f.paid) : f === due ? "due " + S.fmt(f.due) : "due " + S.fmt(f.due, { day: "numeric", month: "short", year: "numeric" })}`, tipT: f.q }))) +
+      `<ol class="ftl" style="--done:${paidN ? ((paidN - 1) / (fl.length - 1)) * 100 : 0}%">` + fl.map((f, i) => {
         const left = Math.round((new Date(f.due + "T00:00") - S.today) / 864e5);
         return `<li class="${f.paid ? "paid" : f === due ? "due" : ""}"><span class="nd">${f.paid ? tick : i + 1}</span><b>${f.q.split(" · ")[0]} · ${S.rupee(f.amount)}</b><span>${f.q.split(" · ")[1]}</span><span class="when">${f.paid ? "Paid " + S.fmt(f.paid) : f === due ? (left > 0 ? `Due in ${left} day${left > 1 ? "s" : ""}` : left === 0 ? "Due today" : "Overdue") : "Due " + S.fmt(f.due, { day: "numeric", month: "short", year: "numeric" })}</span></li>`;
       }).join("") + "</ol>");
-    S.$("#fee-tbl").innerHTML = `<thead><tr><th>Instalment</th><th>Due date</th><th class="num">Amount</th><th>Status</th><th></th></tr></thead><tbody>` + S.state.fees.map((f, i) => `<tr><td>${f.q}</td><td>${S.fmt(f.due, { day: "numeric", month: "short", year: "numeric" })}</td><td class="num">${S.rupee(f.amount)}</td><td>${f.paid ? `<span class="pill green">Paid ${S.fmt(f.paid)}</span>` : f === due ? '<span class="pill red">Due</span>' : '<span class="pill">Upcoming</span>'}</td><td>${f.paid ? `<button class="link-btn" onclick="SJS.toast('Receipt downloaded (demo)')">Receipt</button>` : ""}</td></tr>`).join("") + "</tbody>";
+    S.$("#fee-tbl").innerHTML = `<thead><tr><th>Instalment</th><th>Due date</th><th class="num">Amount</th><th>Status</th><th></th></tr></thead><tbody>` + fees().map((f, i) => `<tr><td>${f.q}</td><td>${S.fmt(f.due, { day: "numeric", month: "short", year: "numeric" })}</td><td class="num">${S.rupee(f.amount)}</td><td>${f.paid ? `<span class="pill green">Paid ${S.fmt(f.paid)}</span>` : f === due ? '<span class="pill red">Due</span>' : '<span class="pill">Upcoming</span>'}</td><td>${f.paid ? `<button class="link-btn" onclick="SJS.toast('Receipt downloaded (demo)')">Receipt</button>` : ""}</td></tr>`).join("") + "</tbody>";
     const pb = S.$("#pay-btn"); if (pb) pb.onclick = () => { S.$("#pay-amt").textContent = `${S.rupee(due.amount)} · ${due.q} · St. John's School`; S.openModal("pay-modal"); };
   }
   // A decorative QR pattern
   (function () { let r = 7, h = '<rect width="21" height="21" fill="#fff"/>'; const rnd = () => ((r = (r * 1103515245 + 12345) >>> 0) / 4294967296); for (let y = 0; y < 21; y++) for (let x = 0; x < 21; x++) { const f = (x < 7 && y < 7) || (x > 13 && y < 7) || (x < 7 && y > 13); if (f) { const a = x > 13 ? x - 14 : x, b = y > 13 ? y - 14 : y; if (a === 0 || a === 6 || b === 0 || b === 6 || (a > 1 && a < 5 && b > 1 && b < 5)) h += `<rect x="${x}" y="${y}" width="1" height="1" fill="#111"/>`; } else if (rnd() > 0.52) h += `<rect x="${x}" y="${y}" width="1" height="1" fill="#111"/>`; } S.$("#qr").innerHTML = h; })();
-  S.$("#pay-done").addEventListener("click", () => { const f = S.state.fees.find((x) => !x.paid); f.paid = S.todayKey; S.save(); S.$("#pay-modal").classList.remove("open"); renderFees(); renderHome(); S.toast("Payment received · receipt sent on WhatsApp and email"); });
+  S.$("#pay-done").addEventListener("click", () => { const f = fees().find((x) => !x.paid); f.paid = S.todayKey; S.save(); S.$("#pay-modal").classList.remove("open"); renderFees(); renderHome(); S.toast("Payment received · receipt sent on WhatsApp and email"); });
 
   function renderThread() {
-    S.$("#thread").innerHTML = S.state.messages.map((m) => `<div class="msg ${m.from === "parent" ? "me" : "bot"}">${S.esc(m.text)}<span class="when">${m.from === "teacher" ? "Ms. Neha Mathew · " : ""}${S.esc(m.at)}</span></div>`).join("");
+    S.$("#thread").innerHTML = thread().map((m) => `<div class="msg ${m.from === "parent" ? "me" : "bot"}">${S.esc(m.text)}<span class="when">${m.from === "teacher" ? S.teacher.name + " · " : ""}${S.esc(m.at)}</span></div>`).join("");
     S.$("#thread").scrollTop = 1e6;
   }
   S.$("#msg-form").addEventListener("submit", (e) => {
     e.preventDefault(); const i = e.target.querySelector("input"); if (!i.value.trim()) return;
-    S.state.messages.push({ from: "parent", text: i.value.trim(), at: "Today, " + S.timeNow(), fresh: true }); i.value = ""; S.save(); renderThread();
-    S.toast("Sent to Ms. Neha Mathew");
+    thread().push({ from: "parent", text: i.value.trim(), at: "Today, " + S.timeNow(), fresh: true }); i.value = ""; S.save(); renderThread();
+    S.toast("Sent to " + S.teacher.name);
   });
 
   S.$("#leave-form").addEventListener("submit", (e) => {
     e.preventDefault();
-    S.state.leaves.unshift({ roll: me.roll, from: S.$("#l-from").value, to: S.$("#l-to").value, why: S.$("#l-why").value, status: "Waiting", fresh: true });
+    S.cs.leaves.unshift({ roll: me.roll, from: S.$("#l-from").value, to: S.$("#l-to").value, why: S.$("#l-why").value, status: "Waiting", fresh: true });
     S.save(); S.$("#leave-modal").classList.remove("open"); renderAttendance(); S.toast("Leave request sent to the class teacher");
   });
   S.$("#l-from").value = S.iso(S.nextSchoolDay(S.today, 3)); S.$("#l-to").value = S.iso(S.nextSchoolDay(S.today, 4));
 
-  S.$("#sib").addEventListener("click", () => S.toast("In the demo, only Aarav's records are filled in"));
+  if (S.$("#sib")) S.$("#sib").addEventListener("click", () => S.toast("In the demo, only " + me.first + "'s records are filled in"));
   S.$("#cal-prev").addEventListener("click", () => { calMonth = new Date(calMonth.getFullYear(), calMonth.getMonth() - 1, 1); renderCal(); });
   S.$("#cal-next").addEventListener("click", () => { calMonth = new Date(calMonth.getFullYear(), calMonth.getMonth() + 1, 1); renderCal(); });
 
   document.addEventListener("sjs:view", (e) => {
-    if (e.detail === "messages") { S.state.messages.forEach((m) => { if (m.from === "teacher") m.fresh = false; }); S.save(); }
+    if (e.detail === "messages") { thread().forEach((m) => { if (m.from === "teacher") m.fresh = false; }); S.save(); }
     renderAll();
   });
   function renderAll() { renderPivot(); renderHome(); renderBus(); renderAttendance(); renderHomework(); renderResults(); renderFees(); renderThread(); }
@@ -578,10 +697,10 @@
   setInterval(renderPivot, 60000);
 
   // Live updates from the teacher's tab
-  let lastAtt = JSON.stringify(S.state.attendance[S.todayKey] || null);
+  let lastAtt = JSON.stringify(S.cs.attendance[S.todayKey] || null);
   document.addEventListener("sjs:sync", () => {
-    const now = JSON.stringify(S.state.attendance[S.todayKey] || null);
-    if (now !== lastAtt) { lastAtt = now; const st = S.statusOn(me.roll, S.todayKey); S.toast(st === "P" ? "Aarav marked present at school" : "Aarav marked " + statusLabel[st].toLowerCase() + " today"); }
+    const now = JSON.stringify(S.cs.attendance[S.todayKey] || null);
+    if (now !== lastAtt) { lastAtt = now; const st = S.statusOn(me.roll, S.todayKey); S.toast(st === "P" ? me.first + " marked present at school" : me.first + " marked " + statusLabel[st].toLowerCase() + " today"); }
     renderAll();
   });
   S.mountAI("parent");

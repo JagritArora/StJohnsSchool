@@ -9,29 +9,35 @@
   const pct = (n) => n + "%";
   const subjIn = (q) => S.subjects.find((s) => q.includes(lower(s)) || (s === "Mathematics" && /\bmaths?\b/.test(q)) || (s === "Social Science" && /\bsst\b|social/.test(q)) || (s === "Science" && /\bsci\b/.test(q) && !/social/.test(q)));
   const studentIn = (q) => S.students.find((s) => q.includes(lower(s.first)) || q.includes(lower(s.name)));
+  // The child, class and stage the page is showing.
+  const C = () => S.EX.cur, P = () => S.EX.prev, LB = (k) => S.exLabel(k, (S.me && S.me.cls) || (S.focus && S.focus.cls));
+  const cls = () => (S.focus ? S.focus.label : "VII-B");
+  const myFees = () => (S.kidKey && S.kidFees ? S.kidFees(S.kidKey) : S.state.fees);
+  const PTM = () => S.PHASE === "start" ? "Meet the Teacher on Saturday, 18 April, 9:00 AM – 11:30 AM" : S.PHASE === "end" ? "the report-card PTM on Saturday, 27 March, 9:00 AM – 12:30 PM" : "the PTM on Saturday, 31 October, 9:00 AM – 12:30 PM (half-yearly answer sheets will be shown)";
+  const attLine = () => { const a = S.attSummary ? S.attSummary() : null; return a ? `<b>${a.pct}% present</b> school-wide (sample). Lowest: ${a.low ? a.low.label + " at " + a.lowPct + "%" : "none"}. ${a.waiting.length} section${a.waiting.length === 1 ? " has" : "s have"} not marked yet${a.waiting.length ? ": " + a.waiting.map((x) => x.label).join(", ") : ""}.` : ""; };
   const upcomingHolidays = () => Object.entries(S.HOLIDAYS).filter(([k]) => k >= S.todayKey).slice(0, 3);
 
   // ---------- Shared helpers ----------
   S.weekly = () => {
-    const s = S.me, hy = s.hy;
+    const s = S.me, hy = s[C()];
     const sorted = [...S.subjects].sort((a, b) => hy[b] - hy[a]);
-    const weak = S.subjects.map((x) => ({ x, gap: S.classAvg("hy", x) - hy[x] })).sort((a, b) => b.gap - a.gap)[0];
-    const pending = S.state.homework.filter((h) => !h.done);
-    const fee = S.state.fees.find((f) => !f.paid);
+    const weak = S.subjects.map((x) => ({ x, gap: S.classAvg(C(), x) - hy[x] })).sort((a, b) => b.gap - a.gap)[0];
+    const pending = S.cs.homework.filter((h) => !h.done);
+    const fee = myFees().find((f) => !f.paid);
     // Last five school days (including today, if taken)
     let present = 0, days = 0, d = new Date(S.today);
     for (let i = 0; i < 12 && days < 5; i++, d = S.addDays(d, -1)) {
       const st = S.statusOn(s.roll, S.iso(d)); if (st === "H" || st === null) continue; days++; if (st === "P") present++;
     }
-    return `Aarav was present <b>${present} of ${days} days</b> this week.\n` +
-      `Half-yearly results are strongest in <b>${sorted[0]} (${hy[sorted[0]]}%)</b> and <b>${sorted[1]} (${hy[sorted[1]]}%)</b>.\n` +
-      (weak.gap > 0 ? `<b>${weak.x} (${hy[weak.x]}%)</b> is below the class average of ${S.classAvg("hy", weak.x)}% — 15 minutes of reading aloud each day would help.\n` : "") +
+    return `${s.first} was present <b>${present} of ${days} days</b> this week.\n` +
+      `${LB(C())} results are strongest in <b>${sorted[0]} (${hy[sorted[0]]}%)</b> and <b>${sorted[1]} (${hy[sorted[1]]}%)</b>.\n` +
+      (weak.gap > 0 ? `<b>${weak.x} (${hy[weak.x]}%)</b> is below the class average of ${S.classAvg(C(), weak.x)}% — 15 minutes of reading aloud each day would help.\n` : "") +
       (pending.length ? `Still to do: ${pending.map((h) => `${h.subj} — ${h.title} (due ${S.fmt(h.due)})`).join("; ")}.\n` : "All homework is done.\n") +
       (fee ? `The ${fee.q.split(" ·")[0]} fee of <b>${S.rupee(fee.amount)}</b> is due on ${S.fmt(fee.due)}.` : "All fees are paid. Thank you!");
   };
 
   S.remarkFor = (s) => {
-    const hy = s.hy, ut = s.ut1, att = S.attendancePct(s.roll);
+    const hy = s[C()], ut = P() ? s[P()] : hy, att = S.attendancePct(s.roll);
     const best = [...S.subjects].sort((a, b) => hy[b] - hy[a]).slice(0, 2);
     const worst = [...S.subjects].sort((a, b) => hy[a] - hy[b])[0];
     const up = S.subjects.filter((x) => hy[x] - ut[x] >= 5).sort((a, b) => (hy[b] - ut[b]) - (hy[a] - ut[a]))[0];
@@ -39,7 +45,7 @@
     const openers = ["is a sincere and attentive learner", "brings curiosity and steady effort to class", "is a cheerful member of the class who works with care", "participates well and is keen to learn"];
     let t = `${s.first} ${openers[s.roll % openers.length]}, doing especially well in ${best[0]} (${hy[best[0]]}%) and ${best[1]} (${hy[best[1]]}%). `;
     if (up) t += `Good progress in ${up} this term (${ut[up]}% → ${hy[up]}%). `;
-    if (down) t += `${down} slipped after Unit Test 1 (${ut[down]}% → ${hy[down]}%); revising each chapter's exercises at home will help. `;
+    if (down) t += `${down} slipped after the ${LB(P() || C()).toLowerCase()} (${ut[down]}% → ${hy[down]}%); revising each chapter's exercises at home will help. `;
     else if (hy[worst] < 70) t += `More regular practice in ${worst} will help reach full potential. `;
     t += att >= 92 ? `Attendance is excellent (${att}%).` : att >= 85 ? `Attendance is satisfactory (${att}%).` : `Attendance (${att}%) needs to improve; frequent absence is affecting continuity.`;
     return t;
@@ -98,40 +104,40 @@
       if (has(q, /attend|absent|present|leave|miss/)) {
         const t = S.statusOn(s.roll, S.todayKey);
         const month = Object.keys(S.history).filter((k) => k.slice(0, 7) === S.todayKey.slice(0, 7) && S.history[k][s.roll]);
-        return `Overall attendance this session: <b>${S.attendancePct(s.roll)}%</b> (CBSE needs 75% to sit the board exam in Class X; ${S.attendancePct(s.roll) >= 75 ? "Aarav is well above it" : "Aarav is below it"}).\n` +
+        return `Overall attendance this session: <b>${S.attendancePct(s.roll)}%</b> (CBSE needs 75% to sit the board exam in Class X; ${S.attendancePct(s.roll) >= 75 ? s.first + " is well above it" : s.first + " is below it"}).\n` +
           `This month: ${month.length ? month.length + " day(s) away — " + month.map((k) => S.fmt(k)).join(", ") : "no absences"}.\n` +
           `Today: ${t === null ? "the class teacher has not marked attendance yet" : t === "P" ? "<b>present</b>" : t === "L" ? "<b>on leave</b>" : "<b>marked absent</b>"}.`;
       }
       const subj = subjIn(q);
       if (subj) {
-        const u2 = S.state.ut2Published && subj === "Mathematics" ? `\nUnit Test 2 (just published): <b>${S.state.ut2[s.roll] ?? "—"}/20</b>.` : "";
-        return `${subj}: Unit Test 1 <b>${s.ut1[subj]}%</b> → Half-yearly <b>${s.hy[subj]}%</b> (class average ${S.classAvg("hy", subj)}%).${u2}\n` +
-          (s.hy[subj] >= S.classAvg("hy", subj) ? "Aarav is above the class average here. 👍" : "This is below the class average. A short daily practice and a chat with the subject teacher at the PTM (31 Oct) would help.");
+        const e = S.entry(S.focusKey, subj), u2 = S.PHASE !== "end" && e.published && e.marks[s.roll] != null ? `\n${S.ENTRY.name} (just published): <b>${e.marks[s.roll]}/${S.ENTRY.max}</b>.` : "";
+        return `${subj}: ${P() ? `${LB(P())} <b>${s[P()][subj]}%</b> → ` : ""}${LB(C())} <b>${s[C()][subj]}%</b> (class average ${S.classAvg(C(), subj)}%).${u2}\n` +
+          (s[C()][subj] >= S.classAvg(C(), subj) ? s.first + " is above the class average here. 👍" : "This is below the class average. A short daily practice and a chat with the subject teacher at " + PTM() + " would help.");
       }
       if (has(q, /weak|improve|help|struggl|focus|concern|work on/)) {
-        const w = S.subjects.map((x) => ({ x, gap: S.classAvg("hy", x) - s.hy[x] })).sort((a, b) => b.gap - a.gap)[0];
-        return `The subject to focus on is <b>${w.x}</b> — ${s.hy[w.x]}% against a class average of ${S.classAvg("hy", w.x)}%, and down from ${s.ut1[w.x]}% in Unit Test 1.\nSuggestions:\n• 15 minutes of reading aloud from the ${w.x} textbook each evening\n• Practise the question–answer exercises of chapters 4–6\n• Raise it with the teacher at the PTM on Saturday, 31 October`;
+        const w = S.subjects.map((x) => ({ x, gap: S.classAvg(C(), x) - s[C()][x] })).sort((a, b) => b.gap - a.gap)[0];
+        return `The subject to focus on is <b>${w.x}</b> — ${s[C()][w.x]}% against a class average of ${S.classAvg(C(), w.x)}%${P() ? `, after ${s[P()][w.x]}% in the ${LB(P()).toLowerCase()}` : ""}.\nSuggestions:\n• 15 minutes with the ${w.x} textbook each evening\n• Practise the end-of-chapter exercises\n• Raise it with the teacher at ${PTM()}`;
       }
       if (has(q, /mark|result|score|exam|grade|perform|report/)) {
-        const avg = S.avgOf(s.hy);
-        return `Half-yearly average: <b>${avg}%</b> (Unit Test 1: ${S.avgOf(s.ut1)}%).\n` + S.subjects.map((x) => `• ${x}: ${s.hy[x]}%`).join("\n");
+        const avg = S.avgOf(s[C()]);
+        return `${LB(C())} average: <b>${avg}%</b>${P() ? ` (${LB(P())}: ${S.avgOf(s[P()])}%)` : ""}.\n` + S.subjects.map((x) => `• ${x}: ${s[C()][x]}%`).join("\n");
       }
       if (has(q, /bag|pack|timetable|period|tomorrow.*(class|subject)|subjects tomorrow/)) {
         const nd = S.nextSchoolDay(S.today, 1), tt = S.timetable[nd.getDay()];
         return `${S.fmtLong(nd)} — pack for:\n` + [...new Set(tt)].filter((x) => !/Games|Library|Assembly/.test(x)).map((x) => "• " + x).join("\n") + (tt.includes("Games") ? "\n(Games period — sports shoes.)" : "");
       }
       if (has(q, /homework|assign|due|project|worksheet|tomorrow/)) {
-        const p = S.state.homework.filter((h) => !h.done);
+        const p = S.cs.homework.filter((h) => !h.done);
         return p.length ? "Pending homework:\n" + p.map((h) => `• <b>${h.subj}</b> — ${h.title} (due ${S.fmt(h.due, { weekday: "short", day: "numeric", month: "short" })})`).join("\n") : "All homework is done. 🎉";
       }
       if (has(q, /fee|pay|due amount|instal/)) {
-        const f = S.state.fees.find((x) => !x.paid);
+        const f = myFees().find((x) => !x.paid);
         return f ? `The <b>${f.q}</b> instalment of <b>${S.rupee(f.amount)}</b> is due on ${S.fmt(f.due)}. You can pay by UPI from the Fees tab and get the receipt instantly.` : "All fee instalments due so far are paid. Thank you!";
       }
-      if (has(q, /bus|van|transport|where is|reach/)) return "Aarav's bus is <b>Route 14</b>. On school days you can watch it move stop by stop on the Home tab, and you get a notification two stops before yours.";
-      if (has(q, /ptm|meeting|teacher|class teacher/)) return `Class teacher: <b>${S.teacher.name}</b>. Next PTM: <b>Saturday, 31 October, 9:00 AM – 12:30 PM</b> (half-yearly answer sheets will be shown). You can message the teacher from the Messages tab.`;
+      if (has(q, /bus|van|transport|where is|reach/)) return s.bus === "Own transport" ? `${s.first} comes to school by your own transport. The office keeps the names of the adults who may pick up.` : `${s.first}'s bus is <b>${s.bus}</b>. On school days you can watch it move stop by stop on the Home tab, and you get a notification two stops before yours.`;
+      if (has(q, /ptm|meeting|teacher|class teacher/)) return `Class teacher: <b>${S.teacher.name}</b>. Coming up: <b>${PTM()}</b>. You can message the teacher from the Messages tab.`;
       if (has(q, /holiday|closed|off|chutti|vacation/)) return "Coming holidays:\n" + upcomingHolidays().map(([k, v]) => `• ${S.fmt(k, { weekday: "short", day: "numeric", month: "short" })} — ${v}`).join("\n");
-      return "I can tell you about Aarav's attendance, marks, homework, fees, bus, timetable and school notices. For anything else, I'll pass your question to " + S.teacher.name + ".";
+      return "I can tell you about " + s.first + "'s attendance, marks, homework, fees, bus, timetable and school notices. For anything else, I'll pass your question to " + S.teacher.name + ".";
     },
 
     teacher(q, ctx) {
@@ -141,7 +147,7 @@
         return `Answer key — <b>${topicName[t]}</b>\n` + KEY[t].slice(0, 6).map((x, i) => `${i + 1}. ${x}`).join("\n");
       }
       if (has(q, /remark|report card|comment|feedback/)) {
-        if (!st) return "Which student? Try: “Remarks for Ishita” — or use the Report-card remarks tool in AI Assist to draft all 32 at once.";
+        if (!st) return `Which student? Try: “Remarks for ${S.students[0].first}” — or use the Report-card remarks tool in AI Assist to draft all ${S.students.length} at once.`;
         return `Draft remark for <b>${st.name}</b> (edit before saving):\n\n${S.remarkFor(st)}`;
       }
       if (has(q, /quiz|question|paper|worksheet|test|practice/)) {
@@ -152,21 +158,21 @@
         const t = topicName[topicIn(q)];
         return `40-minute plan — <b>${t}</b>\n• 5 min: warm-up question on the board\n• 10 min: concept with a number-line / real-life example\n• 15 min: pairs solve 4 questions from the practice set\n• 7 min: two pairs present; correct common mistakes\n• 3 min: exit ticket — one question in the notebook`;
       }
-      if (has(q, /note|parents|notice|ptm|meeting/)) return "Draft note to VII-B parents:\n\nDear parents, the parent–teacher meeting for VII-B is on <b>Saturday, 31 October, 9:00 AM to 12:30 PM</b>. I will go through your child's half-yearly answer sheets with you. If you can't come, reply here and we'll find another time.\n— Neha Mathew\n\nEdit it, then send it from AI assist → Note to parents.";
+      if (has(q, /note|parents|notice|ptm|meeting/)) return `Draft note to ${cls()} parents:\n\nDear parents, please come to <b>${PTM()}</b>. If you can't come, reply here and we'll find another time.\n— ${(S.staff ? S.staff.name : S.teacher.name).replace(/^(Mr|Mrs|Ms)\.\s*/, "")}\n\nEdit it, then send it from AI assist → Note to parents.`;
       if (has(q, /risk|attention|struggl|weak|concern|worr|follow/)) {
         const list = S.atRisk();
-        return `<b>${list.length} students</b> need attention in VII-B:\n` + list.map((x) => `• <b>${x.s.name}</b> — ${x.why.join("; ")}`).join("\n") + "\n\nI can draft a note to each parent, or book them first at the PTM.";
+        return `<b>${list.length} students</b> need attention in ${cls()}:\n` + list.map((x) => `• <b>${x.s.name}</b> — ${x.why.join("; ")}`).join("\n") + "\n\nI can draft a note to each parent, or book them first at the PTM.";
       }
       if (has(q, /absent|attendance|present/)) {
-        const t = S.state.attendance[S.todayKey];
+        const t = S.cs.attendance[S.todayKey];
         const chronic = S.students.filter((s) => S.attendancePct(s.roll) < 85);
-        return (t ? `Today: ${32 - Object.keys(t.marks).length}/32 present.` + (Object.keys(t.marks).length ? " Away: " + Object.keys(t.marks).map((r) => S.student(r).name).join(", ") + "." : "") : "Today's attendance is not marked yet.") +
+        return (t ? `Today: ${S.students.length - Object.keys(t.marks).length}/${S.students.length} present.` + (Object.keys(t.marks).length ? " Away: " + Object.keys(t.marks).map((r) => S.student(r).name).join(", ") + "." : "") : "Today's attendance is not marked yet.") +
           `\nBelow 85% this session: ${chronic.map((s) => `${s.name} (${S.attendancePct(s.roll)}%)`).join(", ") || "nobody"}.`;
       }
-      if (st) return `<b>${st.name}</b> (Roll ${st.roll}) — attendance ${S.attendancePct(st.roll)}%, half-yearly average ${S.avgOf(st.hy)}%.\nBest: ${[...S.subjects].sort((a, b) => st.hy[b] - st.hy[a])[0]}. Weakest: ${[...S.subjects].sort((a, b) => st.hy[a] - st.hy[b])[0]}.`;
+      if (st) return `<b>${st.name}</b> (Roll ${st.roll}) — attendance ${S.attendancePct(st.roll)}%, ${LB(C()).toLowerCase()} average ${S.avgOf(st[C()])}%.\nBest: ${[...S.subjects].sort((a, b) => st[C()][b] - st[C()][a])[0]}. Weakest: ${[...S.subjects].sort((a, b) => st[C()][a] - st[C()][b])[0]}.`;
       if (has(q, /average|top|class perform|rank|best/)) {
-        const top = [...S.students].sort((a, b) => S.avgOf(b.hy) - S.avgOf(a.hy)).slice(0, 3);
-        return "Half-yearly class averages:\n" + S.subjects.map((x) => `• ${x}: ${S.classAvg("hy", x)}%`).join("\n") + `\nTop three: ${top.map((s) => `${s.name} (${S.avgOf(s.hy)}%)`).join(", ")}.`;
+        const top = [...S.students].sort((a, b) => S.avgOf(b[C()]) - S.avgOf(a[C()])).slice(0, 3);
+        return LB(C()) + " class averages:\n" + S.subjects.map((x) => `• ${x}: ${S.classAvg(C(), x)}%`).join("\n") + `\nTop three: ${top.map((s) => `${s.name} (${S.avgOf(s[C()])}%)`).join(", ")}.`;
       }
       return "I can draft report-card remarks, make practice sets and lesson plans, draft notes to parents, and tell you who needs attention. Try: “Quiz on fractions” or “Remarks for Kabir”.";
     },
@@ -177,21 +183,25 @@
         const byCls = enq.reduce((m, e) => ((m[e.cls] = (m[e.cls] || 0) + 1), m), {});
         return `<b>${enq.length} admission enquiries</b> so far: ` + Object.entries(byCls).map(([k, v]) => `${k} ${v}`).join(", ") + `.\n${enq.filter((e) => e.status === "New").length} are new and waiting for a call from the office.`;
       }
-      if (has(q, /fee|collect|pending|defaul|due/)) return "Q3 fees (sample): <b>₹1.92 Cr collected of ₹2.74 Cr</b> (70%). 612 families still to pay; due date is " + S.fmt(S.state.fees[2].due) + ". Reminders go out automatically 7 days and 1 day before.";
+      if (has(q, /fee|collect|pending|defaul|due/)) { const f = S.FEE_NOW; return `${f.q} fees (sample): <b>${f.got} collected of ${f.of}</b> (${f.pct}%). ${f.families} families still to pay; due date ${S.fmt(f.due)}. Reminders go out automatically 7 days and 1 day before.`; }
       if (has(q, /risk|attention|concern|struggl/)) return `Across the school (sample), <b>46 students</b> are flagged — 19 for attendance below 85%, 27 for a drop of 15+ points since Unit Test 1. In VII-B: ${S.atRisk().map((x) => x.s.first).join(", ")}.`;
-      if (has(q, /attend|absent|present/)) return "Today (sample): <b>93.4% present</b> school-wide. Lowest: Class IX-C at 86%. 4 classes have not marked attendance yet." + (S.state.attendance[S.todayKey] ? "" : " VII-B is one of them.");
+      if (has(q, /attend|absent|present/)) return "Today: " + attLine();
       if (has(q, /staff|teacher/)) return "Staff today (sample): 84 of 88 present. 2 on leave, 2 on duty at the CBSE zonal meet. Substitutions are arranged for 6 periods.";
       return S.brief().replace(/<li>/g, "• ").replace(/<\/li>/g, "\n").replace(/<\/?ul>/g, "");
     }
   };
 
   S.brief = () => {
-    const t = S.state.attendance[S.todayKey];
-    const enqNew = S.state.enquiries.filter((e) => e.status === "New").length;
-    return `<ul><li><b>Attendance</b> is 93.4% school-wide (sample); IX-C is lowest at 86%. ${t ? "VII-B marked at " + t.at + "." : "VII-B and 3 other sections have not marked yet."}</li>` +
-      `<li><b>${enqNew} new admission enquiries</b> waiting for a call — ${S.state.enquiries.filter((e) => e.cls === "Nursery").length} of all enquiries are for Nursery.</li>` +
-      `<li><b>Q3 fees</b> are 70% collected; due date ${S.fmt(S.state.fees[2].due)}.</li>` +
-      `<li><b>${S.atRisk().length} students in VII-B</b> are flagged by the class teacher's assistant — worth a look before the PTM on 31 Oct.</li></ul>`;
+    const a = S.attSummary(), f = S.FEE_NOW, enq = S.state.enquiries, enqNew = enq.filter((e) => e.status === "New").length;
+    const att = `<li><b>Attendance</b> is ${a.pct}% school-wide (sample); ${a.low ? a.low.label + " is lowest at " + a.lowPct + "%" : "every section is in"}. ${a.waiting.length ? a.waiting.map((x) => x.label).join(", ") + (a.waiting.length > 1 ? " have" : " has") + " not marked yet." : "Every section has marked."}</li>`;
+    const fee = `<li><b>${f.q} fees</b> are ${f.pct}% collected; ${f.families} families still to pay${S.PHASE === "end" ? "" : ", due " + S.fmt(f.due)}.</li>`;
+    if (S.PHASE === "start") return `<ul>${att}<li><b>The session is a week old.</b> Every section has a class teacher and a timetable; ${enq.length} transfer enquiries are open.</li>${fee}<li><b>Meet the class teacher</b> is on Saturday, 18 April. ${S.atRisk().length} VII-B students carry a flag from last session.</li></ul>`;
+    if (S.PHASE === "end") {
+      const all = S.allSections().filter((x) => x.ci >= 3), st = all.map(S.secStats);
+      const pass = Math.round((st.reduce((t, v) => t + v.pass * v.n, 0) / st.reduce((t, v) => t + v.n, 0)) * 10) / 10;
+      return `<ul><li><b>Results are out today.</b> ${pass}% of students in Classes I to XII passed every subject (sample); report cards go out at the PTM tomorrow.</li><li><b>Board exams</b> for Classes X and XII run until 4 April; results come in May.</li>${fee}<li><b>Admissions 2027–28:</b> ${enq.filter((e) => e.status === "Admitted").length} admitted, ${enqNew} new enquiries to call back. The new session begins on 1 April.</li></ul>`;
+    }
+    return `<ul>${att}<li><b>${enqNew} new admission enquiries</b> waiting for a call — ${enq.filter((e) => e.cls === "Nursery").length} of all enquiries are for Nursery.</li>${fee}<li><b>${S.atRisk().length} students in VII-B</b> are flagged by the class teacher's assistant — worth a look before the PTM on 31 Oct.</li></ul>`;
   };
 
   // ---------- Live answers from Claude ----------
@@ -237,12 +247,12 @@
     }
   };
 
-  // What each assistant may see. The parent's assistant gets only Aarav's
-  // records; the teacher's only VII-B; the website's only public facts.
+  // What each assistant may see. The parent's assistant gets only that child's
+  // records; the teacher's only their class; the website's only public facts.
   const marksLine = (s, ex) => S.subjects.map((x) => `${x} ${s[ex][x]}`).join(", ");
   const noticesTxt = () => S.state.notices.map((n) => `- ${n.title} (${S.fmt(n.date, { weekday: "short", day: "numeric", month: "short" })}): ${n.text}`).join("\n");
   const holidaysTxt = () => Object.entries(S.HOLIDAYS).filter(([k]) => k >= S.todayKey).map(([k, v]) => `${S.fmt(k, { weekday: "short", day: "numeric", month: "short" })} ${v}`).join("; ");
-  const todayAtt = () => { const t = S.state.attendance[S.todayKey]; return t ? `marked at ${t.at}; away: ${Object.keys(t.marks).map((r) => `${S.student(r).name} (${t.marks[r] === "L" ? "leave" : "absent"})`).join(", ") || "nobody"}` : "not marked yet"; };
+  const todayAtt = () => { const t = S.cs.attendance[S.todayKey]; return t ? `marked at ${t.at}; away: ${Object.keys(t.marks).map((r) => `${S.student(r).name} (${t.marks[r] === "L" ? "leave" : "absent"})`).join(", ") || "nobody"}` : "not marked yet"; };
   const timetableTxt = () => { const nd = S.nextSchoolDay(S.today, 1); return `Today (${S.fmtLong(S.today)}): ${(S.timetable[S.today.getDay()] || []).join(", ")}\nNext school day (${S.fmtLong(nd)}): ${S.timetable[nd.getDay()].join(", ")}\nPeriods start at ${S.periodTimes.join(", ")}`; };
   const SCHOOL = `St. John's School, Sector 7A, Faridabad, Haryana. Founded 1965 by Shri T.I. John; run by the Idicula Trust Society (Regd.). CBSE, Nursery to Class XII, on a 4-acre campus. Motto: "Learn to serve". Vision: nurture each child's potential and create lifelong learners and global citizens with innovation and strong values ("Vision with action can build the future"). Mission: honesty, compassion, secularism, tolerance and respect, with pride in the nation's heritage.`;
 
@@ -272,48 +282,47 @@ Upcoming holidays: ${holidaysTxt()}`,
 
     parent: () => {
       const s = S.me, month = Object.keys(S.history).filter((k) => k.slice(0, 7) === S.todayKey.slice(0, 7) && S.history[k][s.roll]);
-      return `You are talking to ${s.parent}, parent of ${s.name}, Class VII-B, Roll ${s.roll}. You can see only Aarav's records and school notices. If asked about another child, say you can only see Aarav's records. Be encouraging and practical; suggest simple things to do at home. For leave, complaints or anything needing a person, point to the Messages tab or the class teacher.
-AARAV
-Class teacher: ${S.teacher.name} (also teaches Maths). Bus: ${s.bus}; the Home tab shows the bus live and a notification comes two stops before.
+      return `You are talking to ${s.parent}, parent of ${s.name}, Class ${cls()}, Roll ${s.roll}. You can see only ${s.first}'s records and school notices. If asked about another child, say you can only see ${s.first}'s records. Be encouraging and practical; suggest simple things to do at home. For leave, complaints or anything needing a person, point to the Messages tab or the class teacher.
+Stage of the session: ${S.PHASES[S.PHASE].label} (${S.PHASES[S.PHASE].when}).
+${s.first.toUpperCase()}
+Class teacher: ${S.teacher.name}. ${s.bus === "Own transport" ? "Comes by own transport." : `Bus: ${s.bus}; the Home tab shows the bus live and a notification comes two stops before.`}
 Attendance this session: ${S.attendancePct(s.roll)}% (CBSE needs 75% to sit the Class X board exam). Away this month: ${month.map((k) => `${S.fmt(k)} (${S.history[k][s.roll] === "L" ? "leave" : "absent"})`).join(", ") || "none"}. Today: ${({ P: "present", A: "absent", L: "on leave" })[S.statusOn(s.roll, S.todayKey)] || "not marked yet"}.
-Unit Test 1 (%): ${marksLine(s, "ut1")}
-Half-yearly (%): ${marksLine(s, "hy")}
-Class average, half-yearly (%): ${S.subjects.map((x) => `${x} ${S.classAvg("hy", x)}`).join(", ")}
-${S.state.ut2Published ? `Unit Test 2 Maths (just published): ${S.state.ut2[s.roll] ?? "—"}/20` : "Unit Test 2 marks are not published yet."}
-Homework: ${S.state.homework.map((h) => `${h.subj}: ${h.title}, due ${S.fmt(h.due)}${h.done ? " (done)" : " (pending)"} — ${h.detail}`).join(" | ")}
-Fees: ${S.state.fees.map((f) => `${f.q} ${S.rupee(f.amount)} due ${S.fmt(f.due)} ${f.paid ? "paid " + S.fmt(f.paid) : "unpaid"}`).join("; ")}. Pay by UPI from the Fees tab; receipt is instant.
-Timetable, VII-B:
+${S.EX.list.map((k) => `${LB(k)} (%): ${marksLine(s, k)}`).join("\n")}
+Class average, ${LB(C()).toLowerCase()} (%): ${S.subjects.map((x) => `${x} ${S.classAvg(C(), x)}`).join(", ")}
+Homework: ${S.cs.homework.map((h) => `${h.subj}: ${h.title}, due ${S.fmt(h.due)}${h.done ? " (done)" : " (pending)"} — ${h.detail}`).join(" | ")}
+Fees: ${myFees().map((f) => `${f.q} ${S.rupee(f.amount)} due ${S.fmt(f.due)} ${f.paid ? "paid " + S.fmt(f.paid) : "unpaid"}`).join("; ")}. Pay by UPI from the Fees tab; receipt is instant.
+Timetable, ${cls()}:
 ${timetableTxt()}
-Sibling at school: ${S.sibling.name}, Class ${S.sibling.cls} (class teacher ${S.sibling.teacher}); those records are not loaded in this demo.
-Next PTM: Saturday 31 October, 9:00 AM–12:30 PM; half-yearly answer sheets will be shown.
+${S.kidKey === "VII-B-1" ? `Sibling at school: ${S.sibling.name}, Class ${S.sibling.cls} (class teacher ${S.sibling.teacher}); those records are not loaded in this demo.\n` : ""}Coming up: ${PTM()}.
 NOTICES
 ${noticesTxt()}
 Upcoming holidays: ${holidaysTxt()}`;
     },
 
-    teacher: () => `You are talking to ${S.teacher.name}, class teacher of VII-B and Maths teacher. You can see VII-B only. You draft report-card remarks, CBSE/NCERT Class VII practice sets with answer keys, lesson plans, and notes to parents — always as drafts the teacher checks. Remarks: 2–3 sentences, specific (cite marks or attendance), kind, with one concrete next step.
-VII-B ROSTER (attendance %, Unit Test 1 %, Half-yearly %; subjects: ${S.subjects.join(", ")})
-${S.students.map((s) => `${s.roll}. ${s.name} — att ${S.attendancePct(s.roll)}; UT1 ${S.subjects.map((x) => s.ut1[x]).join("/")}; HY ${S.subjects.map((x) => s.hy[x]).join("/")}`).join("\n")}
-Class averages, half-yearly: ${S.subjects.map((x) => `${x} ${S.classAvg("hy", x)}`).join(", ")}
+    teacher: () => `You are talking to ${S.staff ? S.staff.name : S.teacher.name}, who teaches ${S.staff ? S.staff.subject + " to " + S.staff.sections.join(", ") : "VII-B"}${S.staff && S.staff.classOf ? " and is class teacher of " + S.staff.classOf : ""}. You can see ${cls()} only. Stage of the session: ${S.PHASES[S.PHASE].label}. You draft report-card remarks, CBSE/NCERT practice sets with answer keys, lesson plans, and notes to parents — always as drafts the teacher checks. Remarks: 2–3 sentences, specific (cite marks or attendance), kind, with one concrete next step.
+${cls()} ROSTER (attendance %, then ${S.EX.list.map((k) => LB(k)).join(", ")} %; subjects: ${S.subjects.join(", ")})
+${S.students.map((s) => `${s.roll}. ${s.name} — att ${S.attendancePct(s.roll)}; ${S.EX.list.map((k) => S.subjects.map((x) => s[k][x]).join("/")).join("; ")}`).join("\n")}
+Class averages, ${LB(C()).toLowerCase()}: ${S.subjects.map((x) => `${x} ${S.classAvg(C(), x)}`).join(", ")}
 Flagged for attention: ${S.atRisk().map((x) => `${x.s.name} (${x.why.join("; ")})`).join(" | ") || "nobody"}
 Today's attendance: ${todayAtt()}
-${Object.keys(S.state.ut2).length ? `Unit Test 2 Maths (out of 20): ${Object.entries(S.state.ut2).map(([r, v]) => `${S.student(r).first} ${v}`).join(", ")}${S.state.ut2Published ? " — published" : " — not published yet"}` : "Unit Test 2 marks not entered yet."}
-Homework set: ${S.state.homework.map((h) => `${h.subj}: ${h.title}, due ${S.fmt(h.due)}`).join(" | ")}
+Homework set: ${S.cs.homework.map((h) => `${h.subj}: ${h.title}, due ${S.fmt(h.due)}`).join(" | ")}
 Timetable:
 ${timetableTxt()}
-Next PTM: Saturday 31 October, 9:00 AM–12:30 PM.
+Coming up: ${PTM()}.
 NOTICES
 ${noticesTxt()}`,
 
     principal: () => {
       const enq = S.state.enquiries, cls = S.sample.classes, att = S.sample.attendance;
-      return `You are talking to the Principal. Whole-school figures below are samples for the demo (say "sample" when quoting them); VII-B and admissions are live from the demo. Be crisp, lead with the number, and suggest one action when useful.
+      return `You are talking to the Principal. Whole-school figures below are samples for the demo (say "sample" when quoting them); VII-B and admissions are live from the demo. Be crisp, lead with the number, and suggest one action when useful. Stage of the session: ${S.PHASES[S.PHASE].label} (${S.PHASES[S.PHASE].when}).
+TODAY'S BRIEF
+${S.brief().replace(/<[^>]+>/g, " ").replace(/\s+/g, " ")}
 WHOLE SCHOOL (sample)
-Present today: 93.4%. By class: ${cls.map((c, i) => `${c} ${c === "VII" ? "VII-B live: " + todayAtt() : att[i] + "%"}`).join(", ")}. Lowest section: IX-C at 86%. 4 sections not marked yet.
+Present today: ${attLine().replace(/<[^>]+>/g, "")} By class: ${cls.map((c, i) => `${c} ${c === "VII" ? "VII-B live: " + todayAtt() : att[i] + "%"}`).join(", ")}.
 Staff: 84 of 88 present; 2 on leave, 2 at the CBSE zonal meet; 6 periods substituted.
-Q3 fees: ₹1.92 Cr collected of ₹2.74 Cr (70%); 612 families yet to pay; due ${S.fmt(S.state.fees[2].due)}; 58% of payments by UPI; reminders go 7 days and 1 day before.
+${S.FEE_NOW.q} fees: ${S.FEE_NOW.got} collected of ${S.FEE_NOW.of} (${S.FEE_NOW.pct}%); ${S.FEE_NOW.families} families yet to pay; due ${S.fmt(S.FEE_NOW.due)}; ${S.FEE_NOW.upi}% of payments by UPI; reminders go 7 days and 1 day before.
 Flagged students school-wide: 46 (19 attendance under 85%, 27 dropped 15+ points since Unit Test 1).
-VII-B (live): flagged — ${S.atRisk().map((x) => `${x.s.name} (${x.why.join("; ")})`).join(" | ")}. Class averages, half-yearly: ${S.subjects.map((x) => `${x} ${S.classAvg("hy", x)}`).join(", ")}.
+VII-B (live): flagged — ${S.atRisk().map((x) => `${x.s.name} (${x.why.join("; ")})`).join(" | ")}. Class averages, ${LB(C()).toLowerCase()}: ${S.subjects.map((x) => `${x} ${S.classAvg(C(), x)}`).join(", ")}.
 ADMISSION ENQUIRIES (live)
 ${enq.map((e) => `- ${e.child}, ${e.cls}; parent ${e.parent}; received ${S.fmt(e.at)}; status ${e.status}${e.note ? "; note: " + e.note : ""}`).join("\n")}
 NOTICES SENT
@@ -353,7 +362,7 @@ ${ROLE[mode]()}`;
   const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
 
   S.mountAI = (mode) => {
-    const m = META[mode];
+    const m = JSON.parse(JSON.stringify(META[mode]).split("Aarav").join(S.me ? S.me.first : "Aarav").split("VII-B").join(cls()).split("Ishita").join(S.students[0] ? S.students[10 % S.students.length].first : "Ishita"));
     const fab = document.createElement("button");
     fab.className = "ai-fab"; fab.type = "button";
     fab.innerHTML = ICON.spark + `<span>${m.title}</span>`;

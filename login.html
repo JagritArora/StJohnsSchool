@@ -47,7 +47,7 @@
         <div class="field"><label for="p-phone">Registered mobile number</label><input id="p-phone" inputmode="tel" value="98765 43210" /></div>
         <div class="field" id="otp-wrap" hidden><label>4-digit OTP sent by SMS</label><div class="otp"><input class="input" maxlength="1" inputmode="numeric" value="4" /><input class="input" maxlength="1" inputmode="numeric" value="7" /><input class="input" maxlength="1" inputmode="numeric" value="2" /><input class="input" maxlength="1" inputmode="numeric" value="9" /></div></div>
         <button class="btn btn-primary btn-block" style="margin-top:22px" type="submit" id="p-btn">Send OTP</button>
-        <p class="muted" style="font-size:13px;margin-top:14px">Signing in as the parent of <b style="color:var(--ink)">Aarav Sharma (VII-B)</b> and <b style="color:var(--ink)">Ananya Sharma (III-A)</b>.</p>
+        <div class="field"><label for="p-kid">Demo: sign in as</label><select id="p-kid" class="input"></select><span class="hint">26 demo families: Aarav in VII-B, and five in every class from VIII to XII.</span></div>
       </form>
 
       <form id="f-staff" data-for="staff" hidden novalidate>
@@ -60,6 +60,7 @@
           <button type="button" data-id="SJS-T-0412"><b>SJS-T-0412</b><span>Teacher · Ms. Neha Mathew, VII-B</span></button>
           <button type="button" data-id="SJS-A-0107"><b>SJS-A-0107</b><span>Office admin · Mrs. Anita Joseph</span></button>
           <button type="button" data-id="SJS-P-0001"><b>SJS-P-0001</b><span>Principal</span></button>
+          <label class="field" style="margin-top:6px"><span class="muted" style="font-size:13px">Or any teacher of Classes VIII to XII</span><select id="s-pick" class="input"><option value="">Pick a teacher…</option></select></label>
         </div>
       </form>
 
@@ -71,6 +72,8 @@
   </main>
 </div>
 <script src="js/data.js"></script>
+<script src="js/classes.js"></script>
+<script src="js/demo.js"></script>
 <script src="js/common.js"></script>
 <script>
 (function () {
@@ -86,8 +89,15 @@
   document.getElementById("f-parent").addEventListener("submit", (e) => {
     e.preventDefault();
     if (!otpSent) { otpSent = true; document.getElementById("otp-wrap").hidden = false; document.getElementById("p-btn").textContent = "Verify & sign in"; SJS.toast("OTP sent to 98765 43210"); return; }
-    location.href = "parent.html";
+    SJS.openAs("kid:" + document.getElementById("p-kid").value);
   });
+  // Demo pickers: every parent, and every teacher, grouped by class.
+  const people = SJS.demoPeople(), esc = SJS.esc;
+  let lastKid = "VII-B-1"; try { lastKid = localStorage.getItem("sjs-kid") || lastKid; } catch (e) {}
+  document.getElementById("p-kid").innerHTML = people.filter((g) => g.label.startsWith("Parents")).map((g) => `<optgroup label="${esc(g.label)}">${g.items.map(([v, l]) => `<option value="${esc(v.slice(4))}" ${v === "kid:" + lastKid ? "selected" : ""}>${esc(l)}</option>`).join("")}</optgroup>`).join("");
+  document.getElementById("s-pick").insertAdjacentHTML("beforeend", people.filter((g) => g.label.startsWith("Teachers")).map((g) => `<optgroup label="${esc(g.label)}">${g.items.map(([v, l]) => `<option value="${esc(v.slice(6))}">${esc(l)}</option>`).join("")}</optgroup>`).join(""));
+  document.getElementById("s-pick").addEventListener("change", (e) => { if (!e.target.value) return; document.getElementById("s-id").value = e.target.value; document.getElementById("s-err").hidden = true; });
+  SJS.mountDemo("");
   // Staff: one sign-in; the staff ID decides the view on the staff page.
   const sid = document.getElementById("s-id"), err = document.getElementById("s-err");
   document.querySelectorAll(".demo-ids [data-id]").forEach((b) => b.addEventListener("click", () => { sid.value = b.dataset.id; err.hidden = true; sid.focus(); }));

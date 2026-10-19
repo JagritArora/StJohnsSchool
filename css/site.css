@@ -1015,3 +1015,68 @@ button.due-li:hover { background: var(--sunken); }
 #c-wk tbody th { font-size: 12px; }
 .cols .col { cursor: pointer; }
 @media (max-width: 640px) { #c-wk { min-width: 0; } }
+
+/* ---------- Presenter controls (prototype bar) ---------- */
+.demo-ctl { display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 8px 14px; margin-top: 6px; }
+.demo-ctl .dm { display: inline-flex; align-items: center; gap: 6px; font-weight: 600; }
+.demo-ctl .dm span { opacity: .75; font-weight: 500; }
+.demo-ctl select { max-width: min(380px, 70vw); height: 28px; padding: 0 26px 0 10px; border-radius: 8px; border: 1px solid rgba(255,255,255,.22); background: #2A2E35; color: #EEF0F3; font: 500 12.5px var(--sans); cursor: pointer; }
+.demo-ctl select:focus-visible { outline: 2px solid var(--gold); outline-offset: 1px; }
+.demo-ctl option, .demo-ctl optgroup { color: #1D2025; background: #fff; }
+.demo-ctl a { color: inherit; }
+@media (max-width: 560px) { .demo-ctl .dm { width: 100%; justify-content: space-between; } .demo-ctl select { flex: 1; max-width: none; } }
+
+/* ---------- Stage cards: checklists, results ---------- */
+.pill.royal { background: color-mix(in srgb, var(--royal) 14%, var(--surface)); color: var(--royal-text); text-decoration: none; }
+.pill.gold { background: color-mix(in srgb, var(--gold) 16%, var(--surface)); color: var(--gold-text); }
+.phase-card .meter { margin: 0 0 6px; }
+.chk { display: grid; gap: 2px; margin-top: 6px; }
+.chk-i { display: flex; gap: 12px; align-items: flex-start; width: 100%; padding: 10px 6px; border: 0; border-top: 1px solid var(--line); background: none; text-align: left; color: var(--ink); font: inherit; border-radius: 0; }
+.chk-i:first-child { border-top: 0; }
+button.chk-i { cursor: pointer; }
+button.chk-i:hover { background: var(--sunken); }
+.chk-i .box { flex: none; width: 22px; height: 22px; border-radius: 7px; border: 1.5px solid var(--line); display: grid; place-items: center; margin-top: 1px; color: #fff; }
+.chk-i .box svg { width: 14px; height: 14px; }
+.chk-i.on .box { background: var(--green); border-color: var(--green); }
+.chk-i .t { display: grid; gap: 1px; flex: 1; min-width: 0; }
+.chk-i .t b { font-size: 14.5px; font-weight: 600; }
+.chk-i.on .t b { color: var(--muted); }
+.chk-i .t > span { font-size: 13px; color: var(--muted); }
+.chk-i .t .meter { margin-top: 6px; max-width: 260px; }
+#phase-card { margin-bottom: 0; }
+.home-main #phase-card:not([hidden]) + .card { margin-top: 0; }
+
+/* Exam calendar for a new session */
+.xcal { list-style: none; margin: 4px 0 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px; }
+.xcal li { padding: 12px 14px; border-radius: 12px; background: var(--sunken); box-shadow: inset 3px 0 0 var(--royal); display: grid; gap: 2px; }
+.xcal b { font-size: 14.5px; }
+.xcal span { font-size: 13px; color: var(--muted); }
+.xcal small { font-size: 12px; font-weight: 600; color: var(--royal-text); }
+
+/* Report card and the year's result */
+.rc-h { display: flex; justify-content: space-between; gap: 12px 20px; flex-wrap: wrap; align-items: flex-start; }
+.rc-h h2 { font-size: 20px; margin: 4px 0 2px; }
+.rc-h .lbl { font-size: 12.5px; color: var(--muted); }
+.rc-h .muted { font-size: 13.5px; }
+.rc-res { display: grid; justify-items: end; gap: 4px; }
+.rc-res .pill { font-size: 13.5px; padding: 8px 12px; }
+.rc-res small { font-size: 12px; color: var(--muted); }
+.rc-k { display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 10px; margin-top: 16px; }
+.rc-k > div { padding: 12px 14px; border-radius: 12px; background: var(--sunken); display: grid; }
+.rc-k b { font-size: 22px; font-variant-numeric: tabular-nums; letter-spacing: -.01em; }
+.rc-k span { font-size: 12.5px; color: var(--muted); }
+.rc-g { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 14px; }
+.rc-g > span { display: inline-flex; align-items: center; gap: 8px; padding: 6px 12px 6px 6px; border: 1px solid var(--line); border-radius: 999px; font-size: 13px; outline: 0; }
+.rc-g > span:focus-visible { box-shadow: 0 0 0 2px var(--ink); }
+.rc-g b { min-width: 30px; height: 24px; padding: 0 6px; border-radius: 999px; display: grid; place-items: center; background: var(--green-soft); color: var(--green-text); font-size: 12px; }
+.rc-rm { margin-top: 14px; font-size: 14px; line-height: 1.55; padding: 12px 14px; border-radius: 12px; background: color-mix(in srgb, var(--royal) 6%, var(--surface)); }
+@media (max-width: 640px) { .rc-k { grid-template-columns: repeat(auto-fit, minmax(110px, 1fr)); } .rc-res { justify-items: start; } }
+.result-hero .rh-top { display: flex; gap: 12px 18px; align-items: center; justify-content: space-between; flex-wrap: wrap; padding-bottom: 12px; }
+.result-hero .lbl { font-size: 12.5px; color: var(--muted); }
+.result-hero h2 { font-size: 22px; margin: 2px 0 2px; color: var(--green-text); }
+.result-hero .muted { font-size: 13.5px; }
+
+/* Teacher: section picker on Marks, and the parent threads */
+.m-pick select { min-height: 36px; padding: 4px 30px 4px 12px; font-size: 14px; width: auto; border-radius: 10px; }
+.threads .li.on { background: var(--accent-soft); border-radius: 12px; }
+.res-row .meter b { background: var(--ink); }
