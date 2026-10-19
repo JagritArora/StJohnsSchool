@@ -63,8 +63,12 @@
       </div>
       <div class="home-grid">
         <aside class="card tt-rail" aria-labelledby="tt-h">
-          <div class="card-h"><h2 id="tt-h">Timetable · VII-B</h2><span class="right muted" style="font-size:12.5px">Point at a period for the teacher</span></div>
-          <div class="pivot-wrap"><table class="pivot" id="pivot"></table></div>
+          <div class="card-h"><h2 id="tt-h">Timetable · VII-B</h2><div class="seg vt" data-vt="tt" aria-label="Timetable view"><button data-v="week">Week</button><button data-v="today">Today</button></div></div>
+          <div class="vp" data-vp="tt" data-v="week">
+            <p class="muted" style="font-size:12.5px;margin:-6px 0 10px">Point at a period for the teacher</p>
+            <div class="pivot-wrap"><table class="pivot" id="pivot"></table></div>
+          </div>
+          <div class="vp" data-vp="tt" data-v="today" hidden><div class="agenda" id="agenda"></div></div>
           <div class="tt-sum"><table class="pivot pivot-sum" id="tt-sum"></table></div>
         </aside>
         <div class="home-main">
@@ -93,9 +97,15 @@
       <div class="grid g3" id="att-stats" style="margin-bottom:16px"></div>
       <div class="grid g21">
         <div class="card">
-          <div class="card-h"><h2 id="cal-title"></h2><div class="right" style="display:flex;gap:6px"><button class="icon-btn" id="cal-prev" aria-label="Previous month" style="width:34px;height:34px">‹</button><button class="icon-btn" id="cal-next" aria-label="Next month" style="width:34px;height:34px">›</button></div></div>
-          <div class="cal" id="cal"></div>
-          <div class="legend"><span><i style="background:var(--green-soft);border:1px solid var(--green)"></i>Present</span><span><i style="background:var(--accent)"></i>Absent</span><span><i style="background:var(--warn-soft);border:1px solid var(--warn)"></i>Leave</span><span><i style="border:1px dashed var(--muted)"></i>Holiday / Sunday</span></div>
+          <div class="card-h"><h2 id="att-h">Attendance</h2><div class="seg vt" data-vt="att" aria-label="Attendance view"><button data-v="month">Month</button><button data-v="session">Session</button><button data-v="trend">Trend</button><button data-v="table">Table</button></div></div>
+          <div class="vp" data-vp="att" data-v="month">
+            <div class="card-h" style="margin-bottom:10px"><h3 id="cal-title" style="font:600 15px/1.3 var(--sans);letter-spacing:0"></h3><div class="right" style="display:flex;gap:6px"><button class="icon-btn" id="cal-prev" aria-label="Previous month" style="width:34px;height:34px">‹</button><button class="icon-btn" id="cal-next" aria-label="Next month" style="width:34px;height:34px">›</button></div></div>
+            <div class="cal" id="cal"></div>
+          </div>
+          <div class="vp" data-vp="att" data-v="session" hidden><div class="heat-wrap" id="att-heat"></div><div class="streaks" id="att-streaks"></div></div>
+          <div class="vp" data-vp="att" data-v="trend" hidden><div id="att-trend"></div></div>
+          <div class="vp" data-vp="att" data-v="table" hidden><div class="tbl-wrap"><table class="tbl" id="att-tbl"></table></div></div>
+          <div class="legend" id="att-legend"><span><i style="background:var(--green-soft);border:1px solid var(--green)"></i>Present</span><span><i style="background:var(--accent)"></i>Absent</span><span><i style="background:var(--warn-soft);border:1px solid var(--warn)"></i>Leave</span><span><i style="border:1px dashed var(--muted)"></i>Holiday / Sunday</span></div>
         </div>
         <div class="card"><div class="card-h"><h2>Days away this session</h2></div><div class="list" id="absences"></div></div>
       </div>
@@ -104,6 +114,7 @@
     <!-- HOMEWORK -->
     <section data-view="homework">
       <div class="topbar"><div><h1>Homework</h1><div class="sub">Posted by Aarav's teachers. Tick when done.</div></div></div>
+      <div class="hw-head"><div class="hw-prog" id="hw-prog"></div><div class="seg vt" data-vt="hw" aria-label="Show homework"><button data-v="all">All</button><button data-v="todo">To do</button><button data-v="done">Done</button></div></div>
       <div class="grid" id="hw"></div>
     </section>
 
@@ -113,9 +124,19 @@
       <div id="ut2-card"></div>
       <div class="grid g21">
         <div class="card">
-          <div class="card-h"><h2 id="res-title">Half-yearly · marks by subject</h2></div>
-          <div class="bars" id="bars"></div>
-          <div class="legend"><span><i style="background:var(--accent)"></i>Aarav</span><span><i style="background:var(--ink);width:3px;border-radius:1px"></i>Class average</span></div>
+          <div class="card-h"><h2 id="res-title">Half-yearly · marks by subject</h2><div class="seg vt" data-vt="res" aria-label="Chart type"><button data-v="bars">Bars</button><button data-v="profile">Profile</button><button data-v="change">Change</button></div></div>
+          <div class="vp" data-vp="res" data-v="bars">
+            <div class="bars" id="bars"></div>
+            <div class="legend"><span><i style="background:var(--accent)"></i>Aarav</span><span><i style="background:var(--ink);width:3px;border-radius:1px"></i>Class average</span></div>
+          </div>
+          <div class="vp" data-vp="res" data-v="profile" hidden>
+            <div id="radar"></div>
+            <div class="legend" style="justify-content:center"><span><i class="ln" style="background:var(--accent)"></i>Aarav</span><span><i class="dash" style="border-color:var(--royal);opacity:1"></i>Class average</span></div>
+          </div>
+          <div class="vp" data-vp="res" data-v="change" hidden>
+            <div class="dumb" id="dumb"></div>
+            <div class="legend"><span><i class="dot" style="border:2px solid var(--muted);width:10px;height:10px"></i>Unit Test 1</span><span><i class="dot" style="background:var(--green)"></i>Half-yearly, up</span><span><i class="dot" style="background:var(--accent)"></i>Half-yearly, down</span></div>
+          </div>
         </div>
         <div class="card">
           <div class="card-h"><h2>Table</h2></div>
@@ -129,7 +150,10 @@
     <section data-view="fees">
       <div class="topbar"><div><h1>Fees</h1><div class="sub">Aarav Sharma · Session 2026–27 · amounts are samples</div></div></div>
       <div id="fee-due" style="margin-bottom:16px"></div>
-      <div class="card"><div class="card-h"><h2>Instalments</h2></div><div class="tbl-wrap"><table class="tbl" id="fee-tbl"></table></div></div>
+      <div class="card"><div class="card-h"><h2>Instalments</h2><div class="seg vt" data-vt="fee" aria-label="Instalments view"><button data-v="timeline">Timeline</button><button data-v="table">Table</button></div></div>
+        <div class="vp" data-vp="fee" data-v="timeline"><div id="fee-tl"></div></div>
+        <div class="vp" data-vp="fee" data-v="table" hidden><div class="tbl-wrap"><table class="tbl" id="fee-tbl"></table></div></div>
+      </div>
     </section>
 
     <!-- MESSAGES -->
@@ -168,6 +192,7 @@
 
 <script src="js/data.js"></script>
 <script src="js/common.js"></script>
+<script src="js/charts.js"></script>
 <script src="js/ai.js"></script>
 <script>
 (function () {
@@ -186,6 +211,7 @@
   S.$("#nav-bottom").innerHTML = nav.filter(([k]) => k !== "messages").map(([k, l]) => btn(k, l)).join("");
 
   const statusLabel = { P: "Present", A: "Absent", L: "Leave" };
+  const feeStack = () => { const due = S.state.fees.find((f) => !f.paid); return S.stack(S.state.fees.map((f) => ({ v: 1, tone: f.paid ? "var(--green)" : f === due ? "var(--accent)" : "var(--line)", tip: f.paid ? "Paid " + S.fmt(f.paid) : "Due " + S.fmt(f.due, { day: "numeric", month: "short", year: "numeric" }), tipT: f.q }))); };
   let exam = "hy", calMonth = new Date(S.today.getFullYear(), S.today.getMonth(), 1);
 
   function renderHome() {
@@ -201,12 +227,13 @@
     else { box.className = "status bad"; box.innerHTML = `<span class="sq red">${alert}</span><div><b>Aarav is marked ${statusLabel[st].toLowerCase()} today</b><span>Marked at ${rec.at} by Ms. Neha Mathew. Not expected? <a href="#messages" data-go="messages" style="color:var(--accent)">Message the teacher</a></span></div>`; }
 
     const pend = S.state.homework.filter((h) => !h.done), fee = S.state.fees.find((f) => !f.paid);
+    const hwAll = S.state.homework.length, classHy = Math.round(S.subjects.reduce((a, x) => a + S.classAvg("hy", x), 0) / S.subjects.length);
     const nextPtm = S.state.notices.filter((n) => n.tag === "PTM" && n.date >= S.todayKey).sort((x, y) => (x.date < y.date ? -1 : 1))[0];
-    S.$("#home-stats").innerHTML = `
-      <div><dt>Attendance</dt><dd>${S.attendancePct(me.roll)}<small>%</small></dd><span>This session · CBSE needs 75%</span></div>
-      <div><dt>Half-yearly</dt><dd>${S.avgOf(me.hy)}<small>%</small></dd><span>Up from ${S.avgOf(me.ut1)}% in Unit Test 1</span></div>
-      <div><dt>Homework</dt><dd>${pend.length}<small> pending</small></dd><span>${pend[0] ? "Next: " + S.esc(pend[0].subj) + ", " + S.fmt(pend[0].due) : "All done"}</span></div>
-      <div class="${fee ? "due" : ""}"><dt>Fees</dt><dd>${fee ? S.rupee(fee.amount) : "Paid"}</dd><span>${fee ? "Due " + S.fmt(fee.due, { day: "numeric", month: "long" }) : "Nothing due"}</span></div>`;
+    S.paint(S.$("#home-stats"), `
+      <div><dt>Attendance</dt><dd>${S.attendancePct(me.roll)}<small>%</small></dd><span>This session · CBSE needs 75%</span>${S.meter(S.attendancePct(me.roll), { tone: "var(--green)", mark: 75, tip: "The line marks CBSE's 75% minimum" })}</div>
+      <div><dt>Half-yearly</dt><dd>${S.avgOf(me.hy)}<small>%</small></dd><span>Up from ${S.avgOf(me.ut1)}% in Unit Test 1</span>${S.meter(S.avgOf(me.hy), { tone: "var(--accent)", mark: classHy, tip: `The line marks the class average, ${classHy}%` })}</div>
+      <div><dt>Homework</dt><dd>${pend.length}<small> pending</small></dd><span>${pend[0] ? "Next: " + S.esc(pend[0].subj) + ", " + S.fmt(pend[0].due) : "All done"}</span>${S.meter(hwAll ? ((hwAll - pend.length) / hwAll) * 100 : 100, { tone: "var(--royal)", tip: `${hwAll - pend.length} of ${hwAll} done` })}</div>
+      <div class="${fee ? "due" : ""}"><dt>Fees</dt><dd>${fee ? S.rupee(fee.amount) : "Paid"}</dd><span>${fee ? "Due " + S.fmt(fee.due, { day: "numeric", month: "long" }) : "Nothing due"}</span><span class="meter-wrap">${feeStack()}</span></div>`);
     // Due soon: homework, the next fee and the next PTM, soonest first.
     const due = pend.map((h) => ({ d: h.due, tone: "warn", icon: "hw", t: `${h.subj}: ${h.title}`, sub: "Set by " + h.by, go: "homework" }));
     if (fee) due.push({ d: fee.due, tone: "red", icon: "fee", t: `Fee instalment, ${S.rupee(fee.amount)}`, sub: fee.q + " · pay by UPI", go: "fees" });
@@ -267,6 +294,10 @@
     S.$("#tt-sum").innerHTML = `<thead><tr><th scope="col">Subject</th><th scope="col">Teacher</th><th scope="col" class="n">A week</th></tr></thead><tbody>` +
       Object.entries(count).sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0])).map(([x, n]) => `<tr><td class="c-${HUE[x] || "none"} sw">${x}</td><td>${S.ttTeachers[x] || ""}</td><td class="n">${n}</td></tr>`).join("") +
       `<tr class="tot"><td>Total</td><td></td><td class="n">${Object.values(count).reduce((a, b) => a + b, 0)}</td></tr></tbody>`;
+    // Today: the day as a short agenda, with the current period outlined and the past ones faded.
+    const list = S.timetable[S.today.getDay()] || [];
+    S.paint(S.$("#agenda"), `<p class="muted" style="font-size:12.5px;margin:-6px 0 4px">${S.fmtLong(S.today)}</p>` + list.map((sub, p) => (p === 4 ? `<div class="ag brk"><time>10:40</time>Break</div>` : "") +
+      `<div class="ag c-${HUE[sub] || "none"}${isToday && p === cur ? " now" : ""}${isToday && now >= mins(ENDS[p]) ? " past" : ""}"><time>${S.periodTimes[p]}</time><b>${sub}</b><span>${S.ttTeachers[sub] || ""}</span></div>`).join(""));
   }
   const tip = S.$("#tt-tip"), piv = S.$("#pivot");
   const hlHeads = (td) => { piv.querySelectorAll(".hl").forEach((x) => x.classList.remove("hl")); if (!td) return; piv.querySelector(`thead th[data-d="${td.dataset.d}"]`).classList.add("hl"); piv.querySelector(`th[data-p="${td.dataset.p}"]`).classList.add("hl"); };
@@ -376,18 +407,84 @@
     const pct = S.attendancePct(me.roll);
     const away = Object.keys(S.history).filter((k) => S.history[k][me.roll]).map((k) => [k, S.history[k][me.roll]]);
     const t = S.state.attendance[S.todayKey]; if (t && t.marks[me.roll]) away.push([S.todayKey, t.marks[me.roll]]);
-    S.$("#att-stats").innerHTML = `
-      <div class="card stat"><span class="lbl">This session</span><div class="num">${pct}<small>%</small></div><div class="foot">CBSE minimum is 75%</div></div>
+    S.paint(S.$("#att-stats"), `
+      <div class="card stat stat-ring">${S.ring(pct, { tone: pct >= 85 ? "var(--green)" : "var(--warn)", mark: 75, label: `${pct}% this session; CBSE minimum 75%` })}<div><span class="lbl">This session</span><div class="num">${pct}<small>%</small></div><div class="foot">The tick marks CBSE's 75% minimum</div></div></div>
       <div class="card stat"><span class="lbl">Days away</span><div class="num">${away.length}</div><div class="foot">${away.filter((a) => a[1] === "L").length} on approved leave</div></div>
-      <div class="card stat"><span class="lbl">Class average</span><div class="num">${Math.round(S.students.reduce((a, s) => a + S.attendancePct(s.roll), 0) / S.students.length * 10) / 10}<small>%</small></div><div class="foot">VII-B</div></div>`;
+      <div class="card stat"><span class="lbl">Class average</span><div class="num">${Math.round(S.students.reduce((a, s) => a + S.attendancePct(s.roll), 0) / S.students.length * 10) / 10}<small>%</small></div><div class="foot">VII-B</div></div>`);
     S.$("#absences").innerHTML = away.length ? away.reverse().map(([k, s]) => `<div class="li"><span class="sq ${s === "A" ? "red" : "warn"}">${s}</span><div class="t"><b>${S.fmt(k, { weekday: "long", day: "numeric", month: "long" })}</b><span>${statusLabel[s]}</span></div></div>`).join("") : '<p class="muted">No days away. 🎉</p>';
     const leaves = S.state.leaves;
     if (leaves.length) S.$("#absences").insertAdjacentHTML("afterbegin", leaves.map((l) => `<div class="li"><span class="sq warn">L</span><div class="t"><b>Leave requested: ${S.fmt(l.from)} – ${S.fmt(l.to)}</b><span>${S.esc(l.why)}</span></div><span class="end pill ${l.status === "Approved" ? "green" : "warn"}">${l.status}</span></div>`).join(""));
-    renderCal();
+    renderCal(); renderSession();
   }
 
+  // Every school day of the session, for Aarav and for the class.
+  function sessionDays() {
+    const days = Object.keys(S.history).sort();
+    if (S.state.attendance[S.todayKey]) days.push(S.todayKey);
+    return days;
+  }
+  function renderSession() {
+    const days = sessionDays(), first = new Date(days[0] + "T00:00");
+    // Session: weeks across, Monday to Saturday down, one square a day.
+    const mon = S.addDays(first, -((first.getDay() + 6) % 7)), weeks = Math.ceil((S.today - mon) / 864e5 / 7 + 0.01);
+    const step = 17, cs = 14, L = 30, T = 18;
+    let g = "", lastM = -1;
+    for (let w = 0; w < weeks; w++) {
+      for (let d = 0; d < 6; d++) {
+        const day = S.addDays(mon, w * 7 + d), k = S.iso(day);
+        if (k < days[0]) continue;
+        if (d === 0 || k === days[0]) { if (day.getMonth() !== lastM) { lastM = day.getMonth(); g += `<text x="${L + w * step}" y="11">${S.fmt(day, { month: "short" })}</text>`; } }
+        const st = S.statusOn(me.roll, k), cls = k > S.todayKey || st === null ? "N" : st;
+        const what = st === "H" ? (S.HOLIDAYS[k] || "Holiday") : st ? statusLabel[st] : k > S.todayKey ? "Coming up" : "Not marked yet";
+        g += `<rect class="c ${cls}${k === S.todayKey ? " T" : ""}" x="${L + w * step}" y="${T + d * step}" width="${cs}" height="${cs}"${S.tipAttr(what, S.fmt(k, { weekday: "short", day: "numeric", month: "short" }))} />`;
+      }
+    }
+    g += ["Mon", "", "Wed", "", "Fri", ""].map((t, d) => (t ? `<text x="0" y="${T + d * step + 11}">${t}</text>` : "")).join("");
+    const W = L + weeks * step, H = T + 6 * step;
+    S.paint(S.$("#att-heat"), `<svg class="chart heat" viewBox="0 0 ${W} ${H}" style="max-width:${Math.round(W * 1.7)}px" role="img" aria-label="Aarav's attendance, every school day this session">${g}</svg>`);
+    // Streaks: the run he is on now, and his longest.
+    let run = 0, best = 0, cur = 0;
+    days.forEach((k) => { if (S.statusOn(me.roll, k) === "P") { run++; best = Math.max(best, run); } else run = 0; });
+    cur = run;
+    const pres = days.filter((k) => S.statusOn(me.roll, k) === "P").length;
+    S.paint(S.$("#att-streaks"), `<div><b>${pres} of ${days.length}</b>school days present</div><div><b>${cur} day${cur === 1 ? "" : "s"}</b>present in a row now</div><div><b>${best} days</b>longest run this session</div>`);
+
+    // Month by month, Aarav against the class.
+    const months = [];
+    days.forEach((k) => {
+      const m = k.slice(0, 7); let row = months.find((x) => x.m === m);
+      if (!row) months.push((row = { m, n: 0, P: 0, A: 0, L: 0, cls: 0 }));
+      const st = S.statusOn(me.roll, k); row.n++; row[st === "P" ? "P" : st]++;
+      row.cls += S.students.filter((s) => S.statusOn(s.roll, k) === "P").length / S.students.length;
+    });
+    months.forEach((r) => { r.me = Math.round((r.P / r.n) * 1000) / 10; r.c = Math.round((r.cls / r.n) * 1000) / 10; r.label = S.fmt(r.m + "-01", { month: "short" }); });
+    const W2 = S.narrow() ? 350 : 560, H2 = S.narrow() ? 240 : 230, pl = 30, pr = 88, pt = 16, pb = 30, lo = 70, hi = 100;
+    const x = (i) => pl + (months.length < 2 ? 0 : (i * (W2 - pl - pr)) / (months.length - 1));
+    const y = (v) => pt + ((hi - v) / (hi - lo)) * (H2 - pt - pb);
+    let c = [70, 80, 90, 100].map((v) => `<line class="grid-l" x1="${pl}" x2="${W2 - pr}" y1="${y(v)}" y2="${y(v)}" /><text x="${pl - 8}" y="${y(v) + 4}" text-anchor="end">${v}</text>`).join("");
+    c += `<line class="ref-l" x1="${pl}" x2="${W2 - pr}" y1="${y(75)}" y2="${y(75)}" /><text class="ref-t" x="${W2 - pr + 8}" y="${y(75) + 4}">CBSE 75%</text>`;
+    c += months.map((r, i) => `<text x="${x(i)}" y="${H2 - 8}" text-anchor="middle">${r.label}${r.m === S.todayKey.slice(0, 7) ? " (so far)" : ""}</text>`).join("");
+    const line = (key) => months.map((r, i) => `${i ? "L" : "M"}${x(i).toFixed(1)},${y(r[key]).toFixed(1)}`).join("");
+    c += `<path class="ln-path s2" d="${line("c")}" /><path class="ln-path s1" d="${line("me")}" />`;
+    c += months.map((r, i) => `<circle class="ln-dot s2" cx="${x(i)}" cy="${y(r.c)}" r="4" /><circle class="ln-dot s1" cx="${x(i)}" cy="${y(r.me)}" r="5" /><rect class="hit" x="${x(i) - 16}" y="${pt}" width="32" height="${H2 - pt - pb}"${S.tipAttr(`Aarav ${r.me}% · class ${r.c}% · ${r.n} school days`, S.fmt(r.m + "-01", { month: "long" }))} />`).join("");
+    const last = months[months.length - 1];
+    let ya = y(last.me), yb = y(last.c);
+    if (Math.abs(ya - yb) < 15) { const mid = (ya + yb) / 2, up = last.me >= last.c; ya = mid + (up ? -8 : 8); yb = mid + (up ? 8 : -8); }
+    c += `<text class="ln-lab s1" x="${x(months.length - 1) + 10}" y="${ya + 4}">Aarav ${last.me}%</text><text class="ln-lab s2" x="${x(months.length - 1) + 10}" y="${yb + 4}">Class ${last.c}%</text>`;
+    S.paint(S.$("#att-trend"), `<svg class="chart" viewBox="0 0 ${W2} ${H2}" role="img" aria-label="Attendance by month, Aarav and the class">${c}</svg><div class="legend"><span><i class="ln" style="background:var(--accent)"></i>Aarav</span><span><i class="ln" style="background:var(--royal)"></i>Class average</span><span><i class="dash"></i>CBSE minimum</span></div>`);
+    S.paint(S.$("#att-tbl"), `<thead><tr><th>Month</th><th class="num">School days</th><th class="num">Present</th><th class="num">Absent</th><th class="num">Leave</th><th class="num">Aarav</th><th class="num">Class</th></tr></thead><tbody>` +
+      months.map((r) => `<tr><td>${S.fmt(r.m + "-01", { month: "long" })}</td><td class="num">${r.n}</td><td class="num">${r.P}</td><td class="num">${r.A || "–"}</td><td class="num">${r.L || "–"}</td><td class="num"><b>${r.me}%</b></td><td class="num muted">${r.c}%</td></tr>`).join("") +
+      `<tr><td><b>Session</b></td><td class="num">${days.length}</td><td class="num">${months.reduce((a, r) => a + r.P, 0)}</td><td class="num">${months.reduce((a, r) => a + r.A, 0)}</td><td class="num">${months.reduce((a, r) => a + r.L, 0)}</td><td class="num"><b>${S.attendancePct(me.roll)}%</b></td><td class="num muted">${Math.round((months.reduce((a, r) => a + r.cls, 0) / days.length) * 1000) / 10}%</td></tr></tbody>`);
+  }
+  // The colour key belongs to the calendar views only.
+  document.addEventListener("sjs:vt", (e) => { if (e.detail.key === "att") S.$("#att-legend").hidden = !["month", "session"].includes(e.detail.v); if (e.detail.key === "hw") renderHomework(); if (e.detail.key === "res") renderResults(); });
+
   function renderHomework() {
-    const hw = [...S.state.homework].sort((a, b) => a.done - b.done || (a.due < b.due ? -1 : 1));
+    const all = S.state.homework, done = all.filter((h) => h.done).length, f = S.vt.hw || "all";
+    S.paint(S.$("#hw-prog"), `<div class="lbl"><span><b>${done} of ${all.length}</b> done</span><span>${all.length - done} to do</span></div>` +
+      S.stack(all.map((h) => ({ v: 1, tone: h.done ? "var(--green)" : "color-mix(in srgb, var(--warn) 45%, var(--surface))", tip: `${h.subj}: ${h.title}`, tipT: h.done ? "Done" : "Due " + S.fmt(h.due, { weekday: "short", day: "numeric", month: "short" }) }))));
+    const hw = [...all].filter((h) => f === "all" || (f === "done") === h.done).sort((a, b) => a.done - b.done || (a.due < b.due ? -1 : 1));
+    if (!hw.length) { S.$("#hw").innerHTML = `<p class="chart-empty">${f === "done" ? "Nothing ticked off yet." : "All done. Nothing left to do."}</p>`; return; }
     S.$("#hw").innerHTML = hw.map((h) => `<div class="card" style="display:flex;gap:16px;align-items:flex-start;${h.done ? "opacity:.6" : ""}">
       <label style="display:grid;place-items:center;width:40px;height:40px;border-radius:12px;border:1.5px solid ${h.done ? "var(--green)" : "var(--line)"};background:${h.done ? "var(--green-soft)" : "transparent"};cursor:pointer;flex:none;color:var(--green)">
         <input type="checkbox" data-hw="${h.id}" ${h.done ? "checked" : ""} class="sr-only" />${h.done ? '<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>' : ""}</label>
@@ -398,7 +495,7 @@
 
   function renderResults() {
     const marks = me[exam];
-    S.$("#res-title").textContent = (exam === "hy" ? "Half-yearly" : "Unit Test 1") + " · marks by subject (%)";
+    S.$("#res-title").textContent = S.vt.res === "change" ? "Unit Test 1 to half-yearly · change by subject" : (exam === "hy" ? "Half-yearly" : "Unit Test 1") + " · marks by subject (%)";
     // Build the bars once; after that only move them, so a refresh never replays the whole chart.
     const bars = S.$("#bars");
     if (bars.children.length !== S.subjects.length) {
@@ -406,6 +503,18 @@
       bars.getBoundingClientRect(); // let the zero width land before the first grow
     }
     S.subjects.forEach((s, i) => { const row = bars.children[i], avg = S.classAvg(exam, s); row.querySelector(".fill").style.width = marks[s] + "%"; row.querySelector(".ref").style.left = avg + "%"; row.querySelector(".tip").textContent = `${s}: Aarav ${marks[s]}% · class average ${avg}%`; row.querySelector(".v").textContent = marks[s]; });
+    const SH = { Mathematics: "Maths", "Social Science": "SSt" };
+    S.paint(S.$("#radar"), S.radar(S.subjects.map((x) => SH[x] || x), [
+      { name: "Aarav", values: S.subjects.map((x) => marks[x]), cls: "s1" },
+      { name: "Class average", values: S.subjects.map((x) => S.classAvg(exam, x)), cls: "s2" }
+    ]));
+    // Change: Unit Test 1 to the half-yearly, per subject.
+    const allV = S.subjects.flatMap((x) => [me.ut1[x], me.hy[x]]), lo = Math.max(0, Math.floor((Math.min(...allV) - 5) / 10) * 10);
+    const pos = (v) => ((v - lo) / (100 - lo)) * 100;
+    S.paint(S.$("#dumb"), S.subjects.map((x) => {
+      const a = me.ut1[x], b = me.hy[x], d = b - a, t = d >= 0 ? "var(--green)" : "var(--accent)";
+      return `<div class="db-row"><span>${x}</span><div class="db-track" tabindex="0" style="--t:${t}"${S.tipAttr(`Unit Test 1 ${a}% → Half-yearly ${b}%`, x)}><span class="seg-b" style="left:${pos(Math.min(a, b))}%;width:${Math.abs(pos(b) - pos(a))}%"></span><span class="p0" style="left:${pos(a)}%"></span><span class="p1" style="left:${pos(b)}%"></span></div><span class="d ${d > 0 ? "up" : d < 0 ? "dn" : ""}">${d > 0 ? "+" : d < 0 ? "−" : ""}${Math.abs(d)}</span></div>`;
+    }).join("") + `<div class="db-axis"><span></span><div><span>${lo}%</span><span>${Math.round((lo + 100) / 2)}%</span><span>100%</span></div><span></span></div>`);
     S.$("#res-tbl").innerHTML = `<thead><tr><th>Subject</th><th class="num">UT 1</th><th class="num">Half-yearly</th><th class="num">Class avg</th></tr></thead><tbody>` +
       S.subjects.map((s) => `<tr><td>${s}</td><td class="num">${me.ut1[s]}</td><td class="num"><b>${me.hy[s]}</b></td><td class="num muted">${S.classAvg("hy", s)}</td></tr>`).join("") +
       `<tr><td><b>Average</b></td><td class="num">${S.avgOf(me.ut1)}</td><td class="num"><b>${S.avgOf(me.hy)}</b></td><td class="num muted">${Math.round(S.subjects.reduce((a, s) => a + S.classAvg("hy", s), 0) / S.subjects.length)}</td></tr></tbody>`;
@@ -421,6 +530,14 @@
   function renderFees() {
     const due = S.state.fees.find((f) => !f.paid);
     S.$("#fee-due").innerHTML = due ? `<div class="card stat hl" style="display:flex;align-items:center;gap:18px;flex-wrap:wrap"><div><span class="lbl">Due ${S.fmt(due.due, { day: "numeric", month: "long" })}</span><div class="num">${S.rupee(due.amount)}</div><div class="foot">${due.q}</div></div><button class="btn" style="margin-left:auto;background:var(--accent-ink);color:var(--accent)" id="pay-btn">Pay now by UPI</button></div>` : `<div class="status ok"><span class="sq green">✓</span><div><b>All fees paid</b><span>Thank you!</span></div></div>`;
+    const fees = S.state.fees, paidN = fees.filter((f) => f.paid).length, paidAmt = fees.filter((f) => f.paid).reduce((a, f) => a + f.amount, 0), total = fees.reduce((a, f) => a + f.amount, 0);
+    const tick = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>';
+    S.paint(S.$("#fee-tl"), `<div class="fee-sum"><div><b>${S.rupee(paidAmt)}</b> <span>paid of ${S.rupee(total)} this session</span></div><span>${paidN} of ${fees.length} instalments</span></div>` +
+      S.stack(fees.map((f) => ({ v: f.amount, tone: f.paid ? "var(--green)" : f === due ? "var(--accent)" : "var(--line)", tip: `${S.rupee(f.amount)} · ${f.paid ? "paid " + S.fmt(f.paid) : f === due ? "due " + S.fmt(f.due) : "due " + S.fmt(f.due, { day: "numeric", month: "short", year: "numeric" })}`, tipT: f.q }))) +
+      `<ol class="ftl" style="--done:${paidN ? ((paidN - 1) / (fees.length - 1)) * 100 : 0}%">` + fees.map((f, i) => {
+        const left = Math.round((new Date(f.due + "T00:00") - S.today) / 864e5);
+        return `<li class="${f.paid ? "paid" : f === due ? "due" : ""}"><span class="nd">${f.paid ? tick : i + 1}</span><b>${f.q.split(" · ")[0]} · ${S.rupee(f.amount)}</b><span>${f.q.split(" · ")[1]}</span><span class="when">${f.paid ? "Paid " + S.fmt(f.paid) : f === due ? (left > 0 ? `Due in ${left} day${left > 1 ? "s" : ""}` : left === 0 ? "Due today" : "Overdue") : "Due " + S.fmt(f.due, { day: "numeric", month: "short", year: "numeric" })}</span></li>`;
+      }).join("") + "</ol>");
     S.$("#fee-tbl").innerHTML = `<thead><tr><th>Instalment</th><th>Due date</th><th class="num">Amount</th><th>Status</th><th></th></tr></thead><tbody>` + S.state.fees.map((f, i) => `<tr><td>${f.q}</td><td>${S.fmt(f.due, { day: "numeric", month: "short", year: "numeric" })}</td><td class="num">${S.rupee(f.amount)}</td><td>${f.paid ? `<span class="pill green">Paid ${S.fmt(f.paid)}</span>` : f === due ? '<span class="pill red">Due</span>' : '<span class="pill">Upcoming</span>'}</td><td>${f.paid ? `<button class="link-btn" onclick="SJS.toast('Receipt downloaded (demo)')">Receipt</button>` : ""}</td></tr>`).join("") + "</tbody>";
     const pb = S.$("#pay-btn"); if (pb) pb.onclick = () => { S.$("#pay-amt").textContent = `${S.rupee(due.amount)} · ${due.q} · St. John's School`; S.openModal("pay-modal"); };
   }
@@ -454,7 +571,9 @@
     renderAll();
   });
   function renderAll() { renderPivot(); renderHome(); renderBus(); renderAttendance(); renderHomework(); renderResults(); renderFees(); renderThread(); }
+  S.vtInit();
   renderAll();
+  document.addEventListener("sjs:redraw", renderSession);
   setInterval(renderBus, 7000);
   setInterval(renderPivot, 60000);
 
