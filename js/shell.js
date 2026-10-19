@@ -3,7 +3,9 @@
    At the top of a page the pill carries the main links. Once you scroll into
    the page it turns into that page's sections, highlights the one you are
    reading and draws a reading-progress line along its bottom edge. On narrow
-   screens it shows the section name and a "Menu" button that opens a sheet. */
+   screens it shows the section name and a "Menu" button that opens a sheet.
+   While admissions are open a small tag hangs under the pill on every page,
+   so it never scrolls out of sight (school.js hides it when they close). */
 (function () {
   const S = (window.SJS = window.SJS || {});
   const page = document.body.dataset.page || "";
@@ -49,6 +51,7 @@
       </div>
       <i class="prog" aria-hidden="true"></i>
     </div>
+    <a class="adm-tag" href="admissions.html#enquire"><i class="live" aria-hidden="true"></i><span class="adm-t">Admissions <b class="adm-s">2027–28</b> are open</span><span class="adm-go">Apply now<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span></a>
     <div class="sheet" aria-hidden="true" inert>
       <div class="sheet-col"><h2>Pages</h2><ul class="sheet-pages">${PAGES.map(([k, l, h], i) => `<li style="--i:${i}"><a href="${h}"${k === page ? ' aria-current="page"' : ""}>${l}</a></li>`).join("")}</ul></div>
       <div class="sheet-col sheet-here" hidden><h2>On this page</h2><ul class="sheet-secs"></ul></div>

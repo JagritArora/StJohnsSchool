@@ -29,6 +29,7 @@
   if (adm) {
     $$("[data-site]").forEach((el) => { const k = el.dataset.site.replace("adm-", ""); if (adm[k]) put(el, esc(adm[k]).replace(esc(adm.session), `<span class="nw">${esc(adm.session)}</span>`)); });
     if (!adm.open) $$('[data-site="adm-btn"]').forEach((a) => (a.href = "admissions.html#process"));
+    $$(".adm-tag").forEach((t) => { if (!adm.open) t.remove(); else $(".adm-s", t).textContent = adm.session; });
   }
   if (site) {
     $$("[data-fact]").forEach((el) => {
@@ -44,7 +45,7 @@
     const shown = site.slides.filter((p) => p.on && S.photo(p.src));
     const dflt = S.siteSeed().slides.filter((p) => p.on);
     const same = shown.length === dflt.length && shown.every((p, i) => p.src === dflt[i].src && (p.pos || "50% 50%") === "50% 50%");
-    if (media && shown.length && !same) media.innerHTML = shown.map((p, i) => `<img ${i ? "data-src" : 'class="on" fetchpriority="high" src'}="${esc(S.photo(p.src))}" alt="" style="object-position:${esc(p.pos || "50% 50%")}" />`).join("");
+    if (media && shown.length && !same) { media.innerHTML = shown.map((p, i) => `<img ${i ? "data-src" : 'class="on" fetchpriority="high" src'}="${esc(S.photo(p.src))}" alt="" data-cap="${esc(p.alt || "")}" style="object-position:${esc(p.pos || "50% 50%")}" />`).join(""); const c = $(".hero-cap"); if (c) { c.textContent = shown[0].alt || ""; c.classList.toggle("none", !shown[0].alt); } }
     // Gallery uploads go first, newest at the top.
     const galEl = $(".gal");
     if (galEl && site.gallery.length) galEl.insertAdjacentHTML("afterbegin", site.gallery.filter((g) => S.photo(g.src)).map((g) => `<button data-cat="${esc(g.cat)}"><img src="${esc(S.photo(g.src))}" alt="${esc(g.alt || g.caption)}" loading="lazy" decoding="async" /><figcaption>${esc(g.caption)}</figcaption></button>`).join(""));
@@ -64,6 +65,8 @@
     const heroEl = $(".hero");
     const past = scrollY > (heroEl ? heroEl.offsetHeight * 0.7 : innerHeight * 0.5);
     bar.classList.toggle("on", past && !inView.size && !!adm && adm.open);
+    // The header's admissions tag hands over to the bar while it is up.
+    document.documentElement.classList.toggle("mbar-on", bar.classList.contains("on"));
   };
   if ("IntersectionObserver" in window) { const bio = new IntersectionObserver((es) => { es.forEach((e) => (e.isIntersecting ? inView.add(e.target) : inView.delete(e.target))); barTick(); }); covers.forEach((c) => bio.observe(c)); }
   addEventListener("scroll", barTick, { passive: true }); barTick();
@@ -85,18 +88,67 @@
   const io = "IntersectionObserver" in window && !reduce ? new IntersectionObserver((es) => es.forEach((e) => { if (e.isIntersecting) { e.target.classList.add("in"); io.unobserve(e.target); } }), { rootMargin: "0px 0px -5% 0px" }) : null;
   $$(".clip").forEach((el) => (io ? io.observe(el) : el.classList.add("in")));
 
+  // ---------- Headings rise in word by word ----------
+  // Each word slides up out of its own line, one after another: on load for
+  // the page title, and as they arrive for section headings further down.
+  const words = (h) => {
+    let i = 0;
+    [...h.childNodes].forEach((n) => {
+      if (n.nodeType !== 3) { if (n.nodeType === 1) { const w = document.createElement("span"); w.className = "w"; n.replaceWith(w); const inner = document.createElement("span"); inner.style.setProperty("--wi", i++); inner.append(n); w.append(inner); } return; }
+      const frag = document.createDocumentFragment();
+      n.textContent.split(/(\s+)/).forEach((t) => { if (!t) return; if (/^\s+$/.test(t)) { frag.append(t); return; } const w = document.createElement("span"); w.className = "w"; w.innerHTML = `<span style="--wi:${i++}">${esc(t)}</span>`; frag.append(w); });
+      n.replaceWith(frag);
+    });
+    h.classList.add("words");
+  };
+  if (!reduce) {
+    $$(".phero h1").forEach((h) => { words(h); requestAnimationFrame(() => requestAnimationFrame(() => h.classList.add("in"))); });
+    if (io) $$("main :is(.sec, .year) h2").forEach((h) => { if (h.closest(".hero") || h.getBoundingClientRect().top < innerHeight) return; words(h); io.observe(h); });
+  }
+
+  // ---------- Photos unveil as they arrive ----------
+  // A mounted photo opens out from its middle, like a print being laid down.
+  if (io) $$("main :is(figure.arch, .duo, .fac .arch, .fac .frame, .story .ph, .letter .arch, .mount)").forEach((el) => {
+    if (el.closest(".hero, .month, .duo .duo, .unveil") || el.parentElement.closest(".duo") || el.getBoundingClientRect().top < innerHeight) return;
+    el.classList.add("unveil"); io.observe(el);
+  });
+
+  // ---------- Depth: tilted prints and inset photos drift with the scroll ----------
+  const par = reduce ? [] : $$(".hero-frame, .phero .arch, .duo");
+  if (par.length) {
+    let q = false;
+    const drift = () => { q = false; const vh = innerHeight; par.forEach((el) => { const r = el.getBoundingClientRect(); if (r.bottom < -100 || r.top > vh + 100) return; el.style.setProperty("--py", (((r.top + r.height / 2) - vh / 2) / vh).toFixed(3)); }); };
+    addEventListener("scroll", () => { if (!q) { q = true; requestAnimationFrame(drift); } }, { passive: true });
+    drift();
+  }
+
+  // ---------- Numbers count up the first time they are seen ----------
+  const counters = $$(".hero-stats b, .facts dd").filter((el) => el.childNodes.length && el.firstChild.nodeType === 3 && /^\d+/.test(el.firstChild.textContent));
+  const countUp = (el) => {
+    const t = el.firstChild, m = t.textContent.match(/^(\d+)(.*)$/s), to = +m[1], from = to > 1000 ? to - 60 : 0, t0 = performance.now(), dur = 1500;
+    el.classList.add("counting");
+    const step = (now) => { const k = Math.min(1, (now - t0) / dur), e = 1 - Math.pow(1 - k, 3); t.textContent = Math.round(from + (to - from) * e) + m[2]; if (k < 1) requestAnimationFrame(step); else el.classList.remove("counting"); };
+    requestAnimationFrame(step);
+  };
+  if (!reduce && counters.length && "IntersectionObserver" in window) {
+    const cio = new IntersectionObserver((es) => es.forEach((e) => { if (e.isIntersecting) { cio.unobserve(e.target); setTimeout(() => countUp(e.target), e.target.closest(".hero") ? 500 : 0); } }), { threshold: 0.6 });
+    counters.forEach((c) => cio.observe(c));
+  }
+
   // ---------- Gentle reveal for content below the first screen ----------
-  const RV = ".sec-title, .sec h2, .sec .lead, .stairs, .month, .year-head, .trio > div, .facgrid > div, .process li, .news li, .kv > div, .faq details, .ticks li, .story, .fac, .docs li, .paths li, .letter, .form, .tbl-wrap, .facts > div, .cta .row, .gal button, .filters, .pill-row";
+  const RV = ".sec-title, .sec h2, .sec .lead, .stairs, .month, .fcard, .duo, .house, .year-head, .trio > div, .facgrid > div, .process li, .news li, .kv > div, .faq details, .ticks li, .story, .fac, .docs li, .paths li, .letter, .form, .tbl-wrap, .facts > div, .cta .row, .gal button, .filters, .pill-row";
   if (io) {
     const seen = new Set();
     $$(RV, $("main")).forEach((el) => {
-      if (seen.has(el) || el.closest(".hero, .rv") || el.getBoundingClientRect().top < innerHeight) return;
+      if (seen.has(el) || el.closest(".hero, .rv") || el.classList.contains("words") || el.getBoundingClientRect().top < innerHeight) return;
       seen.add(el); el.classList.add("rv");
       const sibs = [...el.parentElement.children].filter((c) => c.matches(RV));
       el.style.setProperty("--rv-i", Math.max(0, sibs.indexOf(el)));
       io.observe(el);
     });
   }
+
+  if (io) $$(".ftr-in > div").forEach((el, i) => { el.classList.add("rv"); el.style.setProperty("--rv-i", i); io.observe(el); });
 
   // ---------- Audience paths: the frame shows the photo for the row in focus ----------
   const pathsWrap = $(".paths-wrap");
@@ -110,7 +162,9 @@
   // ---------- News lists (from the same notices the app uses) ----------
   $$("[data-news]").forEach((ul) => {
     const limit = +ul.dataset.limit || 99;
-    const items = [...(S.state ? S.state.notices : [])].sort((a, b) => (a.date < b.date ? -1 : 1)).filter((n) => n.web !== false && !(n.to && (n.to.staff || n.to.bus || n.to.gender)) && n.date >= (S.todayKey || "")).slice(0, limit);
+    // data-all keeps to notices for the whole school (no class picked), for the home page.
+    const all = "all" in ul.dataset;
+    const items = [...(S.state ? S.state.notices : [])].sort((a, b) => (a.date < b.date ? -1 : 1)).filter((n) => n.web !== false && !(n.to && (n.to.staff || n.to.bus || n.to.gender)) && !(all && n.to && n.to.cls && n.to.cls.length) && n.date >= (S.todayKey || "")).slice(0, limit);
     const tone = { Holiday: "", PTM: "tag--brick", Exam: "tag--brick", Event: "tag--hedge", Notice: "tag--gold" };
     const loc = "en-IN";
     ul.innerHTML = items.map((n) => { const d = new Date(n.date + "T00:00"); return `<li><div class="day">${d.getDate()}<small>${d.toLocaleDateString(loc, { month: "long" })}, ${d.toLocaleDateString(loc, { weekday: "short" })}</small></div><div><h3>${esc(n.title)}</h3><p>${esc(n.text)}</p></div><span class="tag ${tone[n.tag] || ""}">${esc(n.tag)}</span></li>`; }).join("") || `<li><div></div><p class="muted">${"Nothing coming up right now. New events appear here as the school posts them."}</p></li>`;
@@ -184,7 +238,8 @@
     const later = () => setTimeout(() => imgs.forEach((im) => { if (im.dataset.src) { im.src = im.dataset.src; im.removeAttribute("data-src"); } }), reduce ? 0 : 1200);
     if (document.readyState === "complete") later(); else addEventListener("load", later, { once: true });
     const ready = (im) => im.getAttribute("src") && im.complete && im.naturalWidth;
-    const go = (n) => { if (n === k || !ready(imgs[n])) return; imgs[k].classList.remove("on"); imgs[n].classList.add("on"); k = n; $$("button", dots).forEach((d, i) => d.setAttribute("aria-current", i === k)); };
+    const cap = $(".hero-cap", hero);
+    const go = (n) => { if (n === k || !ready(imgs[n])) return; imgs[k].classList.remove("on"); imgs[n].classList.add("on"); k = n; $$("button", dots).forEach((d, i) => d.setAttribute("aria-current", i === k)); if (cap) { cap.classList.add("swap"); setTimeout(() => { cap.textContent = imgs[k].dataset.cap || ""; cap.classList.toggle("none", !imgs[k].dataset.cap); cap.classList.remove("swap"); }, 260); } };
     if (imgs.length > 1 && ctl) {
       dots.innerHTML = imgs.map((_, i) => `<button type="button" aria-label="Photo ${i + 1} of ${imgs.length}" aria-current="${i === 0}"></button>`).join("");
       $$("button", dots).forEach((d, i) => d.addEventListener("click", () => { if (!ready(imgs[i])) { imgs[i].addEventListener("load", () => go(i), { once: true }); return; } go(i); }));
@@ -200,13 +255,25 @@
   $$(".year").forEach((year) => {
     const track = $(".year-track", year), head = $(".year-head", year);
     if (!track || !head) return;
-    const nav = document.createElement("div");
-    nav.className = "year-nav";
-    nav.innerHTML = `<button class="ibtn" type="button" aria-label="Earlier months"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 6l-6 6 6 6"/></svg></button><button class="ibtn" type="button" aria-label="Later months"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg></button>`;
-    head.append(nav);
-    const [prev, next] = $$("button", nav);
-    const step = () => { const m = $(".month", track); return m ? (m.offsetWidth + 18) * Math.max(1, Math.floor((track.clientWidth - 40) / (m.offsetWidth + 18))) : track.clientWidth * 0.8; };
-    const sync = () => { prev.disabled = track.scrollLeft < 8; next.disabled = track.scrollLeft > track.scrollWidth - track.clientWidth - 8; };
+    // The row sits in a reel: round arrows on either side, and a dot for each month below.
+    const reel = document.createElement("div");
+    reel.className = "reel";
+    track.before(reel); reel.append(track);
+    const arrow = (cls, label, d) => `<button class="reel-btn ${cls}" type="button" aria-label="${label}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="${d}"/></svg></button>`;
+    reel.insertAdjacentHTML("beforeend", arrow("prev", "Earlier months", "M15 6l-6 6 6 6") + arrow("next", "Later months", "M9 6l6 6-6 6"));
+    const [prev, next] = $$(".reel-btn", reel);
+    const cards = $$(".month", track);
+    const dots = document.createElement("div");
+    dots.className = "reel-dots"; dots.setAttribute("aria-hidden", "true");
+    dots.innerHTML = cards.map(() => "<i></i>").join("");
+    reel.after(dots);
+    const gap = () => parseFloat(getComputedStyle(track).columnGap) || 18;
+    const step = () => { const m = cards[0]; return m ? (m.offsetWidth + gap()) * Math.max(1, Math.floor((track.clientWidth - 40) / (m.offsetWidth + gap()))) : track.clientWidth * 0.8; };
+    const sync = () => {
+      prev.disabled = track.scrollLeft < 8; next.disabled = track.scrollLeft > track.scrollWidth - track.clientWidth - 8;
+      const w = cards[0] ? cards[0].offsetWidth + gap() : 1, i = next.disabled ? cards.length - 1 : Math.round(track.scrollLeft / w);
+      $$("i", dots).forEach((d, k) => d.classList.toggle("on", k === i));
+    };
     prev.addEventListener("click", () => track.scrollBy({ left: -step(), behavior: reduce ? "auto" : "smooth" }));
     next.addEventListener("click", () => track.scrollBy({ left: step(), behavior: reduce ? "auto" : "smooth" }));
     track.addEventListener("scroll", sync, { passive: true }); addEventListener("resize", sync); sync();
