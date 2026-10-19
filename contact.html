@@ -26,7 +26,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Figtree:wght@400..800&display=swap" rel="stylesheet" />
-<link rel="stylesheet" href="css/school.css?v=14" />
+<link rel="stylesheet" href="css/school.css?v=17" />
 <meta name="theme-color" content="#1C1F24" />
 <script>
 /* Before the first paint: fade photos in as they load, and hold headline motion until the fonts arrive. */
@@ -38,7 +38,7 @@
 </script>
 </head>
 <body data-page="contact">
-<script src="js/shell.js?v=10"></script>
+<script src="js/shell.js?v=12"></script>
 <main id="main">
   <header class="phero">
     <div class="wrap phero-in">
@@ -97,10 +97,25 @@
       <h2 class="t-l">Teach at St. John's</h2>
       <div>
         <p class="lead">We look for teachers who are good at their subject and better with children. Current openings are listed here as soon as they come up.</p>
-        <ul class="docs mt-m">
+        <ul class="docs mt-m" id="jobs">
           <li><div class="row"><div><b>No openings listed right now</b><span>Openings will appear here with the subject, level and how to apply.</span></div></div></li>
         </ul>
         <p class="mt-m">You can still send your CV to the school office at <span class="tbc" title="To be provided" data-fact="email">the school email</span>. Include the subject and classes you teach, your qualifications and your experience.</p>
+        <details class="app-chk mt-m" id="job-apply">
+          <summary>Apply here instead</summary>
+          <form class="form" data-form="job">
+            <div class="row2"><div class="field"><label for="j-name">Your name</label><input id="j-name" name="name" required autocomplete="name" /></div><div class="field"><label for="j-phone">Mobile number</label><input id="j-phone" name="phone" required inputmode="tel" autocomplete="tel" /></div></div>
+            <div class="field"><label for="j-post">For</label><select id="j-post" name="post"><option>Future openings</option></select></div>
+            <div class="field"><label for="j-exp">Subjects, classes and years of experience</label><textarea id="j-exp" name="exp" required placeholder="Physics for Classes XI and XII, 6 years; M.Sc., B.Ed."></textarea></div>
+            <div class="field"><label for="j-cv">CV <span class="opt">optional, PDF or Word</span></label><input id="j-cv" name="cv" type="file" accept=".pdf,.doc,.docx" /></div>
+            <button class="btn mt-m" type="submit" style="width:100%">Send application</button>
+          </form>
+          <div class="form done" hidden>
+            <div class="tick"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></div>
+            <h3 class="t-m">Application sent.</h3>
+            <p class="muted mt-s">The school office will call you if your profile fits an opening.</p>
+          </div>
+        </details>
       </div>
     </div>
   </section>
@@ -112,8 +127,8 @@
     </div>
   </section>
 </main>
-<script src="js/data.js?v=8"></script>
+<script src="js/data.js?v=9"></script>
 <script src="js/ai.js?v=8"></script>
-<script src="js/school.js?v=12"></script>
+<script src="js/school.js?v=15"></script>
 </body>
 </html>

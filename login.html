@@ -17,7 +17,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Figtree:wght@400..800&display=swap" rel="stylesheet" />
-<link rel="stylesheet" href="css/site.css?v=8" />
+<link rel="stylesheet" href="css/site.css?v=21" />
 <script>
 /* Before the first paint: fade photos in as they load. */
 (function (d) { d.documentElement.classList.add("js");
@@ -44,11 +44,17 @@
         <button class="role-tab" data-role="staff" role="tab" aria-selected="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="3" width="16" height="18" rx="2"/><circle cx="12" cy="10" r="3"/><path d="M7.5 17.5c.9-2 2.5-3 4.5-3s3.6 1 4.5 3"/></svg>Staff</button>
       </div>
 
+      <div class="lg-forms">
+      <!-- Parents sign in in two steps: the number first, then the OTP it was sent to. -->
       <form id="f-parent" data-for="parent">
-        <div class="field"><label for="p-phone">Registered mobile number</label><input id="p-phone" inputmode="tel" value="98765 43210" /></div>
-        <div class="field" id="otp-wrap" hidden><label>4-digit OTP sent by SMS</label><div class="otp"><input class="input" maxlength="1" inputmode="numeric" value="4" /><input class="input" maxlength="1" inputmode="numeric" value="7" /><input class="input" maxlength="1" inputmode="numeric" value="2" /><input class="input" maxlength="1" inputmode="numeric" value="9" /></div></div>
+        <div class="lg-step" id="p-step1">
+          <div class="field"><label for="p-phone">Registered mobile number</label><input id="p-phone" inputmode="tel" value="98765 43210" /></div>
+        </div>
+        <div class="lg-step" id="otp-wrap" hidden>
+          <div class="field"><label>4-digit OTP</label><div class="otp"><input class="input" maxlength="1" inputmode="numeric" value="4" aria-label="Digit 1" /><input class="input" maxlength="1" inputmode="numeric" value="7" aria-label="Digit 2" /><input class="input" maxlength="1" inputmode="numeric" value="2" aria-label="Digit 3" /><input class="input" maxlength="1" inputmode="numeric" value="9" aria-label="Digit 4" /></div>
+          <span class="hint">Sent by SMS to <b id="p-sent"></b>. <button type="button" class="link-btn" id="p-change">Change number</button></span></div>
+        </div>
         <button class="btn btn-primary btn-block" style="margin-top:22px" type="submit" id="p-btn">Send OTP</button>
-        <div class="field"><label for="p-kid">Demo: sign in as</label><select id="p-kid" class="input"></select><span class="hint">26 demo families: Aarav in VII-B, and five in every class from VIII to XII.</span></div>
       </form>
 
       <form id="f-staff" data-for="staff" hidden novalidate>
@@ -56,42 +62,77 @@
         <div class="field"><label for="s-pw">Password</label><input id="s-pw" type="password" autocomplete="current-password" value="demo-password" /></div>
         <p class="form-err" id="s-err" role="alert" hidden></p>
         <button class="btn btn-primary btn-block" style="margin-top:22px" type="submit">Sign in</button>
-        <div class="demo-ids">
+      </form>
+      </div>
+
+      <!-- Prototype helpers, folded away so the sign-in itself stays plain. -->
+      <details class="demo-box">
+        <summary>Demo sign-ins<span>Pick a family or a staff member</span></summary>
+        <div data-demo-for="parent">
+          <div class="field" style="margin-top:12px"><label for="p-kid">Sign in as</label><select id="p-kid" class="input"></select><span class="hint">26 demo families: Aarav in VII-B, and five in every class from VIII to XII.</span></div>
+        </div>
+        <div class="demo-ids" data-demo-for="staff" hidden>
           <span class="muted">Demo staff IDs. The ID decides what you see.</span>
           <button type="button" data-id="SJS-T-0412"><b>SJS-T-0412</b><span>Teacher · Ms. Neha Mathew, VII-B</span></button>
           <button type="button" data-id="SJS-A-0107"><b>SJS-A-0107</b><span>Office admin · Mrs. Anita Joseph</span></button>
           <button type="button" data-id="SJS-P-0001"><b>SJS-P-0001</b><span>Principal</span></button>
-          <label class="field" style="margin-top:6px"><span class="muted" style="font-size:13px">Or any teacher of Classes VIII to XII</span><select id="s-pick" class="input"><option value="">Pick a teacher…</option></select></label>
+          <label class="field" style="margin-top:6px"><span class="muted" style="font-size:13.5px">Or any teacher of Classes VIII to XII</span><select id="s-pick" class="input"><option value="">Pick a teacher…</option></select></label>
         </div>
-      </form>
-
-      <div class="card" style="margin-top:28px;background:var(--sunken);border-style:dashed">
-        <b style="font-size:14px">Try the full loop</b>
-        <p class="muted" style="font-size:13.5px;margin-top:6px">Sign in as the <b>teacher</b> (SJS-T-0412) and mark Aarav absent, then open the <b>parent</b> view — the absence shows up there straight away. Works best with the two views in side-by-side tabs.</p>
-      </div>
+        <div class="demo-loop">
+          <b>Try the full loop</b>
+          <p>Sign in as the <b>teacher</b> (SJS-T-0412) and mark Aarav absent, then open the <b>parent</b> view: the absence shows up there straight away. Works best with the two views in side-by-side tabs.</p>
+        </div>
+      </details>
     </div>
   </main>
 </div>
-<script src="js/data.js?v=8"></script>
+<script src="js/data.js?v=9"></script>
 <script src="js/classes.js?v=8"></script>
-<script src="js/demo.js"></script>
-<script src="js/common.js?v=7"></script>
+<script src="js/demo.js?v=2"></script>
+<script src="js/common.js?v=11"></script>
 <script>
 (function () {
   const tabs = document.querySelectorAll(".role-tab"), forms = document.querySelectorAll("form[data-for]");
-  const pick = (role) => {
-    tabs.forEach((t) => { const on = t.dataset.role === role; t.classList.toggle("on", on); t.setAttribute("aria-selected", on); });
-    forms.forEach((f) => (f.hidden = f.dataset.for !== role));
+  const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches, ease = "cubic-bezier(.16,1,.3,1)";
+  // The box eases to the new height while the new form slides in from its side.
+  const swap = (show, hideEls, dir) => {
+    const box = show.parentElement, h0 = box.offsetHeight;
+    hideEls.forEach((x) => (x.hidden = true)); show.hidden = false;
+    if (reduce || !box.animate) return;
+    const h1 = box.offsetHeight;
+    if (Math.abs(h1 - h0) > 2) { box.style.overflow = "clip"; box.animate([{ height: h0 + "px" }, { height: h1 + "px" }], { duration: 420, easing: ease }).finished.then(() => (box.style.overflow = ""), () => (box.style.overflow = "")); }
+    show.animate([{ opacity: 0, transform: `translateX(${dir * 24}px)` }, { opacity: 1, transform: "none" }], { duration: 400, easing: ease });
   };
-  tabs.forEach((t) => t.addEventListener("click", () => pick(t.dataset.role)));
-  const q = new URLSearchParams(location.search).get("role"); if (q) pick(q);
+  const box = document.querySelector(".role-tabs");
+  const pick = (role, animate) => {
+    tabs.forEach((t) => { const on = t.dataset.role === role; t.classList.toggle("on", on); t.setAttribute("aria-selected", on); });
+    box.dataset.on = role;
+    const f = [...forms].find((x) => x.dataset.for === role);
+    if (animate && f.hidden) swap(f, [...forms].filter((x) => x !== f), role === "staff" ? 1 : -1); else forms.forEach((x) => (x.hidden = x.dataset.for !== role));
+    document.querySelectorAll("[data-demo-for]").forEach((d) => (d.hidden = d.dataset.demoFor !== role));
+  };
+  tabs.forEach((t) => t.addEventListener("click", () => pick(t.dataset.role, true)));
+  const q = new URLSearchParams(location.search).get("role");
+  pick(["staff", "teacher", "principal"].includes(q) ? "staff" : "parent");
 
   let otpSent = false;
   document.getElementById("f-parent").addEventListener("submit", (e) => {
     e.preventDefault();
-    if (!otpSent) { otpSent = true; document.getElementById("otp-wrap").hidden = false; document.getElementById("p-btn").textContent = "Verify & sign in"; SJS.toast("OTP sent to 98765 43210"); return; }
+    if (!otpSent) {
+      otpSent = true;
+      const ph = document.getElementById("p-phone").value.trim() || "your number";
+      document.getElementById("p-sent").textContent = ph;
+      swap(document.getElementById("otp-wrap"), [document.getElementById("p-step1")], 1);
+      document.getElementById("p-btn").textContent = "Verify and sign in";
+      SJS.toast("OTP sent to " + ph);
+      setTimeout(() => document.querySelector(".otp input").focus(), 60);
+      return;
+    }
     SJS.openAs("kid:" + document.getElementById("p-kid").value);
   });
+  document.getElementById("p-change").addEventListener("click", () => { otpSent = false; swap(document.getElementById("p-step1"), [document.getElementById("otp-wrap")], -1); document.getElementById("p-btn").textContent = "Send OTP"; document.getElementById("p-phone").focus(); });
+  // OTP boxes: typing a digit moves on to the next box.
+  document.querySelectorAll(".otp input").forEach((inp, i, all) => inp.addEventListener("input", () => { if (inp.value && all[i + 1]) all[i + 1].focus(); }));
   // Demo pickers: every parent, and every teacher, grouped by class.
   const people = SJS.demoPeople(), esc = SJS.esc;
   let lastKid = "VII-B-1"; try { lastKid = localStorage.getItem("sjs-kid") || lastKid; } catch (e) {}
@@ -109,7 +150,6 @@
     try { localStorage.setItem("sjs-staff", id); } catch (err2) {}
     location.href = "staff.html?id=" + encodeURIComponent(id);
   });
-  if (q === "teacher" || q === "principal") pick("staff");
 })();
 </script>
 </body>

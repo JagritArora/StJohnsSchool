@@ -16,6 +16,9 @@
       const ps = S.PARENTS.filter((p) => p.sec.startsWith(g + "-"));
       if (ps.length) groups.push({ label: `Parents · Class ${g}`, items: ps.map((p) => { const k = S.kid(p.key); return [`kid:${p.key}`, `${p.parent} · parent of ${k.name}, ${k.label}`]; }) });
     });
+    // Brothers and sisters in other classes (Aarav's sister Ananya, in III-A).
+    const rest = S.PARENTS.filter((p) => !GR.some((g) => p.sec.startsWith(g + "-")));
+    if (rest.length) groups.push({ label: "Parents · other classes", items: rest.map((p) => { const k = S.kid(p.key); return [`kid:${p.key}`, `${p.parent} · parent of ${k.name}, ${k.label}`]; }) });
     return groups;
   };
   S.openAs = (v) => {

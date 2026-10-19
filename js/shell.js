@@ -31,8 +31,14 @@
   const I = (S.ICONS = {
     user: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg>',
     down: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 10l5 5 5-5"/></svg>',
-    x: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg>'
+    x: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg>',
+    search: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="6.5"/><path d="M16 16l4.5 4.5"/></svg>'
   });
+  // Larger text for anyone who wants it: the page content scales, the header stays put. Remembered per browser.
+  const ZOOMS = [["1", "A"], ["1.1", "A+"], ["1.2", "A++"]];
+  let zoom = "1"; try { zoom = localStorage.getItem("sjs-zoom") || "1"; } catch (e) {}
+  const setZoom = (z) => { zoom = z; root.style.setProperty("--zoom", z); root.classList.toggle("zoomed", z !== "1"); try { localStorage.setItem("sjs-zoom", z); } catch (e) {} $$(".tsz button").forEach((b) => b.setAttribute("aria-pressed", b.dataset.z === z)); };
+  setZoom(zoom);
 
   const hdr = document.createElement("header");
   hdr.className = "hdr";
@@ -45,6 +51,7 @@
         <nav class="lane lane-sec" aria-label="On this page" inert><button class="here" type="button" aria-haspopup="true" aria-expanded="false">${pageName}${I.down}</button><div class="chips"><i class="ind" aria-hidden="true"></i></div></nav>
       </div>
       <div class="hdr-act">
+        <button class="ibtn srch-btn" type="button" aria-label="Search the website" title="Search" aria-haspopup="dialog">${I.search}</button>
         <a class="ibtn hide-m" href="login.html" aria-label="Parent and staff login" title="Parent and staff login">${I.user}</a>
         <a class="btn btn--sm hide-m" href="admissions.html#enquire">Apply</a>
         <button class="menu-btn" type="button" aria-haspopup="true" aria-expanded="false"><span>Menu</span></button>
@@ -175,6 +182,61 @@
   const queue = () => { if (!queued) { queued = true; requestAnimationFrame(tick); } };
   addEventListener("scroll", queue, { passive: true });
   addEventListener("resize", () => { placeMain(); if (compact) placeSec(); queue(); });
+
+  // ---------- Search ----------
+  // Built on first use from the site's own pages: every section heading and question, with its text.
+  const tsz = () => `<div class="tsz-row"><span id="tsz-l">Text size</span><div class="tsz" role="group" aria-labelledby="tsz-l">${ZOOMS.map(([z, l]) => `<button type="button" data-z="${z}" aria-pressed="${z === zoom}">${l}</button>`).join("")}</div></div>`;
+  S.textSizeHTML = tsz;
+  document.addEventListener("click", (e) => { const b = e.target.closest(".tsz button"); if (b) setZoom(b.dataset.z); });
+  let srch = null, index = null, lastFocus = null;
+  const LIST = [...PAGES, ["disclosure", "Disclosure", "disclosure.html"], ["privacy", "Privacy", "privacy.html"]];
+  const clean = (t) => t.replace(/\s+/g, " ").trim();
+  // Text of an element with a space between blocks, so headings and paragraphs don't run together.
+  const textOf = (el) => { const w = el.ownerDocument.createTreeWalker(el, NodeFilter.SHOW_TEXT), out = []; while (w.nextNode()) { const p = w.currentNode.parentElement; if (!p.closest("script, style, .tbc-note")) out.push(w.currentNode.nodeValue); } return clean(out.join(" ")); };
+  const buildIndex = async () => {
+    if (index) return index;
+    const out = [], parser = new DOMParser();
+    await Promise.all(LIST.map(async ([, label, href]) => {
+      try {
+        const d = parser.parseFromString(await (await fetch(href)).text(), "text/html");
+        d.querySelectorAll("main section[id], main header").forEach((sec) => {
+          const h = sec.querySelector("h1, h2"); if (!h) return;
+          sec.querySelectorAll("details").forEach((q) => { const sm = q.querySelector("summary"); if (sm) out.push({ page: label, href: href + (sec.id ? "#" + sec.id : ""), head: clean(sm.textContent), text: textOf(q).replace(clean(sm.textContent), "").trim() }); });
+          const head = clean(h.textContent);
+          out.push({ page: label, href: href + (sec.id ? "#" + sec.id : ""), head, text: textOf(sec).replace(head, "").trim().slice(0, 1600) });
+        });
+      } catch (e) {}
+    }));
+    return (index = out);
+  };
+  const mark = (t, ws) => { let h = t.replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c])); ws.forEach((w) => { h = h.replace(new RegExp(`(${w.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")})`, "gi"), "<mark>$1</mark>"); }); return h; };
+  const run = async () => {
+    const q = $(".srch input", srch).value.trim().toLowerCase(), res = $(".srch-res", srch);
+    if (q.length < 2) { res.innerHTML = `<p class="srch-hint">Try fees, timings, uniform, transport or admission age.</p>`; return; }
+    const ws = q.split(/\s+/).filter((w) => w.length > 1), idx = await buildIndex();
+    const hits = idx.map((r) => { const h = r.head.toLowerCase(), t = r.text.toLowerCase(); let sc = 0; for (const w of ws) { if (h.includes(w)) sc += 3; else if (t.includes(w)) sc += 1; else return null; } return { r, sc }; }).filter(Boolean).sort((a, b) => b.sc - a.sc).slice(0, 8);
+    res.innerHTML = hits.length ? `<ul>${hits.map(({ r }) => { const t = r.text, i = Math.max(0, t.toLowerCase().indexOf(ws[0]) - 60), snip = (i ? "…" : "") + t.slice(i, i + 160) + (t.length > i + 160 ? "…" : ""); return `<li><a href="${r.href}"><small>${r.page}</small><b>${mark(r.head, ws)}</b><span>${mark(snip, ws)}</span></a></li>`; }).join("")}</ul>` : `<p class="srch-hint">Nothing on the website matches "${mark(q, [])}". The assistant at the bottom of the page can help, or call the office.</p>`;
+  };
+  const openSearch = () => {
+    if (!srch) {
+      srch = document.createElement("div"); srch.className = "srch"; srch.setAttribute("role", "dialog"); srch.setAttribute("aria-modal", "true"); srch.setAttribute("aria-label", "Search the website");
+      srch.innerHTML = `<div class="srch-card"><div class="srch-bar">${I.search}<input type="search" placeholder="Search the website" aria-label="Search the website" autocomplete="off" /><button class="ibtn srch-x" type="button" aria-label="Close search">${I.x}</button></div><div class="srch-res" aria-live="polite"></div>${tsz()}</div>`;
+      document.body.append(srch);
+      let t; $(".srch input", srch).addEventListener("input", () => { clearTimeout(t); t = setTimeout(run, 120); });
+      $(".srch input", srch).addEventListener("keydown", (e) => { if (e.key === "Enter") { const a = $(".srch-res a", srch); if (a) a.click(); } });
+      srch.addEventListener("click", (e) => { if (e.target === srch || e.target.closest(".srch-x") || e.target.closest(".srch-res a")) closeSearch(); });
+      buildIndex();
+    }
+    lastFocus = document.activeElement; setSheet(false);
+    srch.classList.add("open"); document.documentElement.classList.add("srch-on");
+    run(); setTimeout(() => $(".srch input", srch).focus(), 30);
+  };
+  const closeSearch = () => { if (!srch || !srch.classList.contains("open")) return; srch.classList.remove("open"); document.documentElement.classList.remove("srch-on"); if (lastFocus) lastFocus.focus({ preventScroll: true }); };
+  $(".srch-btn", hdr).addEventListener("click", openSearch);
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape") closeSearch();
+    if (e.key === "/" && !/^(INPUT|TEXTAREA|SELECT)$/.test(document.activeElement.tagName) && !document.activeElement.isContentEditable) { e.preventDefault(); openSearch(); }
+  });
 
   const start = () => { build(); tick(); hdr.classList.add("ready"); };
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", start); else start();

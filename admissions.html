@@ -25,7 +25,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Figtree:wght@400..800&display=swap" rel="stylesheet" />
-<link rel="stylesheet" href="css/school.css?v=14" />
+<link rel="stylesheet" href="css/school.css?v=17" />
 <meta name="theme-color" content="#1C1F24" />
 <script>
 /* Before the first paint: fade photos in as they load, and hold headline motion until the fonts arrive. */
@@ -37,7 +37,7 @@
 </script>
 </head>
 <body data-page="admissions">
-<script src="js/shell.js?v=10"></script>
+<script src="js/shell.js?v=12"></script>
 <main id="main">
   <header class="phero">
     <div class="wrap phero-in">
@@ -72,6 +72,11 @@
         <h2 class="t-l">Age criteria</h2>
         <p class="lead mt-m">Ages follow Haryana government and CBSE norms for the session. Haryana requires a child to be six for admission to Class I.</p>
         <p class="note mt-s">The exact cut-off date for 2027–28 will be confirmed in the admission notice.</p>
+        <form class="age-chk mt-m" id="age-chk">
+          <label for="age-dob">Check your child's age for 2027–28</label>
+          <div class="age-row"><input id="age-dob" type="date" required min="2008-01-01" aria-describedby="age-out" /><button class="btn btn--sm" type="submit">Check</button></div>
+          <p class="age-out" id="age-out" aria-live="polite"></p>
+        </form>
       </div>
       <div class="tbl-wrap">
         <table class="tbl">
@@ -159,14 +164,23 @@
           <div class="tick"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></div>
           <h3 class="t-m">Visit booked.</h3>
           <p class="muted mt-s" data-slot-msg></p>
+          <p class="ref-line mt-m" data-ref-msg></p>
           <p class="note mt-m">In this prototype, the enquiry now shows up in the <a class="textlink" href="staff.html?id=SJS-A-0107">school office view</a>.</p>
         </div>
+        <details class="app-chk mt-m" id="app-chk">
+          <summary>Already enquired? See where it stands</summary>
+          <form id="st-form">
+            <div class="row2"><div class="field"><label for="st-ref">Reference number</label><input id="st-ref" required placeholder="SJS-27-0000" autocomplete="off" /></div><div class="field"><label for="st-ph">Mobile number</label><input id="st-ph" required inputmode="tel" autocomplete="tel" /></div></div>
+            <button class="btn btn--ghost mt-s" type="submit">Check</button>
+          </form>
+          <div id="st-out" aria-live="polite"></div>
+        </details>
       </div>
     </div>
   </section>
 </main>
-<script src="js/data.js?v=8"></script>
+<script src="js/data.js?v=9"></script>
 <script src="js/ai.js?v=8"></script>
-<script src="js/school.js?v=12"></script>
+<script src="js/school.js?v=15"></script>
 </body>
 </html>

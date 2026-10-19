@@ -6,7 +6,7 @@
   let toastEl, toastT;
   S.toast = (msg) => {
     if (!toastEl) { toastEl = document.createElement("div"); toastEl.className = "toast"; toastEl.setAttribute("role", "status"); document.body.append(toastEl); }
-    toastEl.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg><span></span>';
+    toastEl.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path pathLength="1" d="M5 12.5l4.5 4.5L19 7.5"/></svg><span></span>';
     toastEl.querySelector("span").textContent = msg;
     requestAnimationFrame(() => toastEl.classList.add("show"));
     clearTimeout(toastT); toastT = setTimeout(() => toastEl.classList.remove("show"), 3400);
@@ -29,12 +29,52 @@
     const v = document.querySelector(`[data-view="${name}"]`);
     if (!v) return;
     document.querySelectorAll("[data-view]").forEach((x) => x.classList.toggle("active", x === v));
-    document.querySelectorAll("[data-go]").forEach((b) => b.classList.toggle("active", b.dataset.go === name));
+    // data-also lets one menu entry stay lit for a view it shares (Results and the datesheets).
+    document.querySelectorAll("[data-go]").forEach((b) => b.classList.toggle("active", b.dataset.go === name || (b.dataset.also || "").split(" ").includes(name)));
     if (push) history.replaceState(null, "", "#" + name);
     window.scrollTo({ top: 0, behavior: "instant" }); // jump, never glide, when switching tabs
     document.dispatchEvent(new CustomEvent("sjs:view", { detail: name }));
   };
   document.addEventListener("click", (e) => { const b = e.target.closest("[data-go]"); if (b) { e.preventDefault(); S.go(b.dataset.go); } });
+
+  // ---------- "i" buttons: the detail behind a number or a chart, in a small popup ----------
+  // <button class="info-btn" data-info="id" data-info-t="Title">. The element with that id stays
+  // hidden on the page and keeps being drawn into as usual; the popup shows a copy of it when opened.
+  let pop = null;
+  const reduceM = matchMedia("(prefers-reduced-motion: reduce)").matches;
+  const closeInfo = (back) => {
+    if (!pop || !pop.classList.contains("open")) return;
+    pop.classList.remove("open");
+    if (pop.opener) { pop.opener.setAttribute("aria-expanded", "false"); if (back) pop.opener.focus({ preventScroll: true }); }
+  };
+  const openInfo = (b) => {
+    if (!pop) { pop = document.createElement("div"); pop.className = "info-pop"; pop.setAttribute("role", "dialog"); document.body.append(pop); }
+    const src = document.getElementById(b.dataset.info), t = b.dataset.infoT || "More";
+    pop.setAttribute("aria-label", t);
+    pop.innerHTML = `<div class="info-h"><b>${S.esc(t)}</b><button type="button" class="info-x" aria-label="Close">×</button></div><div class="info-b">${src ? src.innerHTML.replace(/\sid="[^"]*"/g, "") : ""}</div>`;
+    pop.opener = b; b.setAttribute("aria-expanded", "true");
+    const phone = innerWidth < 640, r = b.getBoundingClientRect(), w = Math.min(380, innerWidth - 24);
+    pop.classList.toggle("sheet", phone);
+    if (!phone) {
+      pop.style.width = w + "px";
+      pop.style.left = Math.max(12, Math.min(r.right - w, innerWidth - w - 12)) + scrollX + "px";
+      // Opens below the button; upwards only when it would not fit below but does fit above.
+      const below = r.bottom + 10, h = Math.min(pop.scrollHeight, innerHeight * .6), up = below + h > innerHeight - 12 && r.top - 10 - h >= 12;
+      pop.style.top = (up ? r.top - 10 - h : below) + scrollY + "px";
+      pop.style.transformOrigin = `${r.left + r.width / 2 - (parseFloat(pop.style.left) - scrollX)}px ${up ? "100%" : "0"}`;
+    } else { pop.style.width = pop.style.left = pop.style.top = ""; }
+    requestAnimationFrame(() => pop.classList.add("open"));
+    setTimeout(() => pop.querySelector(".info-x").focus({ preventScroll: true }), reduceM ? 0 : 60);
+  };
+  document.addEventListener("click", (e) => {
+    const b = e.target.closest(".info-btn");
+    if (b) { e.preventDefault(); e.stopPropagation(); if (pop && pop.opener === b && pop.classList.contains("open")) closeInfo(true); else { closeInfo(false); openInfo(b); } return; }
+    if (pop && (e.target.closest(".info-x") || !pop.contains(e.target))) closeInfo(!!e.target.closest(".info-x"));
+  }, true);
+  document.addEventListener("keydown", (e) => { if (e.key === "Escape") closeInfo(true); });
+  addEventListener("resize", () => closeInfo(false));
+  document.addEventListener("sjs:view", () => closeInfo(false));
+  S.infoBtn = (id, title) => `<button type="button" class="info-btn" data-info="${id}" data-info-t="${S.esc(title)}" aria-label="More about ${S.esc(title.toLowerCase())}" aria-haspopup="dialog" aria-expanded="false">i</button>`;
   if (document.querySelector("[data-view]")) {
     const first = document.querySelector("[data-view]").dataset.view;
     S.go(location.hash.slice(1) && document.querySelector(`[data-view="${location.hash.slice(1)}"]`) ? location.hash.slice(1) : first, false);
@@ -69,6 +109,44 @@
   S.$$ = (sel, root = document) => [...root.querySelectorAll(sel)];
   S.esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
   S.greet = () => { const h = new Date().getHours(); return h < 12 ? "Good morning" : h < 17 ? "Good afternoon" : "Good evening"; };
+})();
+
+/* Motion that answers a change: numbers count up the first time a screen shows them, a
+   confirmed action ticks (and the button that did it gives one soft ring), and a row that
+   was just added lands in its list. Nothing loops; reduced motion turns all of it off. */
+(function () {
+  const S = window.SJS; if (!S || !S.toast) return;
+  const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
+  const NUM = /\d[\d,]*(\.\d+)?/;
+  const count = (el) => {
+    el._counted = true;
+    const tn = [...el.childNodes].find((n) => n.nodeType === 3 && NUM.test(n.nodeValue)); if (!tn) return;
+    const raw = tn.nodeValue, m = raw.match(NUM), end = parseFloat(m[0].replace(/,/g, "")), dp = m[1] ? m[1].length - 1 : 0;
+    if (!(end >= 3)) return;
+    const fmt = (v) => (m[0].includes(",") ? v.toLocaleString("en-IN", { minimumFractionDigits: dp, maximumFractionDigits: dp }) : v.toFixed(dp));
+    const t0 = performance.now(), dur = 800;
+    const step = (t) => { const k = Math.min(1, (t - t0) / dur); tn.nodeValue = k < 1 ? raw.replace(m[0], fmt(end * (1 - Math.pow(1 - k, 3)))) : raw; if (k < 1) requestAnimationFrame(step); };
+    tn.nodeValue = raw.replace(m[0], fmt(0)); requestAnimationFrame(step);
+  };
+  const countIn = () => { if (reduce) return; document.querySelectorAll("[data-view].active .stat .num, [data-view].active .hm-n").forEach((el) => { if (!el._counted && el.offsetParent && !el.closest(".info-src")) count(el); }); };
+  document.addEventListener("sjs:view", () => setTimeout(countIn, 40));
+  setTimeout(countIn, 40);
+
+  let lastBtn = null, lastAt = 0;
+  document.addEventListener("click", (e) => { const b = e.target.closest && e.target.closest("button, .btn"); if (b) { lastBtn = b; lastAt = Date.now(); } }, true);
+  const DONE = (S.DONE_RE = /^(Saved|Sent|Posted|Published|Signed|Approved|Assigned|Added|Handed|Booked|Marked|Leave approved|Leave request sent|Paid|Payment received|Undone)|It's live/);
+  const restart = (el, cls) => { el.classList.remove(cls); void el.offsetWidth; el.classList.add(cls); };
+  const plain = S.toast;
+  S.toast = (msg, o = {}) => {
+    plain(msg);
+    const el = document.querySelector(".toast"), done = o.done !== undefined ? o.done : DONE.test(msg);
+    el.classList.toggle("note", !done);
+    if (!done) return;
+    restart(el, "tick");
+    const b = lastBtn;
+    if (!reduce && b && b.isConnected && Date.now() - lastAt < 1500) { restart(b, "ok-pulse"); setTimeout(() => b.classList.remove("ok-pulse"), 900); }
+  };
+  S.landed = (el) => { if (!el || reduce) return; restart(el, "landed"); setTimeout(() => el.classList.remove("landed"), 1700); };
 })();
 
 /* Pointer light: cards with a glow layer read --mx/--my from here. */

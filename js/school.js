@@ -19,7 +19,7 @@
       <div><h4>Families</h4><ul><li><a href="admissions.html">Admissions</a></li><li><a href="parents.html">Parent corner</a></li><li><a href="news.html">News and events</a></li><li><a href="login.html">Parent app login</a></li></ul></div>
       <div><h4>Information</h4><ul><li><a href="disclosure.html">Mandatory public disclosure</a></li><li><a href="contact.html">Contact</a></li><li><a href="contact.html#careers">Careers</a></li><li><a href="privacy.html">Privacy</a></li><li><a href="plan.html">About this prototype</a></li></ul></div>
     </div>
-    <div class="wrap ftr-base"><span>© ${new Date().getFullYear()} St. John's School, Faridabad</span><span class="tbc" title="Links to be added">Facebook, Instagram, YouTube</span></div>`;
+    <div class="wrap ftr-base"><span>© ${new Date().getFullYear()} St. John's School, Faridabad</span><span class="tbc" title="Links to be added">Facebook, Instagram, YouTube</span>${S.textSizeHTML ? S.textSizeHTML() : ""}</div>`;
   document.body.append(ftr);
 
   // ---------- Content from the principal's Website tab ----------
@@ -185,16 +185,41 @@
     lb.className = "lb"; lb.setAttribute("role", "dialog"); lb.setAttribute("aria-label", "Photo");
     lb.innerHTML = `<button class="ibtn" type="button" aria-label="Close">${I.x}</button><button class="ibtn nav-l" type="button" aria-label="Previous photo">‹</button><button class="ibtn nav-r" type="button" aria-label="Next photo">›</button><figure><img alt="" /><figcaption></figcaption></figure>`;
     document.body.append(lb);
-    let cur = 0;
+    let cur = 0, closeAnim = null;
     const visible = () => items.filter((i) => !i.classList.contains("out"));
     const lbImg = $("img", lb);
     lbImg.addEventListener("load", () => (lbImg.style.opacity = 1));
-    const show = (i) => { const v = visible(); cur = (i + v.length) % v.length; const it = v[cur]; const src = $("img", it).src; if (lbImg.src !== src) { lbImg.style.opacity = 0; lbImg.src = src; } lbImg.alt = $("img", it).alt; $("figcaption", lb).textContent = $("figcaption", it)?.textContent || ""; };
-    items.forEach((it) => it.addEventListener("click", () => { show(visible().indexOf(it)); lb.classList.add("open"); $(".ibtn", lb).focus(); }));
-    lb.addEventListener("click", (e) => { if (e.target === lb || e.target.closest(".ibtn:not(.nav-l):not(.nav-r)")) lb.classList.remove("open"); });
+    // quick: the thumbnail's own file, already on screen, so the zoom starts at once; the full photo swaps in when it arrives.
+    const show = (i, quick) => { const v = visible(); cur = (i + v.length) % v.length; const it = v[cur]; const src = $("img", it).src; const first = quick || src;
+      if (lbImg.src !== first) { lbImg.style.opacity = quick ? 1 : 0; lbImg.src = first; }
+      if (quick && quick !== src) { const pre = new Image(); pre.onload = () => { if (visible()[cur] === it) lbImg.src = src; }; pre.src = src; }
+      lbImg.alt = $("img", it).alt; $("figcaption", lb).textContent = $("figcaption", it)?.textContent || ""; };
+    // The photo grows out of its thumbnail and shrinks back into it (FLIP: measure both, animate the difference).
+    lb.classList.add("fx");
+    const flip = (it, opening) => {
+      const a = $("img", it).getBoundingClientRect(), b = lbImg.getBoundingClientRect();
+      if (reduce || !a.width || !b.width || a.bottom < 0 || a.top > innerHeight) return null;
+      const k = a.width / b.width, at = { transform: `translate(${a.left + a.width / 2 - b.left - b.width / 2}px, ${a.top + a.height / 2 - b.top - b.height / 2}px) scale(${k})`, borderRadius: `${16 / k}px` }, home = { transform: "none", borderRadius: "14px" };
+      return lbImg.animate(opening ? [at, home] : [home, at], { duration: opening ? 520 : 380, easing: "cubic-bezier(.2,.8,.2,1)", fill: opening ? "none" : "forwards" });
+    };
+    const open = async (it) => {
+      if (closeAnim) { closeAnim.cancel(); closeAnim = null; }
+      const th = $("img", it); show(visible().indexOf(it), th.currentSrc || th.src);
+      try { await lbImg.decode(); } catch (e) {}
+      lb.classList.add("open"); flip(it, true); $(".ibtn", lb).focus({ preventScroll: true });
+    };
+    const close = () => {
+      if (!lb.classList.contains("open")) return;
+      const it = visible()[cur];
+      closeAnim = (it && flip(it, false)) || lbImg.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 250, fill: "forwards" });
+      lb.classList.remove("open");
+      if (it) it.focus({ preventScroll: true });
+    };
+    items.forEach((it) => it.addEventListener("click", () => open(it)));
+    lb.addEventListener("click", (e) => { if (e.target === lb || e.target.closest(".ibtn:not(.nav-l):not(.nav-r)")) close(); });
     $(".nav-l", lb).addEventListener("click", () => show(cur - 1));
     $(".nav-r", lb).addEventListener("click", () => show(cur + 1));
-    document.addEventListener("keydown", (e) => { if (!lb.classList.contains("open")) return; if (e.key === "Escape") lb.classList.remove("open"); if (e.key === "ArrowLeft") show(cur - 1); if (e.key === "ArrowRight") show(cur + 1); });
+    document.addEventListener("keydown", (e) => { if (!lb.classList.contains("open")) return; if (e.key === "Escape") close(); if (e.key === "ArrowLeft") show(cur - 1); if (e.key === "ArrowRight") show(cur + 1); });
   }
 
   // ---------- Campus-visit slots: next eight working days ----------
@@ -212,7 +237,15 @@
     const kind = f.dataset.form, val = (n) => (f.elements[n] ? f.elements[n].value.trim() : "");
     if (kind === "enquiry" && S.state) {
       const slot = $(".slot[aria-pressed='true']", f);
-      S.state.enquiries.unshift({ child: val("child"), cls: val("cls"), parent: val("parent"), phone: val("phone"), note: [slot ? "Visit " + S.fmt(slot.dataset.date) : "", val("note")].filter(Boolean).join(" — "), at: S.todayKey, status: slot ? "Visit booked" : "New", fresh: true });
+      const en = { child: val("child"), cls: val("cls"), parent: val("parent"), phone: val("phone"), note: [slot ? "Visit " + S.fmt(slot.dataset.date) : "", val("note")].filter(Boolean).join(" — "), at: S.todayKey, status: slot ? "Visit booked" : "New", fresh: true };
+      en.ref = S.enqRef(en);
+      S.state.enquiries.unshift(en);
+      S.save();
+      const rl = $("[data-ref-msg]"); if (rl) rl.innerHTML = `Your reference number is <b>${esc(en.ref)}</b>. Keep it to see where your application stands, below.`;
+    }
+    if (kind === "job" && S.state) {
+      const cv = f.elements.cv && f.elements.cv.files[0];
+      S.state.applications.push({ name: val("name"), phone: val("phone"), post: val("post"), exp: val("exp"), cv: cv ? cv.name : "", at: S.todayKey });
       S.save();
     }
     const done = f.nextElementSibling;
@@ -222,6 +255,82 @@
       f.hidden = true; done.hidden = false; done.scrollIntoView({ behavior: reduce ? "auto" : "smooth", block: "center" });
     } else S.toast("Sent. The office will get back to you.");
   }));
+
+  // ---------- Admissions: the age check ----------
+  // Age on 1 April of the admission session, against the bands in the table above it.
+  const ageF = $("#age-chk");
+  if (ageF && S.state) ageF.addEventListener("submit", (e) => {
+    e.preventDefault();
+    const v = $("#age-dob").value; if (!v) return;
+    const a = S.state.site.adm, yr = parseInt(a.session, 10) || 2027, on = new Date(yr, 3, 1), dob = new Date(v + "T00:00");
+    let m = (on.getFullYear() - dob.getFullYear()) * 12 + on.getMonth() - dob.getMonth(); if (on.getDate() < dob.getDate()) m--;
+    const y = Math.floor(m / 12), mo = m % 12, age = `${y} year${y === 1 ? "" : "s"}${mo ? ` ${mo} month${mo === 1 ? "" : "s"}` : ""}`;
+    const fit = y < 3 ? null : y < 4 ? "Nursery" : y < 5 ? "LKG" : y < 6 ? "UKG" : y < 7 ? "Class I" : "older";
+    let msg = `On 1 April ${yr}, your child will be <b>${age}</b>. `;
+    if (m < 0) msg = "That date is after the session begins. Please check the date of birth.";
+    else if (!fit) msg += `That is under the age for Nursery in ${esc(a.session)}, so the year after is the one to apply for.`;
+    else if (fit === "older") msg += `Class I needs six years or more, so the class depends on the last class your child passed. Choose "Other class" in the visit form and the office will tell you if a seat is free.`;
+    else msg += `That fits <b>${fit}</b>${fit === "Class I" ? "" : ", by the age bands above, which the school is still to confirm"}. ` + (a.open && a.classes.includes(fit) ? `Admission to ${fit} is open now.` : `Seats in ${fit} open only when a family moves; ask in the visit form.`);
+    $("#age-out").innerHTML = msg;
+  });
+
+  // ---------- Admissions: where an enquiry stands ----------
+  // The reference from the visit form plus the mobile number. (The demo's numbers are masked,
+  // so only their last two digits are compared.)
+  const stF = $("#st-form");
+  if (stF && S.state) stF.addEventListener("submit", (e) => {
+    e.preventDefault();
+    const ref = $("#st-ref").value.trim().toUpperCase(), ph = $("#st-ph").value.replace(/\D/g, "");
+    const en = S.state.enquiries.find((x) => S.enqRef(x) === ref), out = $("#st-out");
+    if (!en || ph.length < 10 || ph.slice(-2) !== en.phone.replace(/\D/g, "").slice(-2)) { out.innerHTML = `<p class="st-bad">No enquiry matches that reference and mobile number. Check both, or call the office.</p>`; return; }
+    const STEPS = [["New", "Enquiry received"], ["Called", "The office called you"], ["Visit booked", "Campus visit booked"], ["Form given", "Admission form given"], ["Admitted", "Admitted"]];
+    const i = STEPS.findIndex(([k]) => k === en.status);
+    out.innerHTML = `<p class="st-h"><b>${esc(en.child)}</b> · ${esc(en.cls)}</p><ol class="st-steps">${STEPS.map(([, l], k) => `<li class="${k < i ? "st-done" : k === i ? "st-now" : ""}">${l}</li>`).join("")}</ol>`;
+  });
+
+  // ---------- Parent corner: the calendar, with "add to my phone" ----------
+  const ics = (events, name) => {
+    const d = (k) => k.replace(/-/g, ""), next = (k) => { const x = new Date(k + "T00:00"); x.setDate(x.getDate() + 1); return d(S.iso(x)); };
+    const body = ["BEGIN:VCALENDAR", "VERSION:2.0", "PRODID:-//St. John's School//EN", ...events.flatMap((e, i) => ["BEGIN:VEVENT", `UID:${d(e.date)}-${i}-sjs@stjohns`, `DTSTAMP:${d(S.todayKey)}T000000Z`, `DTSTART;VALUE=DATE:${d(e.date)}`, `DTEND;VALUE=DATE:${next(e.end || e.date)}`, `SUMMARY:${e.title.replace(/[,;]/g, "\\$&")}`, "END:VEVENT"]), "END:VCALENDAR"].join("\r\n");
+    const a = document.createElement("a"); a.href = URL.createObjectURL(new Blob([body], { type: "text/calendar" })); a.download = name + ".ics"; document.body.append(a); a.click(); a.remove();
+  };
+  const calL = $("#cal-list");
+  if (calL && S.CALENDAR) {
+    const ev = S.CALENDAR.map(([d, t]) => ({ date: d, title: t, kind: /PTM|teacher/.test(t) ? "Meeting" : /Unit|Half|board|Final|Results/i.test(t) ? "Exam" : "School" }));
+    const hs = Object.keys(S.HOLIDAYS).sort();
+    for (let i = 0; i < hs.length;) { const name = S.HOLIDAYS[hs[i]]; let j = i; while (j + 1 < hs.length && S.HOLIDAYS[hs[j + 1]] === name && (new Date(hs[j + 1]) - new Date(hs[j])) / 864e5 <= 3) j++; ev.push({ date: hs[i], end: hs[j], title: name, kind: "Holiday" }); i = j + 1; }
+    const up = ev.filter((e) => (e.end || e.date) >= S.todayKey).sort((a, b) => (a.date < b.date ? -1 : 1));
+    // The next six show; the rest of the year folds under one button.
+    const more = up.length - 6;
+    calL.insertAdjacentHTML("afterend", more > 0 ? `<button class="cal-more" type="button" aria-expanded="false">Show ${more} more dates</button>` : "");
+    const mb = calL.nextElementSibling && calL.nextElementSibling.classList.contains("cal-more") ? calL.nextElementSibling : null;
+    if (mb) { calL.classList.add("folded"); mb.addEventListener("click", () => { const o = calL.classList.toggle("folded"); mb.setAttribute("aria-expanded", !o); mb.textContent = o ? `Show ${more} more dates` : "Show fewer"; }); }
+    calL.innerHTML = up.map((e, k) => `<li class="k-${e.kind.toLowerCase()}"><time datetime="${e.date}"><b>${new Date(e.date + "T00:00").getDate()}</b>${S.fmt(e.date, { month: "short" })}</time><div><b>${esc(e.title)}</b><span>${e.kind} · ${S.fmt(e.date, { weekday: "long" })}${e.end && e.end !== e.date ? `, until ${S.fmt(e.end, { day: "numeric", month: "short" })}` : ""}</span></div><button class="cal-add" type="button" data-cal="${k}" aria-label="Add ${esc(e.title)} to my calendar">Add</button></li>`).join("");
+    calL.addEventListener("click", (e) => { const b = e.target.closest("[data-cal]"); if (b) { const x = up[+b.dataset.cal]; ics([x], x.title.toLowerCase().replace(/[^a-z0-9]+/g, "-")); } });
+    $("#cal-all").addEventListener("click", () => ics(up, "st-johns-2026-27"));
+  }
+
+  // ---------- Campus: find your bus stop ----------
+  const rtQ = $("#rt-q");
+  if (rtQ && site) {
+    const stops = (site.routes || "").split("\n").map((l) => l.split(/\s*[·|]\s*/)).filter((a) => a[0] && a[0].trim());
+    const out = $("#rt-out");
+    const show = () => {
+      const q = rtQ.value.trim().toLowerCase();
+      if (!stops.length) { out.innerHTML = `<p class="note"><span class="tbc" title="To be provided by the school">Stops are to be added by the transport office.</span> Until then, the office tells you the route when you apply.</p>`; return; }
+      if (!q) { out.innerHTML = ""; return; }
+      const hit = stops.filter((a) => a.join(" ").toLowerCase().includes(q));
+      out.innerHTML = hit.length ? `<ul class="rt-list">${hit.slice(0, 6).map((a) => `<li><b>${esc(a[0])}</b><span>${esc(a[1] || "")}</span><small>${esc(a[2] || "")}</small></li>`).join("")}</ul>` : `<p class="note">No stop matches "${esc(rtQ.value.trim())}". The office can tell you the nearest one.</p>`;
+    };
+    rtQ.addEventListener("input", show); $("#rt-find").addEventListener("submit", (e) => { e.preventDefault(); show(); }); show();
+  }
+
+  // ---------- Contact: openings from the Website tab ----------
+  const jobsEl = $("#jobs");
+  if (jobsEl && site && site.jobs.length) {
+    jobsEl.innerHTML = site.jobs.map((j) => `<li><div class="row"><div><b>${esc(j.title)}</b><span>${esc(j.text)} Apply by ${S.fmt(j.by, { day: "numeric", month: "long", year: "numeric" })}.</span></div></div></li>`).join("");
+    $("#j-post").innerHTML = site.jobs.map((j) => `<option>${esc(j.title)}</option>`).join("") + "<option>Future openings</option>";
+  }
 
   // ---------- AI assistant ----------
   if (S.mountAI) { S.mountAI("public"); $$("[data-ask]").forEach((b) => b.addEventListener("click", () => S.ask(b.dataset.ask, b.textContent))); }

@@ -25,7 +25,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Figtree:wght@400..800&display=swap" rel="stylesheet" />
-<link rel="stylesheet" href="css/school.css?v=14" />
+<link rel="stylesheet" href="css/school.css?v=17" />
 <meta name="theme-color" content="#1C1F24" />
 <script>
 /* Before the first paint: fade photos in as they load, and hold headline motion until the fonts arrive. */
@@ -37,7 +37,7 @@
 </script>
 </head>
 <body data-page="campus">
-<script src="js/shell.js?v=10"></script>
+<script src="js/shell.js?v=12"></script>
 <main id="main">
   <header class="phero">
     <div class="wrap phero-in">
@@ -112,6 +112,11 @@
       <div>
         <h2 class="t-l">School transport</h2>
         <p class="lead mt-m">School buses cover routes across Faridabad. With the new parent app, families can follow their child's bus stop by stop and get a message two stops before home.</p>
+        <form class="rt-find mt-m" id="rt-find" role="search">
+          <label for="rt-q">Find your stop</label>
+          <input id="rt-q" type="search" placeholder="Your sector or area, like Sector 9" autocomplete="off" />
+          <div class="rt-out" id="rt-out" aria-live="polite"></div>
+        </form>
         <p class="mt-m"><a class="btn" href="login.html?role=parent">See the bus in the parent app</a></p>
       </div>
       <div class="tbl-wrap">
@@ -127,8 +132,8 @@
     </div>
   </section>
 </main>
-<script src="js/data.js?v=8"></script>
+<script src="js/data.js?v=9"></script>
 <script src="js/ai.js?v=8"></script>
-<script src="js/school.js?v=12"></script>
+<script src="js/school.js?v=15"></script>
 </body>
 </html>

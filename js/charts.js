@@ -9,10 +9,50 @@
   let saved = {}; try { saved = JSON.parse(localStorage.getItem(KEY) || "{}") || {}; } catch (e) {}
   S.vt = {};
 
+  // A soft thumb slides behind the chosen option; the card eases to the new
+  // pane's height and the pane slides in from the side it was picked from.
+  const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
+  const thumb = (bar) => {
+    if (bar.classList.contains("lv-seg")) return; // the importance picker keeps its own colours
+    let th = bar.querySelector(":scope > .seg-th");
+    if (!th) { th = document.createElement("i"); th.className = "seg-th"; th.setAttribute("aria-hidden", "true"); bar.prepend(th); }
+    const b = bar.querySelector("button[data-v].on, button.on");
+    if (!b || !b.offsetWidth) { if (bar.classList.contains("th-ok")) bar.classList.remove("th-ok"); return; }
+    // Long toggles wrap on phones, so the thumb follows the row as well as the column.
+    const w = b.offsetWidth + "px", hh = b.offsetHeight + "px", x = `translate(${b.offsetLeft}px, ${b.offsetTop}px)`;
+    if (th.style.width !== w) th.style.width = w;
+    if (th.style.height !== hh) th.style.height = hh;
+    if (th.style.transform !== x) th.style.transform = x;
+    if (!bar.classList.contains("th-ok")) requestAnimationFrame(() => bar.classList.add("th-ok"));
+  };
+  S.segThumbs = (root = document) => root.querySelectorAll(".seg").forEach(thumb);
+  S.paneSwap = (show, hide, dir) => {
+    const box = show.parentElement, h0 = box.offsetHeight;
+    hide.forEach((p) => (p.hidden = true)); show.hidden = false;
+    if (reduce || !box.animate) return;
+    const h1 = box.offsetHeight;
+    if (Math.abs(h1 - h0) > 2) { const was = box.style.overflow; box.style.overflow = "clip"; box.animate([{ height: h0 + "px" }, { height: h1 + "px" }], { duration: 420, easing: "cubic-bezier(.16,1,.3,1)" }).finished.then(() => (box.style.overflow = was), () => (box.style.overflow = was)); }
+    show.animate([{ opacity: 0, transform: `translateX(${dir * 22}px)` }, { opacity: 1, transform: "none" }], { duration: 380, easing: "cubic-bezier(.16,1,.3,1)" });
+  };
+  addEventListener("resize", () => S.segThumbs());
+  // Toggles that pages drive themselves (filters, exam pickers) follow along too.
+  let segQ = false;
+  const segSoon = () => { if (!segQ) { segQ = true; requestAnimationFrame(() => { segQ = false; S.segThumbs(); }); } };
+  new MutationObserver((ms) => { if (ms.some((m) => m.target.closest && m.target.closest(".seg") && !(m.target.classList && m.target.classList.contains("seg-th")))) segSoon(); }).observe(document.documentElement, { subtree: true, childList: true, attributes: true, attributeFilter: ["class", "hidden"] });
+  addEventListener("load", segSoon); if (document.fonts) document.fonts.ready.then(segSoon);
+  document.addEventListener("sjs:view", () => requestAnimationFrame(() => S.segThumbs()));
+
   function setView(key, v, remember) {
+    const bars = document.querySelectorAll(`[data-vt="${key}"]`);
+    const opts = bars[0] ? [...bars[0].querySelectorAll("button[data-v]")].map((b) => b.dataset.v) : [];
+    const dir = Math.sign(opts.indexOf(v) - opts.indexOf(S.vt[key])) || 1;
     S.vt[key] = v;
-    document.querySelectorAll(`[data-vt="${key}"] button[data-v]`).forEach((b) => { const on = b.dataset.v === v; b.classList.toggle("on", on); b.setAttribute("aria-pressed", on); });
-    document.querySelectorAll(`[data-vp="${key}"]`).forEach((p) => (p.hidden = p.dataset.v !== v));
+    bars.forEach((bar) => { bar.querySelectorAll("button[data-v]").forEach((b) => { const on = b.dataset.v === v; b.classList.toggle("on", on); b.setAttribute("aria-pressed", on); }); thumb(bar); });
+    const panes = [...document.querySelectorAll(`[data-vp="${key}"]`)];
+    if (remember) {
+      // Panes are grouped by their parent, so a key can drive panes in more than one card.
+      new Set(panes.map((p) => p.parentElement)).forEach((box) => { const mine = panes.filter((p) => p.parentElement === box), show = mine.find((p) => p.dataset.v === v); if (show && show.hidden) S.paneSwap(show, mine.filter((p) => p !== show), dir); else mine.forEach((p) => (p.hidden = p.dataset.v !== v)); });
+    } else panes.forEach((p) => (p.hidden = p.dataset.v !== v));
     if (remember) { saved[key] = v; try { localStorage.setItem(KEY, JSON.stringify(saved)); } catch (e) {} }
     document.dispatchEvent(new CustomEvent("sjs:vt", { detail: { key, v } }));
   }
@@ -98,7 +138,7 @@
     const [li, lv] = pts[pts.length - 1];
     return `<svg class="spark" viewBox="0 0 ${w} ${h}" width="${w}" height="${h}" style="--s:${tone}" role="img" aria-label="${esc(label)}">` +
       (ref !== null ? `<line class="sp-ref" x1="0" x2="${w}" y1="${Y(ref).toFixed(1)}" y2="${Y(ref).toFixed(1)}" />` : "") +
-      `<path class="sp-area" d="${d}L${X(li).toFixed(1)},${h}L${X(pts[0][0]).toFixed(1)},${h}Z" /><path class="sp-line" d="${d}" /><circle class="sp-dot" cx="${X(li).toFixed(1)}" cy="${Y(lv).toFixed(1)}" r="2.8" /></svg>`;
+      `<path class="sp-area" d="${d}L${X(li).toFixed(1)},${h}L${X(pts[0][0]).toFixed(1)},${h}Z" /><path class="sp-line" pathLength="1" d="${d}" /><circle class="sp-dot" cx="${X(li).toFixed(1)}" cy="${Y(lv).toFixed(1)}" r="2.8" /></svg>`;
   };
   // A class at a glance: one dot per student along the marks line. Dots that would
   // touch move up or down, so every student stays visible.

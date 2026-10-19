@@ -297,7 +297,7 @@
   S.siteSeed = () => ({
     adm: { open: true, session: "2027–28", classes: ["Nursery", "Class XI"] },
     slides: S.LIBRARY.map((p, i) => ({ src: p.src, alt: p.alt, on: i < 6, pos: "50% 50%" })),
-    gallery: [], facts: {}, log: [], undo: []
+    gallery: [], facts: {}, log: [], undo: [], routes: "", jobs: []
   });
   const listJoin = (a, and) => a.length < 2 ? a.join("") : a.slice(0, -1).join(", ") + " " + and + " " + a[a.length - 1];
   // The admissions wording, from the Website tab's settings.
@@ -317,13 +317,18 @@
       lead: `Admissions for ${a.session} are closed for now. Here is how it works, so you are ready when registration opens.`
     };
   };
+  // An enquiry's reference number, for checking its status on the website.
+  S.enqRef = (e) => e.ref || "SJS-27-" + String(1000 + ([...(e.child + e.phone)].reduce((a, ch) => (Math.imul(a, 31) + ch.charCodeAt(0)) >>> 0, 7) % 9000));
   S.photo = (src) => (src && src.startsWith("up:") ? (S.state.photos[src.slice(3)] || "") : src);
 
-  const PKEY = phase === "mid" ? KEY : KEY + ":" + phase, SHARED = ["site", "photos"];
+  const PKEY = phase === "mid" ? KEY : KEY + ":" + phase, SHARED = ["site", "photos", "applications"];
   const read = (k) => { try { return JSON.parse(localStorage.getItem(k)); } catch (e) { return null; } };
   const fix = (st) => {
     if (!st.site) st.site = S.siteSeed();
     if (!st.photos) st.photos = {};
+    if (st.site.routes == null) st.site.routes = "";
+    if (!st.site.jobs) st.site.jobs = [];
+    if (!st.applications) st.applications = [];
     // Older demo data kept VII-B's Unit Test 2 marks on their own.
     if (!st.entries) { st.entries = {}; if (st.ut2 && Object.keys(st.ut2).length) st.entries.Mathematics = { marks: st.ut2, published: !!st.ut2Published }; }
     ["secs", "threads", "kidFees", "checks"].forEach((k) => (st[k] = st[k] || {}));

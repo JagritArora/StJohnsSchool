@@ -25,7 +25,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Figtree:wght@400..800&display=swap" rel="stylesheet" />
-<link rel="stylesheet" href="css/school.css?v=14" />
+<link rel="stylesheet" href="css/school.css?v=17" />
 <meta name="theme-color" content="#1C1F24" />
 <script>
 /* Before the first paint: fade photos in as they load, and hold headline motion until the fonts arrive. */
@@ -37,7 +37,7 @@
 </script>
 </head>
 <body data-page="parents">
-<script src="js/shell.js?v=10"></script>
+<script src="js/shell.js?v=12"></script>
 <main id="main">
   <header class="phero">
     <div class="wrap phero-in">
@@ -51,7 +51,7 @@
     </div>
   </header>
 
-  <nav class="subnav" aria-label="On this page"><div class="wrap"><a href="#timings">Timings</a><a href="#uniform">Uniform</a><a href="#fees">Fees and payment</a><a href="#requests">Requests</a><a href="#downloads">Downloads</a><a href="#app">The parent app</a></div></nav>
+  <nav class="subnav" aria-label="On this page"><div class="wrap"><a href="#timings">Timings</a><a href="#uniform">Uniform</a><a href="#fees">Fees and payment</a><a href="#calendar">Calendar</a><a href="#requests">Requests</a><a href="#downloads">Downloads</a><a href="#app">The parent app</a></div></nav>
 
   <section class="sec" id="timings">
     <div class="wrap split">
@@ -94,6 +94,18 @@
           <li><b>Get the receipt</b><span>A receipt arrives at once, on WhatsApp and email, and stays in the app.</span></li>
         </ol>
         <p class="note mt-m">Instalment dates and amounts: <span class="tbc" title="To be provided by the school">to be added by the accounts office</span>.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="sec sec--tint" id="calendar">
+    <div class="wrap cols">
+      <h2 class="t-l">Calendar</h2>
+      <div>
+        <p class="lead">Exams, meetings and holidays for session 2026–27. Add one date, or all of them, to your phone's calendar.</p>
+        <p class="note mt-s"><span class="tbc" title="The school will confirm its own calendar">Sample dates for now</span>. The school's own calendar replaces them.</p>
+        <div class="cal-tools mt-m"><button class="btn btn--ghost btn--sm" type="button" id="cal-all">Add all to my calendar</button></div>
+        <ul class="cal-list" id="cal-list"></ul>
       </div>
     </div>
   </section>
@@ -162,8 +174,8 @@
     </div>
   </section>
 </main>
-<script src="js/data.js?v=8"></script>
+<script src="js/data.js?v=9"></script>
 <script src="js/ai.js?v=8"></script>
-<script src="js/school.js?v=12"></script>
+<script src="js/school.js?v=15"></script>
 </body>
 </html>

@@ -156,6 +156,9 @@
     const ok = secsFor(); [...aud.sec].forEach((s) => { if (!ok.includes(s)) aud.sec.delete(s); });
     S.$("#nt-sec").innerHTML = `<button type="button" class="tchip all${aud.sec.size ? "" : " on"}" data-s="" aria-pressed="${!aud.sec.size}">Every section</button>` + ok.map((s) => `<button type="button" class="tchip${aud.sec.has(s) ? " on" : ""}" data-s="${s}" aria-pressed="${aud.sec.has(s)}">${s}</button>`).join("");
     S.$("#nt-route").disabled = S.$("#nt-bus").value !== "bus";
+    const narrow = [S.$("#nt-bus").value === "bus" ? (S.$("#nt-route").value || "Bus students") : S.$("#nt-bus").value === "own" ? "Own transport" : "", aud.gender ? aud.gender[0].toUpperCase() + aud.gender.slice(1) : ""].filter(Boolean);
+    S.$("#nt-more-s").textContent = narrow.join(", ");
+    if (narrow.length) S.$("#nt-more").open = true;
     S.$("#nt-aud").hidden = aud.staff;
     S.$("#nt-lvl-hint").textContent = LV_HINT[aud.level];
     const to = toNow(), n = { to }, fam = S.reach(to);
@@ -178,8 +181,18 @@
     if (!title || !text) { (title ? S.$("#nt-text") : S.$("#nt-title")).focus(); S.toast("Add a title and a message first"); return; }
     const to = toNow(), fam = S.reach(to);
     if (!aud.staff && !fam) { S.toast("No families match. Widen the classes or groups."); return; }
-    S.state.notices.push({ id: "n" + Date.now(), title, text, date: S.$("#nt-date").value || S.todayKey, tag: S.$("#nt-tag").value, level: aud.level, to, fresh: true, web: S.$("#nt-web").checked });
+    const nn = { id: "n" + Date.now(), title, text, date: S.$("#nt-date").value || S.todayKey, tag: S.$("#nt-tag").value, level: aud.level, to, fresh: true, web: S.$("#nt-web").checked, sent: S.todayKey };
+    // The office's notices wait for the principal; the principal's go straight out.
+    if (S.staff && S.staff.role === "admin") {
+      S.state.pending.push({ id: "pa" + Date.now().toString(36), by: S.staff.name, at: S.fmt(S.todayKey) + ", " + S.timeNow(), status: "waiting", note: "", n: nn });
+      S.save(); if (S.renderPending) S.renderPending();
+      S.landed(S.$("#nt-pending .ap:last-child"));
+      S.toast(`Sent to the principal for approval. It goes to ${aud.staff ? "staff" : fam.toLocaleString("en-IN") + " families"} once approved.`);
+      return;
+    }
+    S.state.notices.push(nn);
     S.save(); renderList();
+    S.landed(S.$$("#nt-list .ns-li").find((li) => li.querySelector("b").textContent === title));
     S.toast(aud.staff ? "Sent to all staff" : `Sent to ${fam.toLocaleString("en-IN")} ${fam === 1 ? "family" : "families"} · ${aud.level === "high" ? "app and SMS" : aud.level === "medium" ? "app and WhatsApp" : "app"}`);
   });
 
@@ -194,7 +207,7 @@
       (!f.cls || S.noticeReachesClass(n, f.cls)) && (!f.sec || (!t(n).staff && (!t(n).sec.length || t(n).sec.includes(f.sec)))) &&
       (!f.cat || (f.cat === "staff" ? t(n).staff : f.cat === "bus" ? t(n).bus === "bus" : f.cat === "own" ? t(n).bus === "own" : t(n).gender === f.cat)));
     S.$("#ns-count").textContent = xs.length === all.length ? `${all.length} notices` : `${xs.length} of ${all.length}`;
-    S.paint(S.$("#nt-list"), xs.map((n) => `<div class="li ns-li lv-${S.levelOf(n)}"><span class="sq ${S.levelOf(n) === "high" ? "red" : n.fresh ? "gold" : ""}">${ICON}</span><div class="t"><b>${esc(n.title)}</b><span>${dLong(n.date)} · ${esc(S.audienceText(n))}${n.web === false || t(n).staff || t(n).bus || t(n).gender ? "" : " · website"}</span></div><div class="end ns-end">${S.levelBadge(n)}<span class="pill">${esc(n.tag)}</span></div></div>`).join("") || `<p class="chart-empty">No notices match these filters.</p>`);
+    S.paint(S.$("#nt-list"), xs.map((n) => `<div class="li ns-li lv-${S.levelOf(n)}"><span class="sq ${S.levelOf(n) === "high" ? "red" : n.fresh ? "gold" : ""}">${ICON}</span><div class="t"><b>${esc(n.title)}</b><span>${dLong(n.date)} · ${esc(S.audienceText(n))}${n.web === false || t(n).staff || t(n).bus || t(n).gender ? "" : " · website"}</span></div><div class="end ns-end">${S.levelBadge(n)}<span class="pill">${esc(n.tag)}</span>${S.levelOf(n) === "high" && !t(n).staff && S.ackCount ? (() => { const a = S.ackCount(n); return `<span class="ns-read"${S.tipAttr ? S.tipAttr("Families who tapped \"I've read this\". Sample figures, plus the demo family.", "Read") : ""}>Read by ${a.read.toLocaleString("en-IN")} of ${a.of.toLocaleString("en-IN")}</span>`; })() : ""}</div></div>`).join("") || `<p class="chart-empty">No notices match these filters.</p>`);
   }
   S.renderNotices = renderList;
   S.$("#ns-lv").addEventListener("click", (ev) => { const b = ev.target.closest("button"); if (!b) return; f.lv = b.dataset.v; seg(S.$("#ns-lv"), f.lv); renderList(); });

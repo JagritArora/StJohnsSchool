@@ -17,7 +17,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Figtree:wght@400..800&display=swap" rel="stylesheet" />
-<link rel="stylesheet" href="css/site.css?v=8" />
+<link rel="stylesheet" href="css/site.css?v=21" />
 <script>
 /* Before the first paint: fade photos in as they load. */
 (function (d) { d.documentElement.classList.add("js");
@@ -57,13 +57,12 @@
       <div class="hm-alerts" id="hm-alerts"></div>
       <div class="hm-glance" id="home-stats"></div>
       <div id="phase-card" class="hm-phase hm-in" style="--i:6" hidden></div>
-      <div class="hm-pair">
-        <div class="card hm-in" style="--i:7">
-          <div class="card-h"><h2>Coming up</h2><button class="right link-btn" type="button" data-go="homework">All homework</button></div>
-          <div class="list" id="due"></div>
-        </div>
-        <div class="ai-card hm-in" style="--i:8">
-          <div class="card-h" style="margin:0"><span class="ai-tag"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l1.9 5.3L19 10l-5.1 1.7L12 17l-1.9-5.3L5 10l5.1-1.7z"/></svg>This week for Aarav · AI summary</span></div>
+      <!-- Coming up and the week's summary cover the same ground, so they share one card. -->
+      <div class="card hm-in hm-week" style="--i:7">
+        <div class="card-h"><div class="seg vt" data-vt="hmw" aria-label="Coming up or this week"><button data-v="due">Coming up</button><button data-v="week"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l1.9 5.3L19 10l-5.1 1.7L12 17l-1.9-5.3L5 10l5.1-1.7z"/></svg>This week</button></div><button class="right link-btn" type="button" data-go="homework">All homework</button></div>
+        <div class="vp" data-vp="hmw" data-v="due"><div class="list" id="due"></div></div>
+        <div class="vp hm-ai" data-vp="hmw" data-v="week" hidden>
+          <span class="ai-tag"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l1.9 5.3L19 10l-5.1 1.7L12 17l-1.9-5.3L5 10l5.1-1.7z"/></svg>This week for Aarav · AI summary</span>
           <div class="body" id="weekly"></div>
           <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:16px"><button class="btn btn-primary btn-sm" onclick="SJS.ask('What should we work on?')">What should we work on?</button><button class="btn btn-ghost btn-sm" onclick="SJS.openAI()">Ask anything about Aarav</button></div>
         </div>
@@ -81,12 +80,13 @@
       <div class="topbar"><div><h1>Timetable</h1><div class="sub">Aarav Sharma · VII-B · Monday to Saturday</div></div></div>
       <div class="tt-page">
         <div class="card tt-rail" aria-labelledby="tt-h">
-          <div class="card-h"><h2 id="tt-h">Class VII-B</h2><div class="seg vt" data-vt="tt" aria-label="Timetable view"><button data-v="week">Week</button><button data-v="today">Today</button></div></div>
+          <div class="card-h"><h2 id="tt-h">Class VII-B</h2><div class="seg vt" data-vt="tt" aria-label="Timetable view"><button data-v="week">Week</button><button data-v="today">Today</button><button data-v="teachers">Teachers</button></div></div>
           <div class="vp" data-vp="tt" data-v="week">
-            <p class="muted" style="font-size:12.5px;margin:-6px 0 10px">Point at a period for the teacher</p>
+            <p class="muted" style="font-size:13.5px;margin:-6px 0 10px">Point at a period for the teacher</p>
             <div class="pivot-wrap"><table class="pivot" id="pivot"></table></div>
           </div>
           <div class="vp" data-vp="tt" data-v="today" hidden><div class="agenda" id="agenda"></div></div>
+          <div class="vp" data-vp="tt" data-v="teachers" hidden><p class="muted" style="font-size:13.5px;margin:-6px 0 10px">Who teaches what, and how many periods a week</p><div class="tt-sum"><table class="pivot pivot-sum" id="tt-sum"></table></div></div>
         </div>
         <div class="tt-side">
           <div class="card now-card" id="now-card"></div>
@@ -96,7 +96,6 @@
             <div class="route" id="route"></div>
             <div class="route-labels" id="route-labels"></div>
           </div>
-          <div class="card tt-sum-card"><div class="card-h"><h2>Subjects and teachers</h2></div><div class="tt-sum"><table class="pivot pivot-sum" id="tt-sum"></table></div></div>
         </div>
       </div>
     </section>
@@ -104,6 +103,32 @@
     <!-- ATTENDANCE -->
     <section data-view="attendance">
       <div class="topbar"><div><h1>Attendance</h1><div class="sub">Aarav Sharma · VII-B · Session 2026–27</div></div><div class="right"><button class="btn btn-primary btn-sm" onclick="SJS.openModal('leave-modal')">Apply for leave</button></div></div>
+      <div class="vt-row"><div class="seg vt" data-vt="patt" aria-label="Attendance or pick-up"><button data-v="att">Attendance</button><button data-v="pick">Pick-up</button></div></div>
+      <div class="pm-panes">
+      <div class="vp" data-vp="patt" data-v="pick" hidden>
+        <div class="grid g21">
+          <div class="card">
+            <div class="card-h"><h2>Who can collect <span class="kid-first">Aarav</span></h2><button class="right btn btn-ghost btn-sm" type="button" id="pk-add">Add a person</button></div>
+            <p class="muted pk-note">The gate checks this list and a photo ID before a child leaves. Any change needs a parent check, and you get an SMS.</p>
+            <form class="pk-form" id="pk-form" hidden>
+              <div class="row2"><div class="field"><label for="pk-n">Full name</label><input id="pk-n" required autocomplete="off" /></div><div class="field"><label for="pk-r">Relation to <span class="kid-first">Aarav</span></label><select id="pk-r"><option>Mother</option><option>Father</option><option>Grandparent</option><option>Uncle</option><option>Aunt</option><option>Driver</option><option>Other</option></select></div></div>
+              <div class="field"><label for="pk-p">Mobile number</label><input id="pk-p" required inputmode="tel" pattern="[0-9 +]{10,14}" placeholder="10 digits" /></div>
+              <div class="pc-row"><button type="button" class="btn btn-ghost btn-sm" id="pk-x">Cancel</button><button class="btn btn-primary btn-sm" type="submit">Add to the list</button></div>
+            </form>
+            <div class="list" id="pk-list"></div>
+          </div>
+          <div class="card">
+            <div class="card-h"><h2>Someone else, today only</h2></div>
+            <p class="muted pk-note">For a one-off pick-up by someone not on the list. They show the code at the gate. It works once, and only today.</p>
+            <form id="ps-form" class="pk-form">
+              <div class="row2"><div class="field"><label for="ps-n">Their name</label><input id="ps-n" required autocomplete="off" /></div><div class="field"><label for="ps-r">Relation</label><input id="ps-r" required placeholder="Neighbour, cousin…" /></div></div>
+              <button class="btn btn-primary btn-sm" type="submit" style="margin-top:14px">Make a gate code</button>
+            </form>
+            <div id="ps-out"></div>
+          </div>
+        </div>
+      </div>
+      <div class="vp" data-vp="patt" data-v="att">
       <div class="grid g3" id="att-stats" style="margin-bottom:16px"></div>
       <div class="grid g21">
         <div class="card">
@@ -120,6 +145,8 @@
         </div>
         <div class="card"><div class="card-h"><h2>Days away this session</h2></div><div class="list" id="absences"></div></div>
       </div>
+      </div>
+      </div>
     </section>
 
     <!-- HOMEWORK -->
@@ -132,11 +159,12 @@
     <!-- RESULTS -->
     <section data-view="results">
       <div class="topbar"><div><h1>Results</h1><div class="sub">Aarav Sharma · VII-B</div></div><div class="right seg" id="exam"></div></div>
+      <div class="seg pg-sw" data-exsw aria-label="Results or datesheets"><button class="on" type="button" data-go="results" aria-pressed="true">Results</button><button type="button" data-go="exams" aria-pressed="false">Datesheets</button></div>
       <div id="ut2-card"></div>
       <div id="res-phase"></div>
       <div class="grid g21">
         <div class="card">
-          <div class="card-h"><h2 id="res-title">Half-yearly · marks by subject</h2><div class="seg vt" data-vt="res" aria-label="Chart type"><button data-v="bars">Against the class</button><button data-v="profile">Profile</button><button data-v="change">Change</button></div></div>
+          <div class="card-h"><h2 id="res-title">Half-yearly · marks by subject</h2><div class="seg vt" data-vt="res" aria-label="Chart type"><button data-v="bars">Against the class</button><button data-v="profile">Profile</button><button data-v="change">Change</button><button data-v="table">Table</button></div></div>
           <div id="res-read"></div>
           <div class="vp" data-vp="res" data-v="bars">
             <div class="dumb gb-list" id="bars"></div>
@@ -150,18 +178,16 @@
             <div class="dumb" id="dumb"></div>
             <div class="legend"><span><i class="dot" style="border:2px solid var(--muted);width:10px;height:10px"></i>Unit Test 1</span><span><i class="dot" style="background:var(--green)"></i>Half-yearly, up</span><span><i class="dot" style="background:var(--accent)"></i>Half-yearly, down</span></div>
           </div>
+          <div class="vp" data-vp="res" data-v="table" hidden><div class="tbl-wrap"><table class="tbl" id="res-tbl"></table></div></div>
         </div>
-        <div class="card">
-          <div class="card-h"><h2>Table</h2></div>
-          <div class="tbl-wrap"><table class="tbl" id="res-tbl"></table></div>
-        </div>
+        <div class="ai-card res-ai"><button class="link-btn res-rc" type="button" data-rc data-no-start>Report card so far</button><span class="ai-tag"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l1.9 5.3L19 10l-5.1 1.7L12 17l-1.9-5.3L5 10l5.1-1.7z"/></svg>What the numbers say</span><div class="body" id="res-ai"></div></div>
       </div>
-      <div class="ai-card" style="margin-top:16px"><span class="ai-tag"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l1.9 5.3L19 10l-5.1 1.7L12 17l-1.9-5.3L5 10l5.1-1.7z"/></svg>What the numbers say</span><div class="body" id="res-ai"></div></div>
     </section>
 
     <!-- EXAMS: this class's datesheets, as the school publishes them -->
     <section data-view="exams">
       <div class="topbar"><div><h1>Exams</h1><div class="sub">Aarav Sharma · VII-B · Session 2026–27</div></div></div>
+      <div class="seg pg-sw" data-exsw aria-label="Results or datesheets"><button type="button" data-go="results" aria-pressed="false">Results</button><button class="on" type="button" data-go="exams" aria-pressed="true">Datesheets</button></div>
       <div class="ex-page">
         <div class="card ex-main" id="ex-main"></div>
         <div class="card ex-side"><div class="card-h"><h2>This session</h2></div><div class="ex-list" id="ex-list"></div></div>
@@ -187,10 +213,19 @@
 
     <!-- MESSAGES -->
     <section data-view="messages">
-      <div class="topbar"><div><h1>Messages</h1><div class="sub">With Ms. Neha Mathew, class teacher VII-B</div></div></div>
-      <div class="card" style="max-width:720px">
+      <div class="topbar"><div><h1>Messages</h1><div class="sub" id="msg-sub">With Ms. Neha Mathew, class teacher VII-B</div></div></div>
+      <div class="vt-row"><div class="seg vt" data-vt="pmsg" aria-label="Messages, remarks or forms"><button data-v="chat">Chat</button><button data-v="remarks">Remarks<span class="seg-n" id="n-rem" hidden></span></button><button data-v="forms">Forms<span class="seg-n" id="n-form" hidden></span></button><button data-v="ptm">Meetings<span class="seg-n" id="n-ptm" hidden></span></button></div></div>
+      <div class="pm-panes">
+      <div class="card vp" data-vp="pmsg" data-v="remarks" hidden style="max-width:720px"><p class="muted" style="font-size:14px;margin-bottom:6px">What teachers have noted about <b class="kid-first">Aarav</b>, newest first.</p><div class="rem-list" id="p-remarks"></div></div>
+      <div class="card vp" data-vp="pmsg" data-v="forms" hidden style="max-width:720px"><div class="form-list" id="p-forms"></div></div>
+      <div class="card vp" data-vp="pmsg" data-v="ptm" hidden style="max-width:720px"><div id="p-ptm"></div></div>
+      <div class="card vp" data-vp="pmsg" data-v="chat" style="max-width:720px">
+        <div id="p-rec"></div>
+        <p class="oh-note" id="p-hours"></p>
         <div class="thread" id="thread"></div>
         <form id="msg-form" class="ai-form" style="padding:14px 0 0;margin-top:12px"><input placeholder="Write to the class teacher…" aria-label="Message" /><button type="submit" aria-label="Send"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button></form>
+      </div>
+      </div>
       </div>
     </section>
   </main>
@@ -215,16 +250,18 @@
 <div class="modal" id="pay-modal"><div class="modal-card" style="text-align:center">
   <h3>Pay by UPI</h3><p class="muted" id="pay-amt"></p>
   <svg viewBox="0 0 21 21" width="170" height="170" style="margin:20px auto;display:block;border-radius:12px;background:#fff;padding:10px" shape-rendering="crispEdges" id="qr"></svg>
-  <p class="muted" style="font-size:13px">Scan with any UPI app — GPay, PhonePe, Paytm, BHIM.</p>
+  <p class="muted" style="font-size:13.5px">Scan with any UPI app — GPay, PhonePe, Paytm, BHIM.</p>
   <div style="display:flex;gap:10px;margin-top:20px"><button type="button" class="btn btn-ghost" data-close>Cancel</button><button class="btn btn-green" id="pay-done" style="flex:1">I've paid (demo)</button></div>
 </div></div>
 
-<script src="js/data.js?v=8"></script>
+<script src="js/data.js?v=9"></script>
 <script src="js/classes.js?v=8"></script>
 <script src="js/exams.js?v=8"></script>
-<script src="js/common.js?v=7"></script>
-<script src="js/charts.js?v=7"></script>
-<script src="js/demo.js"></script>
+<script src="js/care.js?v=2"></script>
+<script src="js/common.js?v=11"></script>
+<script src="js/charts.js?v=10"></script>
+<script src="js/more.js?v=3"></script>
+<script src="js/demo.js?v=2"></script>
 <script src="js/ai.js?v=8"></script>
 <script>
 (function () {
@@ -246,9 +283,14 @@
   S.$(".who .avatar").textContent = parentInitials;
   S.$(".kid-av").textContent = me.initials;
   S.$(".kid-t span").textContent = `Class ${me.label}${me.sec.stream ? " · " + me.sec.stream : ""} · Roll ${String(me.roll).padStart(2, "0")} · Class teacher ${S.teacher.name}`;
-  if (me.key !== "VII-B-1") S.$("#sib").remove();
+  // One login for every child on this phone number; each opens in the same place.
+  const sibs = S.siblingsOf(me.key);
+  if (sibs.length > 1) S.$(".kid-sw").innerHTML = sibs.map((p) => { const k = S.kid(p.key), on = p.key === me.key; return `<button type="button"${on ? ' class="on"' : ""} aria-pressed="${on}" data-kid="${p.key}">${S.esc(k.first)} · ${S.esc(k.label)}</button>`; }).join("");
+  else S.$(".kid-sw").remove();
+  document.addEventListener("click", (e) => { const b = e.target.closest("[data-kid]"); if (b && b.dataset.kid !== me.key) location.href = "parent.html?kid=" + b.dataset.kid + location.hash; });
   S.$(".bus-card h2").textContent = me.bus === "Own transport" ? "Getting to school" : "Bus · " + me.bus;
   S.mountDemo("kid:" + me.key);
+  if (S.PHASE === "start") S.$$("[data-no-start]").forEach((x) => x.remove());
   const I = {
     home: '<path d="M4 11l8-7 8 7v9H4z"/><path d="M10 20v-5h4v5"/>',
     timetable: '<rect x="4" y="4" width="16" height="16" rx="2"/><path d="M4 9.5h16M9.5 9.5V20M14.5 9.5V20"/>',
@@ -262,11 +304,11 @@
   };
   // Exams only where the class sits them (pre-primary has none).
   const myExams = () => S.examsFor(me), G = S.groupOf(me);
-  const nav = [["home", "Home"], ["timetable", "Timetable"], ["attendance", "Attendance"], ["homework", "Homework"], ["results", "Results"], ["exams", "Exams"], ["fees", "Fees"], ["notices", "Notices"], ["messages", "Messages"]].filter(([k]) => k !== "exams" || myExams().length);
-  if (!myExams().length) S.$('[data-view="exams"]').remove();
-  const btn = (k, l) => `<button class="side-btn" data-go="${k}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">${I[k]}</svg>${l}<span class="count" data-count="${k}" hidden></span></button>`;
-  S.$("#nav-side").innerHTML = nav.map(([k, l]) => btn(k, l)).join("");
-  S.$("#nav-bottom").innerHTML = nav.filter(([k]) => !["messages", "timetable", "exams", "notices"].includes(k)).map(([k, l]) => btn(k, l)).join("");
+  const nav = [["home", "Home"], ["timetable", "Timetable"], ["attendance", "Attendance"], ["homework", "Homework"], ["results", "Results"], ["fees", "Fees"], ["notices", "Notices"], ["messages", "Messages"]].map(([k, l]) => (k === "results" && myExams().length ? [k, "Exams and results", "exams"] : [k, l]));
+  if (!myExams().length) { S.$('[data-view="exams"]').remove(); S.$$("[data-exsw]").forEach((x) => x.remove()); }
+  const btn = (k, l, also = "") => `<button class="side-btn" data-go="${k}"${also ? ` data-also="${also}"` : ""}><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">${I[k]}</svg>${l}<span class="count" data-count="${k}" hidden></span></button>`;
+  S.$("#nav-side").innerHTML = nav.map(([k, l, a]) => btn(k, l, a)).join("");
+  S.$("#nav-bottom").innerHTML = nav.filter(([k]) => !["messages", "timetable", "exams", "notices"].includes(k)).map(([k, l, a]) => btn(k, k === "results" ? "Results" : l, a)).join("");
 
   const statusLabel = { P: "Present", A: "Absent", L: "Leave" };
   const feeStack = () => { const due = fees().find((f) => !f.paid); return S.stack(fees().map((f) => ({ v: 1, tone: f.paid ? "var(--green)" : f === due ? "var(--accent)" : "var(--line)", tip: f.paid ? "Paid " + S.fmt(f.paid) : "Due " + S.fmt(f.due, { day: "numeric", month: "short", year: "numeric" }), tipT: f.q }))); };
@@ -332,9 +374,9 @@
     } else label = "First";
     if (i < 0) { day = S.nextSchoolDay(S.today, 1); list = S.timetable[day.getDay()]; i = 0; label = "First"; }
     const sub = list[i], when = real.getTime() === day.getTime() ? "today" : S.fmt(day, { weekday: "long" });
-    S.$("#now-card").innerHTML = `<div class="card-h"><h2>${label === "Now" ? "In class now" : label === "Next" ? "Next class" : "First class " + when}</h2><span class="right muted" style="font-size:12.5px">Period ${i + 1} · ${S.periodTimes[i]}–${ENDS[i]}</span></div>
+    S.$("#now-card").innerHTML = `<div class="card-h"><h2>${label === "Now" ? "In class now" : label === "Next" ? "Next class" : "First class " + when}</h2><span class="right muted" style="font-size:13.5px">Period ${i + 1} · ${S.periodTimes[i]}–${ENDS[i]}</span></div>
       <div class="now-sub c-${HUE[sub] || "none"}"><b>${sub}</b><span>${S.ttTeachers[sub] || ""}</span></div>
-      <p class="muted" style="font-size:13px;margin-top:10px">${list.length < 8 ? "Saturday is a half day, home by 11:30." : "School ends at 1:30 PM."}</p>`;
+      <p class="muted" style="font-size:13.5px;margin-top:10px">${list.length < 8 ? "Saturday is a half day, home by 11:30." : "School ends at 1:30 PM."}</p>`;
   }
   // Home: the school day as one ribbon of periods, with a marker that moves with the clock.
   const TINY = { Maths: "Ma", English: "En", Hindi: "Hi", Science: "Sc", SSt: "SSt", "Comp.": "Co", Games: "Ga", Art: "Art", Library: "Lib", Music: "Mu", Values: "VE", Assembly: "As", Clubs: "Cl", Physics: "Ph", "Chem.": "Ch", "Bio.": "Bi", Accounts: "Ac", BSt: "BSt", "Eco.": "Ec", "App. Maths": "AM", "Phys. Ed.": "PE", IT: "IT" };
@@ -390,7 +432,7 @@
       `<tr class="tot"><td>Total</td><td></td><td class="n">${Object.values(count).reduce((a, b) => a + b, 0)}</td></tr></tbody>`;
     // Today: the day as a short agenda, with the current period outlined and the past ones faded.
     const list = S.timetable[S.today.getDay()] || [];
-    S.paint(S.$("#agenda"), `<p class="muted" style="font-size:12.5px;margin:-6px 0 4px">${S.fmtLong(S.today)}</p>` + list.map((sub, p) => (p === 4 ? `<div class="ag brk"><time>10:40</time>Break</div>` : "") +
+    S.paint(S.$("#agenda"), `<p class="muted" style="font-size:13.5px;margin:-6px 0 4px">${S.fmtLong(S.today)}</p>` + list.map((sub, p) => (p === 4 ? `<div class="ag brk"><time>10:40</time>Break</div>` : "") +
       `<div class="ag c-${HUE[sub] || "none"}${isToday && p === cur ? " now" : ""}${isToday && now >= mins(ENDS[p]) ? " past" : ""}"><time>${S.periodTimes[p]}</time><b>${sub}</b><span>${S.ttTeachers[sub] || ""}</span></div>`).join(""));
   }
   const tip = S.$("#tt-tip"), piv = S.$("#pivot");
@@ -614,7 +656,7 @@
       <label style="display:grid;place-items:center;width:40px;height:40px;border-radius:12px;border:1.5px solid ${h.done ? "var(--green)" : "var(--line)"};background:${h.done ? "var(--green-soft)" : "transparent"};cursor:pointer;flex:none;color:var(--green)">
         <input type="checkbox" data-hw="${h.id}" ${h.done ? "checked" : ""} class="sr-only" />${h.done ? '<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>' : ""}</label>
       <div style="flex:1;min-width:0"><div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center"><span class="pill">${S.esc(h.subj)}</span>${h.fresh ? '<span class="pill red">New</span>' : ""}<span class="pill ${h.done ? "green" : "warn"}">${h.done ? "Done" : "Due " + S.fmt(h.due, { weekday: "short", day: "numeric", month: "short" })}</span></div>
-      <h3 style="font:600 17px/1.35 var(--sans);margin:10px 0 6px">${S.esc(h.title)}</h3><p class="muted" style="font-size:14.5px">${S.esc(h.detail)}</p><p class="muted" style="font-size:12.5px;margin-top:8px">Set by ${S.esc(h.by)}</p></div></div>`).join("");
+      <h3 style="font:600 17px/1.35 var(--sans);margin:10px 0 6px">${S.esc(h.title)}</h3><p class="muted" style="font-size:14.5px">${S.esc(h.detail)}</p><p class="muted" style="font-size:13.5px;margin-top:8px">Set by ${S.esc(h.by)}</p></div></div>`).join("");
   }
   S.$("#hw").addEventListener("change", (e) => { const id = e.target.dataset.hw; const h = S.cs.homework.find((x) => x.id === id); if (!h) return; h.done = e.target.checked; h.fresh = false; S.save(); renderHomework(); renderHome(); });
 
@@ -731,8 +773,8 @@
       } else if (f.mode === "soon") {
         const n = daysTo(ps[0].date);
         title = `${e.name} ${verb(e)} ${n === 1 ? "tomorrow" : dLong(ps[0].date)}`;
-        sub = `${n} day${n === 1 ? "" : "s"} to go · ${ps.length} papers, ${ps[0].subj} first · ${e.time}`;
-        chips = ps.slice(0, 4).map((p) => `<span class="ex-chip"><b>${S.fmt(p.date, { day: "numeric", month: "short" })}</b>${S.esc(SUB_SHORT[p.subj] || p.subj)}</span>`).join("") + (ps.length > 4 ? `<span class="ex-chip more">+${ps.length - 4} more</span>` : "");
+        // Home keeps the headline and the countdown; papers and times are on the datesheet this opens.
+        sub = `${n} day${n === 1 ? "" : "s"} to go · ${ps.length} papers`;
         hot = n <= 7;
       } else {
         const last = [...ps].reverse().find((x) => x.date < S.todayKey), lm = last && S.paperMark(me, e, last);
@@ -744,7 +786,9 @@
     }
     // Important notices for this child that are still to come.
     const imp = S.noticesFor(me).filter((n) => S.levelOf(n) === "high" && n.date >= S.todayKey && !(f && n.exam === f.e.id)).sort((a, b) => (a.date < b.date ? -1 : 1)).slice(0, 2);
-    if (imp.length) h += `<div class="imp-wrap hm-in" style="--i:2">` + imp.map((n) => `<button type="button" class="imp" data-go="notices">${S.levelBadge(n)}<span class="imp-t"><b>${S.esc(n.title)}</b><span>${S.esc(n.text.split(/(?<=\.)\s/)[0])}</span></span><span class="imp-d"><b>${S.fmt(n.date, { day: "numeric", month: "short" })}</b><small>${S.fmt(n.date, { weekday: "short" })}</small></span></button>`).join("") + `</div>`;
+    if (imp.length) h += `<div class="imp-wrap hm-in" style="--i:2">` + imp.map((n) => `<button type="button" class="imp" data-go="notices">${S.levelBadge(n)}<span class="imp-t"><b>${S.esc(n.title)}</b></span><span class="imp-d"><b>${S.fmt(n.date, { day: "numeric", month: "short" })}</b><small>${S.fmt(n.date, { weekday: "short" })}</small></span></button>`).join("") + `</div>`;
+    const toSign = S.formsFor(me.sec.key).filter((x) => !S.formAnswer(x, me.roll));
+    if (toSign.length) h += `<div class="imp-wrap hm-in" style="--i:3">` + toSign.slice(0, 2).map((x) => `<button type="button" class="imp form-due" data-go-forms><span class="lvl high">${S.ICON_LOCK}Form</span><span class="imp-t"><b>Sign: ${S.esc(x.title)}</b></span><span class="imp-d"><b>${S.fmt(x.due, { day: "numeric", month: "short" })}</b><small>Due</small></span></button>`).join("") + `</div>`;
     S.paint(S.$("#hm-alerts"), h);
     S.$("#hm-alerts").hidden = !h;
   }
@@ -793,11 +837,15 @@
   // ---------- Notices: only the ones for this child, the important ones first ----------
   let ntLv = "";
   const FOR = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="9" cy="8" r="3.5"/><path d="M2.5 20c.8-3.6 3.4-5.5 6.5-5.5s5.7 1.9 6.5 5.5M16 4.8a3.5 3.5 0 0 1 0 6.4M18.5 14.8c1.6.8 2.7 2.5 3 5.2"/></svg>';
+  // Important notices ask for a tap, so the school knows who has seen them.
+  const ackBtn = (n) => { const a = S.ackOf(n.id, me.key); return a ? `<p class="nt-ack done">${TICK_S}Read on ${S.fmt(a, { day: "numeric", month: "short" })}</p>` : `<button class="btn btn-ghost btn-sm nt-ack" type="button" data-ack="${n.id}">I've read this</button>`; };
+  const TICK_S = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>';
+  document.addEventListener("click", (e) => { const b = e.target.closest("[data-ack]"); if (!b) return; S.ack(b.dataset.ack, me.key); S.save(); renderNotices(); S.landed(S.$(`[data-ack-row="${b.dataset.ack}"]`)); S.toast("Marked as read. The school can see it.", { done: true }); });
   function renderNotices() {
     const rank = { high: 0, medium: 1, low: 2 }, mine = S.noticesFor(me), all = mine.filter((n) => !ntLv || S.levelOf(n) === ntLv);
     const up = all.filter((n) => n.date >= S.todayKey).sort((a, b) => rank[S.levelOf(a)] - rank[S.levelOf(b)] || (a.date < b.date ? -1 : 1));
     const past = all.filter((n) => n.date < S.todayKey).sort((a, b) => (a.date < b.date ? 1 : -1));
-    const card = (n, old) => `<article class="nt lv-${S.levelOf(n)}${old ? " old" : ""}"><div class="nt-top">${S.levelBadge(n)}<span class="pill">${S.esc(n.tag)}</span><time datetime="${n.date}">${S.fmt(n.date, { weekday: "short", day: "numeric", month: "short" })}</time></div><h3>${S.esc(n.title)}</h3><p>${S.esc(n.text)}</p>${S.isEveryone(n) ? "" : `<span class="nt-for">${FOR}For ${S.esc(S.audienceText(n))}</span>`}</article>`;
+    const card = (n, old) => `<article class="nt lv-${S.levelOf(n)}${old ? " old" : ""}" data-ack-row="${n.id}"><div class="nt-top">${S.levelBadge(n)}<span class="pill">${S.esc(n.tag)}</span><time datetime="${n.date}">${S.fmt(n.date, { weekday: "short", day: "numeric", month: "short" })}</time></div><h3>${S.esc(n.title)}</h3><p>${S.esc(n.text)}</p>${S.isEveryone(n) ? "" : `<span class="nt-for">${FOR}For ${S.esc(S.audienceText(n))}</span>`}${S.levelOf(n) === "high" ? ackBtn(n) : ""}</article>`;
     S.paint(S.$("#nt-feed"), (up.length ? up.map((n) => card(n)).join("") : `<p class="chart-empty">No ${ntLv ? S.LEVELS[ntLv].label.toLowerCase() + "-importance " : ""}notices coming up.</p>`) + (past.length ? `<h3 class="nt-sep">Earlier</h3>` + past.map((n) => card(n, true)).join("") : ""));
     const hi = mine.filter((n) => n.date >= S.todayKey && S.levelOf(n) === "high").length;
     S.$("#nt-count").textContent = `${mine.filter((n) => n.date >= S.todayKey).length} coming up${hi ? ` · ${hi} high` : ""}`;
@@ -827,12 +875,13 @@
         <div class="rc-k"><div><b>${avg}%</b><span>${L(C)} average</span></div><div><b>${S.grade(avg)}</b><span>Overall grade</span></div><div><b>${att}%</b><span>Attendance</span></div><div><b>${S.subjects.filter((x) => me[C][x] >= 33).length} / ${S.subjects.length}</b><span>Subjects passed</span></div></div>
         <div class="rc-g">${S.subjects.map((x) => `<span${S.tipAttr(`${me[C][x]}% · ${L("ut1")} ${me.ut1[x]}% · ${L("hy")} ${me.hy[x]}%`, x)} tabindex="0"><b>${S.grade(me[C][x])}</b>${x}</span>`).join("")}</div>
         ${remark ? `<p class="rc-rm"><b>Class teacher's remark.</b> ${S.esc(remark)}</p>` : ""}
-        <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:14px"><button class="btn btn-primary btn-sm" type="button" onclick="SJS.toast('Report card saved as a PDF (demo)')">Download report card</button><button class="btn btn-ghost btn-sm" type="button" onclick="SJS.ask('How did the year go?')">Ask about the year</button></div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:14px"><button class="btn btn-primary btn-sm" type="button" data-rc>Download report card</button><button class="btn btn-ghost btn-sm" type="button" onclick="SJS.ask('How did the year go?')">Ask about the year</button></div>
       </div>`);
       return;
     }
     box.innerHTML = "";
   }
+  document.addEventListener("click", (e) => { if (!e.target.closest("[data-rc]")) return; S.showDoc("Report card", S.docPage(`Report card · ${me.name}`, [S.reportCard(me, me.sec, { att: S.attendancePct(me.roll), remark: S.PHASE === "end" && S.remarkFor ? S.remarkFor(me) : "" })])); });
   // Grades on the CBSE eight-point scale.
   S.grade = (v) => (v >= 91 ? "A1" : v >= 81 ? "A2" : v >= 71 ? "B1" : v >= 61 ? "B2" : v >= 51 ? "C1" : v >= 41 ? "C2" : v >= 33 ? "D" : "E");
 
@@ -851,7 +900,7 @@
       ].map(([id, t, sub, auto, go]) => ({ id, t, sub, on: auto != null ? auto : !!done[id], auto: auto != null, go }));
       const n = items.filter((x) => x.on).length;
       box.hidden = false;
-      S.paint(box, `<div class="card phase-card"><div class="card-h"><h2>Getting ready for Class ${me.label}</h2><span class="right muted" style="font-size:13px">${n} of ${items.length} done</span></div>${S.meter((n / items.length) * 100, { tone: "var(--green)" })}
+      S.paint(box, `<div class="card phase-card"><div class="card-h"><h2>Getting ready for Class ${me.label}</h2><span class="right muted" style="font-size:13.5px">${n} of ${items.length} done</span></div>${S.meter((n / items.length) * 100, { tone: "var(--green)" })}
         <div class="chk">${items.map((x) => `<button type="button" class="chk-i${x.on ? " on" : ""}" ${x.auto ? `data-go="${x.go}"` : `data-chk="${x.id}"`} aria-pressed="${x.on}"><span class="box">${x.on ? TICK : ""}</span><span class="t"><b>${S.esc(x.t)}</b><span>${S.esc(x.sub)}</span></span></button>`).join("")}</div></div>`);
       return;
     }
@@ -887,22 +936,68 @@
         const left = Math.round((new Date(f.due + "T00:00") - S.today) / 864e5);
         return `<li class="${f.paid ? "paid" : f === due ? "due" : ""}"><span class="nd">${f.paid ? tick : i + 1}</span><b>${f.q.split(" · ")[0]} · ${S.rupee(f.amount)}</b><span>${f.q.split(" · ")[1]}</span><span class="when">${f.paid ? "Paid " + S.fmt(f.paid) : f === due ? (left > 0 ? `Due in ${left} day${left > 1 ? "s" : ""}` : left === 0 ? "Due today" : "Overdue") : "Due " + S.fmt(f.due, { day: "numeric", month: "short", year: "numeric" })}</span></li>`;
       }).join("") + "</ol>");
-    S.$("#fee-tbl").innerHTML = `<thead><tr><th>Instalment</th><th>Due date</th><th class="num">Amount</th><th>Status</th><th></th></tr></thead><tbody>` + fees().map((f, i) => `<tr><td>${f.q}</td><td>${S.fmt(f.due, { day: "numeric", month: "short", year: "numeric" })}</td><td class="num">${S.rupee(f.amount)}</td><td>${f.paid ? `<span class="pill green">Paid ${S.fmt(f.paid)}</span>` : f === due ? '<span class="pill red">Due</span>' : '<span class="pill">Upcoming</span>'}</td><td>${f.paid ? `<button class="link-btn" onclick="SJS.toast('Receipt downloaded (demo)')">Receipt</button>` : ""}</td></tr>`).join("") + "</tbody>";
+    S.$("#fee-tbl").innerHTML = `<thead><tr><th>Instalment</th><th>Due date</th><th class="num">Amount</th><th>Status</th><th></th></tr></thead><tbody>` + fees().map((f, i) => `<tr><td>${f.q}</td><td>${S.fmt(f.due, { day: "numeric", month: "short", year: "numeric" })}</td><td class="num">${S.rupee(f.amount)}</td><td>${f.paid ? `<span class="pill green">Paid ${S.fmt(f.paid)}</span>` : f === due ? '<span class="pill red">Due</span>' : '<span class="pill">Upcoming</span>'}</td><td>${f.paid ? `<button class="link-btn" type="button" data-receipt="${i}">Receipt</button>` : ""}</td></tr>`).join("") + "</tbody>";
     const pb = S.$("#pay-btn"); if (pb) pb.onclick = () => { S.$("#pay-amt").textContent = `${S.rupee(due.amount)} · ${due.q} · St. John's School`; S.openModal("pay-modal"); };
   }
+  document.addEventListener("click", (e) => {
+    const b = e.target.closest("[data-receipt]"); if (!b) return;
+    const f = fees()[+b.dataset.receipt], no = `SJS/${f.paid.replace(/-/g, "").slice(2)}/${String(me.roll).padStart(2, "0")}${+b.dataset.receipt + 1}`;
+    S.showDoc("Fee receipt", S.docPage("Fee receipt " + no, [`<div style="max-width:620px">${S.docHead("Fee receipt · " + no)}<table><tbody>
+      <tr><td>Student</td><td><b>${S.esc(me.name)}</b>, Class ${S.esc(me.label)}, Roll ${String(me.roll).padStart(2, "0")}</td></tr><tr><td>Paid by</td><td>${S.esc(me.parent)}</td></tr>
+      <tr><td>Instalment</td><td>${S.esc(f.q)}</td></tr><tr><td>Amount</td><td><b>${S.rupee(f.amount)}</b></td></tr><tr><td>Paid on</td><td>${S.fmt(f.paid, { day: "numeric", month: "long", year: "numeric" })} · UPI</td></tr></tbody></table>
+      <p class="foot">Computer-made receipt; no signature needed. Prototype: sample amounts.</p></div>`]));
+  });
   // A decorative QR pattern
   (function () { let r = 7, h = '<rect width="21" height="21" fill="#fff"/>'; const rnd = () => ((r = (r * 1103515245 + 12345) >>> 0) / 4294967296); for (let y = 0; y < 21; y++) for (let x = 0; x < 21; x++) { const f = (x < 7 && y < 7) || (x > 13 && y < 7) || (x < 7 && y > 13); if (f) { const a = x > 13 ? x - 14 : x, b = y > 13 ? y - 14 : y; if (a === 0 || a === 6 || b === 0 || b === 6 || (a > 1 && a < 5 && b > 1 && b < 5)) h += `<rect x="${x}" y="${y}" width="1" height="1" fill="#111"/>`; } else if (rnd() > 0.52) h += `<rect x="${x}" y="${y}" width="1" height="1" fill="#111"/>`; } S.$("#qr").innerHTML = h; })();
   S.$("#pay-done").addEventListener("click", () => { const f = fees().find((x) => !x.paid); f.paid = S.todayKey; S.save(); S.$("#pay-modal").classList.remove("open"); renderFees(); renderHome(); S.toast("Payment received · receipt sent on WhatsApp and email"); });
 
   function renderThread() {
-    S.$("#thread").innerHTML = thread().map((m) => `<div class="msg ${m.from === "parent" ? "me" : "bot"}">${S.esc(m.text)}<span class="when">${m.from === "teacher" ? S.teacher.name + " · " : ""}${S.esc(m.at)}</span></div>`).join("");
+    const t = thread(); S.sealThread(t);
+    S.$("#p-rec").innerHTML = S.recordNote(t);
+    S.$("#thread").innerHTML = t.map((m) => `<div class="msg ${m.from === "parent" ? "me" : "bot"}${m.voice ? " voice" : ""}">${S.msgBody(m)}<span class="when">${m.from === "teacher" ? S.teacher.name + " · " : ""}${S.esc(m.at)}${m.after ? " · after hours" : ""}</span></div>`).join("");
+    S.$("#p-hours").innerHTML = `${CLOCK}${S.esc(S.teacher.name)} reads messages ${S.hoursText(S.teacher.name)}, Monday to Saturday.${S.inHours(S.teacher.name) ? "" : ` Anything you send now reaches them ${S.nextOpen(S.teacher.name)}.`}`;
     S.$("#thread").scrollTop = 1e6;
+    renderCare();
   }
-  S.$("#msg-form").addEventListener("submit", (e) => {
+  // Only the parent writes here: a parent check first, good for ten minutes.
+  const chatCheck = () => S.parentCheck({ key: me.key, hold: true, why: `Messages to ${S.teacher.name} go out in your name. Confirm it's you, not ${me.first}.` });
+  // Outside the teacher's office hours a message is kept, without an alert, until they start.
+  const postMine = (m) => {
+    const open = S.inHours(S.teacher.name);
+    S.post(thread(), Object.assign({ from: "parent", at: "Today, " + S.timeNow(), fresh: true, check: "PIN" }, open ? {} : { after: true }, m)); S.save(); renderThread();
+    S.toast(open ? "Sent to " + S.teacher.name : `Sent. ${S.teacher.name} sees it ${S.nextOpen(S.teacher.name)}.`);
+  };
+  S.$("#msg-form").addEventListener("submit", async (e) => {
     e.preventDefault(); const i = e.target.querySelector("input"); if (!i.value.trim()) return;
-    thread().push({ from: "parent", text: i.value.trim(), at: "Today, " + S.timeNow(), fresh: true }); i.value = ""; S.save(); renderThread();
-    S.toast("Sent to " + S.teacher.name);
+    if (!(await chatCheck())) return;
+    postMine({ text: i.value.trim() }); i.value = "";
   });
+  S.bindVoice(S.$("#msg-form"), chatCheck, (v) => postMine(v));
+
+  // ---------- Remarks and forms from the school ----------
+  const myRemarks = () => S.remarksFor(me.sec.key, me.roll, false);
+  const myForms = () => S.formsFor(me.sec.key);
+  const KIND_TONE = { praise: "green", progress: "royal", concern: "warn", conduct: "slate" };
+  function renderCare() {
+    S.$$(".kid-first").forEach((b) => (b.textContent = me.first));
+    const rs = myRemarks(), fs = myForms(), open = fs.filter((f) => !S.formAnswer(f, me.roll));
+    S.$("#n-form").hidden = !open.length; S.$("#n-form").textContent = open.length;
+    S.$("#n-rem").hidden = true;
+    S.paint(S.$("#p-remarks"), rs.length ? rs.map((r) => `<div class="rem"><span class="rem-k t-${KIND_TONE[r.kind]}">${S.REMARK_KINDS[r.kind]}</span><p>${S.esc(r.text)}</p><span class="rem-by">${S.esc(r.by)} · ${S.esc(r.cap)} · ${S.fmt(r.at, { day: "numeric", month: "short" })}</span></div>`).join("") : `<p class="muted">No remarks yet. Teachers' notes about ${me.first} will appear here.</p>`);
+    S.paint(S.$("#p-forms"), fs.length ? fs.map((f) => { const a = S.formAnswer(f, me.roll); return `<div class="pform${a ? " done" : ""}" data-f="${f.id}"><div class="pform-h"><b>${S.esc(f.title)}</b>${a ? `<span class="pill ${a.v === "no" ? "" : "green"}">${S.formLabel(a.v)}</span>` : `<span class="pill red">Due ${S.fmt(f.due, { day: "numeric", month: "short" })}</span>`}</div><p>${S.esc(f.body)}</p><span class="rem-by">From ${S.esc(f.by)} · ${S.esc(f.cap)}</span>${a ? `<p class="pform-sig">${S.ICON_LOCK}Signed by ${S.esc(a.who)} on ${S.fmt(a.at, { day: "numeric", month: "long" })}, after a parent check. A receipt went by SMS.</p>` : `<div class="pform-act">${f.kind === "consent" ? `<button class="btn btn-primary btn-sm" type="button" data-sign="${f.id}" data-v="yes">I agree</button><button class="btn btn-ghost btn-sm" type="button" data-sign="${f.id}" data-v="no">I don't agree</button>` : `<button class="btn btn-primary btn-sm" type="button" data-sign="${f.id}" data-v="ack">I have read this</button>`}</div>`}</div>`; }).join("") : `<p class="muted">No forms to sign.</p>`);
+  }
+  document.addEventListener("click", async (e) => {
+    const b = e.target.closest("[data-sign]"); if (!b) return;
+    const f = S.state.forms.find((x) => x.id === b.dataset.sign); if (!f) return;
+    // Signing always needs the parent check, however recent the last one was.
+    if (!(await S.parentCheck({ key: me.key, hold: false, why: `You are signing "${f.title}" for ${me.first} as ${me.relation.toLowerCase()}. Only a parent can sign.` }))) return;
+    f.replies[me.roll] = { v: b.dataset.v, at: S.todayKey, who: `${me.parent} (${me.relation.toLowerCase()})`, check: "PIN" };
+    S.save(); renderCare(); renderAlerts();
+    S.landed(S.$(`#p-forms .pform[data-f="${f.id}"]`));
+    S.toast(`Signed. A receipt went by SMS to ${me.phone}.`);
+  });
+
+  document.addEventListener("click", (e) => { if (e.target.closest("[data-go-forms]")) { S.go("messages"); document.querySelector('[data-vt="pmsg"] button[data-v="forms"]').click(); } });
 
   S.$("#leave-form").addEventListener("submit", (e) => {
     e.preventDefault();
@@ -911,7 +1006,6 @@
   });
   S.$("#l-from").value = S.iso(S.nextSchoolDay(S.today, 3)); S.$("#l-to").value = S.iso(S.nextSchoolDay(S.today, 4));
 
-  if (S.$("#sib")) S.$("#sib").addEventListener("click", () => S.toast("In the demo, only " + me.first + "'s records are filled in"));
   S.$("#cal-prev").addEventListener("click", () => { calMonth = new Date(calMonth.getFullYear(), calMonth.getMonth() - 1, 1); renderCal(); });
   S.$("#cal-next").addEventListener("click", () => { calMonth = new Date(calMonth.getFullYear(), calMonth.getMonth() + 1, 1); renderCal(); });
 
@@ -919,7 +1013,69 @@
     if (e.detail === "messages") { thread().forEach((m) => { if (m.from === "teacher") m.fresh = false; }); S.save(); }
     renderAll();
   });
-  function renderAll() { renderPivot(); renderHome(); renderBus(); renderAttendance(); renderHomework(); renderResults(); renderExams(); renderNotices(); renderFees(); renderThread(); }
+  // ---------- Pick-up: who may collect this child ----------
+  const CLOCK = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="8.5"/><path d="M12 7.5V12l3 2"/></svg>';
+  const pickCheck = (why) => S.parentCheck({ key: me.key, hold: false, why });
+  function renderPickup() {
+    const ps = S.pickupsOf(me.key);
+    S.paint(S.$("#pk-list"), ps.length ? ps.map((p) => `<div class="li pk-li" data-pk-row="${p.id}"><span class="avatar">${S.esc(p.name.split(" ").map((w) => w[0]).join("").slice(0, 2))}</span><div class="t"><b>${S.esc(p.name)}</b><span>${S.esc(p.rel)} · ${S.esc(p.phone)} · added ${S.fmt(p.at, { day: "numeric", month: "short" })}</span></div><button class="link-btn end" type="button" data-pk-del="${p.id}">Remove</button></div>`).join("") : `<p class="muted">Nobody yet. Add the adults who usually collect ${S.esc(me.first)}.</p>`);
+    const today = S.state.passes.filter((p) => p.kid === me.key && p.date === S.todayKey);
+    S.paint(S.$("#ps-out"), today.length ? `<div class="list" style="margin-top:14px">${today.map((p) => `<div class="li pass-li"><span class="pass-code">${p.code}</span><div class="t"><b>${S.esc(p.name)} · ${S.esc(p.rel)}</b><span>${p.used ? `Used at the gate, ${S.esc(p.used.at)}` : "Valid today only, once"}</span></div></div>`).join("")}</div>` : "");
+  }
+  S.$("#pk-add").addEventListener("click", () => { S.$("#pk-form").hidden = false; S.$("#pk-n").focus(); });
+  S.$("#pk-x").addEventListener("click", () => { S.$("#pk-form").hidden = true; });
+  S.$("#pk-form").addEventListener("submit", async (e) => {
+    e.preventDefault(); const name = S.$("#pk-n").value.trim(); if (!name) return;
+    if (!(await pickCheck(`You are adding ${name} to the people who may collect ${me.first} from school.`))) return;
+    const p = { id: "pk" + Date.now().toString(36), name, rel: S.$("#pk-r").value, phone: S.$("#pk-p").value.trim(), at: S.todayKey, by: me.parent };
+    S.pickupsOf(me.key).push(p); S.logAct(`Pick-up list for ${me.name}: added ${name} (${p.rel})`, me.parent + ", parent");
+    e.target.reset(); e.target.hidden = true; renderPickup(); S.landed(S.$(`[data-pk-row="${p.id}"]`));
+    S.toast(`Added. An SMS went to ${me.phone}.`, { done: true });
+  });
+  document.addEventListener("click", async (e) => {
+    const b = e.target.closest("[data-pk-del]"); if (!b) return;
+    const ps = S.pickupsOf(me.key), p = ps.find((x) => x.id === b.dataset.pkDel); if (!p) return;
+    if (!(await pickCheck(`You are removing ${p.name}. From now on the gate will not hand ${me.first} to them.`))) return;
+    ps.splice(ps.indexOf(p), 1); S.logAct(`Pick-up list for ${me.name}: removed ${p.name}`, me.parent + ", parent"); renderPickup();
+    S.toast(`Removed. An SMS went to ${me.phone}.`, { done: true });
+  });
+  S.$("#ps-form").addEventListener("submit", async (e) => {
+    e.preventDefault(); const name = S.$("#ps-n").value.trim(), rel = S.$("#ps-r").value.trim(); if (!name || !rel) return;
+    if (!(await pickCheck(`${name} will be able to collect ${me.first} today only, with a one-time code.`))) return;
+    const code = S.newPass(me.key, name, rel); S.logAct(`Gate code for ${me.name}: ${name} (${rel}), today only`, me.parent + ", parent");
+    e.target.reset(); renderPickup();
+    S.toast(`Code ${code} made. Send it to ${name}; it works once, today.`, { done: true });
+  });
+
+  // ---------- Meetings: a time with each teacher at the next PTM ----------
+  function renderPtm() {
+    const n = S.nextPtm(), box = S.$("#p-ptm");
+    if (!n || !S.noticeFor(n, me)) { S.paint(box, `<p class="muted">No parent-teacher meeting is planned for ${S.esc(me.label)} yet. When the school sets one, you can pick a time with each teacher here.</p>`); S.$("#n-ptm").hidden = true; return; }
+    const subs = me.sec.subjects, who = S.ttTeachers, ts = [...new Set([S.teacher.name, ...subs.map((x) => who[x]).filter(Boolean)])];
+    const mine = S.ptmOfKid(n.date, me.key), slotOf = (t) => (mine.find((m) => m.teacher === t) || {}).slot;
+    S.$("#n-ptm").hidden = true;
+    S.paint(box, `<div class="ptm-h"><div><b>${S.esc(n.title)}</b><span class="muted">${S.fmt(n.date, { weekday: "long", day: "numeric", month: "long" })} · ten minutes with each teacher, 9:00 AM to 12:30 PM</span></div>${mine.length ? `<button class="btn btn-ghost btn-sm" type="button" id="ptm-ics">Add to my calendar</button>` : ""}</div>
+      <div class="list ptm-list">${ts.map((t) => { const subj = subs.filter((x) => who[x] === t).join(", ") || "Class teacher", have = slotOf(t);
+        const free = S.PTM_SLOTS.filter((sl) => { const b = S.ptmTaken(n.date, t, sl); return !b || b.kid === me.key; });
+        return `<div class="li ptm-li" data-ptm-row="${S.esc(t)}"><div class="t"><b>${S.esc(t)}</b><span>${S.esc(t === S.teacher.name ? "Class teacher" + (subj !== "Class teacher" ? " · " + subj : "") : subj)}</span></div>
+          <label class="ptm-pick"><span class="sr-only">Time with ${S.esc(t)}</span><select data-ptm-t="${S.esc(t)}"><option value="">${have ? "Change time" : "Pick a time"}</option>${free.map((sl) => `<option${sl === have ? " selected" : ""}>${sl}</option>`).join("")}</select></label>
+          ${have ? `<span class="pill green">${have}</span>` : ""}</div>`; }).join("")}</div>
+      <p class="muted" style="font-size:13.5px;margin-top:10px">Times other families have booked are left out. The teacher sees your booking at once.</p>`);
+  }
+  document.addEventListener("change", async (e) => {
+    const sel = e.target.closest("[data-ptm-t]"); if (!sel || !sel.value) return;
+    const n = S.nextPtm(), t = sel.dataset.ptmT, sl = sel.value;
+    if (!(await chatCheck())) { renderPtm(); return; }
+    S.ptmBook(n.date, t, sl, me.key, me.parent); S.save(); renderPtm(); S.landed(S.$(`[data-ptm-row="${t.replace(/"/g, "")}"]`));
+    S.toast(`Booked: ${sl} with ${t}`, { done: true });
+  });
+  document.addEventListener("click", (e) => {
+    if (!e.target.closest("#ptm-ics")) return;
+    const n = S.nextPtm(), mine = S.ptmOfKid(n.date, me.key);
+    S.ics([{ date: n.date, title: `PTM at St. John's: ${me.first}`, note: mine.map((m) => `${m.slot} ${m.teacher}`).join(" / ") }], "ptm-" + n.date);
+  });
+
+  function renderAll() { renderPivot(); renderHome(); renderBus(); renderAttendance(); renderHomework(); renderResults(); renderExams(); renderNotices(); renderFees(); renderThread(); renderPickup(); renderPtm(); }
   S.vtInit();
   renderAll();
   document.addEventListener("sjs:redraw", renderSession);
