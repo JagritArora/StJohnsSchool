@@ -17,7 +17,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Figtree:wght@400..800&display=swap" rel="stylesheet" />
-<link rel="stylesheet" href="css/site.css?v=21" />
+<link rel="stylesheet" href="css/site.css?v=22" />
 <script>
 /* Before the first paint: fade photos in as they load. */
 (function (d) { d.documentElement.classList.add("js");
@@ -28,58 +28,59 @@
 <body class="app">
 <div class="proto-bar"><b>Prototype</b> · Parent view with sample data. <a href="staff.html?id=SJS-T-0412" target="_blank">Open the teacher view in a new tab</a></div>
 <div class="app-shell">
-  <aside class="side">
-    <a href="index.html" class="brand"><img src="assets/crest.svg" alt="" width="40" height="40" /><span><span class="brand-name">St. John&#x27;s School</span><span class="brand-sub">Parent</span></span></a>
-    <nav id="nav-side"></nav>
-    <div class="side-foot">
-      
-      <a class="side-btn" href="login.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M15 4h4v16h-4M10 8l-4 4 4 4M6 12h10"/></svg>Sign out</a>
-      <div class="who"><span class="avatar">RS</span><div><b>Rohit Sharma</b><span>Parent</span></div></div>
-    </div>
-  </aside>
+  <!-- The bar on top: the school (back to the welcome page), the bell, messages and who's signed in. -->
+  <header class="pbar">
+    <a class="pbar-brand" href="#home" data-go="home" aria-label="St. John's School, welcome page"><img src="assets/crest.svg" alt="" width="34" height="34" /><span><b>St. John&#x27;s School</b><small>Parent</small></span></a>
+    <div class="pbar-r"><span data-bell></span><button class="icon-btn" type="button" data-go="messages" aria-label="Messages"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5h16v11H9l-5 4z"/></svg></button><span class="pbar-who who"><span class="avatar">RS</span><span class="pbar-wt"><b>Rohit Sharma</b><small>Parent</small></span></span><a class="icon-btn" href="login.html" aria-label="Sign out"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M15 4h4v16h-4M10 8l-4 4 4 4M6 12h10"/></svg></a></div>
+  </header>
+  <nav id="nav-side" hidden></nav>
 
   <main class="main">
-    <div class="mobile-head"><img src="assets/crest.svg" alt="" /><b>St. John&#x27;s School<small>Parent</small></b><div class="right"><span data-bell></span><button class="icon-btn" data-go="messages" aria-label="Messages"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5h16v11H9l-5 4z"/></svg></button><a class="icon-btn" href="login.html" aria-label="Sign out"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M15 4h4v16h-4M10 8l-4 4 4 4M6 12h10"/></svg></a></div></div>
-
-    <!-- HOME: a calm first look; the detail lives on each tab -->
+    <!-- HOME: the welcome page. What needs a parent today, then one tile per page; the detail lives on the pages. -->
     <section data-view="home" class="hm">
-      <div class="topbar"><div><h1 id="hello">Good morning, Rohit</h1><div class="sub" id="today-line"></div></div></div>
-      <div class="card hm-hero hm-in" style="--i:0">
-        <div class="hm-id">
-          <span class="avatar kid-av">AS</span>
-          <div class="kid-t"><h2>Aarav Sharma</h2><span>Class VII-B · Roll 01 · Class teacher Ms. Neha Mathew</span></div>
-          <div class="seg kid-sw" role="group" aria-label="Choose a child"><button class="on" type="button" aria-pressed="true">Aarav · VII-B</button><button type="button" id="sib" aria-pressed="false">Ananya · III-A</button></div>
+      <div class="hub">
+        <div class="hub-top">
+          <div class="hub-hello"><div><div class="hub-date" id="today-line"></div><h1 id="hello">Good morning, Rohit</h1></div></div>
+          <div class="hub-kid">
+            <span class="avatar kid-av">AS</span>
+            <div class="kid-t"><h2>Aarav Sharma</h2><span>Class VII-B · Roll 01 · Class teacher Ms. Neha Mathew</span></div>
+            <div class="seg kid-sw" role="group" aria-label="Choose a child"><button class="on" type="button" aria-pressed="true">Aarav · VII-B</button><button type="button" id="sib" aria-pressed="false">Ananya · III-A</button></div>
+          </div>
+          <p id="today-status" class="hub-line"></p>
         </div>
-        <div id="today-status" class="hm-status"></div>
-        <div class="hm-day" id="hm-day"></div>
-        <div class="hm-foot"><span id="hm-bus" class="hm-bus"></span><button class="link-btn" type="button" data-go="timetable">Week timetable and bus</button></div>
-      </div>
-      <div class="hm-alerts" id="hm-alerts"></div>
-      <div class="hm-glance" id="home-stats"></div>
-      <div id="phase-card" class="hm-phase hm-in" style="--i:6" hidden></div>
-      <!-- Coming up and the week's summary cover the same ground, so they share one card. -->
-      <div class="card hm-in hm-week" style="--i:7">
-        <div class="card-h"><div class="seg vt" data-vt="hmw" aria-label="Coming up or this week"><button data-v="due">Coming up</button><button data-v="week"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l1.9 5.3L19 10l-5.1 1.7L12 17l-1.9-5.3L5 10l5.1-1.7z"/></svg>This week</button></div><button class="right link-btn" type="button" data-go="homework">All homework</button></div>
-        <div class="vp" data-vp="hmw" data-v="due"><div class="list" id="due"></div></div>
-        <div class="vp hm-ai" data-vp="hmw" data-v="week" hidden>
-          <span class="ai-tag"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l1.9 5.3L19 10l-5.1 1.7L12 17l-1.9-5.3L5 10l5.1-1.7z"/></svg>This week for Aarav · AI summary</span>
-          <div class="body" id="weekly"></div>
-          <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:16px"><button class="btn btn-primary btn-sm" onclick="SJS.ask('What should we work on?')">What should we work on?</button><button class="btn btn-ghost btn-sm" onclick="SJS.openAI()">Ask anything about Aarav</button></div>
-        </div>
-      </div>
+        <div class="hub-sec"><h2>Needs you</h2><div id="hub-needs"></div></div>
+        <div id="phase-card" class="hm-phase" hidden></div>
+        <div class="hub-sec"><h2><span><span class="kid-first">Aarav</span>&#x27;s pages</span></h2><div id="hub-tiles"></div></div>
       <div class="install" id="install" hidden>
         <img src="assets/icons/icon-192.png" alt="" width="44" height="44" />
         <div><b>Keep St. John's on your home screen</b><span id="install-how">It opens straight to Aarav's day, like an app.</span></div>
         <button class="btn btn-primary btn-sm" id="install-go" type="button">Add</button>
         <button class="icon-btn" id="install-x" type="button" aria-label="Not now"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
       </div>
+      </div>
     </section>
 
-    <!-- TIMETABLE: the week, today's classes and the bus -->
+    <!-- TODAY AND TIMETABLE: the day as it happens, the week, and what's coming up -->
     <section data-view="timetable">
-      <div class="topbar"><div><h1>Timetable</h1><div class="sub">Aarav Sharma · VII-B · Monday to Saturday</div></div></div>
-      <div class="tt-page">
-        <div class="card tt-rail" aria-labelledby="tt-h">
+      <div class="topbar"><div><h1>Today and timetable</h1><div class="sub">Aarav Sharma · VII-B · what's on now, the week, and what's due</div></div></div>
+      <div class="vt-row ptabs"><div class="seg vt" data-vt="ttp" aria-label="Today, the week or coming up"><button data-v="today">Today</button><button data-v="week">Week</button><button data-v="soon">Coming up</button></div></div>
+      <div class="pm-panes">
+        <div class="vp" data-vp="ttp" data-v="today">
+          <div class="tt-today">
+            <div class="card hm-hero"><div class="hm-day" id="hm-day"></div><div class="hm-foot"><span id="hm-bus" class="hm-bus"></span></div></div>
+            <div class="tt-side">
+              <div class="card now-card" id="now-card"></div>
+          <div class="card bus-card">
+            <div class="card-h"><h2>Bus · Route 14</h2><span class="right pill green" id="bus-pill">Live</span></div>
+            <div id="bus-text" style="font-size:14.5px"></div>
+            <div class="route" id="route"></div>
+            <div class="route-labels" id="route-labels"></div>
+          </div>
+            </div>
+          </div>
+        </div>
+        <div class="vp" data-vp="ttp" data-v="week" hidden>
+  <div class="card tt-rail" aria-labelledby="tt-h">
           <div class="card-h"><h2 id="tt-h">Class VII-B</h2><div class="seg vt" data-vt="tt" aria-label="Timetable view"><button data-v="week">Week</button><button data-v="today">Today</button><button data-v="teachers">Teachers</button></div></div>
           <div class="vp" data-vp="tt" data-v="week">
             <p class="muted" style="font-size:13.5px;margin:-6px 0 10px">Point at a period for the teacher</p>
@@ -88,14 +89,18 @@
           <div class="vp" data-vp="tt" data-v="today" hidden><div class="agenda" id="agenda"></div></div>
           <div class="vp" data-vp="tt" data-v="teachers" hidden><p class="muted" style="font-size:13.5px;margin:-6px 0 10px">Who teaches what, and how many periods a week</p><div class="tt-sum"><table class="pivot pivot-sum" id="tt-sum"></table></div></div>
         </div>
-        <div class="tt-side">
-          <div class="card now-card" id="now-card"></div>
-          <div class="card bus-card">
-            <div class="card-h"><h2>Bus · Route 14</h2><span class="right pill green" id="bus-pill">Live</span></div>
-            <div id="bus-text" style="font-size:14.5px"></div>
-            <div class="route" id="route"></div>
-            <div class="route-labels" id="route-labels"></div>
-          </div>
+        </div>
+        <div class="vp" data-vp="ttp" data-v="soon" hidden>
+  <!-- Coming up and the week's summary cover the same ground, so they share one card. -->
+      <div class="card hm-week">
+        <div class="card-h"><div class="seg vt" data-vt="hmw" aria-label="Coming up or this week"><button data-v="due">Coming up</button><button data-v="week"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l1.9 5.3L19 10l-5.1 1.7L12 17l-1.9-5.3L5 10l5.1-1.7z"/></svg>This week</button></div><button class="right link-btn" type="button" data-go="homework">All homework</button></div>
+        <div class="vp" data-vp="hmw" data-v="due"><div class="list" id="due"></div></div>
+        <div class="vp hm-ai" data-vp="hmw" data-v="week" hidden>
+          <span class="ai-tag"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l1.9 5.3L19 10l-5.1 1.7L12 17l-1.9-5.3L5 10l5.1-1.7z"/></svg>This week for Aarav · AI summary</span>
+          <div class="body" id="weekly"></div>
+          <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:16px"><button class="btn btn-primary btn-sm" onclick="SJS.ask('What should we work on?')">What should we work on?</button><button class="btn btn-ghost btn-sm" onclick="SJS.openAI()">Ask anything about Aarav</button></div>
+        </div>
+      </div>
         </div>
       </div>
     </section>
@@ -103,7 +108,7 @@
     <!-- ATTENDANCE -->
     <section data-view="attendance">
       <div class="topbar"><div><h1>Attendance</h1><div class="sub">Aarav Sharma · VII-B · Session 2026–27</div></div><div class="right"><button class="btn btn-primary btn-sm" onclick="SJS.openModal('leave-modal')">Apply for leave</button></div></div>
-      <div class="vt-row"><div class="seg vt" data-vt="patt" aria-label="Attendance or pick-up"><button data-v="att">Attendance</button><button data-v="pick">Pick-up</button></div></div>
+      <div class="vt-row ptabs"><div class="seg vt" data-vt="patt" aria-label="Attendance or pick-up"><button data-v="glance">At a glance</button><button data-v="att">Calendar</button><button data-v="pick">Pick-up</button></div></div>
       <div class="pm-panes">
       <div class="vp" data-vp="patt" data-v="pick" hidden>
         <div class="grid g21">
@@ -128,8 +133,10 @@
           </div>
         </div>
       </div>
-      <div class="vp" data-vp="patt" data-v="att">
-      <div class="grid g3" id="att-stats" style="margin-bottom:16px"></div>
+      <div class="vp" data-vp="patt" data-v="glance">
+        <div class="card x-card"><div class="card-h"><h2>Month by month</h2><span class="right muted x-sub">Present on school days, this session</span></div><div id="att-x"></div></div>
+      </div>
+      <div class="vp" data-vp="patt" data-v="att" hidden>
       <div class="grid g21">
         <div class="card">
           <div class="card-h"><h2 id="att-h">Attendance</h2><div class="seg vt" data-vt="att" aria-label="Attendance view"><button data-v="month">Month</button><button data-v="session">Session</button><button data-v="trend">Trend</button><button data-v="table">Table</button></div></div>
@@ -159,10 +166,15 @@
     <!-- RESULTS -->
     <section data-view="results">
       <div class="topbar"><div><h1>Results</h1><div class="sub">Aarav Sharma · VII-B</div></div><div class="right seg" id="exam"></div></div>
-      <div class="seg pg-sw" data-exsw aria-label="Results or datesheets"><button class="on" type="button" data-go="results" aria-pressed="true">Results</button><button type="button" data-go="exams" aria-pressed="false">Datesheets</button></div>
+      <div class="ptabs" data-exsw><div class="seg pg-sw" aria-label="Results or datesheets"><button class="on" type="button" data-go="results" aria-pressed="true">Results</button><button type="button" data-go="exams" aria-pressed="false">Datesheets</button></div></div>
       <div id="ut2-card"></div>
       <div id="res-phase"></div>
-      <div class="grid g21">
+      <div class="grid g21 res-glance">
+        <div class="card x-card"><div class="card-h"><h2 id="res-x-h">Subject by subject</h2><span class="right muted x-sub">The black tick is the class average</span></div><div id="res-x"></div></div>
+        <div class="ai-card res-ai"><button class="link-btn res-rc" type="button" data-rc data-no-start>Report card so far</button><span class="ai-tag"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l1.9 5.3L19 10l-5.1 1.7L12 17l-1.9-5.3L5 10l5.1-1.7z"/></svg>What the numbers say</span><div class="body" id="res-ai"></div></div>
+      </div>
+      <details class="hub-fold res-more">
+        <summary>More ways to see these marks<span class="muted hub-fold-1">Against the class on CBSE grades, a profile, the change since the last exam, and a table</span></summary>
         <div class="card">
           <div class="card-h"><h2 id="res-title">Half-yearly · marks by subject</h2><div class="seg vt" data-vt="res" aria-label="Chart type"><button data-v="bars">Against the class</button><button data-v="profile">Profile</button><button data-v="change">Change</button><button data-v="table">Table</button></div></div>
           <div id="res-read"></div>
@@ -180,14 +192,13 @@
           </div>
           <div class="vp" data-vp="res" data-v="table" hidden><div class="tbl-wrap"><table class="tbl" id="res-tbl"></table></div></div>
         </div>
-        <div class="ai-card res-ai"><button class="link-btn res-rc" type="button" data-rc data-no-start>Report card so far</button><span class="ai-tag"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l1.9 5.3L19 10l-5.1 1.7L12 17l-1.9-5.3L5 10l5.1-1.7z"/></svg>What the numbers say</span><div class="body" id="res-ai"></div></div>
-      </div>
+      </details>
     </section>
 
     <!-- EXAMS: this class's datesheets, as the school publishes them -->
     <section data-view="exams">
       <div class="topbar"><div><h1>Exams</h1><div class="sub">Aarav Sharma · VII-B · Session 2026–27</div></div></div>
-      <div class="seg pg-sw" data-exsw aria-label="Results or datesheets"><button type="button" data-go="results" aria-pressed="false">Results</button><button class="on" type="button" data-go="exams" aria-pressed="true">Datesheets</button></div>
+      <div class="ptabs" data-exsw><div class="seg pg-sw" aria-label="Results or datesheets"><button type="button" data-go="results" aria-pressed="false">Results</button><button class="on" type="button" data-go="exams" aria-pressed="true">Datesheets</button></div></div>
       <div class="ex-page">
         <div class="card ex-main" id="ex-main"></div>
         <div class="card ex-side"><div class="card-h"><h2>This session</h2></div><div class="ex-list" id="ex-list"></div></div>
@@ -214,7 +225,7 @@
     <!-- MESSAGES -->
     <section data-view="messages">
       <div class="topbar"><div><h1>Messages</h1><div class="sub" id="msg-sub">With Ms. Neha Mathew, class teacher VII-B</div></div></div>
-      <div class="vt-row"><div class="seg vt" data-vt="pmsg" aria-label="Messages, remarks or forms"><button data-v="chat">Chat</button><button data-v="remarks">Remarks<span class="seg-n" id="n-rem" hidden></span></button><button data-v="forms">Forms<span class="seg-n" id="n-form" hidden></span></button><button data-v="ptm">Meetings<span class="seg-n" id="n-ptm" hidden></span></button></div></div>
+      <div class="vt-row ptabs"><div class="seg vt" data-vt="pmsg" aria-label="Messages, remarks or forms"><button data-v="chat">Chat</button><button data-v="remarks">Remarks<span class="seg-n" id="n-rem" hidden></span></button><button data-v="forms">Forms<span class="seg-n" id="n-form" hidden></span></button><button data-v="ptm">Meetings<span class="seg-n" id="n-ptm" hidden></span></button></div></div>
       <div class="pm-panes">
       <div class="card vp" data-vp="pmsg" data-v="remarks" hidden style="max-width:720px"><p class="muted" style="font-size:14px;margin-bottom:6px">What teachers have noted about <b class="kid-first">Aarav</b>, newest first.</p><div class="rem-list" id="p-remarks"></div></div>
       <div class="card vp" data-vp="pmsg" data-v="forms" hidden style="max-width:720px"><div class="form-list" id="p-forms"></div></div>
@@ -260,7 +271,8 @@
 <script src="js/care.js?v=2"></script>
 <script src="js/common.js?v=11"></script>
 <script src="js/charts.js?v=10"></script>
-<script src="js/more.js?v=3"></script>
+<script src="js/hub.js?v=3"></script>
+<script src="js/more.js?v=4"></script>
 <script src="js/demo.js?v=2"></script>
 <script src="js/ai.js?v=8"></script>
 <script>
@@ -321,21 +333,13 @@
     S.$("#today-line").textContent = S.fmtLong(S.today);
     const st = S.statusOn(me.roll, S.todayKey), rec = S.cs.attendance[S.todayKey];
     const box = S.$("#today-status");
-    if (st === null) { box.className = "hm-status wait"; box.innerHTML = `<i class="hm-dot"></i><div><b>Attendance not marked yet</b><span>${S.teacher.name} takes roll call at 8:00 AM. You'll get a notification.</span></div>`; }
-    else if (st === "P") { box.className = "hm-status ok"; box.innerHTML = `<i class="hm-dot"></i><div><b>${me.first} is in school today</b><span>Marked present at ${rec.at} by ${S.teacher.name}</span></div>`; }
-    else { box.className = "hm-status bad"; box.innerHTML = `<i class="hm-dot"></i><div><b>${me.first} is marked ${statusLabel[st].toLowerCase()} today</b><span>Marked at ${rec.at} by ${S.teacher.name}. Not expected? <a href="#messages" data-go="messages" style="color:var(--accent-text)">Message the teacher</a></span></div>`; }
+    const say = (c, b, rest) => { box.style.setProperty("--c", c); S.paint(box, `<i></i><span><b>${b}</b> ${rest}</span>`); };
+    if (st === null) say("var(--warn)", "Attendance not marked yet.", `${S.teacher.name} takes roll call at 8:00 AM. You'll get a notification.`);
+    else if (st === "P") say("var(--green)", `${me.first} is in school today.`, `Marked present at ${rec.at} by ${S.teacher.name}.`);
+    else say("var(--accent)", `${me.first} is marked ${statusLabel[st].toLowerCase()} today.`, `Marked at ${rec.at} by ${S.teacher.name}. Not expected? <button class="link-btn" type="button" data-go="messages">Message the teacher</button>`);
 
     const pend = S.cs.homework.filter((h) => !h.done), fee = fees().find((f) => !f.paid);
-    const classHy = Math.round(S.subjects.reduce((a, x) => a + S.classAvg(C, x), 0) / S.subjects.length);
     const nextPtm = S.state.notices.filter((n) => n.tag === "PTM" && n.date >= S.todayKey).sort((x, y) => (x.date < y.date ? -1 : 1))[0];
-    const xs = examsSoFar(), avg = S.avgOf(me[C]);
-    const tile = (i, go, tone, label, num, sub, cls = "") => `<button type="button" class="hm-tile hm-in ${cls}" style="--i:${i};--c:var(--${tone})" data-go="${go}"><span class="hm-l"><i></i>${label}</span><b class="hm-n">${num}</b><span class="hm-s">${sub}</span><svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg></button>`;
-    const cu = (v, dp = 0) => `<span class="cu" data-to="${v}" data-dp="${dp}">${dp ? v.toFixed(dp) : v.toLocaleString("en-IN")}</span>`;
-    S.paint(S.$("#home-stats"),
-      tile(1, "attendance", "green", "Attendance", `${cu(S.attendancePct(me.roll), 1)}<small>%</small>`, "This session · CBSE needs 75%") +
-      tile(2, "results", "accent", L(C), `${cu(avg)}<small>%</small>`, P ? `${avg >= S.avgOf(me[P]) ? "Up" : "Down"} from ${S.avgOf(me[P])}% in ${L(P)}` : "From last session · class " + classHy + "%") +
-      tile(3, "homework", "royal", "Homework", `${cu(pend.length)}<small> to do</small>`, pend[0] ? "Next: " + S.esc(pend[0].subj) + ", " + S.fmt(pend[0].due) : "All done") +
-      tile(4, "fees", "gold", "Fees", fee ? `₹${cu(fee.amount)}` : "Paid", fee ? "Due " + S.fmt(fee.due, { day: "numeric", month: "long" }) : "Nothing due", fee ? "due" : ""));
     // Due soon: homework, the next fee and the next PTM, soonest first.
     const due = pend.map((h) => ({ d: h.due, tone: "warn", icon: "hw", t: `${h.subj}: ${h.title}`, sub: "Set by " + h.by, go: "homework" }));
     if (fee) due.push({ d: fee.due, tone: "red", icon: "fee", t: `Fee instalment, ${S.rupee(fee.amount)}`, sub: fee.q + " · pay by UPI", go: "fees" });
@@ -344,7 +348,7 @@
     const shown = dueOpen ? due : due.slice(0, 3);
     S.$("#due").innerHTML = (due.length ? shown.map((x) => `<${x.go ? `button type="button" data-go="${x.go}"` : "div"} class="li due-li"><span class="sq ${x.tone}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">${NI[x.icon]}</svg></span><div class="t"><b>${S.esc(x.t)}</b><span>${S.esc(x.sub)}</span></div><span class="end due-d"><b>${S.fmt(x.d, { day: "numeric", month: "short" })}</b><small>${S.fmt(x.d, { weekday: "short" })}</small></span></${x.go ? "button" : "div"}>`).join("") : '<p class="muted" style="font-size:14.5px">Nothing due. Enjoy the evening.</p>') +
       (due.length > 3 ? `<button type="button" class="link-btn hm-more" id="due-more" aria-expanded="${dueOpen}">${dueOpen ? "Show fewer" : `Show ${due.length - 3} more`}</button>` : "");
-    renderNow(); renderDay(); renderPhaseHome(); renderAlerts();
+    renderNow(); renderDay(); renderPhaseHome(); renderHub();
     S.$("#weekly").innerHTML = S.weekly().replace(/\n/g, "<br />");
 
     renderNotes();
@@ -559,7 +563,7 @@
     S.$("#absences").innerHTML = away.length ? away.reverse().map(([k, s]) => `<div class="li"><span class="sq ${s === "A" ? "red" : "warn"}">${s}</span><div class="t"><b>${S.fmt(k, { weekday: "long", day: "numeric", month: "long" })}</b><span>${statusLabel[s]}</span></div></div>`).join("") : '<p class="muted">No days away. 🎉</p>';
     const leaves = S.cs.leaves;
     if (leaves.length) S.$("#absences").insertAdjacentHTML("afterbegin", leaves.map((l) => `<div class="li"><span class="sq warn">L</span><div class="t"><b>Leave requested: ${S.fmt(l.from)} – ${S.fmt(l.to)}</b><span>${S.esc(l.why)}</span></div><span class="end pill ${l.status === "Approved" ? "green" : "warn"}">${l.status}</span></div>`).join(""));
-    renderCal(); renderSession();
+    renderCal(); renderSession(); renderAttX();
   }
 
   // The read: the run he is on, any weekday pattern in days away, and how many more
@@ -734,7 +738,7 @@
       const e = S.entry(S.focusKey, k), vals = Object.values(e.marks).map(Number);
       return `<div class="status ok" style="margin-bottom:16px"><span class="sq green"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M5 20V10M12 20V4M19 20v-7"/></svg></span><div><b>New: ${S.ENTRY.name} · ${k} — ${v} / ${S.ENTRY.max}</b><span>Published by ${S.esc(S.ttTeachers[k] || "the teacher")} · class average ${(vals.reduce((a, b) => a + b, 0) / vals.length).toFixed(1)} / ${S.ENTRY.max}</span></div></div>`;
     }).join("");
-    renderPhaseResults();
+    renderPhaseResults(); renderResX();
   }
 
   // ---------- Exams: the datesheet in focus, and what Home should flag ----------
@@ -761,38 +765,6 @@
   const SUB_SHORT = { Mathematics: "Maths", "Social Science": "SSt", "Information Technology": "IT", "Business Studies": "Business", "Applied Mathematics": "App. Maths", "Physical Education": "Phys. Ed.", Accountancy: "Accounts", Economics: "Eco." };
   const EXIC = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="5" y="4" width="14" height="17" rx="2"/><path d="M9 4V3h6v1M9 10h6M9 14h6M9 18h3"/></svg>';
   const CHEV = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg>';
-  function renderAlerts() {
-    const f = examFocus(); let h = "";
-    if (f) {
-      const { e } = f, ps = e.papers[G]; let title, sub, chips = "", hot = false;
-      if (f.mode === "on") {
-        const today = ps.find((p) => p.date === S.todayKey), next = ps.find((p) => p.date > S.todayKey), done = ps.filter((p) => p.date < S.todayKey).length;
-        title = today ? `${e.name}: paper ${done + 1} of ${ps.length} today` : `${e.name}: ${done} of ${ps.length} papers done`;
-        sub = (today ? `Today: <b>${today.subj}</b> · ${e.time}` : "") + (next ? `${today ? " · then" : "Next:"} <b>${next.subj}</b> ${whenWord(next.date)}` : "");
-        hot = true;
-      } else if (f.mode === "soon") {
-        const n = daysTo(ps[0].date);
-        title = `${e.name} ${verb(e)} ${n === 1 ? "tomorrow" : dLong(ps[0].date)}`;
-        // Home keeps the headline and the countdown; papers and times are on the datesheet this opens.
-        sub = `${n} day${n === 1 ? "" : "s"} to go · ${ps.length} papers`;
-        hot = n <= 7;
-      } else {
-        const last = [...ps].reverse().find((x) => x.date < S.todayKey), lm = last && S.paperMark(me, e, last);
-        title = `Test series ${whenWord(f.p.date)}: ${f.p.subj}`;
-        sub = `${e.time.replace(/^Saturdays, /, "")} · marked out of 25` + (lm && lm.v != null ? ` · last test: ${last.subj}, ${lm.v}/${lm.of}` : "");
-        hot = daysTo(f.p.date) <= 1;
-      }
-      h += `<button type="button" class="ex-banner hm-in t-${toneOf(e)}${hot ? " hot" : ""}" style="--i:1" data-ex="${e.id}"><span class="ex-ic">${EXIC}</span><span class="ex-b"><span class="ex-k">${S.EXAM_KINDS[e.kind].name}${f.mode === "on" ? " · on now" : " · datesheet out"}</span><b>${S.esc(title)}</b><span class="ex-sub">${sub}</span>${chips ? `<span class="ex-chips">${chips}</span>` : ""}</span><span class="ex-go">Datesheet ${CHEV}</span></button>`;
-    }
-    // Important notices for this child that are still to come.
-    const imp = S.noticesFor(me).filter((n) => S.levelOf(n) === "high" && n.date >= S.todayKey && !(f && n.exam === f.e.id)).sort((a, b) => (a.date < b.date ? -1 : 1)).slice(0, 2);
-    if (imp.length) h += `<div class="imp-wrap hm-in" style="--i:2">` + imp.map((n) => `<button type="button" class="imp" data-go="notices">${S.levelBadge(n)}<span class="imp-t"><b>${S.esc(n.title)}</b></span><span class="imp-d"><b>${S.fmt(n.date, { day: "numeric", month: "short" })}</b><small>${S.fmt(n.date, { weekday: "short" })}</small></span></button>`).join("") + `</div>`;
-    const toSign = S.formsFor(me.sec.key).filter((x) => !S.formAnswer(x, me.roll));
-    if (toSign.length) h += `<div class="imp-wrap hm-in" style="--i:3">` + toSign.slice(0, 2).map((x) => `<button type="button" class="imp form-due" data-go-forms><span class="lvl high">${S.ICON_LOCK}Form</span><span class="imp-t"><b>Sign: ${S.esc(x.title)}</b></span><span class="imp-d"><b>${S.fmt(x.due, { day: "numeric", month: "short" })}</b><small>Due</small></span></button>`).join("") + `</div>`;
-    S.paint(S.$("#hm-alerts"), h);
-    S.$("#hm-alerts").hidden = !h;
-  }
-
   let exSel = null, tsAll = false;
   const RES_KEY = { ut1: "ut1", hy: "hy", fin: "fin", pb2: "fin" };
   function pickExam() {
@@ -992,12 +964,12 @@
     // Signing always needs the parent check, however recent the last one was.
     if (!(await S.parentCheck({ key: me.key, hold: false, why: `You are signing "${f.title}" for ${me.first} as ${me.relation.toLowerCase()}. Only a parent can sign.` }))) return;
     f.replies[me.roll] = { v: b.dataset.v, at: S.todayKey, who: `${me.parent} (${me.relation.toLowerCase()})`, check: "PIN" };
-    S.save(); renderCare(); renderAlerts();
+    S.save(); renderCare(); renderHome();
     S.landed(S.$(`#p-forms .pform[data-f="${f.id}"]`));
     S.toast(`Signed. A receipt went by SMS to ${me.phone}.`);
   });
 
-  document.addEventListener("click", (e) => { if (e.target.closest("[data-go-forms]")) { S.go("messages"); document.querySelector('[data-vt="pmsg"] button[data-v="forms"]').click(); } });
+  document.addEventListener("click", (e) => { if (e.target.closest("[data-go-forms]")) S.go("messages/forms"); });
 
   S.$("#leave-form").addEventListener("submit", (e) => {
     e.preventDefault();
@@ -1075,30 +1047,112 @@
     S.ics([{ date: n.date, title: `PTM at St. John's: ${me.first}`, note: mine.map((m) => `${m.slot} ${m.teacher}`).join(" / ") }], "ptm-" + n.date);
   });
 
-  function renderAll() { renderPivot(); renderHome(); renderBus(); renderAttendance(); renderHomework(); renderResults(); renderExams(); renderNotices(); renderFees(); renderThread(); renderPickup(); renderPtm(); }
+
+  // ---------- The welcome page: what needs a parent, then a tile per page ----------
+  const PI = Object.assign({}, I, {
+    care: '<path d="M5 4h11l3 3v13H5z"/><path d="M9 10h6M9 14h4M15 17l1.5 1.5L19.5 15"/>',
+    ptm: '<circle cx="8" cy="9" r="3"/><circle cx="16" cy="9" r="3"/><path d="M3 19c.6-3 2.6-4.5 5-4.5s4.4 1.5 5 4.5M11 19c.6-3 2.6-4.5 5-4.5s4.4 1.5 5 4.5"/>',
+    pick: '<path d="M7 21v-7l-2-4 3-4h8l3 4-2 4v7"/><path d="M10 10h4"/>',
+    lock: '<rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/>',
+    clock: '<circle cx="12" cy="12" r="8.5"/><path d="M12 7.5V12l3 2"/>'
+  });
+  const short = (k) => S.fmt(k, { weekday: "short", day: "numeric", month: "short" });
+  // What's on at school right now, in a few words.
+  function nowLine() {
+    const real = new Date(); real.setHours(0, 0, 0, 0);
+    const list = S.timetable[S.today.getDay()] || [], live = real.getTime() === S.today.getTime() && list.length && !S.HOLIDAYS[S.todayKey];
+    if (!live) { const d = S.nextSchoolDay(S.today, 1), l = S.timetable[d.getDay()]; return `${S.fmt(d, { weekday: "long" })} starts with ${l[0]}`; }
+    const m = new Date().getHours() * 60 + new Date().getMinutes(), t1 = mins(ENDS[list.length - 1]);
+    const cur = list.findIndex((x, p) => m >= mins(S.periodTimes[p]) && m < mins(ENDS[p]));
+    if (cur >= 0) return `${list[cur]} now, until ${ENDS[cur]}`;
+    if (m < mins(S.periodTimes[0])) return `Starts with ${list[0]} at 8:00`;
+    if (m < t1) return `Break, then ${list[4]}`;
+    return "School's over for today";
+  }
+  function renderHub() {
+    const pend = S.cs.homework.filter((h) => !h.done), fee = fees().find((f) => !f.paid), N = [];
+    S.formsFor(me.sec.key).filter((x) => !S.formAnswer(x, me.roll)).forEach((x) => N.push({ d: x.due, tone: "red", icon: PI.lock, t: `Sign: ${S.esc(x.title)}`, sub: "Only a parent can sign; it asks for your PIN", when: "Due " + short(x.due), act: "Sign", go: "messages/forms" }));
+    if (fee && daysTo(fee.due) <= 21) N.push({ d: fee.due, tone: daysTo(fee.due) <= 7 ? "red" : "gold", icon: NI.fee, t: `Pay the ${fee.q.split(" · ")[0]} fee, ${S.rupee(fee.amount)}`, sub: "By UPI, with a receipt on WhatsApp", when: daysTo(fee.due) < 0 ? "Overdue" : "Due " + short(fee.due), act: "Pay", go: "fees" });
+    const ptm = S.nextPtm();
+    if (ptm && S.noticeFor(ptm, me) && daysTo(ptm.date) <= 21 && !S.ptmOfKid(ptm.date, me.key).length) N.push({ d: ptm.date, tone: "royal", icon: PI.ptm, t: "Book your times for the parent–teacher meeting", sub: "Ten minutes with each teacher", when: short(ptm.date), act: "Book", go: "messages/ptm" });
+    S.noticesFor(me).filter((n) => S.levelOf(n) === "high" && n.date >= S.todayKey && !S.ackOf(n.id, me.key) && !(ptm && n.id === ptm.id)).forEach((n) => N.push({ d: n.date, tone: "red", icon: NI.nt, t: S.esc(n.title), sub: "Important notice · tap “I've read this” once you have", when: short(n.date), act: "Read", go: "notices" }));
+    const f = examFocus();
+    if (f && f.mode !== "ts") { const ps = f.e.papers[G], nx = ps.find((p) => p.date >= S.todayKey) || ps[0]; N.push({ d: nx.date, tone: "gold", icon: NI.ex, t: f.mode === "on" ? `${S.esc(f.e.name)} is on: ${S.esc(nx.subj)} ${daysTo(nx.date) ? short(nx.date) : "today"}` : `${S.esc(f.e.name)} ${verb(f.e)} ${dLong(ps[0].date)}`, sub: `${ps.length} papers · the datesheet has the times and syllabus`, when: daysTo(nx.date) ? `In ${daysTo(nx.date)} day${daysTo(nx.date) === 1 ? "" : "s"}` : "Today", act: "Datesheet", go: "exams" }); }
+    pend.filter((h) => daysTo(h.due) <= 1).forEach((h) => N.push({ d: h.due, tone: "warn", icon: NI.hw, t: `${S.esc(h.subj)} homework: ${S.esc(h.title)}`, sub: "Set by " + S.esc(h.by), when: daysTo(h.due) < 0 ? "Late" : daysTo(h.due) ? "Due tomorrow" : "Due today", act: "See", go: "homework" }));
+    const unread = thread().filter((m) => m.from === "teacher" && m.fresh).length;
+    if (unread) N.push({ d: S.todayKey, tone: "royal", icon: NI.msg, t: `${unread === 1 ? "A new message" : unread + " new messages"} from ${S.esc(S.teacher.name)}`, sub: "Class teacher", when: "Today", act: "Read", go: "messages" });
+    N.sort((a, b) => (a.d < b.d ? -1 : 1));
+    S.paint(S.$("#hub-needs"), S.needsHTML(N, { empty: `Nothing needs you today. ${me.first}'s pages are below.` }));
+
+    const pct = S.attendancePct(me.roll), avg = S.avgOf(me[C]), ex = myExams().length;
+    const nts = S.noticesFor(me).filter((n) => n.date >= S.todayKey), hi = nts.filter((n) => S.levelOf(n) === "high" && !S.ackOf(n.id, me.key)).length;
+    const toSign = S.formsFor(me.sec.key).filter((x) => !S.formAnswer(x, me.roll)).length, rem = S.remarksFor(me.sec.key, me.roll, false).length;
+    const booked = ptm && S.noticeFor(ptm, me) ? S.ptmOfKid(ptm.date, me.key) : [];
+    const pick = S.pickupsOf(me.key).length, next = f && f.mode !== "ts" ? ` · ${S.esc(f.e.name)} ${daysTo(f.e.papers[G][0].date) > 0 ? "in " + daysTo(f.e.papers[G][0].date) + " days" : "on now"}` : "";
+    S.paint(S.$("#hub-tiles"), S.tilesHTML([
+      { go: "timetable", icon: I.timetable, tone: "teal", name: "Today and timetable", line: nowLine() },
+      { go: "attendance", icon: I.attendance, tone: "green", name: "Attendance", line: `${pct}% this session`, flag: pct < 85 },
+      { go: "homework", icon: I.homework, tone: "royal", name: "Homework", line: pend.length ? `${pend.length} to do · next ${S.esc(pend[0].subj)}, ${S.fmt(pend[0].due)}` : "All done", count: S.cs.homework.filter((h) => h.fresh && !h.done).length },
+      { go: "results", icon: I.results, tone: "accent", name: ex ? "Exams and results" : "Results", line: `${L(C)}: ${avg}%${next}` },
+      { go: "fees", icon: I.fees, tone: "gold", name: "Fees", line: fee ? `${S.rupee(fee.amount)} due ${S.fmt(fee.due, { day: "numeric", month: "short" })}` : "Nothing due", flag: fee && daysTo(fee.due) <= 14 },
+      { go: "notices", icon: I.notices, tone: "slate", name: "Notices", line: hi ? `${hi} important to read` : nts.length ? `${nts.length} coming up` : "Nothing new", flag: hi > 0 },
+      { go: "messages", icon: I.messages, tone: "royal", name: "Messages", line: unread ? `${unread} new from ${S.esc(S.teacher.name)}` : `Chat with ${S.esc(S.teacher.name)}`, count: unread },
+      { go: "messages/forms", icon: PI.care, tone: "green", name: "Remarks and forms", line: toSign ? `${toSign} form${toSign === 1 ? "" : "s"} to sign` : `${rem} remark${rem === 1 ? "" : "s"} from teachers`, flag: toSign > 0 },
+      { go: "messages/ptm", icon: PI.ptm, tone: "accent", name: "Meetings", line: !ptm || !S.noticeFor(ptm, me) ? "None planned yet" : booked.length ? `${booked.length} time${booked.length === 1 ? "" : "s"} booked, ${S.fmt(ptm.date)}` : `Book times for ${S.fmt(ptm.date)}` },
+      { go: "attendance/pick", icon: PI.pick, tone: "teal", name: "Pick-up", line: `${pick} ${pick === 1 ? "person" : "people"} can collect ${me.first}` }
+    ]));
+  }
+
+  // ---------- Charts to pick through ----------
+  // Attendance, month by month: each month's bar is the share of school days present; the line is CBSE's 75%.
+  function renderAttX() {
+    const months = monthsOf(), pct = S.attendancePct(me.roll), days = sessionDays();
+    const away = days.filter((k) => ["A", "L"].includes(S.statusOn(me.roll, k)));
+    const clsPct = Math.round(S.students.reduce((a, s) => a + S.attendancePct(s.roll), 0) / S.students.length * 10) / 10;
+    const lo = Math.min(60, Math.floor((Math.min(...months.map((r) => r.me)) - 5) / 10) * 10);
+    const worst = [...months].sort((a, b) => a.me - b.me)[0];
+    const items = months.map((r) => {
+      const gone = days.filter((k) => k.startsWith(r.m) && ["A", "L"].includes(S.statusOn(me.roll, k)));
+      const list = gone.map((k) => `${S.fmt(k, { weekday: "short", day: "numeric" })} (${S.statusOn(me.roll, k) === "A" ? "absent" : "leave"})`).join(", ");
+      const vs = Math.round((r.me - r.c) * 10) / 10;
+      return { k: r.m, label: S.fmt(r.m + "-01", { month: "long" }) + (r.m === S.todayKey.slice(0, 7) ? " so far" : ""), axis: r.label, v: r.me, short: Math.round(r.me),
+        tone: r.me < 75 ? "low" : r.me < 90 ? "watch" : "good",
+        note: `Present on <b>${r.P} of ${r.n}</b> school days. ` + (gone.length ? `Away: ${list}. ` : "Not a single day missed. ") +
+          `The class averaged ${r.c}%, so ${me.first} was ${vs === 0 ? "level with" : `${Math.abs(vs)} points ${vs > 0 ? "above" : "below"}`} it.`,
+        acts: gone.length ? `<button class="btn btn-ghost btn-sm" type="button" data-go="attendance/att">See the calendar</button>` : "" };
+    });
+    S.explore(S.$("#att-x"), { kind: "cols", lo, hi: 100, items, sel: worst && worst.me < 100 ? worst.m : months[months.length - 1].m, line: { v: 75, label: "CBSE minimum 75%" }, label: `${me.first}'s attendance by month`,
+      head: `${me.first} has been in school on <b>${pct}%</b> of school days this session, ${pct >= 90 ? "comfortably" : pct >= 75 ? "still" : "below"} ${pct >= 75 ? "above" : ""} the 75% CBSE asks for.` + (worst && worst.me < 100 ? ` The lowest month was <b>${S.fmt(worst.m + "-01", { month: "long" })}</b> at ${worst.me}%.` : ""),
+      figs: [[pct + "%", "this session"], [away.length, away.length === 1 ? "day away" : "days away"], [clsPct + "%", "class average"]] });
+  }
+  // Results, subject by subject: the bar is the child's mark, the tick the class average.
+  function renderResX() {
+    const marks = me[exam], prev = exam === C ? P : null, cut = [33, 41, 51, 61, 71, 81, 91];
+    const rows = S.subjects.map((x) => ({ x, v: marks[x], avg: S.classAvg(exam, x), d: prev ? marks[x] - me[prev][x] : null }));
+    const weak = [...rows].sort((a, b) => (a.v - a.avg) - (b.v - b.avg))[0], best = [...rows].sort((a, b) => b.v - a.v)[0];
+    const above = rows.filter((r) => r.v >= r.avg).length;
+    const lo = Math.max(0, Math.min(40, Math.floor((Math.min(...rows.map((r) => Math.min(r.v, r.avg))) - 8) / 10) * 10));
+    const items = rows.map((r) => {
+      const gap = r.v - r.avg, nx = cut.find((c) => c > r.v), who = S.ttTeachers[r.x];
+      return { k: r.x, label: r.x, v: r.v, ref: r.avg, tone: gap >= 0 ? "good" : gap >= -5 ? "watch" : "low",
+        note: `Grade <b>${S.grade(r.v)}</b>. The class averaged ${r.avg}%, so ${me.first} is ${gap === 0 ? "level with the class" : `<b>${Math.abs(gap)} points ${gap > 0 ? "above" : "below"}</b> it`}.` +
+          (r.d !== null ? ` Since ${L(prev)}: ${r.d === 0 ? "no change" : `${r.d > 0 ? "up" : "down"} ${Math.abs(r.d)}`}.` : "") +
+          (nx ? ` ${nx - r.v} more mark${nx - r.v === 1 ? "" : "s"} would reach ${S.grade(nx)}.` : " That's the top grade.") + (who ? ` Taught by ${S.esc(who)}.` : ""),
+        acts: gap < 0 ? `<button class="btn btn-primary btn-sm" type="button" data-x-ask="What should ${S.esc(me.first)} practise in ${S.esc(r.x)}?">What to practise</button><button class="btn btn-ghost btn-sm" type="button" data-go="messages">Message the class teacher</button>` : "" };
+    });
+    S.$("#res-x-h").textContent = L(exam) + " · subject by subject";
+    S.explore(S.$("#res-x"), { kind: "bars", lo, hi: 100, items, sel: weak.v < weak.avg ? weak.x : best.x, label: `${me.first}'s marks against the class average`,
+      head: `${me.first} is at or above the class average in <b>${above} of ${rows.length}</b> subjects. ` + (weak.v < weak.avg ? `<b>${weak.x}</b> needs the most help: ${weak.v}% against ${weak.avg}%.` : `The best is <b>${best.x}</b> at ${best.v}%.`),
+      figs: [[S.avgOf(marks) + "%", "overall"], [S.grade(S.avgOf(marks)), "grade"], [best.x === "Mathematics" ? "Maths" : best.x, "strongest"]],
+      key: `<span><i style="background:var(--green)"></i>At or above the class</span><span><i style="background:var(--gold)"></i>Just below</span><span><i style="background:var(--accent)"></i>More than 5 below</span><span><i style="background:var(--ink);width:3px;border-radius:1px"></i>Class average</span>` });
+  }
+
+  function renderAll() { renderPivot(); renderHome(); renderBus(); renderAttendance(); renderHomework(); renderResults(); renderExams(); renderNotices(); renderFees(); renderThread(); renderPickup(); renderPtm(); renderAttX(); renderResX(); renderHub(); }
   S.vtInit();
   renderAll();
   document.addEventListener("sjs:redraw", renderSession);
   setInterval(renderBus, 7000);
   setInterval(() => { renderPivot(); renderDay(); }, 60000);
-
-  // Home's one entrance: cards rise in turn, the day draws itself and the numbers count up. Once per visit.
-  let introDone = false;
-  function intro() {
-    if (introDone) return; introDone = true;
-    const home = S.$(".hm"); home.classList.add("intro");
-    setTimeout(() => home.classList.remove("intro"), 2600);
-    if (matchMedia("(prefers-reduced-motion: reduce)").matches) return;
-    S.$$(".hm .cu").forEach((el) => {
-      const to = +el.dataset.to, dp = +el.dataset.dp, t0 = performance.now(), dur = 900, delay = 250;
-      const fmt = (v) => (dp ? v.toFixed(dp) : Math.round(v).toLocaleString("en-IN"));
-      el.textContent = fmt(0);
-      const step = (t) => { const k = Math.min(1, Math.max(0, (t - t0 - delay) / dur)); el.textContent = fmt(to * (1 - Math.pow(1 - k, 3))); if (k < 1) requestAnimationFrame(step); };
-      requestAnimationFrame(step);
-    });
-  }
-  if (S.$(".hm").classList.contains("active")) intro();
-  document.addEventListener("sjs:view", (e) => { if (e.detail === "home") requestAnimationFrame(intro); });
 
   // Live updates from the teacher's tab
   let lastAtt = JSON.stringify(S.cs.attendance[S.todayKey] || null);

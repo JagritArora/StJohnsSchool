@@ -175,6 +175,7 @@
   function renderDay() { renderCover(); renderGate(); renderFees(); renderLog(); }
   S.renderDay = renderDay;
   renderDay(); renderPending();
-  document.addEventListener("sjs:view", (e) => { if (e.detail === "day") renderDay(); if (e.detail === "notices" || e.detail === "overview") renderPending(); });
+  // Cover, the gate, fee follow-up and the log each have their own page now.
+  document.addEventListener("sjs:view", (e) => { if (["staff", "gate", "fees", "log"].includes(e.detail)) renderDay(); if (e.detail === "notices" || e.detail === "overview") renderPending(); });
   document.addEventListener("sjs:sync", () => { renderDay(); renderPending(); });
 })();

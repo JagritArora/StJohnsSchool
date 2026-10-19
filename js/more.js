@@ -65,13 +65,13 @@
   // Every confirmed action by staff is written down with who and when. Sealed like the chat,
   // so a quiet edit later shows.
   S.logAct = (what, who) => { ensure(); S.post(S.state.activity, { from: who || (S.staff ? S.staff.name : "A parent"), text: what, at: S.fmt(S.todayKey) + ", " + S.timeNow() }); S.save(); };
-  const VIEW = { attendance: "Attendance", homework: "Homework", marks: "Marks", care: "Remarks and forms", messages: "Messages", assist: "AI assist", home: "Home", overview: "Overview", classes: "Classes", admissions: "Admissions", website: "Website", exams: "Exams", notices: "Notices", day: "School day" };
+  const VIEW = { attendance: "Attendance", homework: "Homework", marks: "Marks", care: "Remarks and forms", messages: "Messages", assist: "AI assist", home: "Home", overview: "Home", classes: "Classes", admissions: "Admissions", website: "Website", exams: "Exams", notices: "Notices", class: "My class", staff: "Staff and cover", fees: "Fees", gate: "Gate", log: "Activity log" };
   if (S.toast && /staff\.html$/.test(location.pathname)) {
     const plain = S.toast;
     S.toast = (msg, o = {}) => {
       plain(msg, o);
       const done = o.done !== undefined ? o.done : S.DONE_RE && S.DONE_RE.test(msg);
-      if (done && S.staff && !o.nolog) { const v = location.hash.slice(1); S.logAct(`${VIEW[v] || "Staff"}: ${msg.charAt(0).toLowerCase() + msg.slice(1)}`); }
+      if (done && S.staff && !o.nolog) { const v = location.hash.slice(1).split("/")[0]; S.logAct(`${VIEW[v] || "Staff"}: ${msg.charAt(0).toLowerCase() + msg.slice(1)}`); }
     };
   }
 
