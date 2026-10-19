@@ -298,15 +298,17 @@
   // the teachers are watching, and three in between.
   S.PARENTS = [{ key: "VII-B-1", sec: "VII-B", roll: 1, parent: "Rohit Sharma", relation: "Father", phone: "98xxxxxx10", bus: "Route 14" }];
   GRADES.forEach((g, gi) => S.SECTIONS[g].forEach((s, si) => {
-    const x = S.section(g, s), st = S.secStats(x);
-    const sorted = [...st.studs].sort((a, b) => b.avg - a.avg);
+    // Picked on the half-yearly, which every stage's data has, so the same families are
+    // in the demo whatever the stage: the top student, the one who most needs help, then others.
+    const x = S.section(g, s), hyAvg = (st) => x.subjects.reduce((a, k) => a + st.hy[k], 0) / x.subjects.length;
+    const sorted = [...x.students].sort((a, b) => hyAvg(b) - hyAvg(a));
     const picks = [];
     const add = (v) => { if (v && !picks.includes(v)) picks.push(v); };
-    add(sorted[0]); add(st.studs.find((v) => v.why.length));
+    add(sorted[0]); add(sorted[sorted.length - 1]);
     const pr = rng(seedOf(x.key + "par"));
-    while (picks.length < (si === 0 ? 3 : 2)) add(st.studs[Math.floor(pr() * st.studs.length)]);
-    picks.slice(0, si === 0 ? 3 : 2).forEach((v, k) => {
-      const mum = (gi + si + k) % 3 === 1, last = v.s.name.split(" ").slice(1).join(" ");
+    while (picks.length < (si === 0 ? 3 : 2)) add(x.students[Math.floor(pr() * x.students.length)]);
+    picks.slice(0, si === 0 ? 3 : 2).forEach((st, k) => {
+      const v = { s: st }, mum = (gi + si + k) % 3 === 1, last = v.s.name.split(" ").slice(1).join(" ");
       const pn = `${mum ? PM[(gi * 5 + si * 3 + k) % PM.length] : PF[(gi * 5 + si * 3 + k) % PF.length]} ${last}`;
       S.PARENTS.push({ key: `${x.key}-${v.s.roll}`, sec: x.key, roll: v.s.roll, parent: pn, relation: mum ? "Mother" : "Father", phone: `9${8 - ((gi + k) % 3)}xxxxxx${String(10 + ((gi * 17 + si * 7 + k * 5) % 89)).padStart(2, "0")}`, bus: (gi + k) % 4 === 3 ? "Own transport" : `Route ${3 + ((gi * 5 + si * 2 + k * 3) % 19)}` });
     });

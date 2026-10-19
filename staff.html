@@ -16,7 +16,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Figtree:wght@400..800&display=swap" rel="stylesheet" />
-<link rel="stylesheet" href="css/site.css" />
+<link rel="stylesheet" href="css/site.css?v=5" />
 <script>
 /* Before the first paint: fade photos in as they load. */
 (function (d) { d.documentElement.classList.add("js");
@@ -49,7 +49,8 @@
       <div class="grid g21" style="margin-bottom:16px">
         <div class="ai-card">
           <div class="card-h" style="margin:0"><span class="ai-tag"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l1.9 5.3L19 10l-5.1 1.7L12 17l-1.9-5.3L5 10l5.1-1.7z"/></svg>Needs attention · spotted by AI</span><div class="seg vt" data-vt="risk" aria-label="Show as"><button data-v="list">List</button><button data-v="map">Class map</button></div></div>
-          <div class="vp" data-vp="risk" data-v="list"><div class="list" id="risk" style="margin-top:12px"></div></div>
+          <div id="t-swarm" style="margin-top:14px"></div>
+          <div class="vp" data-vp="risk" data-v="list"><div class="list" id="risk" style="margin-top:4px"></div></div>
           <div class="vp" data-vp="risk" data-v="map" hidden><div id="class-map" style="margin-top:12px"></div></div>
           <p class="muted" style="font-size:12.5px;margin-top:12px" id="risk-note">Flags attendance under 85%, a drop of 15+ points since Unit Test 1, or any subject under 50%.</p>
         </div>
@@ -168,11 +169,10 @@
       <div class="grid g21" style="margin-bottom:16px">
         <div class="card">
           <div class="card-h"><h2 id="cls-h">Attendance by class · today (%)</h2><div class="seg vt" data-vt="cls" aria-label="Attendance view"><button data-v="today">Today</button><button data-v="week">Last 6 days</button><button data-v="table">Table</button></div></div>
+          <div id="cls-read"></div>
           <div class="vp" data-vp="cls" data-v="today">
-            <p class="muted" style="font-size:12.5px;margin:-6px 0 0">Hover a bar for the number</p>
-            <div class="cols" id="cols"></div>
-            <div class="col-labels" id="col-labels"></div>
-            <div class="legend"><span><i style="background:var(--accent)"></i>90% or more</span><span><i style="background:var(--warn)"></i>Below 90% — follow up</span><span><i class="dash"></i>90% target</span></div>
+            <div class="cdots" id="cols"></div>
+            <div class="legend"><span><i class="dot" style="background:var(--green)"></i>Class, 90% or more</span><span><i class="dot" style="background:var(--warn)"></i>Class, below 90%</span><span><i class="dot" style="border:1.5px solid var(--muted);width:9px;height:9px"></i>Each section</span><span><i class="ln" style="background:var(--royal)"></i>School today</span><span><i class="dash"></i>90% target</span></div>
           </div>
           <div class="vp" data-vp="cls" data-v="week" hidden><div class="tbl-wrap"><table class="wk" id="wk"></table></div>
             <div class="legend"><span><i style="background:color-mix(in srgb, var(--green) 22%, var(--surface))"></i>95% or more</span><span><i style="background:color-mix(in srgb, var(--green) 10%, var(--surface))"></i>90–94%</span><span><i style="background:var(--warn-soft);border:1px solid var(--warn)"></i>Below 90% — follow up</span></div></div>
@@ -181,6 +181,7 @@
         <div class="card">
           <div class="card-h"><h2 id="fee-h">Q3 fee collection</h2><div class="seg vt" data-vt="fees" aria-label="Fee view"><button data-v="all">Overall</button><button data-v="wing">By wing</button></div></div>
           <div class="stat"><div class="num" id="fee-num">₹1.92 Cr <small>of ₹2.74 Cr</small></div></div>
+          <div id="fee-read" style="margin-top:14px"></div>
           <div class="vp" data-vp="fees" data-v="all">
             <div style="margin:16px 0 8px" id="fee-stack"></div>
             <div class="muted" style="font-size:13px;display:flex;justify-content:space-between"><span id="fee-pct">70% collected</span><span id="fee-due"></span></div>
@@ -214,8 +215,9 @@
       <div class="grid g21" style="margin-bottom:16px">
         <div class="card">
           <div class="card-h"><h2 id="c-sbj-h">Subjects · half-yearly</h2><div class="seg vt" data-vt="csub" aria-label="Subjects view"><button data-v="chart">Chart</button><button data-v="table">Table</button></div></div>
-          <div class="vp" data-vp="csub" data-v="chart"><div class="sbj" id="c-sbj"></div>
-            <div class="legend"><span><i style="background:var(--accent)"></i>This section</span><span><i style="background:var(--ink);width:3px;border-radius:1px"></i>Other sections of the class</span></div></div>
+          <div id="c-sbj-read"></div>
+          <div class="vp" data-vp="csub" data-v="chart"><div class="sbj dv-list" id="c-sbj"></div>
+            <div class="legend"><span><i style="background:var(--green)"></i>Ahead of the other sections</span><span><i style="background:var(--warn)"></i>Behind them</span><span><i style="background:var(--ink);width:2px;border-radius:1px"></i>Level with them</span></div></div>
           <div class="vp" data-vp="csub" data-v="table" hidden><div class="tbl-wrap"><table class="tbl" id="c-sbj-tbl"></table></div></div>
         </div>
         <div class="card"><div class="card-h"><h2 id="c-secs-h">Sections</h2><span class="right muted" style="font-size:12.5px">Pick one to open it</span></div><div class="tbl-wrap"><table class="tbl sec-tbl" id="c-secs"></table></div></div>
@@ -223,6 +225,7 @@
       <div class="grid g21">
         <div class="card">
           <div class="card-h"><h2>Students</h2><div class="seg vt" data-vt="cstu" aria-label="Students view"><button data-v="support">Need support</button><button data-v="top">Top 5</button><button data-v="all">All</button></div></div>
+          <div id="c-swarm"></div>
           <div class="vp" data-vp="cstu" data-v="support"><div class="list" id="c-support"></div></div>
           <div class="vp" data-vp="cstu" data-v="top" hidden><div class="list" id="c-top"></div></div>
           <div class="vp" data-vp="cstu" data-v="all" hidden><div class="tbl-wrap roster"><table class="tbl" id="c-all"></table></div></div>
@@ -365,7 +368,7 @@
 })();
 </script>
 <script src="js/common.js"></script>
-<script src="js/charts.js"></script>
+<script src="js/charts.js?v=5"></script>
 <script src="js/ai.js"></script>
 <script>
 (function () {
@@ -420,16 +423,27 @@
     const prevAvg = P ? Math.round(S.students.reduce((a, s) => a + S.avgOf(s[P]), 0) / N()) : null;
     const per = periodsToday(), subjAvg = Math.round(mine.reduce((a, k) => { const y = S.sectionByKey(k); return a + y.students.reduce((b, s) => b + s[C][SUBJ], 0) / y.students.length; }, 0) / mine.length);
     const posted = mine.reduce((a, k) => a + S.secState(k).homework.filter((h) => h.by === T.name).length, 0);
+    // Trend lines: the class's last six school days, and its average (or the subject's) at each exam so far.
+    const exams = [...new Set(["ly", ...[...S.EX.list].reverse()])];
+    const clsRun = exams.map((k) => Math.round(S.students.reduce((a, s) => a + S.avgOf(s[k]), 0) / N()));
+    const subRun = exams.map((k) => Math.round(mine.reduce((a, key) => { const y = S.sectionByKey(key); return a + y.students.reduce((b, s) => b + s[k][SUBJ], 0) / y.students.length; }, 0) / mine.length));
+    const numRow = (num, sp) => `<div class="num-row"><div class="num">${num}</div>${sp}</div>`;
+    const runLbl = "At each exam: " + exams.map(L).join(", ");
     S.paint(S.$("#t-stats"), isCT ? `
-      <div class="card stat"><span class="lbl">Present today</span><div class="num">${rec ? present : "—"}<small> / ${N()}</small></div><div class="foot">${rec ? "Marked " + rec.at : "Not marked yet"}</div>${S.meter(rec ? (present / N()) * 100 : 0, { tone: "var(--green)", mark: 90, tip: "The line marks the school's 90% target" })}</div>
-      <div class="card stat"><span class="lbl">Class average</span><div class="num">${clsAvg}<small>%</small></div><div class="foot">${L(C)}</div>${S.meter(clsAvg, { tone: "var(--royal)", mark: prevAvg, tip: prevAvg ? `The line marks the ${L(P).toLowerCase()} average, ${prevAvg}%` : "" })}</div>
+      <div class="card stat"><span class="lbl">Present today</span>${numRow(`${rec ? present : "—"}<small> / ${N()}</small>`, S.spark(S.weekOf(S.focus), { tone: "var(--green)", ref: 90, label: "Attendance, last six school days" }))}<div class="foot">${rec ? "Marked " + rec.at : "Not marked yet"}</div>${S.meter(rec ? (present / N()) * 100 : 0, { tone: "var(--green)", mark: 90, tip: "The line marks the school's 90% target" })}</div>
+      <div class="card stat"><span class="lbl">Class average</span>${numRow(`${clsAvg}<small>%</small>`, S.spark(clsRun, { tone: "var(--royal)", label: runLbl }))}<div class="foot">${prevAvg !== null ? S.delta(clsAvg - prevAvg, { tip: `${L(P)} ${prevAvg}%` }) + " since the " + L(P).toLowerCase() : L(C)}</div>${S.meter(clsAvg, { tone: "var(--royal)", mark: prevAvg, tip: prevAvg ? `The line marks the ${L(P).toLowerCase()} average, ${prevAvg}%` : "" })}</div>
       <div class="card stat"><span class="lbl">Leave requests</span><div class="num">${waitLeaves}</div><div class="foot">Waiting for you</div>${S.stack([{ v: waitLeaves, tone: "var(--warn)", tip: `${waitLeaves} waiting` }, { v: S.cs.leaves.length - waitLeaves, tone: "var(--green)", tip: `${S.cs.leaves.length - waitLeaves} approved` }, { v: S.cs.leaves.length ? 0 : 1, tone: "var(--sunken)" }])}</div>
       <div class="card stat"><span class="lbl">Messages</span><div class="num">${unread}</div><div class="foot">Unread from parents</div>${S.meter(unread ? 100 : 0, { tone: "var(--accent)", tip: unread ? `${unread} unread` : "All read" })}</div>` : `
       <div class="card stat"><span class="lbl">Periods today</span><div class="num">${per.length}</div><div class="foot">${per.length ? "First at " + S.periodTimes[per[0][0]] : "A free day"}</div>${S.meter((per.length / 8) * 100, { tone: "var(--royal)", tip: `${per.length} of 8 periods` })}</div>
       <div class="card stat"><span class="lbl">Students</span><div class="num">${mine.reduce((a, k) => a + S.sectionByKey(k).students.length, 0)}</div><div class="foot">${mine.map(secLabel).join(", ")}</div></div>
-      <div class="card stat"><span class="lbl">${SUBJ} average</span><div class="num">${subjAvg}<small>%</small></div><div class="foot">${L(C)}, your sections</div>${S.meter(subjAvg, { tone: "var(--accent)" })}</div>
+      <div class="card stat"><span class="lbl">${SUBJ} average</span>${numRow(`${subjAvg}<small>%</small>`, S.spark(subRun, { tone: "var(--royal)", label: runLbl }))}<div class="foot">${P ? S.delta(subRun[subRun.length - 1] - subRun[subRun.length - 2], { tip: `${L(P)} ${subRun[subRun.length - 2]}%` }) + " since the " + L(P).toLowerCase() : L(C) + ", your sections"}</div>${S.meter(subjAvg, { tone: "var(--accent)" })}</div>
       <div class="card stat"><span class="lbl">Homework posted</span><div class="num">${posted}</div><div class="foot">Across your sections</div></div>`);
     renderMap(); renderPhase();
+    // The class on one line: everyone's average, the flagged ones in colour.
+    const flags = new Map(S.atRisk().map((v) => [v.s.roll, v.why]));
+    const avs = S.students.map((s) => S.avgOf(s[C]));
+    S.paint(S.$("#t-swarm"), S.swarm(S.students.map((s, i) => ({ v: avs[i], cls: flags.has(s.roll) ? "flag" : "", tip: `${avs[i]}% average${flags.has(s.roll) ? " · " + flags.get(s.roll).join(", ") : ""}`, tipT: s.name })),
+      { lo: Math.max(0, Math.min(40, Math.floor((Math.min(...avs) - 5) / 10) * 10)), W: S.narrow() ? 330 : 560, R: S.narrow() ? 5 : 5.5, marks: [{ v: clsAvg, label: `Class ${clsAvg}%` }], label: `Every student in ${secLabel(home)} by ${L(C).toLowerCase()} average` }));
     S.$("#risk").innerHTML = S.atRisk().map((v) => `<div class="li"><span class="avatar soft">${v.s.initials}</span><div class="t"><b>${v.s.name}</b><span>${v.why.join(" · ")}</span></div><button class="end link-btn" data-ask="Remarks for ${v.s.first}">Draft note</button></div>`).join("") || '<p class="muted" style="font-size:14.5px">Nobody is flagged right now.</p>';
     S.$("#periods").innerHTML = per.length ? per.map(([i, k]) => `<div class="li"><span class="sq ${k === home && isCT ? "red" : ""}">P${i + 1}</span><div class="t"><b>${SUBJ} · ${secLabel(k)}</b><span>${S.periodTimes[i]}${k === T.classOf ? " · your class" : ""}</span></div></div>`).join("") : `<p class="muted" style="font-size:14.5px">No ${SUBJ} periods today.</p>`;
     S.$("#leaves").innerHTML = S.cs.leaves.length ? S.cs.leaves.map((l, i) => `<div class="li"><span class="avatar soft">${S.student(l.roll).initials}</span><div class="t"><b>${S.student(l.roll).name} · ${S.fmt(l.from)} – ${S.fmt(l.to)}</b><span>${S.esc(l.why)}</span></div><div class="end">${l.status === "Waiting" ? `<button class="btn btn-green btn-sm" data-approve="${i}">Approve</button>` : '<span class="pill green">Approved</span>'}</div></div>`).join("") : `<p class="muted" style="font-size:14.5px">No leave requests. ${isCT ? "Parents send them from the app." : "They go to the class teacher."}</p>`;
@@ -699,7 +713,7 @@
     if (fresh) S.toast(`New message from ${fresh.kid.first}'s ${fresh.kid.relation.toLowerCase()}`);
   });
   document.addEventListener("sjs:vt", (e) => { if (e.detail.key === "reg" && e.detail.v === "register") renderRegister(); });
-  document.addEventListener("sjs:redraw", () => { renderMap(); renderDots(); });
+  document.addEventListener("sjs:redraw", () => { renderHome(); renderDots(); });
   S.vtInit();
   renderHome(); renderAtt(); renderHw(); renderMarks(); renderThread(); if (S.$("#ps-go")) S.$("#ps-go").click(); S.$("#rm-out").value = S.remarkFor(S.student(S.$("#rm-s").value));
   S.mountAI("teacher");
@@ -737,7 +751,70 @@
     if (i < 0 || i >= STAGES.length - 1) return;
     en.status = STAGES[i + 1][0]; S.save(); render(); S.toast(`${en.child} moved to ${en.status.toLowerCase()}`);
   });
+  document.addEventListener("sjs:redraw", () => render());
   document.addEventListener("sjs:vt", (e) => { if (e.detail.key === "cls") S.$("#cls-h").textContent = { today: "Attendance by class · today (%)", week: `Attendance by class · last ${S.lastDays().length} school days (%)`, table: "Attendance by class" }[e.detail.v]; });
+
+  // ---------- Attendance by class, today ----------
+  // A zoomed scale (attendance lives between 80 and 100), one column per class: the big dot
+  // is the class, the small ones its sections, so one section pulling a class down shows.
+  // One column per class on a zoomed scale: a big dot for the class, small ones for its
+  // sections, a line for the school and an optional target. rows: [{ c, v, secs: [{ x, v }], low, lab, attr, tip }]
+  function dotPlot(rows, { lo, hi, target = null, targetLabel = "", avg = null, avgLabel = "", label = "", lowCut = null }) {
+    const N = S.narrow(), W = N ? 360 : 640, H = N ? 236 : 232, pl = 28, pr = N ? 10 : 78, pt = 12, pb = 26;
+    const cw = (W - pl - pr) / rows.length, X = (i) => pl + (i + 0.5) * cw, Y = (v) => pt + ((hi - v) / (hi - lo)) * (H - pt - pb);
+    let g = target !== null ? `<rect class="cd-zone" x="${pl}" y="${Y(target)}" width="${W - pl - pr}" height="${Y(lo) - Y(target)}" />` : "";
+    for (let v = lo; v <= hi; v += 5) g += `<line class="grid-l" x1="${pl}" x2="${W - pr}" y1="${Y(v)}" y2="${Y(v)}" /><text x="${pl - 7}" y="${Y(v) + 4}" text-anchor="end">${v}</text>`;
+    if (target !== null) g += `<line class="ref-l" x1="${pl}" x2="${W - pr}" y1="${Y(target)}" y2="${Y(target)}" />`;
+    if (avg !== null) g += `<line class="cd-avg" x1="${pl}" x2="${W - pr}" y1="${Y(avg)}" y2="${Y(avg)}" />`;
+    if (!N) g += (target !== null ? `<text class="ref-t" x="${W - pr + 8}" y="${Y(target) + 4}">${targetLabel}</text>` : "") + (avg !== null ? `<text class="cd-avg-t" x="${W - pr + 8}" y="${Y(avg) + (target !== null && Math.abs(Y(avg) - Y(target)) < 14 ? (avg > target ? -6 : 14) : 4)}">${avgLabel}</text>` : "");
+    rows.forEach((d, i) => {
+      const x = X(i), ts = d.secs.map((s) => s.v).filter((v) => v !== null);
+      if (ts.length > 1) g += `<line class="cd-range" x1="${x}" x2="${x}" y1="${Y(Math.max(...ts))}" y2="${Y(Math.min(...ts))}" />`;
+      if (d.secs.length > 1) d.secs.forEach((s) => { if (s.v !== null) g += `<circle class="cd-sec${lowCut !== null && s.v < lowCut ? " lo" : ""}" cx="${x}" cy="${Y(s.v)}" r="3.2" />`; });
+      g += d.v === null ? `<circle class="cd-wait" cx="${x}" cy="${Y(hi) + 7}" r="6" />` : `<circle class="cd-cls${d.low ? " lo" : ""}" cx="${x}" cy="${Y(d.v)}" r="${N ? 5 : 6.5}" style="animation-delay:${i * 30}ms" />`;
+      // Value beside the dot, clear of the section rings above and below it.
+      if (d.v !== null && (N ? d.labN ?? d.lab : d.lab)) g += `<text class="cd-lab${N ? " cd-x" : ""}" x="${x + (N ? 6 : 9)}" y="${Y(d.v) + 4}">${d.v}</text>`;
+      g += `<text x="${x}" y="${H - 8}" text-anchor="middle"${N ? ' class="cd-x"' : ""}>${d.c}</text>`;
+      g += `<rect class="hit cd-col" ${d.attr} x="${x - cw / 2}" y="${pt}" width="${cw}" height="${H - pt}" tabindex="0" role="button"${S.tipAttr(d.tip, S.classLabel(d.c))} />`;
+    });
+    return `<svg class="chart" viewBox="0 0 ${W} ${H}" role="img" aria-label="${S.esc(label)}">${g}</svg>`;
+  }
+  function renderClassDots(vals, byDay) {
+    const data = classes.map((c, ci) => ({ c, ci, v: vals[ci], secs: secsOf(c).map((x) => ({ x, t: S.todayPct(x) })) }));
+    const seen = data.flatMap((d) => d.secs.map((s) => s.t).concat(d.v)).filter((v) => v !== null);
+    const school = byDay[byDay.length - 1], marked = data.filter((d) => d.v !== null), lowest = marked.length ? marked.reduce((a, b) => (b.v < a.v ? b : a)) : null;
+    S.paint(S.$("#cols"), dotPlot(data.map((d) => ({
+      c: d.c, v: d.v, low: d.v !== null && d.v < 90, lab: d.v !== null && d.v < 90, labN: d === lowest && d.v < 90, secs: d.secs.map((s) => ({ x: s.x, v: s.t })), attr: `data-col="${d.ci}"`,
+      tip: (d.v === null ? "Not marked yet" : d.v + "% present") + (d.secs.length > 1 ? " · " + d.secs.map((s) => `${nameOf(s.x)} ${s.t === null ? "not marked" : s.t + "%"}`).join(", ") : "") + " · open the class"
+    })), { lo: Math.min(80, Math.floor((Math.min(...seen) - 1) / 5) * 5), hi: 100, target: 90, targetLabel: "90% target", avg: school, avgLabel: `School ${school}%`, lowCut: 90, label: "Attendance today by class and section" }));
+    // The read: which classes are under the target, whether one section is the cause, and how today compares.
+    const low = data.filter((d) => d.v !== null && d.v < 90).sort((a, b) => a.v - b.v);
+    const why = (d) => {
+      const m = d.secs.filter((s) => s.t !== null); if (m.length < 2) return `${S.classLabel(d.c)} (${d.v}%)`;
+      const w = m.reduce((a, b) => (b.t < a.t ? b : a)), rest = m.filter((s) => s !== w);
+      return rest.every((s) => s.t >= 90) ? `${S.classLabel(d.c)} (${d.v}%), where <b>${nameOf(w.x)}</b> alone is at ${w.t}% and ${rest.map((s) => `${nameOf(s.x)} ${s.t}%`).join(", ")}` : `${S.classLabel(d.c)} (${d.v}%), lowest in ${nameOf(w.x)} at ${w.t}%`;
+    };
+    const prev = byDay.slice(0, -1).filter((v) => v !== null), base = prev.length ? avgOf(prev) : null, diff = base === null || school === null ? null : Math.round((school - base) * 10) / 10;
+    const waiting = data.filter((d) => d.v === null).map((d) => S.classLabel(d.c));
+    S.paint(S.$("#cls-read"), S.read(
+      (low.length ? `<b>${low.length === 1 ? "One class is" : low.length + " classes are"} under 90%</b>: ${low.slice(0, 2).map(why).join("; and ")}${low.length > 2 ? `; and ${low.length - 2} more` : ""}. ` : "<b>Every class that has marked is at 90% or more.</b> ") +
+      (diff !== null ? `The school is at ${school}%, ${diff === 0 ? "level with" : `${Math.abs(diff)} point${Math.abs(diff) === 1 ? "" : "s"} ${diff > 0 ? "above" : "below"}`} its ${prev.length}-day average.` : "") +
+      (waiting.length ? ` Still to mark: ${waiting.join(", ")}.` : "")));
+  }
+  // The quarter's collection, week by week (sample), and what this week brought in.
+  function feeCurve() {
+    const start = { Q1: "2026-04-01", Q3: "2026-10-01", Q4: "2027-01-01" }[F.q] || "2026-10-01";
+    const weeks = Math.max(2, Math.ceil((S.today - new Date(start + "T00:00")) / 864e5 / 7));
+    const pts = Array.from({ length: weeks + 1 }, (_, k) => Math.round(F.pct * (1 - Math.pow(1 - k / weeks, 1.7))));
+    return { pts, week: pts[weeks] - pts[weeks - 1], weeks, start };
+  }
+  function feeRead(fc) {
+    if (S.PHASE === "end") return `<b>${F.pct}% of ${F.q} is in.</b> ${F.families} families still owe; the office calls each of them before transfer certificates and next year's books.`;
+    const due = new Date(F.due + "T00:00"), left = Math.max(0, Math.round((due - S.today) / 864e5));
+    const pace = fc.week, proj = Math.min(99, Math.round(F.pct + pace * (left / 7) * 0.8));
+    const r1 = S.addDays(due, -7), r2 = S.addDays(due, -1);
+    return `<b>${pace} points came in this week.</b> At that pace, about <b>${proj}%</b> will be in by ${S.fmt(due, { day: "numeric", month: "long" })}${left ? `, ${left} days away` : ""}. Reminders go to the ${F.families} families yet to pay${r1 > S.today ? ` on ${S.fmt(r1)} and ${S.fmt(r2)}` : r2 > S.today ? ` on ${S.fmt(r2)}` : ""}.`;
+  }
 
   function render() {
     S.$("#p-hello").textContent = S.greet() + (S.staff.first ? ", " + S.staff.first : "");
@@ -754,13 +831,22 @@
     S.$("#brief").innerHTML = S.brief();
     const enq = S.state.enquiries, fresh = enq.filter((e) => e.status === "New").length;
     const today = S.schoolToday(), roll = S.allSections().reduce((a, x) => a + x.students.length, 0);
-    const presentKpi = `<div class="card stat"><span class="lbl">Present today</span><div class="num">${today}<small>%</small></div><div class="foot">Sample · every section that has marked</div>${S.meter(today, { tone: "var(--green)", mark: 90, tip: "The line marks the 90% target" })}</div>`;
-    const feeKpi = `<div class="card stat"><span class="lbl">${F.q} fees</span><div class="num">${F.pct}<small>%</small></div><div class="foot">${S.PHASE === "end" ? "The year is almost settled" : "Collected so far · due " + S.fmt(F.due)}</div>${S.meter(F.pct, { tone: "var(--green)" })}</div>`;
-    const enqKpi = `<div class="card stat hl"><span class="lbl">New enquiries</span><div class="num">${fresh}</div><div class="foot">${enq.length} total this season</div>${S.meter(enq.length ? (fresh / enq.length) * 100 : 0, { tone: "var(--accent-ink)", tip: `${fresh} of ${enq.length} still to call` })}</div>`;
+    // Trend lines: the school's last six school days, the quarter's collection week by week,
+    // and enquiries week by week, from the enquiry dates themselves.
+    const days6 = S.lastDays(), byDay = days6.map((k, di) => { const v = classes.map((c) => classDays(c)[di]).filter((v) => v !== null); return v.length ? Math.round(avgOf(v) * 10) / 10 : null; });
+    byDay[byDay.length - 1] = today;
+    const before = byDay.slice(0, -1).filter((v) => v !== null), base5 = before.length ? Math.round(avgOf(before) * 10) / 10 : null;
+    const fc = feeCurve();
+    const wk = (n) => { const end = S.addDays(S.today, -7 * n); return enq.filter((e) => { const d = new Date(e.at + "T00:00"); return d <= end && d > S.addDays(end, -7); }).length; };
+    const enqW = [5, 4, 3, 2, 1, 0].map(wk);
+    const numRow = (num, sp) => `<div class="num-row"><div class="num">${num}</div>${sp}</div>`;
+    const presentKpi = `<div class="card stat"><span class="lbl">Present today</span>${numRow(`${today}<small>%</small>`, S.spark(byDay, { tone: "var(--green)", ref: 90, label: `School attendance, last ${days6.length} school days` }))}<div class="foot">${base5 !== null ? S.delta(today - base5, { dp: 1, tip: `Against the ${before.length}-day average, ${base5}%` }) + ` against the ${before.length}-day average` : "Sample · every section that has marked"}</div>${S.meter(today, { tone: "var(--green)", mark: 90, tip: "The line marks the 90% target" })}</div>`;
+    const feeKpi = `<div class="card stat"><span class="lbl">${F.q} fees</span>${numRow(`${F.pct}<small>%</small>`, S.spark(fc.pts, { tone: "var(--green)", lo: 0, label: `${F.q} collection, week by week` }))}<div class="foot">${S.PHASE === "end" ? "The year is almost settled" : `${S.delta(fc.week, { tip: "Collected in the last 7 days" })} this week · due ${S.fmt(F.due)}`}</div>${S.meter(F.pct, { tone: "var(--green)" })}</div>`;
+    const enqKpi = `<div class="card stat hl"><span class="lbl">New enquiries</span>${numRow(fresh, S.spark(enqW, { tone: "var(--accent-ink)", lo: 0, label: "Enquiries, week by week" }))}<div class="foot">${enq.length} this season · ${enqW[5]} this week</div>${S.meter(enq.length ? (fresh / enq.length) * 100 : 0, { tone: "var(--accent-ink)", tip: `${fresh} of ${enq.length} still to call` })}</div>`;
     if (S.PHASE === "end") {
       const res = endResults();
       S.paint(S.$("#kpis"), `
-      <div class="card stat"><span class="lbl">Passed every subject</span><div class="num">${res.pass}<small>%</small></div><div class="foot">Classes I to XII, final and pre-board</div>${S.meter(res.pass, { tone: "var(--green)", mark: 95, tip: "The line marks 95%" })}</div>
+      <div class="card stat"><span class="lbl">Passed every subject</span>${numRow(`${res.pass}<small>%</small>`, S.spark(res.trend, { tone: "var(--green)", label: "Pass rate: Unit Test 1, half-yearly, final" }))}<div class="foot">${S.delta(res.pass - res.trend[1], { dp: 1, tip: `Half-yearly ${res.trend[1]}%` })} on the half-yearly · I to XII</div>${S.meter(res.pass, { tone: "var(--green)", mark: 95, tip: "The line marks 95%" })}</div>
       <div class="card stat"><span class="lbl">Promoted</span><div class="num">${res.promoted}<small> / ${res.n}</small></div><div class="foot">${res.n - res.promoted} have a re-test in July</div>${S.meter((res.promoted / res.n) * 100, { tone: "var(--royal)" })}</div>
       ${feeKpi}
       <div class="card stat hl"><span class="lbl">Admitted for 2027–28</span><div class="num">${enq.filter((e) => e.status === "Admitted").length}</div><div class="foot">${fresh} new enquiries to call</div>${S.meter((enq.filter((e) => e.status === "Admitted").length / Math.max(1, enq.length)) * 100, { tone: "var(--accent-ink)" })}</div>`);
@@ -771,31 +857,19 @@
       ${feeKpi}${enqKpi}`);
     } else {
       S.paint(S.$("#kpis"), `${presentKpi}
-      <div class="card stat"><span class="lbl">Staff present</span><div class="num">84<small> / 88</small></div><div class="foot">2 on leave, 2 on duty</div>${S.stack([{ v: 84, tone: "var(--green)", tip: "84 present" }, { v: 2, tone: "var(--warn)", tip: "2 on leave" }, { v: 2, tone: "var(--royal)", tip: "2 on duty outside school" }])}</div>
+      <div class="card stat"><span class="lbl">Staff present</span>${numRow(`84<small> / 88</small>`, S.spark([85, 86, 83, 86, 85, 84], { tone: "var(--royal)", label: "Staff present, last six school days" }))}<div class="foot">2 on leave, 2 on duty</div>${S.stack([{ v: 84, tone: "var(--green)", tip: "84 present" }, { v: 2, tone: "var(--warn)", tip: "2 on leave" }, { v: 2, tone: "var(--royal)", tip: "2 on duty outside school" }])}</div>
       ${feeKpi}${enqKpi}`);
     }
     renderPhase();
     const vals = classes.map((c) => classDays(c).slice(-1)[0]);
-    // Build the columns once; after that only move them, so a refresh never replays the whole chart.
-    const cols = S.$("#cols");
-    if (cols.querySelectorAll(".col").length !== vals.length) {
-      cols.innerHTML = vals.map((v, i) => `<div class="col" data-col="${i}"><span class="tip"></span><span class="c"></span></div>`).join("") + `<div class="target" style="top:calc(22px + (100% - 22px) * .1)"><span>90% target</span></div>`;
-      S.$("#col-labels").innerHTML = classes.map((c) => `<span>${c}</span>`).join("");
-      cols.getBoundingClientRect(); // let the zero height land before the first grow
-    }
-    vals.forEach((v, i) => {
-      const col = cols.querySelectorAll(".col")[i], c = col.querySelector(".c");
-      col.classList.toggle("low", v !== null && v < 90);
-      col.querySelector(".tip").textContent = `Class ${classes[i]}: ${v === null ? "not marked yet" : v + "% present"} · click to open`;
-      c.classList.toggle("pending", v === null);
-      c.style.height = v === null ? "100%" : v + "%";
-    });
+    renderClassDots(vals, byDay);
     renderWeek(vals); renderWatch(); renderClasses();
     S.$("#fee-h").textContent = `${F.q} fee collection`;
     S.$("#fee-num").innerHTML = `${F.got} <small>of ${F.of}</small>`;
     S.$("#fee-pct").textContent = `${F.pct}% collected`;
     S.$("#fee-due").textContent = (S.PHASE === "end" ? "Was due " : "Due ") + S.fmt(F.due);
     S.$("#fee-upi").textContent = `${F.upi}% of payments this quarter`;
+    S.paint(S.$("#fee-read"), S.read(feeRead(fc)));
     S.$("#fee-fam").textContent = F.families;
     const left = 274 - F.online - F.counter;
     S.paint(S.$("#fee-stack"), S.stack([{ v: F.online, tone: "var(--green)", tip: `₹${(F.online / 100).toFixed(2)} Cr`, tipT: "Paid online" }, { v: F.counter, tone: "color-mix(in srgb, var(--green) 45%, var(--surface))", tip: `₹${(F.counter / 100).toFixed(2)} Cr`, tipT: "Paid at the counter" }, { v: left, tone: "var(--sunken)", tip: `₹${(left / 100).toFixed(2)} Cr · ${F.families} families`, tipT: "Yet to pay" }]).replace("stackbar", "stackbar lg"));
@@ -970,11 +1044,11 @@
   S.$("#c-cls").innerHTML = classes.map((c) => `<option value="${c}">${S.classLabel(c)}</option>`).join("");
   S.$("#c-cls").addEventListener("change", (e) => { const c = e.target.value; openSection(c, S.SECTIONS[c].includes(pick.s) ? pick.s : S.SECTIONS[c][0]); });
   S.$("#c-sec").addEventListener("change", (e) => openSection(pick.c, e.target.value));
-  document.addEventListener("keydown", (e) => { const o = e.target.closest && e.target.closest("tr[data-sec]"); if (o && (e.key === "Enter" || e.key === " ")) { e.preventDefault(); o.click(); } });
+  document.addEventListener("keydown", (e) => { const o = e.target.closest && e.target.closest("tr[data-sec], #cols .cd-col"); if (o && (e.key === "Enter" || e.key === " ")) { e.preventDefault(); o.dispatchEvent(new MouseEvent("click", { bubbles: true })); } });
   document.addEventListener("click", (e) => {
     const o = e.target.closest("[data-sec]"); if (o) { const [c, s] = o.dataset.sec.split("-"); openSection(c, s, true); return; }
     // A class's bar on the overview opens its section that most needs a look.
-    const col = e.target.closest("#cols .col"); if (col) {
+    const col = e.target.closest("#cols .cd-col"); if (col) {
       const c = classes[+col.dataset.col], secs = secsOf(c);
       const worst = secs.find((x) => S.todayPct(x) === null) || secs.reduce((a, b) => (S.todayPct(b) < S.todayPct(a) ? b : a));
       openSection(c, worst.sec, true);
@@ -996,20 +1070,34 @@
     const present = today === null ? null : Math.round((today / 100) * st.n);
     const clsAtt = Math.round(avgOf(sst.map((v) => v.att)) * 10) / 10, othCur = Math.round(avgOf(others.map(([, v]) => v.cur)));
     const school = S.schoolToday();
+    // A section's average at each exam of the year so far, oldest first.
+    const exAvg = (y, k) => Math.round(avgOf(y.students.map((s) => avgOf(y.subjects.map((j) => s[k][j])))));
+    const exams = [...new Set(["ly", ...[...S.EX.list].reverse()])];
+    const sp = (html) => (html ? `<span class="kpi-sp">${html}</span>` : "");
     S.paint(S.$("#c-kpis"), `
-      <div><dt>Present today</dt><dd>${present === null ? "Not marked" : `${present}<small> / ${st.n}</small>`}</dd><span>${today === null ? "Waiting for the class teacher" : today + "% · school " + school + "%"}</span>${S.meter(today || 0, { tone: today !== null && today < 90 ? "var(--warn)" : "var(--green)", mark: 90, tip: "The line marks the 90% target" })}</div>
+      <div>${sp(S.spark(S.weekOf(x), { tone: "var(--green)", ref: 90, w: 64, h: 24, label: "Attendance, last six school days" }))}<dt>Present today</dt><dd>${present === null ? "Not marked" : `${present}<small> / ${st.n}</small>`}</dd><span>${today === null ? "Waiting for the class teacher" : today + "% · school " + school + "%"}</span>${S.meter(today || 0, { tone: today !== null && today < 90 ? "var(--warn)" : "var(--green)", mark: 90, tip: "The line marks the 90% target" })}</div>
       <div><dt>This session</dt><dd>${st.att}<small>%</small></dd><span>Attendance · class ${clsAtt}%</span>${S.meter(st.att, { tone: "var(--green)", mark: clsAtt, tip: `The line marks ${S.classLabel(x.cls)}'s average, ${clsAtt}%` })}</div>
-      <div><dt>${LC}</dt><dd>${st.cur}<small>%</small></dd><span>${st.prev === null ? "From last session" : `${st.cur === st.prev ? "Level with" : st.cur > st.prev ? "Up from" : "Down from"} ${st.prev}% in ${LP}`}</span>${S.meter(st.cur, { tone: "var(--accent)", mark: others.length ? othCur : null, tip: others.length ? `The line marks the other sections, ${othCur}%` : "" })}</div>
+      <div>${sp(S.spark(exams.map((k) => exAvg(x, k)), { tone: "var(--royal)", w: 64, h: 24, label: "Average at each exam: " + exams.map((k) => L(k, x.cls)).join(", ") }))}<dt>${LC}</dt><dd>${st.cur}<small>%</small></dd><span>${st.prev === null ? "From last session" : `${st.cur === st.prev ? "Level with" : st.cur > st.prev ? "Up from" : "Down from"} ${st.prev}% in ${LP}`}</span>${S.meter(st.cur, { tone: "var(--accent)", mark: others.length ? othCur : null, tip: others.length ? `The line marks the other sections, ${othCur}%` : "" })}</div>
       ${S.PHASE === "end" ? `<div><dt>Passed every subject</dt><dd>${st.pass}<small>%</small></dd><span>${Math.round((st.pass / 100) * st.n)} of ${st.n} ${/^(X|XII)$/.test(x.cls) ? "ready for the boards" : "promoted"}</span>${S.meter(st.pass, { tone: "var(--royal)", mark: 95, tip: "The line marks 95%" })}</div>` : `<div><dt>${F.q} fees</dt><dd>${x.fees}<small>%</small></dd><span>${Math.round(((100 - x.fees) / 100) * st.n)} families yet to pay</span>${S.meter(x.fees, { tone: x.fees < 66 ? "var(--warn)" : "var(--green)", mark: 70, tip: "The line marks the school's 70%" })}</div>`}
       <div class="${st.support ? "due" : ""}"><dt>Need support</dt><dd>${st.support}<small> of ${st.n}</small></dd><span>Flagged by the assistant</span>${S.meter((st.support / st.n) * 100, { tone: "var(--accent)", tip: `${st.support} flagged` })}</div>`);
 
     // Subjects: this section against the other sections of the class (same subject only).
     S.$("#c-sbj-h").textContent = "Subjects · " + LC.toLowerCase();
     const oth = (k) => { const v = others.filter(([y]) => y.subjects.includes(k)).map(([, w]) => w.subj[k].cur); return v.length ? Math.round(avgOf(v)) : null; };
-    S.paint(S.$("#c-sbj"), x.subjects.map((k) => {
-      const v = st.subj[k], o = oth(k), d = v.prev === null ? null : v.cur - v.prev;
-      return `<div class="sbj-row"><div class="nm"><b>${k}</b><span>${S.esc(x.subjTeachers[k] || "")}</span></div><div class="track" tabindex="0"${S.tipAttr(`This section ${v.cur}%${o !== null ? ` · other sections ${o}%` : ""}${v.prev !== null ? ` · ${LP} ${v.prev}%` : ""}`, k)}><span class="fill" style="width:${v.cur}%"></span>${o !== null ? `<span class="ref" style="left:${o}%"></span>` : ""}</div><div class="v"><b>${v.cur}</b>${d === null ? "" : `<small class="${d > 0 ? "up" : d < 0 ? "dn" : ""}">${d > 0 ? "+" : d < 0 ? "−" : "±"}${Math.abs(d)}</small>`}</div></div>`;
-    }).join(""));
+    const rows = x.subjects.map((k) => { const v = st.subj[k], o = oth(k); return { k, v, o, gap: o === null ? null : v.cur - o, d: v.prev === null ? null : v.cur - v.prev }; });
+    const M = Math.max(5, ...rows.map((r) => Math.abs(r.gap || 0)));
+    S.paint(S.$("#c-sbj"), rows.map(({ k, v, o, gap, d }) => {
+      const w = gap === null ? 0 : (Math.abs(gap) / M) * 46, side = gap > 0 ? "left" : "right", tone = gap > 0 ? "up" : gap < 0 ? "dn" : "eq";
+      return `<div class="sbj-row"><div class="nm"><b>${k}</b><span>${S.esc(x.subjTeachers[k] || "")}</span></div><div class="dv" tabindex="0"${S.tipAttr(`This section ${v.cur}%${o !== null ? ` · other sections ${o}%` : ""}${v.prev !== null ? ` · ${LP} ${v.prev}%` : ""}`, k)}>${gap ? `<span class="dv-bar ${tone}" style="${side}:50%;width:${w}%"></span><span class="dv-n ${tone}" style="${side}:calc(50% + ${w}% + 6px)">${gap > 0 ? "+" : "−"}${Math.abs(gap)}</span>` : `<span class="dv-n eq" style="left:calc(50% + 6px)">level</span>`}</div><div class="v"><b>${v.cur}</b>${d === null ? "" : `<small class="${d > 0 ? "up" : d < 0 ? "dn" : ""}">${d > 0 ? "+" : d < 0 ? "−" : "±"}${Math.abs(d)}</small>`}</div></div>`;
+    }).join("") + `<div class="dv-axis"><span></span><div><span>Behind the other sections</span><span>Ahead</span></div><span></span></div>`);
+    // The read: the subject furthest behind, whether the same teacher takes the other sections, and the biggest move.
+    const byGap = rows.filter((r) => r.gap !== null).sort((a, b) => a.gap - b.gap), worst = byGap[0], best = byGap[byGap.length - 1];
+    const same = (k) => others.every(([y]) => !y.subjects.includes(k) || y.subjTeachers[k] === x.subjTeachers[k]);
+    const moved = rows.filter((r) => r.d !== null).sort((a, b) => Math.abs(b.d) - Math.abs(a.d))[0];
+    S.paint(S.$("#c-sbj-read"), S.read(
+      (worst && worst.gap <= -2 ? `<b>${worst.k}</b> is ${-worst.gap} points behind the other sections${same(worst.k) && x.subjTeachers[worst.k] ? `. ${S.esc(x.subjTeachers[worst.k])} teaches it in every section, so they can say what's different here` : ""}. ` : "No subject is more than a point behind the other sections. ") +
+      (best && best.gap >= 2 ? `Furthest ahead in <b>${best.k}</b> (+${best.gap}). ` : "") +
+      (moved && Math.abs(moved.d) >= 2 ? `Biggest move since the ${LP.toLowerCase()}: ${moved.k}, ${moved.d > 0 ? "up" : "down"} ${Math.abs(moved.d)}.` : "")));
     S.paint(S.$("#c-sbj-tbl"), `<thead><tr><th>Subject</th><th>Teacher</th>${P ? `<th class="num">${LP}</th>` : ""}<th class="num">${LC}</th>${P ? '<th class="num">Change</th>' : ""}<th class="num">Other sections</th></tr></thead><tbody>` +
       x.subjects.map((k) => { const v = st.subj[k], d = v.prev === null ? 0 : v.cur - v.prev, o = oth(k); return `<tr><td>${k}</td><td class="muted">${S.esc(x.subjTeachers[k] || "")}</td>${P ? `<td class="num">${v.prev}</td>` : ""}<td class="num"><b>${v.cur}</b></td>${P ? `<td class="num ${d < 0 ? "dn" : d > 0 ? "up" : ""}">${d > 0 ? "+" : d < 0 ? "−" : ""}${Math.abs(d)}</td>` : ""}<td class="num muted">${o ?? "–"}</td></tr>`; }).join("") + "</tbody>");
 
@@ -1018,8 +1106,12 @@
     S.paint(S.$("#c-secs"), `<thead><tr><th>Section</th><th class="num">Today</th><th class="num">${S.PHASE === "end" ? "Final" : "Marks"}</th><th class="num">${S.PHASE === "end" ? "Pass" : "Fees"}</th><th class="num">Support</th></tr></thead><tbody>` +
       sibs.map((y, i) => { const t = S.todayPct(y); return `<tr class="${y.sec === x.sec ? "on" : ""}" data-sec="${y.cls}-${y.sec}" tabindex="0"><td><b>${nameOf(y)}${y.stream ? ` <small class="muted">${y.stream}</small>` : ""}</b><span>${S.esc(y.teacher)}</span></td><td class="num ${t !== null && t < 90 ? "lo" : ""}">${t === null ? '<span class="pill">Not marked</span>' : t + "%"}</td><td class="num">${sst[i].cur}%</td>${S.PHASE === "end" ? `<td class="num ${sst[i].pass < 90 ? "lo" : ""}">${sst[i].pass}%</td>` : `<td class="num ${y.fees < 66 ? "lo" : ""}">${y.fees}%</td>`}<td class="num">${sst[i].support ? `<span class="pill ${sst[i].support > 3 ? "red" : "warn"}">${sst[i].support}</span>` : "–"}</td></tr>`; }).join("") + "</tbody>");
 
-    // Students
+    // Students: the whole class on one line, flagged students in colour.
     const flagged = st.studs.filter((v) => v.why.length);
+    const avs = st.studs.map((v) => v.avg).sort((a, b) => a - b), q = (f) => avs[Math.min(avs.length - 1, Math.floor(f * avs.length))];
+    const lo = Math.max(0, Math.min(40, Math.floor((avs[0] - 5) / 10) * 10));
+    S.paint(S.$("#c-swarm"), S.read(`The middle half of ${nameOf(x)} averages <b>${q(0.25)}–${q(0.75)}%</b>; the spread runs from ${avs[0]}% to ${avs[avs.length - 1]}%. ${flagged.length ? `${flagged.length} flagged student${flagged.length > 1 ? "s are" : " is"} in red.` : "No one is flagged."}`) +
+      S.swarm(st.studs.map((v) => ({ v: v.avg, cls: v.why.length ? "flag" : "", tip: `${v.avg}% average · ${v.att}% present${v.why.length ? " · " + v.why.join(", ") : ""}`, tipT: v.s.name })), { lo, W: S.narrow() ? 340 : 600, R: S.narrow() ? 5 : 6, marks: [{ v: st.cur, label: `Section ${st.cur}%` }], label: `Every student in ${nameOf(x)} by ${LC.toLowerCase()} average` }));
     S.paint(S.$("#c-support"), flagged.length ? flagged.map((v) => `<div class="li"><span class="avatar soft">${v.s.initials}</span><div class="t"><b>${S.esc(v.s.name)}</b><span>${S.esc(v.why.join(" · "))}</span></div><span class="end stu-n"><b>${v.avg}%</b><small>${v.att}% present</small></span></div>`).join("") : '<p class="muted" style="font-size:14.5px">No one flagged in this section.</p>');
     S.paint(S.$("#c-top"), [...st.studs].sort((a, b) => b.avg - a.avg).slice(0, 5).map((v, i) => `<div class="li"><span class="sq ${i ? "" : "green"}">${i + 1}</span><div class="t"><b>${S.esc(v.s.name)}</b><span>Best: ${[...x.subjects].sort((a, b) => v.s[C][b] - v.s[C][a])[0]} ${Math.max(...x.subjects.map((k) => v.s[C][k]))}%</span></div><span class="end stu-n"><b>${v.avg}%</b><small>${v.att}% present</small></span></div>`).join(""));
     const parentsHere = new Set(S.PARENTS.filter((p) => p.sec === x.key).map((p) => p.roll));
@@ -1066,7 +1158,10 @@
     const n = st.reduce((a, v) => a + v.n, 0), passN = st.reduce((a, v) => a + Math.round((v.pass / 100) * v.n), 0);
     const board = (x) => /^(X|XII)$/.test(x.cls);
     const promoted = secs.reduce((a, x, i) => a + (board(x) ? 0 : Math.round((st[i].pass / 100) * st[i].n)), 0), notBoard = secs.reduce((a, x, i) => a + (board(x) ? 0 : st[i].n), 0);
-    return { secs, st, n: notBoard, pass: Math.round((passN / n) * 1000) / 10, promoted };
+    const pass = Math.round((passN / n) * 1000) / 10;
+    // Pass rate at each exam of the year, for the trend line.
+    const passOf = (k) => { let m = 0, p = 0; secs.forEach((x) => x.students.forEach((s) => { m++; if (x.subjects.every((j) => s[k][j] >= 33)) p++; })); return Math.round((p / m) * 1000) / 10; };
+    return { secs, st, n: notBoard, pass, promoted, trend: [passOf("ut1"), passOf("hy"), pass] };
   }
   const TICK = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>';
   const chk = (items) => `<div class="chk">${items.map(([t, sub, on, pct]) => `<div class="chk-i${on ? " on" : ""}"><span class="box">${on ? TICK : ""}</span><span class="t"><b>${t}</b><span>${sub}</span>${pct != null && !on ? S.meter(pct, { tone: "var(--royal)" }) : ""}</span></div>`).join("")}</div>`;
@@ -1096,10 +1191,23 @@
     if (S.PHASE === "end") {
       const res = endResults();
       const byClass = classes.slice(3).map((c) => { const xs = secsOf(c), st = xs.map(S.secStats); const n = st.reduce((a, v) => a + v.n, 0); return { c, avg: Math.round(st.reduce((a, v) => a + v.cur * v.n, 0) / n), pass: Math.round((st.reduce((a, v) => a + v.pass * v.n, 0) / n) * 10) / 10, top: st.flatMap((v) => v.studs).sort((a, b) => b.avg - a.avg)[0], xs }; });
+      const hiC = byClass.reduce((a, b) => (b.avg > a.avg ? b : a)), loC = byClass.reduce((a, b) => (b.avg < a.avg ? b : a));
+      const schoolAvg = Math.round(byClass.reduce((a, r) => a + r.avg, 0) / byClass.length);
+      // The read: the spread between classes, where pass rates are lowest, and the widest gap between sections.
+      const resRead = (rows) => {
+        const lowP = [...rows].sort((a, b) => a.pass - b.pass)[0];
+        const gaps = rows.map((r) => { const v = r.xs.map((x) => [x, S.secStats(x).cur]).sort((a, b) => a[1] - b[1]); return { r, lo: v[0], hi: v[v.length - 1], d: v[v.length - 1][1] - v[0][1] }; }).sort((a, b) => b.d - a.d)[0];
+        return `Class averages run from <b>${loC.avg}%</b> (${S.classLabel(loC.c)}) to <b>${hiC.avg}%</b> (${S.classLabel(hiC.c)}). The lowest pass rate is in ${S.classLabel(lowP.c)}, ${lowP.pass}%.` + (gaps && gaps.d >= 3 ? ` The widest gap between sections is in ${S.classLabel(gaps.r.c)}: ${nameOf(gaps.hi[0])} ${gaps.hi[1]}% against ${nameOf(gaps.lo[0])} ${gaps.lo[1]}%.` : "");
+      };
       S.paint(box, `<div class="grid g21" style="margin-bottom:16px">
-        <div class="card"><div class="card-h"><h2>Results by class</h2><span class="right muted" style="font-size:12.5px">Average and pass rate · X and XII are pre-boards</span></div>
-          <div class="wing">${byClass.map((r) => `<div class="wing-row res-row"><span>Class ${r.c}</span>${S.meter(r.avg, { tone: r.pass < 93 ? "var(--warn)" : "var(--accent)", mark: r.pass, tip: `Average ${r.avg}% · ${r.pass}% passed every subject` })}<b>${r.avg}%</b></div>`).join("")}</div>
-          <p class="chart-note">The bar is the class average; the line marks the share who passed every subject. Sample figures.</p></div>
+        <div class="card"><div class="card-h"><h2>Results by class</h2><span class="right muted" style="font-size:12.5px">Final exam average · X and XII are pre-boards</span></div>
+          ${S.read(resRead(byClass))}
+          <div class="cdots">${dotPlot(byClass.map((r) => {
+            const sst = r.xs.map(S.secStats), worst = r.xs[sst.reduce((a, v, i) => (v.cur < sst[a].cur ? i : a), 0)];
+            return { c: r.c, v: r.avg, low: r.pass < 95, lab: r === hiC || r === loC, secs: r.xs.map((x, i) => ({ x, v: sst[i].cur })), attr: `data-sec="${worst.key}"`,
+              tip: `Average ${r.avg}% · ${r.pass}% passed every subject · ` + r.xs.map((x, i) => `${nameOf(x)} ${sst[i].cur}%`).join(", ") + " · open the class" };
+          }), { lo: Math.floor((Math.min(...byClass.flatMap((r) => r.xs.map((x) => S.secStats(x).cur))) - 1) / 5) * 5, hi: Math.ceil((Math.max(...byClass.flatMap((r) => r.xs.map((x) => S.secStats(x).cur))) + 1) / 5) * 5, avg: schoolAvg, avgLabel: `School ${schoolAvg}%`, label: "Final exam average by class and section" })}</div>
+          <div class="legend"><span><i class="dot" style="background:var(--green)"></i>Class, 95% or more passed</span><span><i class="dot" style="background:var(--warn)"></i>Fewer passed</span><span><i class="dot" style="border:1.5px solid var(--muted);width:9px;height:9px"></i>Each section</span><span><i class="ln" style="background:var(--royal)"></i>School average</span></div></div>
         <div class="card phase-card"><div class="card-h"><h2>Toppers</h2><span class="right muted" style="font-size:12.5px">Highest average in each class</span></div>
           <div class="list">${byClass.slice(-6).reverse().map((r) => `<button class="li todo" type="button" data-sec="${r.xs.find((x) => x.students.includes(r.top.s)).key}"><span class="sq green sec-sq">${r.c}</span><div class="t"><b>${S.esc(r.top.s.name)}</b><span>${r.top.avg}% · ${r.xs.find((x) => x.students.includes(r.top.s)).label}</span></div><span class="end muted" aria-hidden="true">›</span></button>`).join("")}</div></div>
       </div>

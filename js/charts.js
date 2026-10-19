@@ -75,6 +75,54 @@
     return `<span class="stackbar">${parts.filter((p) => p.v > 0).map((p) => `<i style="flex:${p.v / sum};--t:${p.tone}"${p.tip ? tipAttr(p.tip, p.tipT) : ""}></i>`).join("")}</span>`;
   };
 
+  // ---------- Reading the numbers ----------
+  // A one-line read of what a chart says, worked out from the same data.
+  const SPARKLE = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l1.9 5.3L19 10l-5.1 1.7L12 17l-1.9-5.3L5 10l5.1-1.7z"/></svg>';
+  S.read = (html) => (html ? `<p class="read">${SPARKLE}<span>${html}</span></p>` : "");
+  // Change since last time. "better" says which way is good, so the colour means good or bad, not up or down.
+  S.delta = (d, { unit = "", dp = 0, better = "up", tip = "", flat = "Level" } = {}) => {
+    if (d === null || d === undefined || isNaN(d)) return "";
+    const r = Math.round(d * 10 ** dp) / 10 ** dp;
+    if (r === 0) return `<span class="delta eq"${tip ? tipAttr(tip) : ""}>${flat}</span>`;
+    const good = (r > 0) === (better === "up");
+    return `<span class="delta ${good ? "good" : "bad"}"${tip ? tipAttr(tip) : ""}><svg viewBox="0 0 10 10" aria-hidden="true"><path d="${r > 0 ? "M5 1.5l4 6.5H1z" : "M5 8.5L1 2h8z"}"/></svg>${Math.abs(r).toFixed(dp)}${unit}<span class="sr-only">${r > 0 ? " up" : " down"}</span></span>`;
+  };
+  // Sparkline: the run of a figure, last point marked. Optional dashed reference (a target).
+  S.spark = (vals, { w = 88, h = 28, tone = "var(--royal)", ref = null, lo = null, hi = null, label = "" } = {}) => {
+    const pts = vals.map((v, i) => [i, v]).filter(([, v]) => v !== null && v !== undefined && !isNaN(v));
+    if (pts.length < 2) return "";
+    const ys = pts.map((q) => q[1]).concat(ref !== null ? [ref] : []);
+    let a = lo ?? Math.min(...ys), b = hi ?? Math.max(...ys); if (b - a < 2) { a -= 1; b += 1; }
+    const p = 3.5, X = (i) => p + (i * (w - 2 * p)) / (vals.length - 1), Y = (v) => p + ((b - v) / (b - a)) * (h - 2 * p);
+    const d = pts.map(([i, v], k) => `${k ? "L" : "M"}${X(i).toFixed(1)},${Y(v).toFixed(1)}`).join("");
+    const [li, lv] = pts[pts.length - 1];
+    return `<svg class="spark" viewBox="0 0 ${w} ${h}" width="${w}" height="${h}" style="--s:${tone}" role="img" aria-label="${esc(label)}">` +
+      (ref !== null ? `<line class="sp-ref" x1="0" x2="${w}" y1="${Y(ref).toFixed(1)}" y2="${Y(ref).toFixed(1)}" />` : "") +
+      `<path class="sp-area" d="${d}L${X(li).toFixed(1)},${h}L${X(pts[0][0]).toFixed(1)},${h}Z" /><path class="sp-line" d="${d}" /><circle class="sp-dot" cx="${X(li).toFixed(1)}" cy="${Y(lv).toFixed(1)}" r="2.8" /></svg>`;
+  };
+  // A class at a glance: one dot per student along the marks line. Dots that would
+  // touch move up or down, so every student stays visible.
+  // pts: [{ v, cls: "" | "flag" | "me", tip, tipT }]; marks: [{ v, label }] reference lines.
+  S.swarm = (pts, { lo = 0, hi = 100, W = 600, R = 5.5, marks = [], zone = null, zoneLabel = "", label = "" } = {}) => {
+    const pl = 10, pr = 10, gap = 2 * R + 1.5, X = (v) => pl + ((Math.max(lo, Math.min(hi, v)) - lo) / (hi - lo)) * (W - pl - pr);
+    const order = [0, -1, 1, -2, 2, -3, 3, -4, 4, -5, 5, -6, 6];
+    const placed = [];
+    [...pts].sort((a, b) => a.v - b.v).forEach((q) => {
+      const x = X(q.v); let row = 0;
+      for (const o of order) { if (!placed.some((z) => z.row === o && Math.abs(z.x - x) < gap)) { row = o; break; } }
+      placed.push({ x, row, q });
+    });
+    const span = Math.max(1, ...placed.map((z) => Math.abs(z.row))), top = marks.length ? 22 : 8, mid = top + span * gap + R, base = mid + span * gap + R + 6, H = base + 20;
+    let g = "";
+    if (zone !== null) g += `<rect class="sw-zone" x="${pl}" y="${top - 4}" width="${X(zone) - pl}" height="${base - top + 4}" rx="6" />` + (zoneLabel ? `<text class="zone-t" x="${pl + 6}" y="${base - 6}">${esc(zoneLabel)}</text>` : "");
+    g += `<line class="grid-l" x1="${pl}" x2="${W - pr}" y1="${base}" y2="${base}" />`;
+    const step = hi - lo > 50 ? 20 : 10;
+    for (let v = Math.ceil(lo / step) * step; v <= hi; v += step) g += `<text x="${X(v)}" y="${base + 15}" text-anchor="middle">${v}</text>`;
+    marks.forEach((m, i) => { const x = X(m.v); g += `<line class="ref-l" x1="${x}" x2="${x}" y1="${top - 6}" y2="${base}" /><text class="ref-t" x="${x + (i % 2 ? -6 : 6)}" y="${top - 10}" text-anchor="${i % 2 ? "end" : "start"}">${esc(m.label)}</text>`; });
+    g += placed.map((z, i) => { const y = mid + z.row * gap; return `<circle class="sw-dot ${z.q.cls || ""}" cx="${z.x.toFixed(1)}" cy="${y.toFixed(1)}" r="${R}" style="animation-delay:${Math.min(i * 12, 500)}ms" /><circle class="hit" cx="${z.x.toFixed(1)}" cy="${y.toFixed(1)}" r="${R + 3}"${z.q.tip ? tipAttr(z.q.tip, z.q.tipT) : ""} />`; }).join("");
+    return `<svg class="chart swarm" viewBox="0 0 ${W} ${H}" role="img" aria-label="${esc(label)}">${g}</svg>`;
+  };
+
   // ---------- Radar: a profile across subjects, one polygon per series ----------
   // series: [{ name, values: [], cls: "s1" | "s2" }]; labels: short axis names.
   S.radar = (labels, series, { max = 100, min = 0, W = 420, H = 300, R = 104 } = {}) => {
