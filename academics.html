@@ -5,6 +5,7 @@
 <!-- Prototype: kept out of search results so it never competes with the school's own site. -->
 <meta name="robots" content="noindex, nofollow" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta name="color-scheme" content="light" />
 <title>Academics | St. John's School, Faridabad</title>
 <meta name="description" content="CBSE curriculum from Nursery to Class XII at St. John's School, Faridabad: the five stages, how we teach, exams and assessment, and senior secondary." />
 <meta property="og:type" content="website" />
@@ -24,9 +25,8 @@
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Figtree:wght@400..800&display=swap" rel="stylesheet" />
-<link rel="stylesheet" href="css/school.css" />
-<meta name="theme-color" content="#1C1F24" media="(prefers-color-scheme: light)" />
-<meta name="theme-color" content="#1B1D22" media="(prefers-color-scheme: dark)" />
+<link rel="stylesheet" href="css/school.css?v=8" />
+<meta name="theme-color" content="#1C1F24" />
 <script>
 /* Before the first paint: fade photos in as they load, and hold headline motion until the fonts arrive. */
 (function (d) { var h = d.documentElement, done = function () { h.classList.add("fonts"); }; h.classList.add("js");
@@ -55,19 +55,19 @@
   <section class="sec" id="stages">
     <div class="wrap">
       <div class="sec-title"><h2 class="t-l">The five stages</h2><p>Subjects follow the CBSE scheme of studies for each class. The lists below are <span class="tbc" title="The school will confirm its exact subject offer">indicative</span>; the school will publish its exact subject offer every year.</p></div>
-      <div class="stairs" style="margin-bottom:64px">
-        <div class="step" style="--h:40%;--i:0"><small>Nursery to UKG</small><b>Pre-primary</b><p>Ages 3 to 6</p></div>
-        <div class="step" style="--h:54%;--i:1"><small>Classes I to V</small><b>Primary</b><p>Foundations</p></div>
-        <div class="step" style="--h:68%;--i:2"><small>Classes VI to VIII</small><b>Middle</b><p>Widening out</p></div>
-        <div class="step" style="--h:84%;--i:3"><small>Classes IX and X</small><b>Secondary</b><p>Board years</p></div>
-        <div class="step" style="--h:100%;--i:4"><small>Classes XI and XII</small><b>Senior secondary</b><p>Streams</p></div>
-      </div>
-      <div class="faq">
-        <details open><summary>Pre-primary: Nursery, LKG and UKG</summary><div class="a"><p>Children learn through play, stories, rhymes, music and movement. We build early language in English and Hindi, number sense, fine motor skills and the confidence to be away from home. No homework, no exams.</p><div class="pill-row mt-s"><span class="tag">English and Hindi through stories</span><span class="tag">Numbers</span><span class="tag">The world around us</span><span class="tag">Art and craft</span><span class="tag">Music and movement</span><span class="tag">Free play</span></div></div></details>
-        <details><summary>Primary: Classes I to V</summary><div class="a"><p>Strong reading, writing and arithmetic, with plenty of activity. Every week includes art, music, dance and games, and a library period to build the reading habit.</p><div class="pill-row mt-s"><span class="tag">English</span><span class="tag">Hindi</span><span class="tag">Mathematics</span><span class="tag">Environmental studies</span><span class="tag">Computers</span><span class="tag">Art</span><span class="tag">Music and dance</span><span class="tag">Games</span><span class="tag">Value education</span></div></div></details>
-        <details><summary>Middle: Classes VI to VIII</summary><div class="a"><p>Subjects separate out and lab work begins. Projects and presentations train children to find things out for themselves and explain what they found.</p><div class="pill-row mt-s"><span class="tag">English</span><span class="tag">Hindi</span><span class="tag">Third language</span><span class="tag">Mathematics</span><span class="tag">Science</span><span class="tag">Social science</span><span class="tag">Computers</span><span class="tag">Art</span><span class="tag">Physical education</span><span class="tag">Value education</span></div></div></details>
-        <details><summary>Secondary: Classes IX and X</summary><div class="a"><p>The CBSE secondary course, ending in the Class X board exam. Regular periodic tests, internal assessment and pre-board exams, with remedial help for anyone who falls behind.</p><div class="pill-row mt-s"><span class="tag">English</span><span class="tag">Hindi</span><span class="tag">Mathematics (Standard or Basic)</span><span class="tag">Science</span><span class="tag">Social science</span><span class="tag">A skill subject</span><span class="tag">Health and physical education</span></div></div></details>
-        <details><summary>Senior secondary: Classes XI and XII</summary><div class="a"><p>Students choose a stream after Class X and sit the CBSE Class XII board exam. See <a class="textlink" href="#senior">senior secondary</a> below for how admission to Class XI works.</p></div></details>
+      <div class="stairs stairs--open" data-stages>
+        <button class="step" type="button" id="pre-primary" style="--h:40%;--i:0" aria-expanded="true" aria-controls="stage-panel"><small>Nursery to UKG</small><b>Pre-primary</b><p>Ages 3 to 6</p><i class="st-ic" aria-hidden="true"></i></button>
+        <button class="step" type="button" id="primary" style="--h:54%;--i:1" aria-expanded="false" aria-controls="stage-panel"><small>Classes I to V</small><b>Primary</b><p>Foundations</p><i class="st-ic" aria-hidden="true"></i></button>
+        <button class="step" type="button" id="middle" style="--h:68%;--i:2" aria-expanded="false" aria-controls="stage-panel"><small>Classes VI to VIII</small><b>Middle</b><p>Widening out</p><i class="st-ic" aria-hidden="true"></i></button>
+        <button class="step" type="button" id="secondary" style="--h:84%;--i:3" aria-expanded="false" aria-controls="stage-panel"><small>Classes IX and X</small><b>Secondary</b><p>Board years</p><i class="st-ic" aria-hidden="true"></i></button>
+        <button class="step" type="button" id="senior-secondary" style="--h:100%;--i:4" aria-expanded="false" aria-controls="stage-panel"><small>Classes XI and XII</small><b>Senior secondary</b><p>Streams</p><i class="st-ic" aria-hidden="true"></i></button>
+        <div class="stage-panel" id="stage-panel" role="region" aria-label="Stage details">
+          <div class="sp" data-stage="0"><h3>Pre-primary: Nursery, LKG and UKG</h3><p>Children learn through play, stories, rhymes, music and movement. We build early language in English and Hindi, number sense, fine motor skills and the confidence to be away from home. No homework, no exams.</p><div class="pill-row mt-s"><span class="tag">English and Hindi through stories</span><span class="tag">Numbers</span><span class="tag">The world around us</span><span class="tag">Art and craft</span><span class="tag">Music and movement</span><span class="tag">Free play</span></div></div>
+          <div class="sp" data-stage="1"><h3>Primary: Classes I to V</h3><p>Strong reading, writing and arithmetic, with plenty of activity. Every week includes art, music, dance and games, and a library period to build the reading habit.</p><div class="pill-row mt-s"><span class="tag">English</span><span class="tag">Hindi</span><span class="tag">Mathematics</span><span class="tag">Environmental studies</span><span class="tag">Computers</span><span class="tag">Art</span><span class="tag">Music and dance</span><span class="tag">Games</span><span class="tag">Value education</span></div></div>
+          <div class="sp" data-stage="2"><h3>Middle: Classes VI to VIII</h3><p>Subjects separate out and lab work begins. Projects and presentations train children to find things out for themselves and explain what they found.</p><div class="pill-row mt-s"><span class="tag">English</span><span class="tag">Hindi</span><span class="tag">Third language</span><span class="tag">Mathematics</span><span class="tag">Science</span><span class="tag">Social science</span><span class="tag">Computers</span><span class="tag">Art</span><span class="tag">Physical education</span><span class="tag">Value education</span></div></div>
+          <div class="sp" data-stage="3"><h3>Secondary: Classes IX and X</h3><p>The CBSE secondary course, ending in the Class X board exam. Regular periodic tests, internal assessment and pre-board exams, with remedial help for anyone who falls behind.</p><div class="pill-row mt-s"><span class="tag">English</span><span class="tag">Hindi</span><span class="tag">Mathematics (Standard or Basic)</span><span class="tag">Science</span><span class="tag">Social science</span><span class="tag">A skill subject</span><span class="tag">Health and physical education</span></div></div>
+          <div class="sp" data-stage="4"><h3>Senior secondary: Classes XI and XII</h3><p>Students choose a stream after Class X and sit the CBSE Class XII board exam. See <a class="textlink" href="#senior">senior secondary</a> below for how admission to Class XI works.</p></div>
+        </div>
       </div>
     </div>
   </section>
@@ -121,8 +121,8 @@
     </div>
   </section>
 </main>
-<script src="js/data.js"></script>
-<script src="js/ai.js"></script>
-<script src="js/school.js"></script>
+<script src="js/data.js?v=8"></script>
+<script src="js/ai.js?v=8"></script>
+<script src="js/school.js?v=8"></script>
 </body>
 </html>

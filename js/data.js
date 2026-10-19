@@ -56,8 +56,8 @@
   // Classes X and XII sit the CBSE board exam, so their school final is the pre-board.
   S.exLabel = (k, cls) => (k === "fin" && /^(X|XII)$/.test(cls || "") ? "Pre-board" : S.EXAMS[k]);
   S.CALENDAR = [
-    ["2026-04-01", "Session begins"], ["2026-04-18", "Meet the class teacher"], ["2026-07-20", "Unit Test 1"], ["2026-09-14", "Half-yearly exams"],
-    ["2026-10-31", "PTM: half-yearly answer sheets"], ["2026-11-23", "Unit Test 2"], ["2027-02-15", "CBSE board exams (X, XII) begin"], ["2027-02-22", "Final exams"], ["2027-03-26", "Results"], ["2027-03-27", "Report-card PTM"]
+    ["2026-04-01", "Session begins"], ["2026-04-18", "Meet the class teacher"], ["2026-07-20", "Unit Test 1"], ["2026-09-14", "Half-yearly exams"], ["2026-10-05", "Unit Test 2"],
+    ["2026-10-31", "PTM: half-yearly answer sheets"], ["2026-11-23", "Unit Test 3"], ["2026-12-01", "Pre-board 1 (X, XII)"], ["2027-01-11", "Pre-board 2 (X, XII)"], ["2027-02-15", "CBSE board exams (X, XII) begin"], ["2027-02-22", "Final exams"], ["2027-03-26", "Results"], ["2027-03-27", "Report-card PTM"]
   ];
   // What a teacher enters marks for, at each stage.
   S.ENTRY = { start: { name: "Baseline test", max: 20 }, mid: { name: "Unit Test 2", max: 20 }, end: { name: "Final exam", max: 100 } }[phase];
@@ -180,11 +180,12 @@
         { from: "parent", text: "Thank you ma'am. Looking forward to the year.", at: "Wed 1 Apr, 7:30 PM" }
       ],
       notices: [
-        { id: "n1", title: "Welcome to session 2026–27", text: "Classes began on Wednesday, 1 April. Every class's timetable and class teacher are on the app.", date: "2026-04-01", tag: "Notice" },
-        { id: "n2", title: "Q1 fees due", text: "First-quarter fees are due by Friday, 10 April. Pay by UPI from the app; the receipt comes at once.", date: "2026-04-10", tag: "Notice" },
-        { id: "n3", title: "Bookshop and uniform counter", text: "The school bookshop is open 8:00 AM to 1:00 PM until Saturday, 11 April. Book lists for every class are on the app.", date: "2026-04-11", tag: "Notice" },
-        { id: "n4", title: "Meet the class teacher", text: "Saturday, 18 April, 9:00 AM to 11:30 AM. Meet your child's class teacher and subject teachers.", date: "2026-04-18", tag: "PTM" },
-        { id: "n5", title: "Summer break", text: "School is closed from Saturday, 16 May. It reopens on Wednesday, 1 July.", date: "2026-05-16", tag: "Holiday" }
+        { id: "n1", title: "Welcome to session 2026–27", text: "Classes began on Wednesday, 1 April. Every class's timetable and class teacher are on the app.", date: "2026-04-01", tag: "Notice", level: "low" },
+        { id: "n2", title: "Q1 fees due", text: "First-quarter fees are due by Friday, 10 April. Pay by UPI from the app; the receipt comes at once.", date: "2026-04-10", tag: "Notice", level: "high" },
+        { id: "n3", title: "Bookshop and uniform counter", text: "The school bookshop is open 8:00 AM to 1:00 PM until Saturday, 11 April. Book lists for every class are on the app.", date: "2026-04-11", tag: "Notice", level: "medium" },
+        { id: "n4", title: "Meet the class teacher", text: "Saturday, 18 April, 9:00 AM to 11:30 AM. Meet your child's class teacher and subject teachers.", date: "2026-04-18", tag: "PTM", level: "high" },
+        { id: "n5", title: "Summer break", text: "School is closed from Saturday, 16 May. It reopens on Wednesday, 1 July.", date: "2026-05-16", tag: "Holiday", level: "medium" },
+        { id: "n6", title: "Bus passes for the new session", text: "Collect this session's bus pass from the transport desk by Saturday, 11 April. Routes and stops are unchanged.", date: "2026-04-11", tag: "Notice", level: "medium", to: { bus: "bus" }, web: false }
       ],
       enquiries: [
         { child: "Advik Malhotra", cls: "Class IV", parent: "Nitin Malhotra", phone: "98xxxxxx63", at: "2026-04-07", status: "New", note: "Transfer from Gurugram" },
@@ -209,10 +210,10 @@
         { from: "parent", text: "Thank you so much ma'am, for everything this year. See you on Saturday.", at: "Today, 10:05 AM" }
       ],
       notices: [
-        { id: "n1", title: "Final results are out", text: "Results for Classes Nursery to IX and XI are on the app today. Report cards are given out at the PTM.", date: "2027-03-26", tag: "Notice" },
-        { id: "n2", title: "Report-card PTM", text: "Saturday, 27 March, 9:00 AM to 12:30 PM. Collect the report card and meet the teachers.", date: "2027-03-27", tag: "PTM" },
-        { id: "n3", title: "New session begins", text: "Session 2027–28 begins on Thursday, 1 April. Book lists for every class are on the app.", date: "2027-04-01", tag: "Notice" },
-        { id: "n4", title: "CBSE board exams", text: "Class X and XII board exams continue until 4 April. Results are expected in May.", date: "2027-04-04", tag: "Event" }
+        { id: "n1", title: "Final results are out", text: "Results for Classes Nursery to IX and XI are on the app today. Report cards are given out at the PTM.", date: "2027-03-26", tag: "Notice", level: "high" },
+        { id: "n2", title: "Report-card PTM", text: "Saturday, 27 March, 9:00 AM to 12:30 PM. Collect the report card and meet the teachers.", date: "2027-03-27", tag: "PTM", level: "high" },
+        { id: "n3", title: "New session begins", text: "Session 2027–28 begins on Thursday, 1 April. Book lists for every class are on the app.", date: "2027-04-01", tag: "Notice", level: "medium" },
+        { id: "n4", title: "CBSE board exams", text: "Class X and XII board exams continue until 4 April. Results are expected in May.", date: "2027-04-04", tag: "Exam", level: "high", to: { cls: ["X", "XII"] } }
       ],
       enquiries: [
         { child: "Myra Aggarwal", cls: "Nursery", parent: "Kunal Aggarwal", phone: "98xxxxxx41", at: "2026-10-16", status: "Admitted" },
@@ -241,10 +242,14 @@
         { from: "parent", text: "Thank you ma'am, will do.", at: "Yesterday, 6:45 PM" }
       ],
       notices: [
-        { id: "n1", title: "Parent–Teacher Meeting", text: "PTM for Classes VI–VIII on Saturday, 31 October, 9:00 AM – 12:30 PM. Half-yearly answer sheets will be shown.", date: "2026-10-31", tag: "PTM" },
-        { id: "n2", title: "Dussehra holiday", text: "School remains closed on Tuesday, 20 October for Dussehra.", date: "2026-10-20", tag: "Holiday" },
-        { id: "n3", title: "Children's Day celebrations", text: "Special assembly and teachers' performance on Saturday, 14 November. Students may come in colour dress.", date: "2026-11-14", tag: "Event" },
-        { id: "n4", title: "Diwali break", text: "School closed 6–10 November. Reopens Wednesday, 11 November.", date: "2026-11-06", tag: "Holiday" }
+        { id: "n1", title: "Parent–Teacher Meeting", text: "PTM for Classes VI–VIII on Saturday, 31 October, 9:00 AM – 12:30 PM. Half-yearly answer sheets will be shown.", date: "2026-10-31", tag: "PTM", level: "high", to: { cls: ["VI", "VII", "VIII"] } },
+        { id: "n2", title: "Dussehra holiday", text: "School remains closed on Tuesday, 20 October for Dussehra.", date: "2026-10-20", tag: "Holiday", level: "medium" },
+        { id: "n3", title: "Children's Day celebrations", text: "Special assembly and teachers' performance on Saturday, 14 November. Students may come in colour dress.", date: "2026-11-14", tag: "Event", level: "low" },
+        { id: "n4", title: "Diwali break", text: "School closed 6–10 November. Reopens Wednesday, 11 November.", date: "2026-11-06", tag: "Holiday", level: "medium" },
+        { id: "n5", title: "Route 14: earlier pick-up", text: "From Monday, 26 October, the Route 14 bus reaches Sector 9 at 7:05 AM, ten minutes earlier, while the road at Sector 8 market is repaired.", date: "2026-10-26", tag: "Notice", level: "medium", to: { bus: "bus", route: "Route 14" }, web: false },
+        { id: "n6", title: "Cricket trials, under-14 boys", text: "Trials for the school's under-14 cricket team on Wednesday, 28 October, after school on the main ground. Bring whites and sports shoes.", date: "2026-10-28", tag: "Event", level: "low", to: { cls: ["VI", "VII", "VIII"], gender: "boys" }, web: false },
+        { id: "n7", title: "Basketball trials, senior girls", text: "Trials for the girls' basketball team on Thursday, 29 October, after school on the court. Open to Classes IX to XII.", date: "2026-10-29", tag: "Event", level: "low", to: { cls: ["IX", "X", "XI", "XII"], gender: "girls" }, web: false },
+        { id: "n8", title: "Practical files for the board exam", text: "Science practical files must be complete and signed by Friday, 20 November. Labs are open after school on Tuesdays and Thursdays.", date: "2026-11-20", tag: "Exam", level: "high", to: { cls: ["X", "XII"] }, web: false }
       ],
       enquiries: [
         { child: "Myra Aggarwal", cls: "Nursery", parent: "Kunal Aggarwal", phone: "98xxxxxx41", at: "2026-10-16", status: "Visit booked" },

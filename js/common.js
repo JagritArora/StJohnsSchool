@@ -70,3 +70,14 @@
   S.esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
   S.greet = () => { const h = new Date().getHours(); return h < 12 ? "Good morning" : h < 17 ? "Good afternoon" : "Good evening"; };
 })();
+
+/* Pointer light: cards with a glow layer read --mx/--my from here. */
+(function () {
+  if (!matchMedia("(hover: hover)").matches) return;
+  const SEL = ".step, .card, .hm-tile, .role-tab";
+  document.addEventListener("pointermove", (e) => {
+    const el = e.target.closest && e.target.closest(SEL); if (!el) return;
+    const r = el.getBoundingClientRect();
+    el.style.setProperty("--mx", Math.round(e.clientX - r.left) + "px"); el.style.setProperty("--my", Math.round(e.clientY - r.top) + "px");
+  }, { passive: true });
+})();

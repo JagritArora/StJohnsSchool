@@ -250,7 +250,9 @@
   // What each assistant may see. The parent's assistant gets only that child's
   // records; the teacher's only their class; the website's only public facts.
   const marksLine = (s, ex) => S.subjects.map((x) => `${x} ${s[ex][x]}`).join(", ");
-  const noticesTxt = () => S.state.notices.map((n) => `- ${n.title} (${S.fmt(n.date, { weekday: "short", day: "numeric", month: "short" })}): ${n.text}`).join("\n");
+  // Each assistant sees only the notices meant for its reader.
+  const noticesFor = (m) => m === "parent" && S.noticesFor ? S.noticesFor(S.me) : m === "public" ? S.state.notices.filter((n) => n.web !== false && !(n.to && (n.to.staff || n.to.bus || n.to.gender))) : S.state.notices;
+  const noticesTxt = (m) => noticesFor(m).map((n) => `- ${n.title} (${S.fmt(n.date, { weekday: "short", day: "numeric", month: "short" })}${n.level === "high" ? ", important" : ""}${S.audienceText && !S.isEveryone(n) ? ", for " + S.audienceText(n) : ""}): ${n.text}`).join("\n");
   const holidaysTxt = () => Object.entries(S.HOLIDAYS).filter(([k]) => k >= S.todayKey).map(([k, v]) => `${S.fmt(k, { weekday: "short", day: "numeric", month: "short" })} ${v}`).join("; ");
   const todayAtt = () => { const t = S.cs.attendance[S.todayKey]; return t ? `marked at ${t.at}; away: ${Object.keys(t.marks).map((r) => `${S.student(r).name} (${t.marks[r] === "L" ? "leave" : "absent"})`).join(", ") || "nobody"}` : "not marked yet"; };
   const timetableTxt = () => { const nd = S.nextSchoolDay(S.today, 1); return `Today (${S.fmtLong(S.today)}): ${(S.timetable[S.today.getDay()] || []).join(", ")}\nNext school day (${S.fmtLong(nd)}): ${S.timetable[nd.getDay()].join(", ")}\nPeriods start at ${S.periodTimes.join(", ")}`; };
@@ -277,7 +279,7 @@ ADMISSIONS
 ${factsTxt()}
 WEBSITE PAGES: Home, About, Academics, Admissions, Campus, Student life, News, Parents, Mandatory disclosure, Contact (map, message form, careers, alumni).
 UPCOMING NOTICES
-${noticesTxt()}
+${noticesTxt("public")}
 Upcoming holidays: ${holidaysTxt()}`,
 
     parent: () => {
@@ -295,7 +297,9 @@ Timetable, ${cls()}:
 ${timetableTxt()}
 ${S.kidKey === "VII-B-1" ? `Sibling at school: ${S.sibling.name}, Class ${S.sibling.cls} (class teacher ${S.sibling.teacher}); those records are not loaded in this demo.\n` : ""}Coming up: ${PTM()}.
 NOTICES
-${noticesTxt()}
+${noticesTxt("parent")}
+EXAMS AND DATESHEETS (${cls()})
+${S.examsTxt ? S.examsTxt(s) : ""}
 Upcoming holidays: ${holidaysTxt()}`;
     },
 

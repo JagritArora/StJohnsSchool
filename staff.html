@@ -5,6 +5,7 @@
 <!-- Prototype: kept out of search results so it never competes with the school's own site. -->
 <meta name="robots" content="noindex, nofollow" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+<meta name="color-scheme" content="light" />
 <title>Staff | St. John's School</title>
 <link rel="icon" href="assets/crest.svg" type="image/svg+xml" />
 <link rel="manifest" href="manifest.webmanifest" />
@@ -16,7 +17,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Figtree:wght@400..800&display=swap" rel="stylesheet" />
-<link rel="stylesheet" href="css/site.css?v=5" />
+<link rel="stylesheet" href="css/site.css?v=8" />
 <script>
 /* Before the first paint: fade photos in as they load. */
 (function (d) { d.documentElement.classList.add("js");
@@ -293,32 +294,72 @@
       </div>
     </section>
 
-    <!-- NOTICES -->
+    <!-- EXAMS: every exam of the session and its datesheet; the office edits and publishes -->
+    <section data-view="exams" data-roles="teacher principal admin">
+      <div class="topbar"><div><h1>Exams</h1><div class="sub" id="xs-sub">Datesheets for every class. Parents see a datesheet only after it is published.</div></div>
+        <div class="right cls-pick xs-pick"><label>Class<select id="xs-cls"></select></label><button class="btn btn-primary btn-sm" id="xs-new" type="button" data-roles="principal admin">New exam</button></div></div>
+      <div class="ex-page">
+        <div class="card ex-main" id="xs-main"></div>
+        <div class="card ex-side"><div class="card-h"><h2>Session 2026–27</h2><span class="right muted" id="xs-count" style="font-size:12.5px"></span></div><div class="ex-list" id="xs-list"></div></div>
+      </div>
+    </section>
+
+    <!-- NOTICES: how important, and exactly who gets it -->
     <section data-view="notices" data-roles="principal admin">
       <div class="topbar"><div><h1>Notices</h1><div class="sub">One notice reaches the app, SMS, WhatsApp and the website.</div></div></div>
-      <div class="grid g21">
-        <form class="card" id="nt-form">
+      <div class="grid g21 nt-grid">
+        <form class="card" id="nt-form" novalidate>
           <div class="card-h"><h2>New notice</h2></div>
           <div class="field" style="margin-top:0"><label for="nt-title">Title</label><input id="nt-title" required value="Winter uniform from 2 November" /></div>
-          <div class="field"><label for="nt-text">Message</label><textarea id="nt-text" required style="min-height:130px">Students will wear the full winter uniform (blazer and maroon sweater) from Monday, 2 November.</textarea></div>
-          <div class="field"><label for="nt-date">Date of the event, holiday or deadline</label><input id="nt-date" type="date" required value="2026-11-02" /><span class="hint">The website lists it under "Coming up" until this date has passed.</span></div>
-          <div class="row2"><div class="field"><label for="nt-to">Send to</label><select id="nt-to"><option>All parents</option><option>Classes VI–VIII</option><option>Staff only</option></select></div><div class="field"><label for="nt-tag">Type</label><select id="nt-tag"><option>Notice</option><option>Event</option><option>Holiday</option><option>PTM</option></select></div></div>
-          <label style="display:flex;gap:10px;align-items:center;margin-top:16px;font-size:14.5px"><input type="checkbox" checked id="nt-web" /> Show on the website's News section</label>
-          <button class="btn btn-primary btn-block" type="submit" style="margin-top:20px">Send notice</button>
+          <div class="field"><label for="nt-text">Message</label><textarea id="nt-text" required style="min-height:110px">Students will wear the full winter uniform (blazer and maroon sweater) from Monday, 2 November.</textarea></div>
+          <div class="row2"><div class="field"><label for="nt-date">Date of the event or deadline</label><input id="nt-date" type="date" required value="2026-11-02" /></div><div class="field"><label for="nt-tag">Type</label><select id="nt-tag"><option>Notice</option><option>Event</option><option>Holiday</option><option>PTM</option><option>Exam</option></select></div></div>
+          <div class="field"><span class="lbl" id="nt-lvl-l">Importance</span><div class="seg lv-seg" id="nt-lvl" role="group" aria-labelledby="nt-lvl-l"><button type="button" data-v="high" aria-pressed="false"><span class="lvl high"><span class="bars" aria-hidden="true"><i></i><i></i><i></i></span>High</span></button><button type="button" data-v="medium" class="on" aria-pressed="true"><span class="lvl medium"><span class="bars" aria-hidden="true"><i></i><i></i><i></i></span>Medium</span></button><button type="button" data-v="low" aria-pressed="false"><span class="lvl low"><span class="bars" aria-hidden="true"><i></i><i></i><i></i></span>Low</span></button></div><span class="hint" id="nt-lvl-hint"></span></div>
+          <fieldset class="aud">
+            <legend>Who gets it</legend>
+            <div class="seg" id="nt-who" role="group" aria-label="Send to"><button type="button" data-v="parents" class="on" aria-pressed="true">Parents</button><button type="button" data-v="staff" aria-pressed="false">Staff only</button></div>
+            <div id="nt-aud">
+              <div class="field"><span class="lbl" id="nt-cls-l">Classes</span><div class="tchips" id="nt-cls" role="group" aria-labelledby="nt-cls-l"></div></div>
+              <div class="field"><span class="lbl" id="nt-sec-l">Sections</span><div class="tchips" id="nt-sec" role="group" aria-labelledby="nt-sec-l"></div></div>
+              <div class="row2"><div class="field"><label for="nt-bus">Transport</label><select id="nt-bus"><option value="">Bus and own transport</option><option value="bus">Bus students</option><option value="own">Own transport</option></select></div><div class="field"><label for="nt-route">Bus route</label><select id="nt-route" disabled></select></div></div>
+              <div class="field"><span class="lbl" id="nt-gen-l">Students</span><div class="seg" id="nt-gen" role="group" aria-labelledby="nt-gen-l"><button type="button" data-v="" class="on" aria-pressed="true">Girls and boys</button><button type="button" data-v="girls" aria-pressed="false">Girls</button><button type="button" data-v="boys" aria-pressed="false">Boys</button></div></div>
+            </div>
+            <div class="reach" id="nt-reach" aria-live="polite"></div>
+          </fieldset>
+          <label class="nt-web"><input type="checkbox" checked id="nt-web" /> <span>Show on the website's News section<small id="nt-web-hint"></small></span></label>
+          <button class="btn btn-primary btn-block" type="submit" style="margin-top:18px">Send notice</button>
         </form>
-        <div class="card"><div class="card-h"><h2>Sent</h2></div><div class="list" id="nt-list"></div></div>
+        <div class="card"><div class="card-h"><h2>Sent</h2><span class="right muted" id="ns-count" style="font-size:12.5px"></span></div>
+          <div class="ns-filters">
+            <div class="seg" id="ns-lv" role="group" aria-label="Importance"><button type="button" class="on" data-v="" aria-pressed="true">All</button><button type="button" data-v="high" aria-pressed="false">High</button><button type="button" data-v="medium" aria-pressed="false">Medium</button><button type="button" data-v="low" aria-pressed="false">Low</button></div>
+            <div class="ns-sel"><label>Class<select id="ns-cls"></select></label><label>Section<select id="ns-sec"></select></label><label>Group<select id="ns-cat"><option value="">Everyone</option><option value="bus">Bus students</option><option value="own">Own transport</option><option value="girls">Girls</option><option value="boys">Boys</option><option value="staff">Staff only</option></select></label></div>
+          </div>
+          <div class="list" id="nt-list"></div>
+        </div>
       </div>
     </section>
   </main>
 </div>
 <nav class="bottom-nav" id="nav-bottom"></nav>
 
+<div class="modal" id="xs-modal"><div class="modal-card">
+  <h3>New exam</h3><p class="muted">Makes a draft datesheet from each class's subjects. Check the dates, then publish it to parents.</p>
+  <form id="xs-form" novalidate>
+    <div class="field"><label for="xf-name">Name</label><input id="xf-name" required value="Unit Test 4" /></div>
+    <div class="row2"><div class="field"><label for="xf-kind">Type</label><select id="xf-kind"></select></div><div class="field"><label for="xf-from">First paper</label><input id="xf-from" type="date" required /></div></div>
+    <div class="field"><span class="lbl" id="xf-cls-l">Classes</span><div class="tchips" id="xf-cls" role="group" aria-labelledby="xf-cls-l"></div><span class="hint">Pre-primary has no exams.</span></div>
+    <div class="row2"><div class="field"><label for="xf-how">Papers</label><select id="xf-how"><option value="day">One every school day</option><option value="alt">Every other school day</option><option value="sat">Saturdays only</option></select></div><div class="field"><label for="xf-time">Time</label><input id="xf-time" value="8:00 to 9:30 AM, then regular classes" /></div></div>
+    <p class="form-err" id="xf-err" hidden></p>
+    <div style="display:flex;gap:10px;margin-top:20px"><button type="button" class="btn btn-ghost" data-close>Cancel</button><button class="btn btn-primary" type="submit" style="flex:1">Make the draft</button></div>
+  </form>
+</div></div>
 
 
 
 
-<script src="js/data.js"></script>
-<script src="js/classes.js"></script>
+
+<script src="js/data.js?v=8"></script>
+<script src="js/classes.js?v=8"></script>
+<script src="js/exams.js?v=8"></script>
 <script src="js/demo.js"></script>
 <script>
 /* One staff page. The staff ID (from sign-in, or ?id= in the address) picks the
@@ -355,21 +396,22 @@
     homework: '<path d="M6 3h9l4 4v14H6z"/><path d="M14 3v5h5M9 13h7M9 17h5"/>', marks: '<path d="M5 20V10M12 20V4M19 20v-7"/>',
     assist: '<path d="M12 3l1.9 5.3L19 10l-5.1 1.7L12 17l-1.9-5.3L5 10l5.1-1.7z"/><path d="M19 15l.8 2.2L22 18l-2.2.8L19 21l-.8-2.2L16 18l2.2-.8z"/>',
     messages: '<path d="M4 5h16v11H9l-5 4z"/>', admissions: '<circle cx="10" cy="8" r="4"/><path d="M3 21c1-4 4-6 7-6 1.5 0 3 .4 4.2 1.3M17 14v6M14 17h6"/>',
+    exams: '<rect x="5" y="4" width="14" height="17" rx="2"/><path d="M9 4V3h6v1M9 10h6M9 14h6M9 18h3"/>',
     notices: '<path d="M4 10v4h3l6 4V6L7 10z"/><path d="M17 9a4 4 0 0 1 0 6"/>', classes: '<rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 10h18M9 10v10M15 10v10"/>', website: '<rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 9h18M7 6.5h.01M10 6.5h.01"/>'
   };
   const NAV = {
-    teacher: [["home", "Home"], ["attendance", "Attendance"], ["homework", "Homework"], ["marks", "Marks"], ["assist", "AI assist"], ["messages", "Messages"]],
-    principal: [["overview", "Overview"], ["classes", "Classes"], ["admissions", "Admissions"], ["notices", "Notices"], ["website", "Website"]],
-    admin: [["overview", "Office desk"], ["classes", "Classes"], ["admissions", "Admissions"], ["notices", "Notices"], ["website", "Website"]]
+    teacher: [["home", "Home"], ["attendance", "Attendance"], ["homework", "Homework"], ["marks", "Marks"], ["exams", "Exams"], ["assist", "AI assist"], ["messages", "Messages"]],
+    principal: [["overview", "Overview"], ["classes", "Classes"], ["exams", "Exams"], ["admissions", "Admissions"], ["notices", "Notices"], ["website", "Website"]],
+    admin: [["overview", "Office desk"], ["classes", "Classes"], ["exams", "Exams"], ["admissions", "Admissions"], ["notices", "Notices"], ["website", "Website"]]
   }[role].filter(([k]) => role !== "teacher" || me.classOf || !["attendance", "messages"].includes(k));
   const btn = ([k, l]) => `<button class="side-btn" data-go="${k}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">${I[k]}</svg>${l}<span class="count" data-count="${k}" hidden></span></button>`;
   document.getElementById("nav-side").innerHTML = NAV.map(btn).join("");
-  document.getElementById("nav-bottom").innerHTML = NAV.filter(([k]) => k !== "messages").map(btn).join("");
+  document.getElementById("nav-bottom").innerHTML = NAV.filter(([k]) => k !== "messages" && k !== "exams").map(btn).join("");
 })();
 </script>
-<script src="js/common.js"></script>
-<script src="js/charts.js?v=5"></script>
-<script src="js/ai.js"></script>
+<script src="js/common.js?v=7"></script>
+<script src="js/charts.js?v=7"></script>
+<script src="js/ai.js?v=8"></script>
 <script>
 (function () {
   const S = SJS;
@@ -677,7 +719,7 @@
     });
   }
   // A short, warm class note drafted from each school notice; the teacher edits before sending.
-  const notices = S.state.notices;
+  const notices = S.state.notices.filter((n) => S.noticeReachesClass(n, x.cls));
   const noteFor = (n) => `Dear parents, ${n.text.charAt(0).toLowerCase() + n.text.slice(1)}${n.tag === "PTM" ? " If you can't come, reply here and we'll find another time." : n.tag === "Holiday" ? " Homework due that day can be handed in the next school day." : ""}`;
   S.$("#tr-n").innerHTML = notices.map((n) => `<option value="${n.id}">${S.esc(n.title)}</option>`).join("");
   const showTr = () => { const n = notices.find((v) => v.id === S.$("#tr-n").value); S.$("#tr-out").value = (n ? noteFor(n) : "") + `\n\n— ${tname}, ${isCT ? "class teacher " + secLabel(home) : SUBJ + " teacher"}`; };
@@ -842,14 +884,14 @@
     const numRow = (num, sp) => `<div class="num-row"><div class="num">${num}</div>${sp}</div>`;
     const presentKpi = `<div class="card stat"><span class="lbl">Present today</span>${numRow(`${today}<small>%</small>`, S.spark(byDay, { tone: "var(--green)", ref: 90, label: `School attendance, last ${days6.length} school days` }))}<div class="foot">${base5 !== null ? S.delta(today - base5, { dp: 1, tip: `Against the ${before.length}-day average, ${base5}%` }) + ` against the ${before.length}-day average` : "Sample · every section that has marked"}</div>${S.meter(today, { tone: "var(--green)", mark: 90, tip: "The line marks the 90% target" })}</div>`;
     const feeKpi = `<div class="card stat"><span class="lbl">${F.q} fees</span>${numRow(`${F.pct}<small>%</small>`, S.spark(fc.pts, { tone: "var(--green)", lo: 0, label: `${F.q} collection, week by week` }))}<div class="foot">${S.PHASE === "end" ? "The year is almost settled" : `${S.delta(fc.week, { tip: "Collected in the last 7 days" })} this week · due ${S.fmt(F.due)}`}</div>${S.meter(F.pct, { tone: "var(--green)" })}</div>`;
-    const enqKpi = `<div class="card stat hl"><span class="lbl">New enquiries</span>${numRow(fresh, S.spark(enqW, { tone: "var(--accent-ink)", lo: 0, label: "Enquiries, week by week" }))}<div class="foot">${enq.length} this season · ${enqW[5]} this week</div>${S.meter(enq.length ? (fresh / enq.length) * 100 : 0, { tone: "var(--accent-ink)", tip: `${fresh} of ${enq.length} still to call` })}</div>`;
+    const enqKpi = `<div class="card stat hl"><span class="lbl">New enquiries</span>${numRow(fresh, S.spark(enqW, { tone: "var(--accent)", lo: 0, label: "Enquiries, week by week" }))}<div class="foot">${enq.length} this season · ${enqW[5]} this week</div>${S.meter(enq.length ? (fresh / enq.length) * 100 : 0, { tone: "var(--accent)", tip: `${fresh} of ${enq.length} still to call` })}</div>`;
     if (S.PHASE === "end") {
       const res = endResults();
       S.paint(S.$("#kpis"), `
       <div class="card stat"><span class="lbl">Passed every subject</span>${numRow(`${res.pass}<small>%</small>`, S.spark(res.trend, { tone: "var(--green)", label: "Pass rate: Unit Test 1, half-yearly, final" }))}<div class="foot">${S.delta(res.pass - res.trend[1], { dp: 1, tip: `Half-yearly ${res.trend[1]}%` })} on the half-yearly · I to XII</div>${S.meter(res.pass, { tone: "var(--green)", mark: 95, tip: "The line marks 95%" })}</div>
       <div class="card stat"><span class="lbl">Promoted</span><div class="num">${res.promoted}<small> / ${res.n}</small></div><div class="foot">${res.n - res.promoted} have a re-test in July</div>${S.meter((res.promoted / res.n) * 100, { tone: "var(--royal)" })}</div>
       ${feeKpi}
-      <div class="card stat hl"><span class="lbl">Admitted for 2027–28</span><div class="num">${enq.filter((e) => e.status === "Admitted").length}</div><div class="foot">${fresh} new enquiries to call</div>${S.meter((enq.filter((e) => e.status === "Admitted").length / Math.max(1, enq.length)) * 100, { tone: "var(--accent-ink)" })}</div>`);
+      <div class="card stat hl"><span class="lbl">Admitted for 2027–28</span><div class="num">${enq.filter((e) => e.status === "Admitted").length}</div><div class="foot">${fresh} new enquiries to call</div>${S.meter((enq.filter((e) => e.status === "Admitted").length / Math.max(1, enq.length)) * 100, { tone: "var(--accent)" })}</div>`);
     } else if (S.PHASE === "start") {
       const fresher = Math.round(roll * 0.07);
       S.paint(S.$("#kpis"), `${presentKpi}
@@ -895,7 +937,7 @@
     }).join(""));
 
     // Notices
-    S.$("#nt-list").innerHTML = [...S.state.notices].reverse().map((n) => `<div class="li"><span class="sq ${n.fresh ? "red" : ""}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 10v4h3l6 4V6L7 10z"/></svg></span><div class="t"><b>${S.esc(n.title)}</b><span>${S.fmt(n.date, { weekday: "short", day: "numeric", month: "short" })} · ${S.esc(n.text)}</span></div><span class="end pill">${S.esc(n.tag)}</span></div>`).join("");
+    if (S.renderNotices) S.renderNotices();
     renderSite();
   }
 
@@ -1025,11 +1067,6 @@
     sweep(); S.save(); renderSite(); S.toast("Undone. The website is back as it was.");
   });
   S.$("#adm-tbl").addEventListener("change", (e) => { const s = e.target.closest("[data-enq]"); if (!s) return; S.state.enquiries[+s.dataset.enq].status = s.value; S.save(); render(); S.toast("Status updated"); });
-  S.$("#nt-form").addEventListener("submit", (e) => {
-    e.preventDefault();
-    S.state.notices.push({ id: "n" + Date.now(), title: S.$("#nt-title").value.trim(), text: S.$("#nt-text").value.trim(), date: S.$("#nt-date").value || S.todayKey, tag: S.$("#nt-tag").value, fresh: true, web: S.$("#nt-web").checked });
-    S.save(); render(); S.toast(`Sent to ${S.$("#nt-to").value.toLowerCase()} · app, SMS and WhatsApp`);
-  });
   let seen = S.state.enquiries.length;
   document.addEventListener("sjs:sync", () => { const n = S.state.enquiries.length; render(); if (n > seen) S.toast("New admission enquiry from the website"); seen = n; });
   // ---------- Classes: one class and section at a time ----------
@@ -1230,5 +1267,6 @@
   S.mountAI("principal");
 })();
 </script>
+<script src="js/office.js?v=8"></script>
 </body>
 </html>

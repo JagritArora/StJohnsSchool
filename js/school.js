@@ -110,8 +110,8 @@
   // ---------- News lists (from the same notices the app uses) ----------
   $$("[data-news]").forEach((ul) => {
     const limit = +ul.dataset.limit || 99;
-    const items = [...(S.state ? S.state.notices : [])].sort((a, b) => (a.date < b.date ? -1 : 1)).filter((n) => n.web !== false && n.date >= (S.todayKey || "")).slice(0, limit);
-    const tone = { Holiday: "", PTM: "tag--brick", Event: "tag--hedge", Notice: "tag--gold" };
+    const items = [...(S.state ? S.state.notices : [])].sort((a, b) => (a.date < b.date ? -1 : 1)).filter((n) => n.web !== false && !(n.to && (n.to.staff || n.to.bus || n.to.gender)) && n.date >= (S.todayKey || "")).slice(0, limit);
+    const tone = { Holiday: "", PTM: "tag--brick", Exam: "tag--brick", Event: "tag--hedge", Notice: "tag--gold" };
     const loc = "en-IN";
     ul.innerHTML = items.map((n) => { const d = new Date(n.date + "T00:00"); return `<li><div class="day">${d.getDate()}<small>${d.toLocaleDateString(loc, { month: "long" })}, ${d.toLocaleDateString(loc, { weekday: "short" })}</small></div><div><h3>${esc(n.title)}</h3><p>${esc(n.text)}</p></div><span class="tag ${tone[n.tag] || ""}">${esc(n.tag)}</span></li>`; }).join("") || `<li><div></div><p class="muted">${"Nothing coming up right now. New events appear here as the school posts them."}</p></li>`;
   });
@@ -211,4 +211,91 @@
     next.addEventListener("click", () => track.scrollBy({ left: step(), behavior: reduce ? "auto" : "smooth" }));
     track.addEventListener("scroll", sync, { passive: true }); addEventListener("resize", sync); sync();
   });
+
+  // ---------- The five stages: one opens at a time, under its own row ----------
+  $$("[data-stages]").forEach((stg) => {
+    const tiles = $$("button.step", stg), panel = $(".stage-panel", stg), sps = $$(".sp", panel);
+    const EASE = "cubic-bezier(.22, 1, .36, 1)";
+    let cur = -1, anim = null;
+    const cols = () => getComputedStyle(stg).gridTemplateColumns.split(" ").filter(Boolean).length || 1;
+    // The panel sits after the last tile of the chosen tile's row, so on a phone it opens right below the tile.
+    const place = () => {
+      if (cur < 0) return;
+      const c = cols();
+      tiles.forEach((t, i) => (t.style.order = i));
+      panel.style.order = Math.min(tiles.length - 1, Math.floor(cur / c) * c + c - 1);
+      const t = tiles[cur];
+      panel.style.setProperty("--nx", Math.round(t.offsetLeft + t.offsetWidth / 2 - panel.offsetLeft) + "px");
+    };
+    const rowOf = (i) => (i < 0 ? -1 : Math.floor(i / cols()));
+    const show = (i, how = {}) => {
+      if (anim) anim.cancel();
+      const was = cur, h0 = was < 0 || panel.hidden ? 0 : panel.offsetHeight;
+      const sameRow = was >= 0 && rowOf(was) === rowOf(i);
+      cur = i;
+      tiles.forEach((t, k) => t.setAttribute("aria-expanded", String(k === cur)));
+      stg.classList.toggle("has-open", cur >= 0);
+      if (cur < 0) {
+        if (reduce || !h0) { panel.hidden = true; return; }
+        panel.style.overflow = "clip";
+        anim = panel.animate([{ height: h0 + "px", opacity: 1 }, { height: "0px", opacity: 0 }], { duration: 320, easing: EASE });
+        anim.onfinish = () => { panel.hidden = true; panel.style.overflow = ""; anim = null; };
+        return;
+      }
+      panel.hidden = false; panel.style.overflow = ""; panel.dataset.s = cur;
+      sps.forEach((p, k) => (p.hidden = k !== cur));
+      place();
+      if (!reduce && how.animate !== false) {
+        const h1 = panel.offsetHeight, from = sameRow ? h0 : 0;
+        if (from !== h1) {
+          panel.style.overflow = "clip";
+          anim = panel.animate([{ height: from + "px" }, { height: h1 + "px" }], { duration: 420, easing: EASE });
+          anim.onfinish = () => { panel.style.overflow = ""; anim = null; };
+        }
+      }
+      // If the tile ran off screen (a panel above it just closed), bring it back into view.
+      if (how.scroll !== false) {
+        const r = tiles[cur].getBoundingClientRect();
+        if (r.top < 80 || r.top > innerHeight * 0.62) tiles[cur].scrollIntoView({ block: "start", behavior: reduce ? "auto" : "smooth" });
+      }
+    };
+    tiles.forEach((t, i) => t.addEventListener("click", () => {
+      stg.classList.add("is-live");
+      show(cur === i ? -1 : i);
+      if (cur >= 0) history.replaceState(null, "", "#" + tiles[cur].id);
+    }));
+    // A link from the home page names the stage: open it, glow the tile once, and
+    // show the section heading too when the tile and its panel still fit on screen.
+    const hashed = () => tiles.findIndex((t) => "#" + t.id === location.hash);
+    const frame = (i) => {
+      const t = tiles[i], sec = stg.closest("section");
+      const fits = t.getBoundingClientRect().bottom - sec.getBoundingClientRect().top + 260 < innerHeight;
+      (fits ? sec : t).scrollIntoView({ block: "start" });
+    };
+    const land = (i) => {
+      stg.classList.add("is-live");
+      show(i, { scroll: false });
+      const t = tiles[i];
+      t.classList.remove("arrive"); void t.offsetWidth; t.classList.add("arrive");
+      t.addEventListener("animationend", () => t.classList.remove("arrive"), { once: true });
+      requestAnimationFrame(() => frame(i));
+    };
+    const first = hashed();
+    if (first >= 0) land(first); else show(0, { animate: false, scroll: false });
+    addEventListener("hashchange", () => { const i = hashed(); if (i >= 0) land(i); });
+    // The browser jumps to the tile again once the page has loaded; settle on our framing.
+    addEventListener("load", () => { place(); const i = hashed(); if (i >= 0 && i === cur) frame(i); });
+    addEventListener("resize", place);
+  });
+})();
+
+/* Pointer light: cards with a glow layer read --mx/--my from here. */
+(function () {
+  if (!matchMedia("(hover: hover)").matches) return;
+  const SEL = ".step, .card, .hm-tile, .role-tab";
+  document.addEventListener("pointermove", (e) => {
+    const el = e.target.closest && e.target.closest(SEL); if (!el) return;
+    const r = el.getBoundingClientRect();
+    el.style.setProperty("--mx", Math.round(e.clientX - r.left) + "px"); el.style.setProperty("--my", Math.round(e.clientY - r.top) + "px");
+  }, { passive: true });
 })();
