@@ -139,7 +139,7 @@
         const pl = trip === "am" ? path : path.slice().reverse();
         const at = S.along(pl, live), to = S.along(pl, me);
         m = Math.max(1, Math.round((to - at) / SPEED) + out.away);
-      } else m = Math.max(1, mins(me.t) - mins(list[next] ? list[next].t : me.t));
+      } else m = Math.max(1, mins(me.t) - mins(next ? list[next - 1].t : list[0].t));
       out.mins = m;
       const near = dist(live, me) < 120;
       out.state = near ? "here" : out.away <= 1 ? "soon" : "coming";
@@ -154,7 +154,7 @@
     return out;
   };
 
-  // ---------- The map (Leaflet + OpenStreetMap tiles, loaded only when a map opens) ----------
+  // ---------- The map (Leaflet + Esri satellite tiles, loaded only when a map opens) ----------
   let lp = null;
   S.leaflet = () => lp || (lp = new Promise((ok, no) => {
     const css = document.createElement("link"); css.rel = "stylesheet"; css.href = "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css"; document.head.append(css);
@@ -167,7 +167,10 @@
   const make = async (el, o) => {
     const L = await S.leaflet();
     const map = L.map(el, { zoomControl: true, attributionControl: true, scrollWheelZoom: !!o.wheel }).setView([SCHOOL.lat, SCHOOL.lng], 13);
-    L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", { maxZoom: 19, attribution: "© OpenStreetMap" }).addTo(map);
+    const esri = "https://server.arcgisonline.com/ArcGIS/rest/services/";
+    L.tileLayer(esri + "World_Imagery/MapServer/tile/{z}/{y}/{x}", { maxZoom: 19, maxNativeZoom: 18, attribution: "Imagery © Esri, Maxar, Earthstar Geographics" }).addTo(map);
+    L.tileLayer(esri + "Reference/World_Transportation/MapServer/tile/{z}/{y}/{x}", { maxZoom: 19, maxNativeZoom: 18, opacity: 0.7 }).addTo(map);
+    L.tileLayer(esri + "Reference/World_Boundaries_and_Places/MapServer/tile/{z}/{y}/{x}", { maxZoom: 19, maxNativeZoom: 18 }).addTo(map);
     el._map = map; map._lay = L.layerGroup().addTo(map);
     return map;
   };
@@ -175,8 +178,8 @@
   // Draws one route: the road, the stops (yours larger), the school, and the bus if it's out.
   S.drawRoute = (map, r, path, o = {}) => {
     const L = window.L, g = map._lay; g.clearLayers();
-    L.polyline(path, { color: "#5c6a7a", weight: 6, opacity: 0.22, lineJoin: "round" }).addTo(g);
-    L.polyline(path, { color: "#2f6f8f", weight: 3, opacity: 0.9, lineJoin: "round" }).addTo(g);
+    L.polyline(path, { color: "#ffffff", weight: 7, opacity: 0.9, lineJoin: "round" }).addTo(g);
+    L.polyline(path, { color: "#1e88e5", weight: 4, opacity: 1, lineJoin: "round" }).addTo(g);
     r.stops.forEach((s, i) => {
       const m = L.marker([s.lat, s.lng], { icon: pin(L, i === o.mine ? "mine" : "stop", i === o.mine ? `<span>${S.esc(s.n)}</span>` : ""), title: s.n, draggable: !!o.drag, keyboard: false }).addTo(g);
       m.bindTooltip(`${S.esc(s.n)} · ${S.ampm(s.t)}`, { direction: "top", offset: [0, -8] });

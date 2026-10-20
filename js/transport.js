@@ -1,5 +1,5 @@
 /* Staff page, Transport (office and principal): every route, and one route at a time
-   to edit: its stops on the map, their times, the driver, and each child's stop.
+   to edit: its stops in order, their times, the driver, and each child's stop.
    Saving reaches the driver's phone and the parents straight away. */
 (function () {
   const S = window.SJS;
@@ -30,11 +30,10 @@
         <div class="field"><label for="tr-drv">Driver</label><select id="tr-drv"><option value="">No driver yet</option>${drivers().map(([k, v]) => `<option value="${k}" ${k === r.driver ? "selected" : ""}>${esc(v.name)} · ${k}${taken[k] ? ` (now ${esc(taken[k])})` : ""}</option>`).join("")}</select></div>
         <div class="field"><label for="tr-back">Leaves school after classes</label><input id="tr-back" type="time" value="${esc(r.back || "13:40")}" /></div>
       </div>
-      <div class="tr-find"><input id="tr-q" class="input" type="search" value="${esc(q)}" placeholder="Find a place to add as a stop, e.g. Sector 21A" aria-label="Find a place" autocomplete="off" />${found.length ? `<div class="tr-found">${found.map((f, i) => `<button type="button" data-found="${i}"><b>${esc(f.n)}</b><small>${esc(f.full)}</small></button>`).join("")}</div>` : ""}</div>
+      <div class="tr-find"><input id="tr-q" class="input" type="search" value="${esc(q)}" placeholder="Find a place to add as a stop, e.g. Sector 21A" aria-label="Find a place" autocomplete="off" />${q.trim().length >= 2 || found.length ? `<div class="tr-found">${q.trim().length >= 2 ? `<button type="button" data-tr="addname"><b>Add “${esc(q.trim())}” as a stop</b><small>Goes before school; set its time below</small></button>` : ""}${found.map((f, i) => `<button type="button" data-found="${i}"><b>${esc(f.n)}</b><small>${esc(f.full)}</small></button>`).join("")}</div>` : ""}</div>
 `;
-    $("#tr-map").setAttribute("aria-label", "Map of " + r.id);
     $("#tr-bot").innerHTML = `
-      <p class="muted tr-hint">Tap the map to add a stop there, or drag a stop to move it. ${r.rec && r.rec.sig === S.pathSig(r) ? `The road is the one ${esc(r.rec.by)} drove on ${esc(r.rec.on)}. <button class="link-btn" type="button" data-tr="unrec">Follow the map's roads instead</button>` : "The road between stops follows the map's roads."}</p>
+      <p class="muted tr-hint">Type a stop's name above to add it. Use ↑ ↓ to put the stops in the order the bus reaches them, and set each time. The driver taps each stop as done, and parents see it.</p>
       <h3 class="d-sub">Stops, morning order</h3>
       <ol class="tr-stops">${r.stops.map((s, i) => `<li><span class="tr-i">${i + 1}</span><input class="input" data-sn="${i}" value="${esc(s.n)}" aria-label="Stop ${i + 1} name" /><input class="input" type="time" data-st="${i}" value="${esc(s.t)}" aria-label="Stop ${i + 1} time" /><span class="tr-k">${riders.filter((x) => x.stop === i).length || ""}</span><span class="tr-b"><button class="icon-btn" type="button" data-up="${i}" aria-label="Move up" ${i ? "" : "disabled"}>↑</button><button class="icon-btn" type="button" data-dn="${i}" aria-label="Move down" ${i < r.stops.length - 1 ? "" : "disabled"}>↓</button><button class="icon-btn" type="button" data-rm="${i}" aria-label="Remove ${esc(s.n)}">×</button></span></li>`).join("")}
         <li class="sch"><span class="tr-i"></span><span class="tr-sch">School</span><span class="tr-t">${S.ampm(L[L.length - 1].t)}</span></li></ol>
@@ -42,16 +41,6 @@
       <h3 class="d-sub">Children on this route</h3>
       ${riders.length ? `<div class="list">${riders.map((x) => `<div class="li"><span class="li-t"><b>${esc(S.kidName(x.key))}</b></span><select class="input tr-rs" data-rider="${esc(x.key)}" aria-label="Stop for ${esc(S.kid(x.key).first)}">${r.stops.map((s, i) => `<option value="${i}" ${i === x.stop ? "selected" : ""}>${esc(s.n)}</option>`).join("")}</select></div>`).join("")}</div>` : `<p class="muted" style="font-size:14px">No demo family uses ${esc(r.id)}.</p>`}
       ${r.driver ? `<p class="muted tr-hint">${esc(S.STAFF[r.driver].name)} signs in with <b>${esc(r.driver)}</b> and sees only this route. <a href="driver.html?id=${esc(r.driver)}" target="_blank">Open the driver's view in a new tab</a></p>` : ""}`;
-    drawMap();
-  }
-  async function drawMap() {
-    const el = $("#tr-map"); if (!el) return;
-    if (!draft.stops.length) { path = [[S.SCHOOL_AT.lat, S.SCHOOL_AT.lng]]; }
-    else path = path || await S.routePath(draft);
-    map = await S.busMap(el, { wheel: false });
-    if (!map._trClick) { map._trClick = true; map.on("click", (e) => addStop({ n: "New stop", lat: e.latlng.lat, lng: e.latlng.lng })); }
-    const v = S.busLive(draft.id);
-    S.drawRoute(map, draft, path, { bus: v, drag: (i, lat, lng) => { draft.stops[i].lat = Math.round(lat * 1e5) / 1e5; draft.stops[i].lng = Math.round(lng * 1e5) / 1e5; changed(true); } });
   }
   const mins = (t) => { const [h, m] = t.split(":").map(Number); return h * 60 + m; };
   const hhmm = (m) => String(Math.floor(m / 60)).padStart(2, "0") + ":" + String(m % 60).padStart(2, "0");
@@ -76,8 +65,7 @@
     try {
       const res = await fetch("https://nominatim.openstreetmap.org/search?format=json&limit=5&bounded=1&viewbox=77.22,28.52,77.42,28.30&q=" + encodeURIComponent(text + ", Faridabad"));
       found = (await res.json()).map((x) => ({ n: x.display_name.split(",")[0], full: x.display_name.split(",").slice(1, 3).join(",").trim(), lat: +x.lat, lng: +x.lon }));
-      if (!found.length) S.toast("No place found by that name in Faridabad. Try the sector, or tap the map.", { nolog: true });
-    } catch (e) { found = []; S.toast("Couldn't search right now. Tap the map to place the stop.", { nolog: true }); }
+    } catch (e) { found = []; S.toast("Couldn't search right now. Add the stop by name instead.", { nolog: true }); }
     renderEd(); const i = $("#tr-q"); if (i) { i.focus(); i.setSelectionRange(i.value.length, i.value.length); }
   }
 
@@ -86,6 +74,7 @@
     const b = e.target.closest("button"); if (!b) return;
     const d = b.dataset, st = draft.stops;
     if (d.route) { if (dirty && !confirm(`Discard the changes to ${draft.id}?`)) return; pick(d.route); renderList(); renderEd(); }
+    else if (d.tr === "addname") { const st0 = draft.stops, last = st0[st0.length - 1] || S.SCHOOL_AT, n = q.trim(); found = []; q = ""; st0.push({ n, lat: last.lat, lng: last.lng, t: last.t ? hhmm(Math.min(mins(last.t) + 5, 23 * 60)) : "07:10" }); changed(true); }
     else if (d.found) { const f = found[+d.found]; found = []; q = ""; addStop(f); }
     else if (d.up || d.dn) { const i = d.up ? +d.up - 1 : +d.dn; swapR(i, i + 1); [st[i], st[i + 1]] = [st[i + 1], st[i]]; changed(true); }
     else if (d.rm) { const i = +d.rm; if (S.ridersOf(draft).some((x) => x.stop === i) && !confirm(`Children get on at ${st[i].n}. Remove it? They move to the stop before.`)) return; st.splice(i, 1); Object.keys(draft.riders).forEach((k) => { if (draft.riders[k] >= i) draft.riders[k] = Math.max(0, draft.riders[k] - 1); }); changed(true); }

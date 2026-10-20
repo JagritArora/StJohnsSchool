@@ -2642,3 +2642,23 @@ body.app .card-h h2 { letter-spacing: -.005em; }
 @media (max-width: 640px) { .tr-stops li { grid-template-columns: 22px 1fr 104px; } .tr-k { display: none; } .tr-b { grid-column: 2 / -1; justify-content: flex-end; margin-top: -4px; } .tr-meta { grid-template-columns: 1fr; } }
 .bus-map, .drv-map, .tr-map { isolation: isolate; z-index: 0; position: relative; }
 @media (max-width: 900px) { .bus-side { display: contents; } .bus-now { order: 1; } .bus-map-card { order: 2; } #bus-stops { order: 3; } .bus-map { height: 40vh; } }
+
+/* Driver: tap-to-mark stops (no map) */
+.drv-sum { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin: 16px 0 4px; }
+.drv-sum div { background: var(--sunken); border-radius: 14px; padding: 12px 14px; display: grid; gap: 2px; }
+.drv-sum b { font-size: 26px; line-height: 1.1; font-variant-numeric: tabular-nums; }
+.drv-sum span { font-size: 13.5px; color: var(--muted); }
+.drv-tap li { align-items: center; padding-top: 14px; padding-bottom: 14px; }
+.drv-tap li::before { top: 22px; }
+.drv-tap .n { display: grid; gap: 2px; font-weight: 600; }
+.drv-tap .n small { font-weight: 400; font-size: 13.5px; color: var(--muted); }
+.drv-tap li.next { background: color-mix(in srgb, var(--gold) 8%, var(--surface)); border-radius: 12px; }
+.drv-tap .c { display: flex; align-items: center; gap: 8px; }
+.drv-tap .ok { color: var(--green-text); font-size: 14px; font-variant-numeric: tabular-nums; }
+.drv-done { min-height: 48px; min-width: 92px; font-size: 16px; }
+@media (max-width: 420px) { .drv-tap li { grid-template-columns: 62px 1fr auto; } }
+
+/* Parent Bus page without a map: the route card leads on the left */
+.bus-start { font-size: 14px; margin: -2px 0 8px; }
+.bus-list li.next .c { color: var(--gold-text); font-weight: 600; }
+@media (max-width: 900px) { .bus-g .bus-side { order: -1; } }
