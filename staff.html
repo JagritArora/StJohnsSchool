@@ -17,7 +17,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Figtree:wght@400..800&display=swap" rel="stylesheet" />
-<link rel="stylesheet" href="css/site.css?v=22" />
+<link rel="stylesheet" href="css/site.css?v=32" />
 <script>
 /* Before the first paint: fade photos in as they load. */
 (function (d) { d.documentElement.classList.add("js");
@@ -37,16 +37,15 @@
 
   <main class="main">
     <!-- TEACHER -->
-    <!-- HOME: the welcome page. What needs the teacher, today's periods, then one tile per page. -->
+    <!-- HOME: the welcome page. The teacher's day as it happens, then one tile per page. "Needs you" is behind the top bar's icon. -->
     <section data-view="home" data-roles="teacher" class="hm">
       <div class="hub">
-        <div class="hub-top">
+        <div class="hub-top hero">
           <div class="hub-hello"><div><div class="hub-date" id="today-line"></div><h1 id="hello">Good morning, Neha</h1></div></div>
           <p class="hub-line" id="t-line"></p>
+          <div class="tday" id="t-day"></div>
         </div>
-        <div class="hub-sec"><h2>Needs you</h2><div id="t-needs"></div></div>
         <div id="t-phase"></div>
-        <div class="hub-sec"><h2>Your periods today</h2><div class="per-strip" id="periods"></div></div>
         <div class="hub-sec"><h2>Your pages</h2><div id="t-tiles"></div></div>
       </div>
     </section>
@@ -188,19 +187,19 @@
     </section>
 
     <!-- PRINCIPAL AND OFFICE -->
-    <!-- HOME: the welcome page. What needs the principal or the office, then one tile per page. -->
+    <!-- HOME: the welcome page. The school today at a glance, then one tile per page. "Needs you" is behind the top bar's icon. -->
     <section data-view="overview" data-roles="principal admin" class="hm">
       <div class="hub">
-        <div class="hub-top">
+        <div class="hub-top hero">
           <div class="hub-hello"><div><div class="hub-date" id="p-today-line"></div><h1 id="p-hello">Good morning</h1></div><div class="right"><button class="btn btn-ghost btn-sm" type="button" id="wk-btn" data-only="principal">Weekly summary</button><button class="btn btn-primary btn-sm" data-go="notices">Send a notice</button></div></div>
           <p class="hub-line" id="p-line"></p>
+          <div class="pulse" id="p-pulse"></div>
+          <details class="hub-fold brief-fold" data-only="principal">
+            <summary><span class="ai-tag"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l1.9 5.3L19 10l-5.1 1.7L12 17l-1.9-5.3L5 10l5.1-1.7z"/></svg>Morning brief</span><span class="hub-fold-1" id="brief-1"></span></summary>
+            <div class="body" id="brief"></div>
+            <p class="muted brief-note">Written by AI at 9:00 AM from the morning's attendance, enquiries and fee figures. Every number links to a page.</p>
+          </details>
         </div>
-        <div class="hub-sec"><h2>Needs you</h2><div id="p-needs"></div></div>
-        <details class="hub-fold brief-fold" data-only="principal">
-          <summary><span class="ai-tag"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l1.9 5.3L19 10l-5.1 1.7L12 17l-1.9-5.3L5 10l5.1-1.7z"/></svg>Morning brief</span><span class="hub-fold-1" id="brief-1"></span></summary>
-          <div class="body" id="brief"></div>
-          <p class="muted brief-note">Written by AI at 9:00 AM from the morning's attendance, enquiries and fee figures. Every number links to a page.</p>
-        </details>
         <div class="hub-sec"><h2>School pages</h2><div id="p-tiles"></div></div>
       </div>
     </section>
@@ -577,7 +576,7 @@
 </script>
 <script src="js/common.js?v=11"></script>
 <script src="js/charts.js?v=10"></script>
-<script src="js/hub.js?v=3"></script>
+<script src="js/hub.js?v=8"></script>
 <script src="js/more.js?v=4"></script>
 <script src="js/ai.js?v=8"></script>
 <script>
@@ -653,11 +652,7 @@
     S.paint(S.$("#t-swarm"), S.swarm(S.students.map((s, i) => ({ v: avs[i], cls: flags.has(s.roll) ? "flag" : "", tip: `${avs[i]}% average${flags.has(s.roll) ? " · " + flags.get(s.roll).join(", ") : ""}`, tipT: s.name })),
       { lo: Math.max(0, Math.min(40, Math.floor((Math.min(...avs) - 5) / 10) * 10)), W: S.narrow() ? 330 : 560, R: S.narrow() ? 5 : 5.5, marks: [{ v: clsAvg, label: `Class ${clsAvg}%` }], label: `Every student in ${secLabel(home)} by ${L(C).toLowerCase()} average` }));
     S.$("#risk").innerHTML = S.atRisk().map((v) => `<div class="li"><span class="avatar soft">${v.s.initials}</span><div class="t"><b>${v.s.name}</b><span>${v.why.join(" · ")}</span></div><button class="end link-btn" data-ask="Remarks for ${v.s.first}">Draft note</button></div>`).join("") || '<p class="muted" style="font-size:14.5px">Nobody is flagged right now.</p>';
-    // Today's periods as a strip: past ones fade, the one on now is outlined.
-    const nowM = new Date().getHours() * 60 + new Date().getMinutes(), live = new Date().toDateString() === S.today.toDateString();
-    const hm = (t) => { let [h, m] = t.split(":").map(Number); if (h < 7) h += 12; return h * 60 + m; };
-    S.paint(S.$("#periods"), per.length ? per.map(([i, k]) => { const st = hm(S.periodTimes[i]), on = live && nowM >= st && nowM < st + 40, past = live && nowM >= st + 40;
-      return `<div class="per${on ? " on" : ""}${past ? " past" : ""}${k === T.classOf ? " mine" : ""}"><span class="per-p">P${i + 1} · ${S.periodTimes[i]}</span><b>${secLabel(k)}</b><span class="per-s">${SUBJ}${k === T.classOf ? " · your class" : ""}${on ? " · now" : ""}</span></div>`; }).join("") : `<p class="muted per-none">No ${SUBJ} periods today${S.today.getDay() ? "" : " — it's Sunday"}.</p>`);
+    renderTDay();
     S.$("#leaves").innerHTML = S.cs.leaves.length ? S.cs.leaves.map((l, i) => `<div class="li"><span class="avatar soft">${S.student(l.roll).initials}</span><div class="t"><b>${S.student(l.roll).name} · ${S.fmt(l.from)} – ${S.fmt(l.to)}</b><span>${S.esc(l.why)}</span></div><div class="end">${l.status === "Waiting" ? `<button class="btn btn-green btn-sm" data-approve="${i}">Approve</button>` : '<span class="pill green">Approved</span>'}</div></div>`).join("") : `<p class="muted" style="font-size:14.5px">No leave requests. ${isCT ? "Parents send them from the app." : "They go to the class teacher."}</p>`;
     if (S.$("#inbox")) S.$("#inbox").innerHTML = isCT ? threads().map((t) => { const last = [...t.msgs].reverse()[0], n = t.msgs.filter((m) => m.from === "parent" && m.fresh).length; return `<button type="button" class="li todo" data-thread="${t.key}" data-go="messages"><span class="avatar soft">${t.kid.initials}</span><div class="t"><b>${S.esc(t.kid.name)}'s ${t.kid.relation.toLowerCase()} ${n ? `<span class="pill red">${n} new</span>` : ""}</b><span>${last ? (last.voice ? "Voice message" : S.esc(last.text)) : "No messages yet"}</span></div></button>`; }).join("") || '<p class="muted" style="font-size:14.5px">No messages yet.</p>' : `<p class="muted" style="font-size:14.5px">Parents write to the class teacher; anything about ${SUBJ} is passed on to you.</p>`;
     document.querySelectorAll('[data-count="messages"]').forEach((c) => { c.hidden = !unread; c.textContent = unread; });
@@ -672,13 +667,10 @@
   function renderTHub(rec, present, waitLeaves, unread, clsAvg, prevAvg, subjAvg, per) {
     const N2 = [], flagged = S.atRisk();
     // The line under the greeting: the class's day so far, or the next period.
-    const nowM = new Date().getHours() * 60 + new Date().getMinutes();
-    const hm = (t) => { let [h, m] = t.split(":").map(Number); if (h < 7) h += 12; return h * 60 + m; };
-    const nx = per.find(([i]) => hm(S.periodTimes[i]) + 40 > nowM);
     const line = S.$("#t-line");
-    if (isCT && rec) { line.style.setProperty("--c", "var(--green)"); S.paint(line, `<i></i><span><b>${present} of ${N()} in today.</b> Attendance went to parents at ${rec.at}.${nx ? ` Next: ${SUBJ}, ${secLabel(nx[1])} at ${S.periodTimes[nx[0]]}.` : ""}</span>`); }
+    if (isCT && rec) { line.style.setProperty("--c", "var(--green)"); S.paint(line, `<i></i><span><b>${present} of ${N()} in today.</b> Attendance went to parents at ${rec.at}.</span>`); }
     else if (isCT) { line.style.setProperty("--c", "var(--warn)"); S.paint(line, `<i></i><span><b>${secLabel(home)}'s attendance isn't marked yet.</b> Parents are waiting for the morning update.</span>`); }
-    else { line.style.setProperty("--c", "var(--royal)"); S.paint(line, `<i></i><span>${nx ? `<b>Next: ${SUBJ}, ${secLabel(nx[1])}</b> at ${S.periodTimes[nx[0]]}.` : per.length ? "<b>Your periods are done for today.</b>" : "<b>No periods today.</b>"} ${mine.length} section${mine.length === 1 ? "" : "s"}: ${mine.map(secLabel).join(", ")}.</span>`); }
+    else { line.style.setProperty("--c", "var(--royal)"); S.paint(line, `<i></i><span><b>${SUBJ} average ${subjAvg}%</b> across your ${mine.length} section${mine.length === 1 ? "" : "s"}: ${mine.map(secLabel).join(", ")}.</span>`); }
     if (isCT && !rec && S.today.getDay()) N2.push({ tone: "red", icon: PI.attendance, t: `Take today's attendance for ${secLabel(home)}`, sub: "Parents get it the moment you submit", when: "Before 8:30", act: "Take", go: "attendance" });
     if (waitLeaves) N2.push({ tone: "gold", icon: PI.attendance, t: `${waitLeaves} leave request${waitLeaves === 1 ? "" : "s"} from parents`, sub: "Approve and the parent hears at once", act: "Review", go: "attendance/leave" });
     if (unread) N2.push({ tone: "royal", icon: PI.messages, t: `${unread} new message${unread === 1 ? "" : "s"} from parents`, sub: `Your office hours are ${S.hoursText(T.name)}`, act: "Reply", go: "messages" });
@@ -691,7 +683,7 @@
     if (flagged.length) N2.push({ tone: "warn", icon: PI.class, t: `${flagged.length} student${flagged.length === 1 ? "" : "s"} in ${secLabel(home)} need${flagged.length === 1 ? "s" : ""} a look`, sub: flagged.slice(0, 3).map((v) => v.s.first).join(", ") + (flagged.length > 3 ? " and more" : "") + " · spotted by AI", act: "See", go: "class/watch" });
     const ptm = S.nextPtm();
     if (ptm && daysTo(ptm.date) <= 14) { const bk = S.ptmOfTeacher(ptm.date, T.name).length; N2.push({ tone: "royal", icon: PI.ptm, t: `Parent–teacher meeting, ${S.fmt(ptm.date, { weekday: "long", day: "numeric", month: "short" })}`, sub: `${bk} parent${bk === 1 ? " has" : "s have"} booked a time with you`, when: `In ${daysTo(ptm.date)} days`, act: "Times", go: "care/ptm" }); }
-    S.paint(S.$("#t-needs"), S.needsHTML(N2, { empty: "Nothing needs you right now." }));
+    S.setNeeds(N2, { empty: "Nothing needs you right now." });
 
     const posted = mine.reduce((a, k) => a + S.secState(k).homework.filter((h) => h.by === T.name).length, 0);
     const behind = /Mathematics/.test(SUBJ) ? mine.filter((k) => { const sec = S.sectionByKey(k), ch = S.chaptersOf ? S.chaptersOf(sec.cls, SUBJ) : []; return ch.length && S.sylDone(k, SUBJ).length < S.chaptersDueBy(ch.length, S.todayKey); }).length : 0;
@@ -699,10 +691,10 @@
     const forms = (S.state.forms || []).filter((f) => f.by === T.name).length, bk = ptm ? S.ptmOfTeacher(ptm.date, T.name).length : 0;
     const entry = S.ENTRY && S.PHASE !== "start" ? S.entry(home, SUBJ) : null;
     S.paint(S.$("#t-tiles"), S.tilesHTML([
-      { go: "class", icon: PI.class, tone: "accent", name: isCT ? "My class" : "My sections", line: isCT ? `${clsAvg}% average${flagged.length ? ` · ${flagged.length} to watch` : ""}` : `${SUBJ} average ${subjAvg}%`, flag: flagged.length > 0 },
-      ...(isCT ? [{ go: "attendance", icon: PI.attendance, tone: "green", name: "Attendance", line: rec ? `${present} of ${N()} present today` : "Not marked yet", flag: !rec && !!S.today.getDay(), count: waitLeaves }] : []),
-      { go: "homework", icon: PI.homework, tone: "royal", name: "Homework", line: `${posted} posted${/Mathematics/.test(SUBJ) ? ` · chapter plan ${behind ? `behind in ${behind}` : "on track"}` : ""}`, flag: behind > 0 },
-      { go: "marks", icon: PI.marks, tone: "gold", name: "Marks", line: entry ? `${S.ENTRY.name}: ${entry.published ? "published" : Object.keys(entry.marks).length + " entered"}` : `${L(C)} average ${subjAvg}%` },
+      { go: "class", icon: PI.class, tone: "accent", name: isCT ? "My class" : "My sections", line: isCT ? `${clsAvg}% average${flagged.length ? ` · ${flagged.length} to watch` : ""}` : `${SUBJ} average ${subjAvg}%`, flag: flagged.length > 0, m: isCT ? clsAvg : subjAvg, main: true, big: isCT ? clsAvg : subjAvg, unit: "%" },
+      ...(isCT ? [{ go: "attendance", icon: PI.attendance, tone: "green", name: "Attendance", line: rec ? `${present} of ${N()} present today` : "Not marked yet", flag: !rec && !!S.today.getDay(), count: waitLeaves, m: null, main: true, bars: S.weekOf(S.focus), barsOpt: { lo: 60, hi: 100, ref: 90 } }] : []),
+      { go: "homework", icon: PI.homework, tone: "royal", name: "Homework", main: true, big: posted, unit: " posted", line: `${/Mathematics/.test(SUBJ) ? `Chapter plan ${behind ? `behind in ${behind}` : "on track"}` : "Across your sections"}`, flag: behind > 0 },
+      { go: "marks", icon: PI.marks, tone: "gold", name: "Marks", line: entry ? `${S.ENTRY.name}: ${entry.published ? "published" : Object.keys(entry.marks).length + " entered"}` : `${L(C)} average ${subjAvg}%`, m: entry ? (entry.published ? 100 : (Object.keys(entry.marks).length / N()) * 100) : null, main: true, big: entry ? (entry.published ? "Done" : Object.keys(entry.marks).length) : subjAvg, unit: entry ? (entry.published ? "" : ` / ${N()}`) : "%" },
       { go: "exams", icon: PI.exams, tone: "slate", name: "Exams", line: nextEx ? `${S.esc(nextEx.name)} from ${S.fmt(S.examSpan(nextEx, S.groupOf({ cls: x.cls, sec: x })).from)}` : "Datesheets for every class" },
       { go: "care", icon: PI.care, tone: "green", name: "Remarks and forms", line: forms ? `${forms} form${forms === 1 ? "" : "s"} sent · notes on any student` : "Notes on any student you teach" },
       { go: "care/ptm", icon: PI.ptm, tone: "accent", name: "Meetings", line: ptm ? `${bk} booked for ${S.fmt(ptm.date)}` : "None planned yet" },
@@ -710,6 +702,67 @@
       { go: "assist", icon: PI.assist, tone: "teal", name: "AI assist", line: "Remarks, practice sets and notes to parents" }
     ]));
   }
+  // ---------- Your day: every period in a row, yours in colour, a marker at the time now ----------
+  const slotsOn = (day) => {
+    const g = day.getDay(), n = S.periodsOn(day), isToday = S.iso(day) === S.todayKey;
+    const given = isToday ? ((S.state.cover || {})[S.todayKey] || {}) : {};
+    const cov = isToday && n ? S.coverToday().filter((r) => given[r.id] === T.name) : [];
+    return Array.from({ length: n }, (_, p) => {
+      const k = mine.find((key) => (S.timetableOf(key)[g] || [])[p] === SUBJ), cv = !k && cov.find((r) => r.p === p);
+      return { p, k: k || (cv ? cv.key : null), cover: cv || null };
+    });
+  };
+  const at = (p) => S.periodTimes[p], till = (p) => S.ENDS[p];
+  const inMin = (m, now) => m < 60 ? `in ${m} min` : `at ${S.hhmm(now + m)}`;
+  function renderTDay() {
+    const c = S.schoolClock(), rec = S.cs.attendance[S.todayKey];
+    let day = S.today, live = c.live;
+    if (!c.n) { day = S.nextSchoolDay(S.today, 1); live = false; }
+    const isToday = S.iso(day) === S.todayKey, slots = slotsOn(day), teach = slots.filter((x) => x.k);
+    const nd = S.nextSchoolDay(day, 1), ndFirst = slotsOn(nd).find((x) => x.k), ndName = S.iso(nd) === S.iso(S.addDays(day, 1)) ? "Tomorrow" : S.fmt(nd, { weekday: "long" });
+    // The card: the period on now, else the next one, else tomorrow's first.
+    let f = null, kick, tone = "royal";
+    if (live && c.cur >= 0 && slots[c.cur].k) { f = slots[c.cur]; kick = `On now · ${40 - Math.floor(c.frac * 40)} min left`; tone = "green"; }
+    else if (live && !c.after && (f = teach.find((x) => S.mins(at(x.p)) > c.nowM))) { const lead = c.brk ? "Break now" : c.cur >= 0 ? "Free now" : ""; kick = `${lead ? lead + " · next" : c.before ? "First" : "Next"} ${inMin(S.mins(at(f.p)) - c.nowM, c.nowM)}`; }
+    else if (!live && teach.length) { f = teach[0]; kick = isToday ? "First period" : `First on ${S.fmt(day, { weekday: "long" })}`; }
+    const name = (x) => (x.cover ? `Cover for ${S.esc(x.cover.teacher)}` : SUBJ) + `${x.k === T.classOf ? " · your class" : ""}`;
+    let card;
+    if (f) {
+      const acts = [];
+      if (isToday && isCT && f.k === home && !rec) acts.push(`<button class="btn btn-primary btn-sm" type="button" data-go="attendance">Take attendance</button>`);
+      if (!f.cover) acts.push(`<button class="btn btn-ghost btn-sm" type="button" data-go="homework" data-hwsec="${f.k}">Homework for ${secLabel(f.k)}</button>`);
+      if (!f.cover && S.ENTRY && S.PHASE !== "start" && !S.entry(f.k, SUBJ).published) acts.push(`<button class="btn btn-ghost btn-sm" type="button" data-go="marks" data-msec="${f.k}">${S.ENTRY.name} marks</button>`);
+      if (f.cover) acts.push(`<button class="btn btn-ghost btn-sm" type="button" data-x-ask="What should I do in a cover period for ${secLabel(f.k)} ${S.esc(f.cover.subj)}?">Ideas for the period</button>`);
+      card = `<div class="tnow t-${tone}${f.cover ? " cv" : ""}"><span class="tnow-k"><i></i>${kick}</span><b class="tnow-sec">${secLabel(f.k)}</b>
+        <span class="tnow-s">${name(f)}${f.cover ? ` · ${S.esc(f.cover.subj)}` : ""}</span><span class="tnow-t">Period ${f.p + 1} · ${at(f.p)} to ${till(f.p)}</span>
+        ${kick.startsWith("On now") ? `<span class="tnow-bar" aria-hidden="true"><i style="width:${(c.frac * 100).toFixed(1)}%"></i></span>` : ""}
+        <div class="tnow-acts">${acts.slice(0, 2).join("")}</div></div>`;
+    } else {
+      const doneAll = teach.length && live;
+      card = `<div class="tnow t-slate"><span class="tnow-k"><i></i>${doneAll ? (c.after ? "School's over" : "Your periods are done") : `No ${SUBJ} periods ${isToday ? "today" : "that day"}`}</span>
+        <b class="tnow-sec">${doneAll ? `All ${teach.length} taught` : "A free day"}</b>
+        <span class="tnow-s">${ndFirst ? `${ndName} starts with ${secLabel(ndFirst.k)} at ${at(ndFirst.p)}.` : ""}</span>${doneAll && !c.after ? `<span class="tnow-t">School ends at ${till(c.n - 1)}.</span>` : ""}
+        <div class="tnow-acts"><button class="btn btn-ghost btn-sm" type="button" data-go="homework">Homework</button><button class="btn btn-ghost btn-sm" type="button" data-go="care">Remarks</button></div></div>`;
+    }
+    // The rail: free periods narrow, break hatched, the marker inside whichever block is on now.
+    const mark = (frac) => `<span class="tr-now" style="left:${(Math.max(0, Math.min(1, frac)) * 100).toFixed(1)}%"><i>${S.hhmm(c.nowM)}</i></span>`;
+    let rail = "", i = 0;
+    slots.forEach((x) => {
+      if (x.p === 4) rail += `<div class="tr-s brk" style="--i:${i++}" title="Break, 10:40 to 10:50"><span class="tr-b">${live && c.brk ? mark(c.frac) : ""}</span><span class="tr-t" aria-hidden="true"></span></div>`;
+      const on = live && c.cur === x.p, past = live && (c.after || (c.cur > x.p) || (c.cur < 0 && S.mins(till(x.p)) <= c.nowM));
+      const kind = x.cover ? "cv" : x.k ? "tc" : "fr";
+      rail += `<div class="tr-s ${kind}${x.k && x.k === T.classOf ? " mine" : ""}${on ? " on" : ""}${past ? " past" : ""}" style="--i:${i++}" role="listitem" aria-label="Period ${x.p + 1}, ${at(x.p)}: ${x.k ? secLabel(x.k) + (x.cover ? ", cover" : "") : "free"}${on ? ", on now" : ""}">
+        <span class="tr-b"${on ? ` style="--f:${(c.frac * 100).toFixed(1)}%"` : ""}><span class="tr-p">P${x.p + 1}</span><b>${x.k ? secLabel(x.k) : "Free"}</b>${x.cover ? `<span class="tr-tag">Cover</span>` : ""}${on ? mark(c.frac) : ""}</span><span class="tr-t" aria-hidden="true">${at(x.p)}</span></div>`;
+    });
+    const free = slots.length - teach.length, cov = teach.filter((x) => x.cover).length;
+    S.paint(S.$("#t-day"), `${card}<div class="trail"><div class="tr-h"><b>${isToday ? "Your day" : S.fmt(day, { weekday: "long", day: "numeric", month: "short" })}</b><span>${slots.length} periods · ${at(0)} to ${till(slots.length - 1)}</span></div>
+      <div class="tr${live && !c.before && !c.after ? " live" : ""}" role="list">${rail}</div>
+      <p class="tr-sum"><span><i class="k-tc"></i>${teach.length - cov} ${SUBJ}</span>${cov ? `<span><i class="k-cv"></i>${cov} cover</span>` : ""}<span><i class="k-fr"></i>${free} free</span>${isCT ? `<span><i class="k-mine"></i>${secLabel(home)}, your class</span>` : ""}</p></div>`);
+  }
+  // Keep the day moving while the welcome page is open.
+  setInterval(() => { if (!document.hidden && document.body.classList.contains("on-hub")) renderTDay(); }, 30000);
+  // A shortcut to a section's homework opens the form on that section.
+  document.addEventListener("click", (e) => { const b = e.target.closest("[data-hwsec]"); if (!b) return; const sel = S.$("#hw-cls"); if (sel && sel.value !== b.dataset.hwsec) { sel.value = b.dataset.hwsec; sel.dispatchEvent(new Event("change", { bubbles: true })); } });
   // A shortcut to a section's marks opens that section.
   document.addEventListener("click", (e) => { const b = e.target.closest("[data-msec]"); if (!b) return; const sel = S.$("#m-sec"); if (sel && sel.value !== b.dataset.msec) { sel.value = b.dataset.msec; sel.dispatchEvent(new Event("change", { bubbles: true })); } });
 
@@ -1255,7 +1308,7 @@
   // ---------- The welcome page: what needs the principal or the office, then a tile per page ----------
   const PI = S.NAV_ICONS, role = S.staff.role;
   const shortD = (k) => S.fmt(k, { weekday: "short", day: "numeric", month: "short" });
-  function renderHub(today, vals, roll) {
+  function renderHub(today, vals, roll, byDay = []) {
     const enq = S.state.enquiries, fresh = enq.filter((e) => e.status === "New").length, N2 = [];
     const waiting = classes.filter((c, i) => vals[i] === null), low = classes.filter((c, i) => vals[i] !== null && vals[i] < 90);
     const notMarked = S.allSections().filter((x) => S.todayPct(x) === null).map(nameOf);
@@ -1274,16 +1327,25 @@
     if (S.PHASE !== "end" && feeDays >= 0 && feeDays <= 14) N2.push({ tone: "gold", icon: PI.fees, t: `${F.q} fees are due ${shortD(F.due)}: ${F.families} families yet to pay`, sub: `${F.pct}% collected so far`, when: `In ${feeDays} day${feeDays === 1 ? "" : "s"}`, act: "Follow up", go: "fees/follow" });
     if (role === "admin" && missing) N2.push({ tone: "slate", icon: PI.website, t: `${missing} school details still missing on the website`, sub: "Phone, email, timings and more", act: "Add", go: "website/facts" });
     if (role === "admin" && upcoming) N2.push({ tone: "slate", icon: PI.notices, t: `${upcoming} notices coming up on the website`, sub: "Check the dates are right", act: "Check", go: "notices" });
-    S.paint(S.$("#p-needs"), S.needsHTML(N2, { empty: "Nothing needs you right now. The school pages are below." }));
+    S.setNeeds(N2, { empty: "Nothing needs you right now." });
+
+    // The school today in four rings; each opens its page.
+    const secN = S.allSections().length, inN = secN - notMarked.length, covN = cover.length, upN = (n, of) => `<span data-up="${n}">${n}</span><small>/${of}</small>`;
+    S.paint(S.$("#p-pulse"), [
+      { go: "attendance", v: today ?? 0, text: today === null ? "–" : undefined, tone: today === null ? "var(--line)" : today >= 90 ? "var(--green)" : "var(--gold)", l: "Students in", s: today === null ? "Not marked yet" : today >= 90 ? "Above the 90% target" : "Under the 90% target" },
+      { go: "attendance", v: (inN / secN) * 100, text: upN(inN, secN), tone: "var(--royal)", l: "Sections marked", s: notMarked.length ? `${notMarked.length} still to mark` : "Every section" },
+      { go: "staff", v: covN ? ((covN - toCover) / covN) * 100 : 100, text: covN ? upN(covN - toCover, covN) : "–", tone: toCover ? "var(--accent)" : "var(--green)", l: "Periods covered", s: covN ? `${S.leaveToday().length} teachers on leave` : "Nobody away" },
+      { go: "fees", v: F.pct, tone: "var(--gold)", l: `${F.q} fees in`, s: S.PHASE === "end" ? "Nearly settled" : `Due ${S.fmt(F.due)}` }
+    ].map((r, i) => `<button type="button" class="pl" data-go="${r.go}" style="--i:${i}">${S.ringHTML(r.v, { tone: r.tone, text: r.text })}<span class="pl-t"><b>${r.l}</b><span>${r.s}</span></span></button>`).join(""));
 
     const passes = S.state.passes.filter((p) => p.date === S.todayKey).length, vis = (S.state.visitors[S.todayKey] || []).length;
     const watchN = S.$$("#watch .li, #watch button.li").length;
     const nextEx = S.state.exams.filter((e) => e.published && Object.values(e.papers).flat().some((p) => p.date >= S.todayKey)).sort((a, b) => (S.examSpan(a).from < S.examSpan(b).from ? -1 : 1))[0];
     S.paint(S.$("#p-tiles"), S.tilesHTML([
-      { go: "attendance", icon: PI.attendance, tone: "green", name: "Attendance", line: today === null ? "Not marked yet" : `${today}% present today`, flag: today !== null && today < 90 },
-      { go: "staff", icon: PI.staff, tone: "royal", name: "Staff and cover", line: toCover ? `${toCover} period${toCover === 1 ? "" : "s"} to cover` : S.PHASE === "mid" ? "84 of 88 present · all covered" : "All periods covered", flag: toCover > 0 },
-      { go: "fees", icon: PI.fees, tone: "gold", name: "Fees", line: `${F.pct}% of ${F.q} collected` },
-      { go: "classes", icon: PI.classes, tone: "teal", name: "Classes", line: S.PHASE === "start" ? `${roll.toLocaleString("en-IN")} students in ${S.allSections().length} sections` : S.PHASE === "end" ? "Results by class and toppers" : `${watchN} section${watchN === 1 ? "" : "s"} to watch` },
+      { go: "attendance", icon: PI.attendance, tone: "green", name: "Attendance", line: today === null ? "Not marked yet" : `${today}% present today`, flag: today !== null && today < 90, main: true, bars: byDay, barsOpt: { lo: 80, hi: 100, ref: 90 } },
+      { go: "staff", icon: PI.staff, tone: "royal", name: "Staff and cover", main: true, big: toCover, unit: toCover === 1 ? " period to cover" : " to cover", line: toCover ? `${toCover} period${toCover === 1 ? "" : "s"} to cover` : S.PHASE === "mid" ? "84 of 88 present · all covered" : "All periods covered", flag: toCover > 0 },
+      { go: "fees", icon: PI.fees, tone: "gold", name: "Fees", line: `${F.pct}% of ${F.q} collected`, m: F.pct, main: true, big: F.pct, unit: "%" },
+      { go: "classes", icon: PI.classes, tone: "teal", name: "Classes", main: true, big: S.PHASE === "mid" ? watchN : S.allSections().length, unit: S.PHASE === "mid" ? " to watch" : " sections", line: S.PHASE === "start" ? `${roll.toLocaleString("en-IN")} students in ${S.allSections().length} sections` : S.PHASE === "end" ? "Results by class and toppers" : `${watchN} section${watchN === 1 ? "" : "s"} to watch` },
       { go: "admissions", icon: PI.admissions, tone: "accent", name: "Admissions", line: fresh ? `${fresh} new to call · ${enq.length} this season` : `${enq.length} enquiries this season`, count: fresh },
       { go: "exams", icon: PI.exams, tone: "slate", name: "Exams", line: nextEx ? `${S.esc(nextEx.name)}${S.examSpan(nextEx).from > S.todayKey ? " from " + S.fmt(S.examSpan(nextEx).from) : " on now"}` : "Datesheets for every class" },
       { go: "notices", icon: PI.notices, tone: "accent", name: "Notices", line: role === "principal" && pend.length ? `${pend.length} waiting for you` : `${upcoming} coming up`, flag: role === "principal" && pend.length > 0, count: role === "principal" ? pend.length : 0 },
@@ -1323,12 +1385,15 @@
       key: `<span><i style="background:var(--green)"></i>At or ahead of the school</span><span><i style="background:var(--gold)"></i>Just behind</span><span><i style="background:var(--accent)"></i>More than 4 behind</span><span><i style="background:var(--ink);width:3px;border-radius:1px"></i>School-wide ${F.pct}%</span>` });
   }
   document.addEventListener("sjs:view", (e) => { if (e.detail === "overview") render(); });
+  // Where the school day is, after the date: the period on now, break, or the day done.
+  const clockLine = () => { const c = S.schoolClock(); return !c.live || c.before ? "" : c.after ? " · School's over for today" : c.brk ? " · Break, until 10:50" : c.cur >= 0 ? ` · Period ${c.cur + 1} of ${c.n}, until ${S.ENDS[c.cur]}` : ""; };
+  setInterval(() => { if (!document.hidden && document.body.classList.contains("on-hub")) S.$("#p-today-line").textContent = S.fmtLong(S.today) + clockLine(); }, 30000);
 
   function render() {
     S.$("#p-hello").textContent = S.greet() + (S.staff.first ? ", " + S.staff.first : "");
     const missing = S.FACTS.filter(([k]) => !(S.state.site.facts[k] || "").trim()).length;
     const upcoming = S.state.notices.filter((n) => n.date >= S.todayKey).length;
-    S.$("#p-today-line").textContent = S.fmtLong(S.today);
+    S.$("#p-today-line").textContent = S.fmtLong(S.today) + clockLine();
     S.$("#brief").innerHTML = S.brief();
     const b1 = S.$("#brief li"); S.$("#brief-1").textContent = b1 ? b1.textContent : "";
     const enq = S.state.enquiries, fresh = enq.filter((e) => e.status === "New").length;
@@ -1367,7 +1432,7 @@
     const vals = classes.map((c) => classDays(c).slice(-1)[0]);
     renderClassDots(vals, byDay);
     renderWeek(vals); renderWatch(); renderClasses();
-    renderAttX(vals, today); renderFeeX(); renderHub(today, vals, roll);
+    renderAttX(vals, today); renderFeeX(); renderHub(today, vals, roll, byDay);
     S.$("#fee-h").textContent = `${F.q} fee collection`;
     S.$("#fee-num").innerHTML = `${F.got} <small>of ${F.of}</small>`;
     S.$("#fee-pct").textContent = `${F.pct}% collected`;

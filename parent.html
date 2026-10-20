@@ -17,7 +17,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Figtree:wght@400..800&display=swap" rel="stylesheet" />
-<link rel="stylesheet" href="css/site.css?v=22" />
+<link rel="stylesheet" href="css/site.css?v=32" />
 <script>
 /* Before the first paint: fade photos in as they load. */
 (function (d) { d.documentElement.classList.add("js");
@@ -36,10 +36,10 @@
   <nav id="nav-side" hidden></nav>
 
   <main class="main">
-    <!-- HOME: the welcome page. What needs a parent today, then one tile per page; the detail lives on the pages. -->
+    <!-- HOME: the welcome page. The child's day as it happens, then one tile per page; the detail lives on the pages. "Needs you" is behind the top bar's icon. -->
     <section data-view="home" class="hm">
       <div class="hub">
-        <div class="hub-top">
+        <div class="hub-top hero">
           <div class="hub-hello"><div><div class="hub-date" id="today-line"></div><h1 id="hello">Good morning, Rohit</h1></div></div>
           <div class="hub-kid">
             <span class="avatar kid-av">AS</span>
@@ -47,8 +47,8 @@
             <div class="seg kid-sw" role="group" aria-label="Choose a child"><button class="on" type="button" aria-pressed="true">Aarav · VII-B</button><button type="button" id="sib" aria-pressed="false">Ananya · III-A</button></div>
           </div>
           <p id="today-status" class="hub-line"></p>
+          <div class="hub-day hm-day" id="hub-day"></div>
         </div>
-        <div class="hub-sec"><h2>Needs you</h2><div id="hub-needs"></div></div>
         <div id="phase-card" class="hm-phase" hidden></div>
         <div class="hub-sec"><h2><span><span class="kid-first">Aarav</span>&#x27;s pages</span></h2><div id="hub-tiles"></div></div>
       <div class="install" id="install" hidden>
@@ -271,7 +271,7 @@
 <script src="js/care.js?v=2"></script>
 <script src="js/common.js?v=11"></script>
 <script src="js/charts.js?v=10"></script>
-<script src="js/hub.js?v=3"></script>
+<script src="js/hub.js?v=8"></script>
 <script src="js/more.js?v=4"></script>
 <script src="js/demo.js?v=2"></script>
 <script src="js/ai.js?v=8"></script>
@@ -409,10 +409,11 @@
     else if (brk) cap = `<b>Break</b> <span>until ${S.periodTimes[4]} · then ${list[4]} with ${who(list[4])}</span>`;
     else if (live && nowM >= t1) cap = `<b>School's over for today.</b> <span>${off}${ndName} begins with ${ndList[0]} at 8:00.</span>`;
     else cap = `<b>${live ? "Today" : "The day"} begins with ${list[0]}</b> <span>at 8:00, with ${who(list[0])} · ${endNote}</span>`;
-    S.paint(S.$("#hm-day"), `<div class="hm-day-h"><b>${live ? "Today" : S.fmt(day, { weekday: "long", day: "numeric", month: "short" })}</b><span>${list.length} periods · ${S.periodTimes[0]} to ${hhmm(t1)}</span></div>
+    const html = `<div class="hm-day-h"><b>${live ? "Today" : S.fmt(day, { weekday: "long", day: "numeric", month: "short" })}</b><span>${list.length} periods · ${S.periodTimes[0]} to ${hhmm(t1)}</span></div>
       <div class="rb${during ? " live" : ""}"><div class="rb-track" role="img" aria-label="${list.length} periods: ${list.join(", ")}">${seg}</div>${during ? `<span class="rb-now" style="--x:${(x * 100).toFixed(2)}%"><i>${hhmm(nowM)}</i></span>` : ""}</div>
       <div class="rb-ax"><span style="left:0">${S.periodTimes[0]}</span>${list.length > 4 ? `<span style="left:${pct(mins(ENDS[3]))}">Break ${ENDS[3]}</span>` : ""}<span style="left:100%">${hhmm(t1)}</span></div>
-      <p class="hm-cap">${cap}</p>`);
+      <p class="hm-cap">${cap}</p>`;
+    S.paint(S.$("#hm-day"), html); S.paint(S.$("#hub-day"), html);
   }
   function renderPivot() {
     const real = new Date(); real.setHours(0, 0, 0, 0);
@@ -1082,7 +1083,7 @@
     const unread = thread().filter((m) => m.from === "teacher" && m.fresh).length;
     if (unread) N.push({ d: S.todayKey, tone: "royal", icon: NI.msg, t: `${unread === 1 ? "A new message" : unread + " new messages"} from ${S.esc(S.teacher.name)}`, sub: "Class teacher", when: "Today", act: "Read", go: "messages" });
     N.sort((a, b) => (a.d < b.d ? -1 : 1));
-    S.paint(S.$("#hub-needs"), S.needsHTML(N, { empty: `Nothing needs you today. ${me.first}'s pages are below.` }));
+    S.setNeeds(N, { empty: "Nothing needs you today." });
 
     const pct = S.attendancePct(me.roll), avg = S.avgOf(me[C]), ex = myExams().length;
     const nts = S.noticesFor(me).filter((n) => n.date >= S.todayKey), hi = nts.filter((n) => S.levelOf(n) === "high" && !S.ackOf(n.id, me.key)).length;
@@ -1091,10 +1092,10 @@
     const pick = S.pickupsOf(me.key).length, next = f && f.mode !== "ts" ? ` · ${S.esc(f.e.name)} ${daysTo(f.e.papers[G][0].date) > 0 ? "in " + daysTo(f.e.papers[G][0].date) + " days" : "on now"}` : "";
     S.paint(S.$("#hub-tiles"), S.tilesHTML([
       { go: "timetable", icon: I.timetable, tone: "teal", name: "Today and timetable", line: nowLine() },
-      { go: "attendance", icon: I.attendance, tone: "green", name: "Attendance", line: `${pct}% this session`, flag: pct < 85 },
-      { go: "homework", icon: I.homework, tone: "royal", name: "Homework", line: pend.length ? `${pend.length} to do · next ${S.esc(pend[0].subj)}, ${S.fmt(pend[0].due)}` : "All done", count: S.cs.homework.filter((h) => h.fresh && !h.done).length },
-      { go: "results", icon: I.results, tone: "accent", name: ex ? "Exams and results" : "Results", line: `${L(C)}: ${avg}%${next}` },
-      { go: "fees", icon: I.fees, tone: "gold", name: "Fees", line: fee ? `${S.rupee(fee.amount)} due ${S.fmt(fee.due, { day: "numeric", month: "short" })}` : "Nothing due", flag: fee && daysTo(fee.due) <= 14 },
+      { go: "attendance", icon: I.attendance, tone: "green", name: "Attendance", line: "Present this session", flag: pct < 85, m: pct, main: true, big: pct, unit: "%" },
+      { go: "homework", icon: I.homework, tone: "royal", name: "Homework", line: pend.length ? `Next: ${S.esc(pend[0].subj)}, ${S.fmt(pend[0].due)}` : "All done", count: S.cs.homework.filter((h) => h.fresh && !h.done).length, main: true, big: pend.length, unit: " to do", m: S.cs.homework.length ? ((S.cs.homework.length - pend.length) / S.cs.homework.length) * 100 : null },
+      { go: "results", icon: I.results, tone: "accent", name: ex ? "Exams and results" : "Results", line: `${L(C)}${next}`, m: avg, main: true, big: avg, unit: "%" },
+      { go: "fees", icon: I.fees, tone: "gold", name: "Fees", main: true, big: fee ? S.rupee(fee.amount) : "Paid", line: fee ? `Due ${S.fmt(fee.due, { day: "numeric", month: "long" })}` : "Nothing due", flag: fee && daysTo(fee.due) <= 14 },
       { go: "notices", icon: I.notices, tone: "slate", name: "Notices", line: hi ? `${hi} important to read` : nts.length ? `${nts.length} coming up` : "Nothing new", flag: hi > 0 },
       { go: "messages", icon: I.messages, tone: "royal", name: "Messages", line: unread ? `${unread} new from ${S.esc(S.teacher.name)}` : `Chat with ${S.esc(S.teacher.name)}`, count: unread },
       { go: "messages/forms", icon: PI.care, tone: "green", name: "Remarks and forms", line: toSign ? `${toSign} form${toSign === 1 ? "" : "s"} to sign` : `${rem} remark${rem === 1 ? "" : "s"} from teachers`, flag: toSign > 0 },

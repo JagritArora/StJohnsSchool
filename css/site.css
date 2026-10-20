@@ -2007,3 +2007,309 @@ p.nt-ack.done svg { width: 15px; height: 15px; }
   .hub-kid .kid-sw { margin-left: 0; }
   .xc.dense .xc-l { font-size: 10.5px; overflow: visible; text-overflow: clip; letter-spacing: -.02em; }
 }
+
+/* ---------- Round 17: a livelier welcome page ----------
+   The greeting sits on a sheet with a soft glow for the time of day, and carries the day
+   as it happens: a teacher's periods with a marker at now, a child's school day, or the
+   school's four figures as rings. "Needs you" moved behind an icon in the top bar. */
+:root { --tod: var(--gold); }
+:root[data-tod="pm"] { --tod: var(--teal); }
+:root[data-tod="eve"] { --tod: var(--royal); }
+.hub-top.hero { position: relative; isolation: isolate; overflow: hidden; background: var(--surface); border: 1px solid var(--line); border-radius: 26px; padding: 26px 28px 24px; box-shadow: 0 1px 2px rgba(25,28,34,.04), 0 26px 50px -38px rgba(25,28,34,.3); }
+.hero::before { content: ""; position: absolute; z-index: -1; top: -55%; right: -12%; width: 62%; height: 150%; background: radial-gradient(closest-side, color-mix(in srgb, var(--tod) 20%, transparent), transparent); animation: todDrift 22s ease-in-out infinite alternate; pointer-events: none; }
+.hero::after { content: ""; position: absolute; z-index: -1; inset: 0; background: repeating-linear-gradient(to bottom, transparent 0 33px, var(--rule) 33px 34px); -webkit-mask-image: linear-gradient(to bottom, #000, transparent 46%); mask-image: linear-gradient(to bottom, #000, transparent 46%); pointer-events: none; }
+@keyframes todDrift { to { transform: translate(-9%, 7%) scale(1.08); } }
+@media (max-width: 640px) { .hub-top.hero { padding: 20px 16px 18px; border-radius: 20px; } .hero::before { width: 90%; right: -30%; } }
+
+/* "Needs you": an icon in the top bar with a count, and the list in a panel under it. */
+.needs-btn { position: relative; }
+.needs-btn.has { color: var(--accent-text); border-color: color-mix(in srgb, var(--accent) 28%, var(--line)); background: color-mix(in srgb, var(--accent) 5%, var(--surface)); }
+.needs-btn .badge { position: absolute; top: -4px; right: -5px; min-width: 18px; height: 18px; padding: 0 5px; border-radius: 999px; background: var(--accent); color: #fff; font: 700 12px/18px var(--sans); text-align: center; box-shadow: 0 0 0 2px var(--bg); }
+.needs-btn .badge[hidden] { display: none; }
+.needs-btn[aria-expanded="true"] { background: var(--sunken); }
+.needs-btn.nudge::after { content: ""; position: absolute; inset: -1px; border-radius: 50%; box-shadow: 0 0 0 0 color-mix(in srgb, var(--accent) 45%, transparent); animation: nudge 1.3s ease-out 2; pointer-events: none; }
+@keyframes nudge { to { box-shadow: 0 0 0 11px transparent; } }
+.ntray { width: min(440px, calc(100vw - 24px)); }
+.ntray .notif-h b { margin-right: 0; }
+.ntray-n { margin-right: auto; font-size: 13.5px; color: var(--muted); }
+.ntray .notif-h .icon-btn { width: 34px; height: 34px; }
+.ntray .notif-h .icon-btn svg { width: 16px; height: 16px; }
+.ntray .needs { border: 0; border-radius: 0; padding: 0; }
+.ntray .needs::before { left: 61px; }
+.ntray .need { grid-template-columns: 40px minmax(0, 1fr) auto; column-gap: 14px; row-gap: 2px; padding: 12px 16px 12px 14px; }
+.ntray .need .sq { grid-row: 1 / span 2; }
+.ntray .need-t { grid-column: 2; }
+.ntray .need-t b { font-size: 15px; }
+.ntray .need-w { grid-column: 2; grid-row: 2; text-align: left; white-space: normal; font-size: 13px; }
+.ntray .need-a { grid-column: 3; grid-row: 1 / span 2; font-size: 13.5px; }
+.ntray .need-more { margin: 4px 0 10px 76px; }
+.ntray .needs-clear { gap: 14px; padding: 18px 16px; }
+.ntray-f { padding: 10px 16px 12px; border-top: 1px solid var(--line); font-size: 13px; color: var(--muted); }
+
+/* A teacher's day: the period on now (or next) on the left, every period in a row on the right. */
+.tday { display: grid; grid-template-columns: minmax(280px, 340px) minmax(0, 1fr); gap: 28px; margin-top: 22px; padding-top: 22px; border-top: 1px solid var(--line); }
+.tday:empty { display: none; }
+.tnow { --tc: var(--royal); display: flex; flex-direction: column; gap: 2px; padding: 16px 18px 16px; border-radius: 18px; background: color-mix(in srgb, var(--tc) 7%, var(--surface)); border: 1px solid color-mix(in srgb, var(--tc) 20%, var(--line)); }
+.tnow.t-green { --tc: var(--green); }
+.tnow.t-slate { --tc: var(--slate); }
+.tnow.cv { --tc: var(--gold); }
+.tnow-k { display: flex; align-items: center; gap: 8px; font: 600 13.5px/1.3 var(--sans); color: color-mix(in srgb, var(--tc) 80%, var(--ink)); }
+.tnow-k i { position: relative; width: 8px; height: 8px; border-radius: 50%; background: var(--tc); flex: none; }
+.tnow.t-green .tnow-k i::after { content: ""; position: absolute; inset: 0; border-radius: 50%; background: var(--tc); animation: rbPulse 2.4s ease-out infinite; }
+.tnow-sec { font: 700 32px/1.1 var(--sans); letter-spacing: -.02em; margin-top: 8px; }
+.tnow-s { font-size: 14.5px; font-weight: 500; }
+.tnow-t { font-size: 13.5px; color: var(--muted); font-variant-numeric: tabular-nums; }
+.tnow-bar { display: block; height: 6px; margin-top: 10px; border-radius: 999px; background: color-mix(in srgb, var(--tc) 15%, var(--surface)); overflow: hidden; }
+.tnow-bar i { display: block; height: 100%; border-radius: inherit; background: var(--tc); transition: width 1s var(--ease); }
+.tnow-acts { display: flex; flex-wrap: wrap; gap: 8px; margin-top: auto; padding-top: 14px; }
+.tnow-acts .btn-ghost { background: var(--surface); }
+.trail { min-width: 0; display: flex; flex-direction: column; }
+.tr-h { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; flex-wrap: wrap; font-size: 13.5px; color: var(--muted); }
+.tr-h b { font-size: 15px; font-weight: 600; color: var(--ink); }
+.tr { display: flex; gap: 4px; margin-top: 26px; }
+.tr-s { flex: 1 1 0; min-width: 0; display: grid; grid-template-rows: 84px auto; gap: 7px; }
+.tr-s.tc, .tr-s.cv { flex-grow: 1.7; }
+.tr-s.brk { flex: .4 1 0; }
+.tr-b { --sc: var(--slate); position: relative; isolation: isolate; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 1px; padding: 0 4px; border-radius: 11px; background: var(--sunken); color: var(--muted); transition: opacity .4s var(--ease), background .3s; }
+.tr-b b { max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font: 650 15px/1.15 var(--sans); }
+.tr-p { font: 600 11.5px/1.1 var(--sans); opacity: .78; font-variant-numeric: tabular-nums; }
+.tr-tag { font: 600 11px/1.1 var(--sans); }
+.fr .tr-b b { font-size: 13px; font-weight: 500; }
+.tc .tr-b { --sc: var(--royal); background: color-mix(in srgb, var(--royal) 12%, var(--surface)); color: var(--royal-text); }
+.tc.mine .tr-b { --sc: var(--accent); background: color-mix(in srgb, var(--accent) 11%, var(--surface)); color: var(--accent-text); }
+.cv .tr-b { --sc: var(--gold); background: color-mix(in srgb, var(--gold) 17%, var(--surface)); color: var(--gold-text); }
+.brk .tr-b { background: repeating-linear-gradient(135deg, var(--line) 0 2px, transparent 2px 6px); }
+.tr-s.on .tr-b { background: color-mix(in srgb, var(--sc) 14%, var(--surface)); box-shadow: inset 0 0 0 2px var(--sc); }
+/* The part of the period already gone, filled in up to the marker. */
+.tr-s.on .tr-b::before { content: ""; position: absolute; z-index: -1; left: 0; top: 0; bottom: 0; width: var(--f, 0%); border-radius: 11px 0 0 11px; background: color-mix(in srgb, var(--sc) 16%, transparent); transition: width 1s var(--ease); }
+.fr.on .tr-b { box-shadow: inset 0 0 0 2px color-mix(in srgb, var(--slate) 45%, transparent); }
+.tr-s.past .tr-b { opacity: .5; }
+.tr-t { font-size: 12px; color: var(--muted); text-align: center; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.tr-s.on .tr-t { color: var(--ink); font-weight: 600; }
+.tr-now { position: absolute; z-index: 2; top: -11px; height: 11px; width: 2px; margin-left: -1px; border-radius: 2px; background: var(--ink); pointer-events: none; }
+.tr-now::before, .tr-now::after { content: ""; position: absolute; left: 50%; top: 0; width: 9px; height: 9px; margin: -4px 0 0 -4.5px; border-radius: 50%; background: var(--ink); }
+.tr-now::after { animation: rbPulse 2.6s ease-out infinite; }
+.tr-now i { position: absolute; bottom: calc(100% + 6px); left: 50%; transform: translateX(-50%); font: 600 12px/1 var(--sans); font-style: normal; color: var(--ink); font-variant-numeric: tabular-nums; white-space: nowrap; }
+.tr-sum { display: flex; flex-wrap: wrap; gap: 6px 18px; margin-top: auto; padding-top: 16px; font-size: 13.5px; color: var(--muted); }
+.tr-sum span { display: inline-flex; align-items: center; gap: 7px; }
+.tr-sum i { width: 11px; height: 11px; border-radius: 3px; flex: none; }
+.tr-sum .k-tc { background: color-mix(in srgb, var(--royal) 30%, var(--surface)); }
+.tr-sum .k-mine { background: color-mix(in srgb, var(--accent) 30%, var(--surface)); }
+.tr-sum .k-cv { background: color-mix(in srgb, var(--gold) 40%, var(--surface)); }
+.tr-sum .k-fr { background: var(--sunken); box-shadow: inset 0 0 0 1px var(--line); }
+@media (max-width: 860px) { .tday { grid-template-columns: minmax(0, 1fr); gap: 20px; } .tnow-sec { font-size: 28px; } }
+@media (max-width: 520px) {
+  .tr { gap: 3px; margin-top: 24px; }
+  .tr-s { grid-template-rows: 60px auto; gap: 5px; }
+  .tr-b { padding: 0 2px; border-radius: 9px; }
+  .tr-b b { font-size: 12.5px; letter-spacing: -.01em; }
+  .fr .tr-b b { font-size: 11px; }
+  .tr-p, .tr-tag { font-size: 10.5px; }
+  .tr-t { font-size: 10.5px; letter-spacing: -.02em; }
+}
+
+/* The principal's and office's four figures: rings that open their page. */
+.pulse { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px; margin-top: 22px; padding-top: 18px; border-top: 1px solid var(--line); }
+.pulse:empty { display: none; }
+.pl { display: flex; align-items: center; gap: 13px; min-width: 0; padding: 10px 12px; margin: 0 -4px; border: 0; border-radius: 16px; background: none; text-align: left; font: inherit; color: inherit; cursor: pointer; transition: background .2s; }
+.pl:hover { background: color-mix(in srgb, var(--sunken) 80%, transparent); }
+.pl:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
+.pl-t { min-width: 0; }
+.pl-t b { display: block; font-size: 15px; font-weight: 600; line-height: 1.3; }
+.pl-t span { display: block; font-size: 13px; color: var(--muted); line-height: 1.35; }
+.ring { position: relative; width: 58px; height: 58px; flex: none; }
+.ring svg { width: 100%; height: 100%; transform: rotate(-90deg); }
+.ring circle { fill: none; stroke-width: 5; }
+.ring-bg { stroke: var(--sunken); }
+.ring-fg { stroke: var(--tone); stroke-linecap: round; stroke-dashoffset: var(--off); transition: stroke-dashoffset .8s var(--ease); }
+.ring b { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; font: 700 14px/1 var(--sans); letter-spacing: -.01em; font-variant-numeric: tabular-nums; }
+.ring b small { font-size: 10.5px; font-weight: 600; color: var(--muted); }
+@keyframes ringIn { from { stroke-dashoffset: var(--c0); } }
+@media (max-width: 900px) { .pulse { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 400px) { .pl { gap: 10px; padding: 8px; } .ring { width: 52px; height: 52px; } .pl-t b { font-size: 14px; } .pl-t span { font-size: 12.5px; } }
+
+/* A parent's view of the child's day, inside the greeting sheet. */
+.hero .hub-day { padding: 20px 0 0; margin-top: 20px; border-top: 1px solid var(--line); }
+.hero .hub-day:empty { display: none; }
+
+/* Tiles: a thin bar for a share, and the icon fills in on hover. */
+.pg-m { display: block; width: 100%; height: 4px; margin-top: 10px; border-radius: 999px; background: color-mix(in srgb, var(--mc, var(--c)) 12%, var(--surface)); overflow: hidden; }
+.pg-m i { display: block; height: 100%; border-radius: inherit; background: var(--mc, var(--c)); transform-origin: left; }
+.pg-ic { transition: background .25s, color .25s; }
+.pg:hover .pg-ic { background: var(--c); color: #fff; }
+
+/* The welcome page's one entrance: the sheet, then the day draws left to right, rings fill, tiles in turn. */
+.hub-play .tr-b { animation: dpIn .55s var(--ease) both; animation-delay: calc(.25s + var(--i) * 45ms); }
+.hub-play .tr-now { animation: hubIn .5s var(--ease) .9s both; }
+.hub-play .tnow { animation: hubIn .6s var(--ease) .12s both; }
+.hub-play .hub-day .dp { animation: dpIn .55s var(--ease) both; animation-delay: calc(.25s + var(--i) * 45ms); }
+.hub-play .hub-day .rb-now { animation: nowIn 1.2s var(--ease) .7s both; }
+.hub-play .ring-fg { animation: ringIn 1.2s var(--ease) both; animation-delay: calc(.25s + var(--i, 0) * 90ms); }
+.hub-play .pg-m i { animation: xGrow .9s var(--ease) both; animation-delay: calc(.4s + var(--i) * 40ms); }
+@media (prefers-reduced-motion: reduce) { .hero::before, .needs-btn.nudge::after, .tr-now::after, .tnow-k i::after { animation: none !important; } .hub-play .tr-b, .hub-play .tr-now, .hub-play .tnow, .hub-play .hub-day .dp, .hub-play .hub-day .rb-now, .hub-play .ring-fg, .hub-play .pg-m i { animation: none !important; } }
+/* The welcome page's column never grows past the screen, whatever sits in it. */
+.hub { grid-template-columns: minmax(0, 1fr); }
+
+/* ---------- Round 17b: the satin thread of the day ----------
+   The public site's prize-day ribbon, carried into the portals with a job: in the greeting
+   sheet two layers of fine strands drift against each other, and a glint sits on the strands
+   at the point of the school day we're in (8:00 at the left, home time at the right). The
+   tiles each carry a few strands in their own colour, out of step with one another; a tile
+   spreads its strands when the pointer is on it. Everything moves by transform only. */
+.rib { position: absolute; z-index: -1; left: -8%; right: -8%; top: -6px; height: 260px; transform: rotate(-4deg); pointer-events: none;
+  -webkit-mask-image: linear-gradient(90deg, transparent 16%, #000 48%, #000 90%, transparent); mask-image: linear-gradient(90deg, transparent 16%, #000 48%, #000 90%, transparent); }
+.rib i { position: absolute; top: 0; bottom: 0; left: 0; width: calc(100% + 760px); will-change: transform;
+  -webkit-mask: url("../assets/strands.svg") 0 50% / 760px 100% repeat-x; mask: url("../assets/strands.svg") 0 50% / 760px 100% repeat-x; }
+.rib-a { background: color-mix(in srgb, var(--tod) 60%, var(--accent)); opacity: .3; animation: ribA 80s linear infinite; }
+.rib-b { width: calc(100% + 1100px) !important; -webkit-mask-size: 1100px 125% !important; mask-size: 1100px 125% !important; background: color-mix(in srgb, var(--royal) 70%, var(--tod)); opacity: .13; animation: ribB 130s linear infinite; }
+.rib-g { position: absolute; inset: 0; animation: glint 7s ease-in-out infinite alternate;
+  -webkit-mask-image: radial-gradient(320px 210px at var(--nx, 50%) 50%, #000 8%, transparent 70%); mask-image: radial-gradient(320px 210px at var(--nx, 50%) 50%, #000 8%, transparent 70%); }
+.rib-g .rib-a { background: color-mix(in srgb, var(--tod) 78%, var(--accent)); opacity: .95; }
+@keyframes ribA { to { transform: translateX(-760px); } }
+@keyframes ribB { from { transform: translateX(-1100px); } to { transform: none; } }
+@keyframes glint { from { opacity: .5; } to { opacity: 1; } }
+@keyframes ribIn { from { clip-path: inset(0 100% 0 0); } to { clip-path: inset(0 0 0 0); } }
+.hub-play .rib { animation: ribIn 1.8s var(--ease) .1s both; }
+@media (max-width: 640px) { .rib { height: 210px; left: -20%; right: -20%; -webkit-mask-image: linear-gradient(90deg, transparent 22%, #000 55%, #000 92%, transparent); mask-image: linear-gradient(90deg, transparent 22%, #000 55%, #000 92%, transparent); } }
+
+/* Tiles: a wash of their own colour from the top, and strands drifting across it. */
+.pg { overflow: hidden; isolation: isolate; background: linear-gradient(180deg, color-mix(in srgb, var(--c) 7%, var(--surface)), var(--surface) 64%); }
+.pg::before { content: ""; position: absolute; z-index: -1; top: -18px; left: 0; width: calc(100% + 520px); height: 112px; pointer-events: none; transform-origin: 50% 0;
+  background: linear-gradient(180deg, var(--c), transparent 92%); opacity: .2; will-change: transform;
+  -webkit-mask: url("../assets/strands.svg") 0 0 / 520px 112px repeat-x; mask: url("../assets/strands.svg") 0 0 / 520px 112px repeat-x;
+  animation: pgRib 70s linear infinite; animation-delay: calc(var(--i) * -6.5s); transition: opacity .45s var(--ease), scale .6s var(--ease); }
+.pg:hover::before, .pg:focus-visible::before { opacity: .42; scale: 1 1.3; }
+@keyframes pgRib { to { transform: translateX(-520px); } }
+
+/* The welcome page sits in a warmer light, with the drifting washes turned up. */
+body.app { background-color: color-mix(in srgb, var(--gold) 4%, var(--bg)); }
+body.app::before { background:
+    radial-gradient(42vw 36vw at 92% 0%, color-mix(in srgb, var(--tod) 15%, transparent), transparent 70%),
+    radial-gradient(36vw 32vw at 12% 14%, color-mix(in srgb, var(--accent) 9%, transparent), transparent 70%),
+    radial-gradient(40vw 34vw at 62% 100%, color-mix(in srgb, var(--royal) 10%, transparent), transparent 70%); }
+
+@media (prefers-reduced-motion: reduce) { .rib i, .rib-g, .pg::before, .hub-play .rib { animation: none !important; } }
+@media (max-width: 640px) { .rib { top: 24px; height: 280px; } .rib-a { opacity: .22; } .rib-g .rib-a { opacity: .55; } .rib-g { -webkit-mask-image: radial-gradient(200px 160px at var(--nx, 50%) 50%, #000 5%, transparent 70%); mask-image: radial-gradient(200px 160px at var(--nx, 50%) 50%, #000 5%, transparent 70%); } }
+.pg::before { opacity: .24; }
+.pg:hover::before, .pg:focus-visible::before { opacity: .45; }
+
+/* ---------- Round 18: layout ----------
+   The greeting sheet is the exercise-book page (its own margin line; the page's ruled lines step
+   aside on the welcome page), a light time mark sits where the glint is, daily pages are wide
+   tiles with a live figure, and everything else is a compact link underneath. */
+body.app .main::before { display: none; }
+.hub-top.hero { background: linear-gradient(90deg, transparent 13px, var(--margin-red) 13px 15px, transparent 15px), var(--surface); }
+.hero-clock { position: absolute; top: 24px; right: 30px; text-align: right; pointer-events: none; }
+.hero-clock b { display: block; font: 300 58px/1 var(--sans); letter-spacing: -.035em; font-variant-numeric: tabular-nums; color: color-mix(in srgb, var(--tod) 55%, var(--ink)); opacity: .85; }
+.hero-clock span { display: block; margin-top: 6px; font-size: 13.5px; font-weight: 500; color: var(--muted); }
+.hero:has(.hub-hello .right) .hero-clock { display: none; }
+@media (max-width: 760px) { .hero-clock { display: none; } }
+.hero .brief-fold { margin-top: 16px; padding: 12px 16px; border: 0; border-radius: 14px; background: color-mix(in srgb, var(--sunken) 75%, transparent); }
+
+/* Daily pages: wide tiles, a figure or a week of bars in the middle. */
+.pgs-main { grid-template-columns: repeat(var(--n, 4), minmax(0, 1fr)); }
+.pg.main { min-height: 190px; }
+.pg.main .pg-ic { margin-bottom: 0; }
+.pg-v { display: block; margin-top: 16px; }
+.pg-big { display: block; font: 700 34px/1 var(--sans); letter-spacing: -.025em; font-variant-numeric: tabular-nums; color: var(--ink); white-space: nowrap; }
+.pg-big small { font-size: 14px; font-weight: 550; letter-spacing: 0; color: var(--muted); margin-left: 2px; }
+.pg.main .pg-n { margin-top: auto; padding-top: 14px; }
+.mb { position: relative; display: flex; align-items: flex-end; gap: 5px; height: 42px; max-width: 170px; }
+.mb i { flex: 1; min-height: 3px; border-radius: 4px 4px 2px 2px; background: color-mix(in srgb, var(--c) 30%, var(--surface)); transform-origin: bottom; }
+.mb i.last { background: var(--c); }
+.mb i.none { height: 6px; background: none; border: 1.5px dashed var(--line); border-bottom: 0; }
+.mb b { position: absolute; left: -3px; right: -3px; border-top: 1.5px dashed color-mix(in srgb, var(--ink) 45%, transparent); }
+.hub-play .mb i { animation: xRise .7s var(--ease) both; animation-delay: calc(.35s + var(--i) * 50ms); }
+
+/* Everything else: compact links. */
+.pgl-h { font: 600 14px/1.3 var(--sans); color: var(--muted); margin: 22px 0 10px 2px; }
+.pgl { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 8px; }
+.pgl-i { position: relative; display: flex; align-items: center; gap: 12px; min-width: 0; padding: 10px 14px 10px 10px; border: 1px solid var(--line); border-radius: 14px; background: color-mix(in srgb, var(--surface) 82%, transparent); text-align: left; font: inherit; color: inherit; cursor: pointer; transition: border-color .25s, background .25s, transform .25s var(--ease); }
+.pgl-i:hover { border-color: color-mix(in srgb, var(--c) 40%, var(--line)); background: var(--surface); transform: translateY(-1px); }
+.pgl-i:focus-visible { outline: 2px solid var(--c); outline-offset: 2px; }
+.pgl-i .pg-ic { width: 34px; height: 34px; border-radius: 10px; margin: 0; flex: none; }
+.pgl-i .pg-ic svg { width: 18px; height: 18px; }
+.pgl-i:hover .pg-ic { background: var(--c); color: #fff; }
+.pgl-t { min-width: 0; flex: 1; }
+.pgl-t b { display: block; font-size: 14.5px; font-weight: 600; line-height: 1.3; }
+.pgl-t span { display: block; font-size: 13px; color: var(--muted); line-height: 1.35; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.pgl-i.flag .pgl-t span { color: var(--gold-text); font-weight: 600; }
+.pgl-i .count { min-width: 20px; height: 20px; border-radius: 999px; background: var(--accent); color: var(--accent-ink); font: 600 12px/20px var(--sans); text-align: center; padding: 0 6px; flex: none; }
+.pgl-i > svg { width: 15px; height: 15px; color: var(--muted); opacity: .5; flex: none; }
+.hub-play .pgl-i { animation: hubIn .5s var(--ease) both; animation-delay: calc(.2s + var(--i) * 30ms); }
+
+/* The page's name in the top bar, once you're off the welcome page. */
+.pbar-page { padding-left: 14px; margin-left: 4px; border-left: 1px solid var(--line); font: 600 15px/1.2 var(--sans); color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; min-width: 0; }
+.pbar-page:empty { display: none; }
+@media (max-width: 760px) { .pbar-page { display: none; } }
+
+@media (max-width: 1000px) { .pgs-main { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 640px) {
+  .hub-top.hero { padding: 18px 16px 16px 24px; background: linear-gradient(90deg, transparent 10px, var(--margin-red) 10px 12px, transparent 12px), var(--surface); }
+  .hub { gap: 22px; }
+  .tnow-acts { flex-wrap: nowrap; }
+  .tnow-acts .btn { padding-inline: 12px; font-size: 13.5px; white-space: nowrap; }
+  .pgs-main { grid-template-columns: minmax(0, 1fr); gap: 8px; }
+  .pg.main { min-height: 0; display: grid; grid-template-columns: 38px minmax(0, 1fr) auto; grid-template-areas: "ic n v" "ic l v" "m m m"; column-gap: 12px; row-gap: 1px; align-items: center; padding: 13px 38px 13px 13px; }
+  .pg.main .pg-ic { grid-area: ic; }
+  .pg.main .pg-n { grid-area: n; margin: 0; padding: 0; font-size: 15px; }
+  .pg.main .pg-l { grid-area: l; }
+  .pg.main .pg-v { grid-area: v; margin: 0; }
+  .pg.main .pg-m { grid-area: m; margin-top: 10px; }
+  .pg.main > svg { top: 50%; margin-top: -8px; }
+  .pg.main .count { top: 8px; right: 30px; }
+  .pg-big { font-size: 24px; }
+  .pg-big small { display: block; font-size: 11.5px; text-align: right; margin: 2px 0 0; }
+  .mb { width: 92px; height: 32px; gap: 3px; }
+  .pgl { display: flex; overflow-x: auto; gap: 8px; margin: 0 -16px; padding: 2px 16px 6px; scroll-snap-type: x proximity; scrollbar-width: none; }
+  .pgl::-webkit-scrollbar { display: none; }
+  .pgl-i { flex: 0 0 auto; max-width: 240px; scroll-snap-align: start; }
+}
+@media (prefers-reduced-motion: reduce) { .hub-play .mb i, .hub-play .pgl-i { animation: none !important; } }
+.pgs-main > .pg { width: 100%; }
+.mb { width: 100%; }
+@media (max-width: 640px) { .mb { width: 92px; } }
+.pg.main .pg-v { align-self: stretch; }
+
+/* ---------- Round 19: every page in step with the welcome page ----------
+   The warm light, the washes and the exercise-book sheet now belong to every page: each title
+   sits on its own sheet with the red margin line, the satin thread runs through it with the glint
+   at "now", and it draws itself in once when the page opens. Cards take the tiles' softer depth. */
+.topbar.pg-head { position: relative; isolation: isolate; background: linear-gradient(90deg, transparent 13px, var(--margin-red) 13px 15px, transparent 15px), var(--surface); border: 1px solid var(--line); border-radius: 22px; padding: 20px 24px 18px 34px; box-shadow: 0 1px 2px rgba(25,28,34,.04), 0 22px 44px -36px rgba(25,28,34,.28); }
+.pg-head > :not(.pg-head-bg) { position: relative; }
+.pg-head-bg { position: absolute; inset: 0; z-index: -1; overflow: hidden; border-radius: inherit; pointer-events: none;
+  background: radial-gradient(40% 140% at 96% 0%, color-mix(in srgb, var(--tod) 16%, transparent), transparent 70%); }
+.pg-head .rib { z-index: 0; top: -40px; height: 220px; opacity: .7; }
+.pg-head.pg-in .rib { animation: ribIn 1.4s var(--ease) both; }
+.pg-head .crumb, .pg-head .sub { max-width: 68ch; }
+body.app .card { box-shadow: 0 1px 2px rgba(25,28,34,.04), 0 16px 34px -30px rgba(25,28,34,.26); }
+body.app .card-h h2 { letter-spacing: -.005em; }
+@media (max-width: 640px) {
+  .topbar.pg-head { padding: 16px 14px 14px 24px; border-radius: 18px; background: linear-gradient(90deg, transparent 10px, var(--margin-red) 10px 12px, transparent 12px), var(--surface); }
+  .pg-head .rib { top: -10px; height: 200px; opacity: .55; }
+  .pg-head > .right { flex-wrap: wrap; max-width: 100%; }
+}
+@media (prefers-reduced-motion: reduce) { .pg-head.pg-in .rib { animation: none !important; } }
+
+/* ---------- Round 19b: the light passed along ----------
+   The glint on the greeting sheet's thread carries on into the tiles: a soft pool of each tile's
+   own colour drifts across it and fades, one tile after the next, so a slow wave of light moves
+   along the row in step with the glint's own breath (7s, twice). Transform and opacity only. */
+.pg::after { content: ""; position: absolute; z-index: -1; top: -30%; left: -60%; width: 90%; height: 160%; pointer-events: none;
+  background: radial-gradient(closest-side, color-mix(in srgb, var(--c) 26%, transparent), transparent); opacity: 0;
+  animation: pgLight 14s ease-in-out infinite; animation-delay: calc(var(--i) * 1.75s); will-change: transform, opacity; }
+@keyframes pgLight { 0% { transform: translateX(0); opacity: 0; } 18% { opacity: 1; } 50% { transform: translateX(150%); opacity: .9; } 72%, 100% { transform: translateX(190%); opacity: 0; } }
+.pgl-i { position: relative; isolation: isolate; overflow: hidden; }
+.pgl-i::after { content: ""; position: absolute; z-index: -1; inset: 0; pointer-events: none; background: linear-gradient(100deg, transparent 30%, color-mix(in srgb, var(--c) 10%, transparent) 50%, transparent 70%); transform: translateX(-100%); animation: pglLight 14s ease-in-out infinite; animation-delay: calc(4s + var(--i) * .9s); }
+@keyframes pglLight { 0% { transform: translateX(-100%); } 22%, 100% { transform: translateX(100%); } }
+@media (prefers-reduced-motion: reduce) { .pg::after, .pgl-i::after { animation: none !important; opacity: 0; } }
+
+/* Behind the row, on the page itself: a broad, faint glow in the time of day's colour that walks
+   from the first tile to the last in step with the light passing through them, then rests. */
+.pgs-main { position: relative; isolation: isolate; }
+.pgs-main::before { content: ""; position: absolute; z-index: -1; top: -34%; bottom: -34%; left: 0; width: 34%; pointer-events: none;
+  background: radial-gradient(closest-side, color-mix(in srgb, var(--tod) 22%, transparent), transparent); opacity: 0;
+  animation: rowLight 14s ease-in-out 5s infinite; will-change: transform, opacity; }
+@keyframes rowLight { 0% { transform: translateX(-20%); opacity: 0; } 12% { opacity: 1; } 45% { opacity: 1; } 55%, 100% { transform: translateX(215%); opacity: 0; } }
+@media (max-width: 1000px) { .pgs-main::before { width: 60%; } @keyframes rowLight { 0% { transform: translateX(-20%); opacity: 0; } 12%, 45% { opacity: 1; } 55%, 100% { transform: translateX(80%); opacity: 0; } } }
+@media (prefers-reduced-motion: reduce) { .pgs-main::before { animation: none !important; opacity: 0; } }
