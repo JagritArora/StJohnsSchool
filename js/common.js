@@ -25,7 +25,9 @@
   }
 
   // Portal views: buttons with data-go="name" show <section data-view="name">.
+  S.ALIAS = { bus: "timetable" }; // the parent's Bus page now lives on Today, Bus and Timetable
   S.go = (name, push = true) => {
+    name = (S.ALIAS || {})[name] || name; // old links to a view that was merged into another
     const v = document.querySelector(`[data-view="${name}"]`);
     if (!v) return;
     document.querySelectorAll("[data-view]").forEach((x) => x.classList.toggle("active", x === v));
@@ -77,7 +79,8 @@
   S.infoBtn = (id, title) => `<button type="button" class="info-btn" data-info="${id}" data-info-t="${S.esc(title)}" aria-label="More about ${S.esc(title.toLowerCase())}" aria-haspopup="dialog" aria-expanded="false">i</button>`;
   if (document.querySelector("[data-view]")) {
     const first = document.querySelector("[data-view]").dataset.view;
-    S.go(location.hash.slice(1) && document.querySelector(`[data-view="${location.hash.slice(1)}"]`) ? location.hash.slice(1) : first, false);
+    const h = (S.ALIAS || {})[location.hash.slice(1)] || location.hash.slice(1);
+    S.go(h && document.querySelector(`[data-view="${h}"]`) ? h : first, false);
   }
 
   // Modal helpers

@@ -176,9 +176,12 @@
     const subjTeachers = {};
     subjects.forEach((x, k) => (subjTeachers[x] = (ownerOf[key + "|" + x] || {}).name || teacher(60 + ci * 7 + k)));
     const ct = Object.values(ownerOf).find((t) => t.classOf === key);
+    // Every class teacher also teaches the class one subject: where no subject teacher holds the class, they take one of its main subjects.
+    const ctName = ct ? ct.name : key === "III-A" ? "Mrs. Priya Nair" : teacher(ci * 3 + si + 3);
+    if (!Object.values(subjTeachers).includes(ctName)) subjTeachers[subjects[seedOf(key + "ct") % Math.min(4, subjects.length)]] = ctName;
     return {
       key, cls: c, sec: s, ci, label: S.secName(key), stream: S.STREAM(c, s), live: false, subjects, students, history, subjTeachers,
-      teacher: ct ? ct.name : key === "III-A" ? "Mrs. Priya Nair" : teacher(ci * 3 + si + 3), teacherId: ct ? ct.id : null,
+      teacher: ctName, teacherId: ct ? ct.id : null,
       fees: Math.max(55, Math.min(90, WING_FEES[WING(ci)] + ((seedOf(key + "f") % 9) - 4))), wing: S.WING_NAMES[WING(ci)],
       target: key === "IX-B" ? 86 : key === "IX-A" ? 87 : Math.max(88, Math.min(99, CLASS_TODAY[ci] + ((seed % 5) - 2)))
     };

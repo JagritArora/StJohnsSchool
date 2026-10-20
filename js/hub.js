@@ -23,7 +23,7 @@
   const plain = S.go;
   const viewOf = (h) => String(h || "").replace(/^#/, "").split("/");
   S.go = (name, push = true) => {
-    const [v, sub] = viewOf(name);
+    const [v0, sub0] = viewOf(name), [v, subA] = viewOf((S.ALIAS || {})[v0] || v0), sub = sub0 || subA; // a merged page's old name opens the page it joined
     if (!document.querySelector(`[data-view="${v}"]`)) return;
     const was = viewOf(location.hash)[0] || HOME;
     plain(v, false);
