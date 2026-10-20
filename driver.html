@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<!-- Prototype: kept out of search results so it never competes with the school's own site. -->
+<meta name="robots" content="noindex, nofollow" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+<meta name="color-scheme" content="light" />
+<title>Driver | St. John's School</title>
+<link rel="icon" href="assets/crest.svg" type="image/svg+xml" />
+<link rel="manifest" href="manifest.webmanifest" />
+<link rel="apple-touch-icon" href="assets/icons/apple-touch-icon.png" />
+<meta name="apple-mobile-web-app-title" content="St. John's" />
+<meta name="mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Figtree:wght@400..800&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="css/site.css?v=48" />
+</head>
+<body class="app drv">
+<div class="proto-bar" id="proto"><b>Prototype</b> · Driver view.</div>
+<div class="app-shell">
+  <header class="pbar">
+    <a class="pbar-brand" href="#" aria-label="St. John's School"><img src="assets/crest.svg" alt="" width="34" height="34" /><span><b>St. John&#x27;s School</b><small>Bus driver</small></span></a>
+    <div class="pbar-r"><span class="pbar-who"><span class="avatar" id="who-av"></span><span class="pbar-wt"><b id="who-name"></b><small id="who-title"></small></span></span><a class="icon-btn" href="login.html?role=staff" data-signout aria-label="Sign out"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M15 4h4v16h-4M10 8l-4 4 4 4M6 12h10"/></svg></a></div>
+  </header>
+  <main class="main drv-main">
+    <!-- The trip: one big button to start, then the next stop and the button for it. -->
+    <section class="card drv-trip" id="trip" aria-live="polite"></section>
+    <section class="card drv-map-card"><div class="drv-map" id="map" role="img" aria-label="Map of the route"></div></section>
+    <section class="card">
+      <div class="card-h"><h2>Stops</h2><span class="right muted" id="stops-n" style="font-size:13.5px"></span></div>
+      <ol class="drv-stops" id="stops"></ol>
+    </section>
+    <section class="card" id="road"></section>
+  </main>
+</div>
+<script src="js/data.js?v=12"></script>
+<script src="js/classes.js?v=8"></script>
+<script src="js/common.js?v=12"></script>
+<script src="js/bus.js?v=2"></script>
+<script>
+/* The driver's phone: starts a trip, shares where the bus is, marks each stop as
+   it's reached (by itself within 80 m, or with a tap), and can record the road. */
+(function () {
+  const S = SJS, $ = (q) => document.querySelector(q), esc = S.esc;
+  let id = new URLSearchParams(location.search).get("id");
+  try { if (id) localStorage.setItem("sjs-staff", id.toUpperCase()); else id = localStorage.getItem("sjs-staff"); } catch (e) {}
+  id = (id || "").toUpperCase();
+  const me = S.STAFF[id];
+  if (!me || me.role !== "driver") { location.replace("login.html?role=staff"); return; }
+  document.querySelectorAll("[data-signout]").forEach((a) => a.addEventListener("click", () => { try { localStorage.removeItem("sjs-staff"); } catch (e) {} }));
+  $("#who-av").textContent = me.initials; $("#who-name").textContent = me.name; $("#who-title").textContent = "Driver · " + id;
+
+  let r = S.routeOfDriver(id), trip, live, path = null, map = null, watch = null, sim = null, lock = null, err = "";
+  if (!r) { $("#trip").innerHTML = `<h1 class="drv-h">No route yet</h1><p class="muted">The school office hasn't given you a route. Once they do, it shows here.</p>`; document.querySelectorAll(".drv-main > section:not(#trip)").forEach((x) => x.remove()); return; }
+  const rider = S.ridersOf(r)[0];
+  $("#proto").innerHTML = `<b>Prototype</b> · Driver view. The bus's position reaches parent pages open in this browser.` + (rider ? ` <a href="parent.html?kid=${rider.key}" target="_blank">Open ${esc(S.kid(rider.key).first)}'s parent view in a new tab</a>` : "");
+  const mine = () => { const v = S.busLive(r.id); return v && v.by === id ? v : null; };
+  live = mine(); trip = live ? live.trip : S.tripNow(r);
+  const list = () => S.tripStops(r, trip);
+  const tripPath = () => (trip === "am" ? path : path.slice().reverse());
+  const ridersAt = (i) => S.ridersOf(r).filter((x) => x.stop === i).length;
+  const ago = (t) => { const s = Math.round((Date.now() - t) / 1000); return s < 5 ? "just now" : s < 60 ? s + " s ago" : Math.round(s / 60) + " min ago"; };
+
+  // ---------- Drawing ----------
+  function render() {
+    const L = list(), on = !!live, n = on ? Math.min(live.next, L.length) : 0, nx = L[n], done = on && n >= L.length;
+    const name = trip === "am" ? "Morning pick-up" : "Afternoon drop";
+    $("#trip").innerHTML = `
+      <div class="drv-top"><div><span class="drv-r">${esc(r.id)} · ${esc(r.bus)}${r.reg ? " · " + esc(r.reg) : ""}</span><h1 class="drv-h">${on ? name : "Ready for the " + (trip === "am" ? "morning" : "afternoon")}</h1></div>
+      ${on ? `<span class="drv-on${live.sim ? " sim" : ""}"><i></i>${live.sim ? "Demo drive" : "Sharing location"}</span>` : `<div class="seg" role="group" aria-label="Trip"><button type="button" data-trip="am" class="${trip === "am" ? "on" : ""}" aria-pressed="${trip === "am"}">Morning</button><button type="button" data-trip="pm" class="${trip === "pm" ? "on" : ""}" aria-pressed="${trip === "pm"}">Afternoon</button></div>`}</div>
+      ${!on ? `<p class="drv-line">${L.length - 1} stops, then ${trip === "am" ? "school" : "the last drop"}. First stop <b>${esc(L[0].n)}</b> at ${S.ampm(L[0].t)}.</p>
+        <button class="btn btn-primary drv-go" type="button" data-start>Start trip</button>
+        <p class="drv-err" ${err ? "" : "hidden"}>${esc(err)}</p>
+        <button class="link-btn" type="button" data-sim>No GPS here? Drive the route as a demo</button>`
+      : done ? `<p class="drv-line"><b>Trip finished.</b> ${trip === "am" ? "Reached school" : "Last drop done"} at ${esc(live.reached[L.length - 1] || S.timeNow())}.</p><button class="btn btn-primary drv-go" type="button" data-end>Close the trip</button>`
+      : `<div class="drv-next"><span>Next stop</span><b>${esc(nx.n)}</b><small>${S.ampm(nx.t)}${!nx.school && ridersAt(nx.i) ? ` · ${ridersAt(nx.i)} child${ridersAt(nx.i) === 1 ? "" : "ren"} to ${trip === "am" ? "pick up" : "drop"}` : ""}</small></div>
+        <button class="btn btn-primary drv-go" type="button" data-reach>Reached ${esc(nx.n)}</button>
+        <p class="drv-meta">Updated ${ago(live.at)}${live.acc ? ` · within ${Math.round(live.acc)} m` : ""}. Stops tick themselves off within 80 m.</p>
+        <button class="btn btn-ghost btn-sm" type="button" data-end>End trip</button>`}`;
+    $("#stops-n").textContent = `${trip === "am" ? "Morning" : "Afternoon"} · ${L.length} stops`;
+    $("#stops").innerHTML = L.map((s, k) => { const st = on && k < n ? "done" : on && k === n ? "next" : ""; return `<li class="${st}${s.school ? " sch" : ""}"><span class="t">${S.ampm(s.t)}</span><span class="n">${esc(s.n)}</span><span class="c">${on && live.reached[k] ? "✓ " + esc(live.reached[k]) : s.school || !ridersAt(s.i) ? "" : ridersAt(s.i) + " child" + (ridersAt(s.i) === 1 ? "" : "ren")}</span></li>`; }).join("");
+    renderRoad();
+  }
+  function renderRoad() {
+    const t = live && live.track ? live.track.length : 0, last = r.lastTrack;
+    $("#road").innerHTML = `<div class="card-h"><h2>The road</h2></div>
+      <p class="muted" style="font-size:14px;margin:-4px 0 10px">${r.rec ? `The map uses the road you recorded on ${esc(r.rec.on)}.` : "The map follows the roads between stops. If you take a different road, record it once on a morning trip and the office will use yours."}</p>
+      ${live && !live.sim ? `<button class="btn btn-ghost btn-sm" type="button" data-addstop>Suggest a new stop here</button>` : ""}
+      ${!live && last && last.length > 5 ? `<button class="btn btn-ghost btn-sm" type="button" data-saverd>Use the road from my last morning trip</button>` : ""}
+      ${(r.pending || []).length ? `<p class="muted" style="font-size:13.5px;margin-top:10px">${r.pending.length} stop${r.pending.length === 1 ? "" : "s"} suggested, waiting for the office.</p>` : ""}`;
+  }
+  async function draw(fit) {
+    path = path || await S.routePath(r);
+    map = await S.busMap($("#map"));
+    S.drawRoute(map, r, path, { fit, bus: live ? live : null });
+  }
+
+  // ---------- The trip ----------
+  const push = () => { live.at = Date.now(); S.setBusLive(r.id, live); };
+  function fix(p) {
+    if (!live) return;
+    Object.assign(live, p);
+    const L = list();
+    // Reached the next stop when within 80 m.
+    while (live.next < L.length && S.dist(live, L[live.next]) < 80) { live.reached[live.next] = S.timeNow(); live.next++; }
+    if (trip === "am" && !live.sim) { const t = live.track, z = t[t.length - 1]; if (!z || S.dist({ lat: z[0], lng: z[1] }, p) > 25) t.push([Math.round(p.lat * 1e5) / 1e5, Math.round(p.lng * 1e5) / 1e5]); }
+    push(); if (map) S.moveBus(map, live); render();
+  }
+  async function start(demo, resume) {
+    err = "";
+    if (!resume) live = { by: id, trip, next: 0, reached: {}, start: Date.now(), at: Date.now(), sim: !!demo, track: [], lat: list()[0].lat, lng: list()[0].lng };
+    if (resume) live.track = live.track || [];
+    if ("wakeLock" in navigator) navigator.wakeLock.request("screen").then((l) => (lock = l)).catch(() => {});
+    if (demo) { await draw(false); drive(); }
+    else {
+      if (!("geolocation" in navigator)) { live = null; err = "This phone can't share its location. Use the demo drive, or ask the office."; render(); return; }
+      watch = navigator.geolocation.watchPosition((pos) => fix({ lat: pos.coords.latitude, lng: pos.coords.longitude, acc: pos.coords.accuracy }),
+        (e) => { if (e.code === 1) { stop(true); err = "Location is off for this site. Allow it in the phone's settings, then start again."; render(); } },
+        { enableHighAccuracy: true, maximumAge: 5000, timeout: 20000 });
+    }
+    push(); render();
+    if (!resume) S.toast(trip === "am" ? "Trip started. Parents can see the bus now." : "Afternoon trip started. Parents can see the bus now.");
+  }
+  // Demo drive: along the road at twelve times town speed, a short wait at each stop.
+  function drive() {
+    const P = tripPath(), len = S.pathLen(P), L = list(), stopAt = L.map((s) => S.along(P, s));
+    let m = 0, wait = 0, k = 0;
+    sim = setInterval(() => {
+      if (wait > 0) { wait--; return; }
+      m = Math.min(len, m + 66);
+      if (k < stopAt.length && m >= stopAt[k]) { m = stopAt[k]; k++; wait = 3; }
+      const p = S.pointAt(P, m); fix({ lat: p.lat, lng: p.lng, acc: 0 });
+      if (m >= len && live) { const z = list(); live.reached[z.length - 1] = live.reached[z.length - 1] || S.timeNow(); live.next = z.length; push(); render(); clearInterval(sim); sim = null; }
+    }, 1000);
+  }
+  function stop(quiet) {
+    if (watch !== null) navigator.geolocation.clearWatch(watch); watch = null;
+    if (sim) clearInterval(sim); sim = null;
+    if (lock) lock.release().catch(() => {}); lock = null;
+    if (live) {
+      if (live.trip === "am" && live.track && live.track.length > 5) { r.lastTrack = live.track; S.saveRoutes(); }
+      live.ended = true; S.setBusLive(r.id, live); live = null;
+    }
+    if (!quiet) S.toast("Trip ended. Parents see the bus as off the road.");
+    render(); if (map) S.drawRoute(map, r, path, { fit: false });
+  }
+
+  document.addEventListener("click", (e) => {
+    const b = e.target.closest("button"); if (!b) return;
+    if (b.dataset.trip) { trip = b.dataset.trip; render(); }
+    else if (b.hasAttribute("data-start")) start(false);
+    else if (b.hasAttribute("data-sim")) start(true);
+    else if (b.hasAttribute("data-reach")) { const L = list(); live.reached[live.next] = S.timeNow(); S.toast(`Marked: reached ${L[live.next].n}`); live.next++; push(); render(); }
+    else if (b.hasAttribute("data-end")) stop();
+    else if (b.hasAttribute("data-addstop")) { (r.pending = r.pending || []).push({ n: "Near " + (list()[Math.max(0, live.next - 1)] || {}).n, lat: live.lat, lng: live.lng, t: new Date().toTimeString().slice(0, 5), by: me.name, on: S.fmt ? S.fmt(S.todayKey) : "" }); S.saveRoutes(); S.toast("Stop suggested. The office will name it and add it."); renderRoad(); }
+    else if (b.hasAttribute("data-saverd")) { r.rec = { path: r.lastTrack, sig: S.pathSig(r), on: S.fmt ? S.fmt(S.todayKey) : "today", by: me.name }; S.saveRoutes(); path = null; draw(true); S.toast("Saved. The map now follows the road you drove."); }
+  });
+  // The office may change the route while the driver is signed in.
+  document.addEventListener("sjs:bus", () => { const nr = S.routeOfDriver(id); if (nr && JSON.stringify(nr.stops) !== JSON.stringify(r.stops)) { r = nr; path = null; draw(true); } else if (nr) r = nr; render(); });
+  setInterval(() => { if (live) render(); }, 5000);
+  // A trip left running (page reloaded): carry on sharing.
+  render(); draw(true).then(() => { if (live) { if (live.sim) { stop(true); } else start(false, true); } });
+})();
+</script>
+</body>
+</html>

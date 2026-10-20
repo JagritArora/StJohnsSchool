@@ -17,7 +17,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Figtree:wght@400..800&display=swap" rel="stylesheet" />
-<link rel="stylesheet" href="css/site.css?v=46" />
+<link rel="stylesheet" href="css/site.css?v=48" />
 <script>
 /* Before the first paint: fade photos in as they load. */
 (function (d) { d.documentElement.classList.add("js");
@@ -207,6 +207,15 @@
     </section>
 
     <!-- NOTICES: only the ones meant for this child -->
+    <!-- BUS: the child's route on the map, the bus while it's out, and every stop's time -->
+    <section data-view="bus">
+      <div class="topbar"><div><h1 id="bus-h1">Bus</h1><div class="sub" id="bus-sub"></div></div></div>
+      <div class="bus-g">
+        <div class="card bus-map-card"><div class="bus-map" id="bus-map" role="img" aria-label="Map of the bus route"></div></div>
+        <div class="bus-side"><div class="card bus-now" id="bus-now" aria-live="polite"></div><div class="card" id="bus-stops"></div></div>
+      </div>
+    </section>
+
     <section data-view="notices">
       <div class="topbar"><div><h1>Notices</h1><div class="sub" id="nt-sub">For Aarav's class, bus and school</div></div></div>
       <div class="nt-bar"><div class="seg" id="nt-lv" role="group" aria-label="Importance"><button class="on" type="button" data-l="" aria-pressed="true">All</button><button type="button" data-l="high" aria-pressed="false">High</button><button type="button" data-l="medium" aria-pressed="false">Medium</button><button type="button" data-l="low" aria-pressed="false">Low</button></div><span class="muted" id="nt-count"></span></div>
@@ -269,12 +278,13 @@
 
 <script src="js/data.js?v=12"></script>
 <script src="js/classes.js?v=8"></script>
+<script src="js/bus.js?v=2"></script>
 <script src="js/exams.js?v=8"></script>
 <script src="js/care.js?v=2"></script>
 <script src="js/common.js?v=12"></script>
 <script src="js/charts.js?v=10"></script>
 <script src="js/hub.js?v=10"></script>
-<script src="js/more.js?v=6"></script>
+<script src="js/more.js?v=7"></script>
 <script src="js/demo.js?v=2"></script>
 <script src="js/ai.js?v=8"></script>
 <script>
@@ -314,15 +324,16 @@
     fees: '<rect x="3" y="6" width="18" height="13" rx="2"/><path d="M3 10h18M7 15h3"/>',
     messages: '<path d="M4 5h16v11H9l-5 4z"/>',
     exams: '<rect x="5" y="4" width="14" height="17" rx="2"/><path d="M9 4V3h6v1M9 10h6M9 14h6M9 18h3"/>',
-    notices: '<path d="M4 10v4h3l6 4V6L7 10z"/><path d="M17 9a4 4 0 0 1 0 6"/>'
+    notices: '<path d="M4 10v4h3l6 4V6L7 10z"/><path d="M17 9a4 4 0 0 1 0 6"/>',
+    bus: '<rect x="5" y="3.5" width="14" height="14" rx="2.5"/><path d="M5 11h14M8.5 20.5v-3M15.5 20.5v-3"/>'
   };
   // Exams only where the class sits them (pre-primary has none).
   const myExams = () => S.examsFor(me), G = S.groupOf(me);
-  const nav = [["home", "Home"], ["timetable", "Timetable"], ["attendance", "Attendance"], ["homework", "Homework"], ["results", "Results"], ["fees", "Fees"], ["notices", "Notices"], ["messages", "Messages"]].map(([k, l]) => (k === "results" && myExams().length ? [k, "Exams and results", "exams"] : [k, l]));
+  const nav = [["home", "Home"], ["timetable", "Timetable"], ...(me.bus === "Own transport" ? [] : [["bus", "Bus"]]), ["attendance", "Attendance"], ["homework", "Homework"], ["results", "Results"], ["fees", "Fees"], ["notices", "Notices"], ["messages", "Messages"]].map(([k, l]) => (k === "results" && myExams().length ? [k, "Exams and results", "exams"] : [k, l]));
   if (!myExams().length) { S.$('[data-view="exams"]').remove(); S.$$("[data-exsw]").forEach((x) => x.remove()); }
   const btn = (k, l, also = "") => `<button class="side-btn" data-go="${k}"${also ? ` data-also="${also}"` : ""}><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">${I[k]}</svg>${l}<span class="count" data-count="${k}" hidden></span></button>`;
   S.$("#nav-side").innerHTML = nav.map(([k, l, a]) => btn(k, l, a)).join("");
-  S.$("#nav-bottom").innerHTML = nav.filter(([k]) => !["messages", "timetable", "exams", "notices"].includes(k)).map(([k, l, a]) => btn(k, k === "results" ? "Results" : l, a)).join("");
+  S.$("#nav-bottom").innerHTML = nav.filter(([k]) => !["messages", "timetable", "exams", "notices", "bus"].includes(k)).map(([k, l, a]) => btn(k, k === "results" ? "Results" : l, a)).join("");
 
   const statusLabel = { P: "Present", A: "Absent", L: "Leave" };
   const feeStack = () => { const due = fees().find((f) => !f.paid); return S.stack(fees().map((f) => ({ v: 1, tone: f.paid ? "var(--green)" : f === due ? "var(--accent)" : "var(--line)", tip: f.paid ? "Paid " + S.fmt(f.paid) : "Due " + S.fmt(f.due, { day: "numeric", month: "short", year: "numeric" }), tipT: f.q }))); };
@@ -585,22 +596,59 @@
     if (b.dataset.to) { closeNotes(); S.go(b.dataset.to); } else renderNotes();
   });
 
-  // Bus: loops through the stops so it looks live in a demo.
-  const stops = ["Sector 9", "Sec 8 Market", "Sec 7C", "Your stop", "School"];
+  // Bus: the child's route as the office set it, and where the bus is while the driver shares it.
+  const R = me.bus === "Own transport" ? null : S.route(me.bus);
+  let busPath = null, busMapEl = null, busTrip = null, busWarned = "";
+  if (R) S.routePath(R).then((p) => { busPath = p; renderBus(); });
+  if (R && R.driver) S.$(".proto-bar > a").insertAdjacentHTML("afterend", ` · <a href="driver.html?id=${R.driver}" target="_blank">Open the bus driver's view</a>`);
+  const busNow = () => S.busFor(R, me.key, busPath);
   function renderBus() {
     const BUS = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="5" y="3.5" width="14" height="14" rx="2.5"/><path d="M5 11h14M8.5 20.5v-3M15.5 20.5v-3"/><circle cx="8.5" cy="14.3" r=".6" fill="currentColor"/><circle cx="15.5" cy="14.3" r=".6" fill="currentColor"/></svg>';
-    if (me.bus === "Own transport") { S.$("#hm-bus").innerHTML = `${BUS}<span>Own transport · picked up by family</span>`; S.$("#bus-pill").hidden = true; S.$("#route").hidden = S.$("#route-labels").hidden = true; S.$("#bus-text").innerHTML = `<b>Own transport.</b> ${me.first} is dropped and picked up by family. The office has the names of the adults who may collect ${me.first}.`; return; }
-    const morning = new Date().getHours() < 12;
-    const list = morning ? stops : [...stops].reverse();
-    const home = list.indexOf("Your stop");
-    const pos = Math.floor(Date.now() / 7000) % list.length;
-    S.$("#route").innerHTML = list.map((s, i) => `${i ? `<span class="seg-l ${i <= pos ? "done" : ""}"></span>` : ""}<span class="stop ${i <= pos ? "done" : ""} ${s === "Your stop" ? "home" : ""}" title="${s}"></span>`).join("");
-    S.$("#route-labels").innerHTML = list.map((s) => `<span>${s}</span>`).join("");
-    const left = home - pos;
-    const where = left > 0 ? `${left} stop${left > 1 ? "s" : ""} away · about ${left * 4} min` : left === 0 ? "At your stop now" : morning ? me.first + " is on the bus to school" : "Dropped off at your stop ✓";
-    S.$("#bus-text").innerHTML = (morning ? "<b>Morning pick-up.</b> " : "<b>Afternoon drop.</b> ") + where;
-    S.paint(S.$("#hm-bus"), `${BUS}<span>${me.bus.replace("Route", "Bus")} · ${where}</span>`);
+    if (!R) { S.$("#hm-bus").innerHTML = `${BUS}<span>Own transport · picked up by family</span>`; S.$("#bus-pill").hidden = true; S.$("#route").hidden = S.$("#route-labels").hidden = true; S.$("#bus-text").innerHTML = `<b>Own transport.</b> ${me.first} is dropped and picked up by family. The office has the names of the adults who may collect ${me.first}.`; return; }
+    const b = busNow(), list = b.list, pos = b.live ? Math.min(b.next, list.length) - 1 : -1;
+    S.$("#bus-pill").hidden = !b.live;
+    S.$("#route").innerHTML = list.map((s, i) => `${i ? `<span class="seg-l ${i <= pos ? "done" : ""}"></span>` : ""}<span class="stop ${i <= pos ? "done" : ""} ${i === b.mine ? "home" : ""}" title="${S.esc(s.n)}"></span>`).join("");
+    S.$("#route-labels").innerHTML = list.map((s, i) => `<span${i === b.mine ? ' class="home"' : ""}>${S.esc(s.school ? "School" : s.n.replace("Sector ", "Sec "))}</span>`).join("");
+    S.$("#bus-text").innerHTML = `<b>${b.trip === "am" ? "Morning pick-up." : "Afternoon drop."}</b> ${S.esc(b.line)} <button class="link-btn" type="button" data-go="bus">See the map</button>`;
+    S.paint(S.$("#hm-bus"), `${BUS}<span>${S.esc(R.bus)} · ${S.esc(b.line)}</span>`);
+    // One quiet heads-up a trip, when the bus is a stop away.
+    const tk = b.live ? b.live.start + b.trip : "";
+    if (b.live && b.state === "soon" && busWarned !== tk) { busWarned = tk; S.toast(`${R.bus} is a stop away from ${b.me.n}. About ${b.mins} min.`); }
+    if (S.$('[data-view="bus"].active')) renderBusPage(b);
   }
+  // The Bus page: the map, what's happening now, the driver, and every stop's time.
+  function renderBusPage(b) {
+    b = b || busNow();
+    const d = S.STAFF[R.driver], view = busTrip || b.trip, L = S.tripStops(R, view), mineI = L.findIndex((s) => s.i === S.stopOf(R, me.key));
+    const am = S.tripStops(R, "am").find((s) => s.i === S.stopOf(R, me.key)), pm = S.tripStops(R, "pm").find((s) => s.i === S.stopOf(R, me.key));
+    S.$("#bus-h1").textContent = "Bus · " + R.id;
+    S.$("#bus-sub").textContent = `${me.first} gets on at ${b.me.n} · ${R.bus}${R.reg ? ", " + R.reg : ""}`;
+    const tone = b.live ? (["soon", "here"].includes(b.state) ? "warn" : "green") : "";
+    S.paint(S.$("#bus-now"), `
+      <div class="card-h"><h2>${b.live ? (b.trip === "am" ? "Morning pick-up" : "Afternoon drop") : "Not on the road"}</h2><span class="right pill ${tone || "muted"}">${b.live ? '<i class="live" aria-hidden="true"></i>Live' : "Off"}</span></div>
+      <p class="bus-big">${S.esc(b.line)}</p>
+      ${b.live ? `<p class="muted bus-upd">Updated ${Math.max(0, Math.round((Date.now() - b.live.at) / 1000))} s ago${b.live.sim ? " · demo drive" : ""}</p>` : ""}
+      <dl class="bus-kv"><div><dt>Pick-up</dt><dd>${S.ampm(am.t)}</dd></div><div><dt>Drop</dt><dd>${S.ampm(pm.t)}</dd></div><div><dt>Stop</dt><dd>${S.esc(b.me.n)}</dd></div></dl>
+      ${d ? `<div class="bus-drv"><span class="avatar">${S.esc(d.initials)}</span><span><b>${S.esc(d.name)}</b><small>Driver · ${S.esc(R.bus)}</small></span><button class="btn btn-ghost btn-sm" type="button" data-bus-call>Call</button></div>` : ""}`);
+    S.paint(S.$("#bus-stops"), `<div class="card-h"><h2>Stops and times</h2><div class="right seg" role="group" aria-label="Trip"><button type="button" data-bus-trip="am" class="${view === "am" ? "on" : ""}" aria-pressed="${view === "am"}">Morning</button><button type="button" data-bus-trip="pm" class="${view === "pm" ? "on" : ""}" aria-pressed="${view === "pm"}">Afternoon</button></div></div>
+      <ol class="bus-list">${L.map((s, k) => { const on = b.live && b.trip === view, done = on && k < b.next, nx = on && k === b.next, at = on && b.live.reached && b.live.reached[k]; return `<li class="${done ? "done" : ""}${nx ? " next" : ""}${k === mineI ? " mine" : ""}${s.school ? " sch" : ""}"><span class="t">${S.ampm(s.t)}</span><span class="n">${S.esc(s.n)}${k === mineI ? `<em>${me.first}'s stop</em>` : ""}</span><span class="c">${at ? "✓ " + S.esc(at) : nx ? "Next" : ""}</span></li>`; }).join("")}</ol>`);
+    drawBusMap(b);
+  }
+  async function drawBusMap(b) {
+    const el = S.$("#bus-map"); if (!el || !busPath) return;
+    const fresh = !el._map;
+    const map = await S.busMap(el);
+    if (fresh || busMapEl !== S.pathSig(R)) { busMapEl = S.pathSig(R); S.drawRoute(map, R, busPath, { mine: S.stopOf(R, me.key), bus: b.live }); }
+    else if (b.live) S.moveBus(map, b.live);
+  }
+  document.addEventListener("click", (e) => {
+    const t = e.target.closest("[data-bus-trip]"); if (t) { busTrip = t.dataset.busTrip; renderBusPage(); return; }
+    if (e.target.closest("[data-bus-call]")) { const d = S.STAFF[R.driver]; S.toast(`Calling ${d.name}, ${d.phone}. Only while the bus is on its trip.`); }
+  });
+  if (R) {
+    document.addEventListener("sjs:view", (e) => { if (e.detail === "bus") { busTrip = null; renderBusPage(); } });
+    document.addEventListener("sjs:bus", () => { const r2 = S.route(R.id); if (r2 && S.pathSig(r2) !== S.pathSig(R)) { Object.assign(R, r2); S.routePath(R).then((p) => { busPath = p; busMapEl = null; renderBus(); renderHub(); }); } else { if (r2) Object.assign(R, r2); renderBus(); renderHub(); } });
+  } else { const v = S.$('[data-view="bus"]'); if (v) v.remove(); }
 
   function renderCal() {
     const y = calMonth.getFullYear(), m = calMonth.getMonth();
@@ -1198,7 +1246,8 @@
       { go: "messages", icon: I.messages, tone: "royal", name: "Messages", line: unread ? `${unread} new from ${S.esc(S.teacher.name)}` : `Chat with ${S.esc(S.teacher.name)}`, count: unread },
       { go: "messages/forms", icon: PI.care, tone: "green", name: "Remarks and forms", line: toSign ? `${toSign} form${toSign === 1 ? "" : "s"} to sign` : `${rem} remark${rem === 1 ? "" : "s"} from teachers`, flag: toSign > 0 },
       { go: "messages/ptm", icon: PI.ptm, tone: "accent", name: "Meetings", line: !ptm || !S.noticeFor(ptm, me) ? "None planned yet" : booked.length ? `${booked.length} time${booked.length === 1 ? "" : "s"} booked, ${S.fmt(ptm.date)}` : `Book times for ${S.fmt(ptm.date)}` },
-      { go: "attendance/pick", icon: PI.pick, tone: "teal", name: "Pick-up", line: `${pick} ${pick === 1 ? "person" : "people"} can collect ${me.first}` }
+      { go: "attendance/pick", icon: PI.pick, tone: "teal", name: "Pick-up", line: `${pick} ${pick === 1 ? "person" : "people"} can collect ${me.first}` },
+      ...(R ? [{ go: "bus", icon: I.bus, tone: "gold", name: "Bus", line: `${S.esc(R.id)} · ${S.esc(busNow().line)}`, flag: ["soon", "here"].includes(busNow().state) }] : [])
     ]));
   }
 
@@ -1250,7 +1299,7 @@
   S.vtInit();
   renderAll();
   document.addEventListener("sjs:redraw", renderSession);
-  setInterval(renderBus, 7000);
+  setInterval(renderBus, 3000);
   setInterval(() => { renderPivot(); renderDay(); }, 60000);
 
   // Live updates from the teacher's tab

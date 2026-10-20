@@ -17,7 +17,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Figtree:wght@400..800&display=swap" rel="stylesheet" />
-<link rel="stylesheet" href="css/site.css?v=46" />
+<link rel="stylesheet" href="css/site.css?v=48" />
 <script>
 /* Before the first paint: fade photos in as they load. */
 (function (d) { d.documentElement.classList.add("js");
@@ -83,8 +83,10 @@
         <div class="demo-ids" data-demo-for="staff" hidden>
           <span class="muted">Demo staff IDs. The ID decides what you see.</span>
           <button type="button" data-id="SJS-T-0412"><b>SJS-T-0412</b><span>Teacher · Ms. Neha Mathew, VII-B</span></button>
-          <button type="button" data-id="SJS-A-0107"><b>SJS-A-0107</b><span>Office admin · Mrs. Anita Joseph</span></button>
+          <button type="button" data-id="SJS-A-0107"><b>SJS-A-0107</b><span>Office admin · Mrs. Anita Joseph · routes under Transport</span></button>
           <button type="button" data-id="SJS-P-0001"><b>SJS-P-0001</b><span>Principal</span></button>
+          <button type="button" data-id="SJS-D-0114"><b>SJS-D-0114</b><span>Bus driver · Harish Chauhan, Route 14</span></button>
+          <label class="field" style="margin-top:6px"><span class="muted" style="font-size:13.5px">Or any bus driver</span><select id="d-pick" class="input"><option value="">Pick a driver…</option></select></label>
           <label class="field" style="margin-top:6px"><span class="muted" style="font-size:13.5px">Or any teacher of Classes VIII to XII</span><select id="s-pick" class="input"><option value="">Pick a teacher…</option></select></label>
         </div>
         <div class="demo-loop">
@@ -97,6 +99,7 @@
 </div>
 <script src="js/data.js?v=12"></script>
 <script src="js/classes.js?v=8"></script>
+<script src="js/bus.js?v=2"></script>
 <script src="js/demo.js?v=2"></script>
 <script src="js/common.js?v=12"></script>
 <script>
@@ -161,6 +164,8 @@
   let lastKid = "VII-B-1"; try { lastKid = localStorage.getItem("sjs-kid") || lastKid; } catch (e) {}
   document.getElementById("p-kid").innerHTML = people.filter((g) => g.label.startsWith("Parents")).map((g) => `<optgroup label="${esc(g.label)}">${g.items.map(([v, l]) => `<option value="${esc(v.slice(4))}" ${v === "kid:" + lastKid ? "selected" : ""}>${esc(l)}</option>`).join("")}</optgroup>`).join("");
   document.getElementById("s-pick").insertAdjacentHTML("beforeend", people.filter((g) => g.label.startsWith("Teachers")).map((g) => `<optgroup label="${esc(g.label)}">${g.items.map(([v, l]) => `<option value="${esc(v.slice(6))}">${esc(l)}</option>`).join("")}</optgroup>`).join(""));
+  document.getElementById("d-pick").insertAdjacentHTML("beforeend", SJS.routes().filter((r) => r.driver).map((r) => `<option value="${r.driver}">${esc(r.driver)} · ${esc(SJS.STAFF[r.driver].name)}, ${esc(r.id)}</option>`).join(""));
+  document.getElementById("d-pick").addEventListener("change", (e) => { if (!e.target.value) return; document.getElementById("s-id").value = e.target.value; document.getElementById("s-err").hidden = true; });
   document.getElementById("s-pick").addEventListener("change", (e) => { if (!e.target.value) return; document.getElementById("s-id").value = e.target.value; document.getElementById("s-err").hidden = true; });
   SJS.mountDemo("");
   // Staff: one sign-in; the staff ID decides the view on the staff page.
@@ -171,7 +176,7 @@
     const id = sid.value.trim().toUpperCase();
     if (!SJS.STAFF[id]) { err.textContent = id ? `No staff member has the ID ${id}. Check it, or pick a demo ID below.` : "Enter your staff ID."; err.hidden = false; sid.focus(); return; }
     try { localStorage.setItem("sjs-staff", id); } catch (err2) {}
-    location.href = "staff.html?id=" + encodeURIComponent(id);
+    location.href = (SJS.STAFF[id].role === "driver" ? "driver.html?id=" : "staff.html?id=") + encodeURIComponent(id);
   });
 })();
 </script>
