@@ -25,7 +25,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Figtree:wght@400..800&display=swap" rel="stylesheet" />
-<link rel="stylesheet" href="css/school.css?v=18" />
+<link rel="stylesheet" href="css/school.css?v=52" />
 <meta name="theme-color" content="#1C1F24" />
 <script>
 /* Before the first paint: fade photos in as they load, and hold headline motion until the fonts arrive. */
@@ -37,7 +37,7 @@
 </script>
 </head>
 <body data-page="campus">
-<script src="js/shell.js?v=12"></script>
+<script src="js/shell.js?v=16"></script>
 <main id="main">
   <header class="phero">
     <div class="wrap phero-in">
@@ -54,20 +54,42 @@
 
   <section class="sec" id="facilities" style="padding-bottom:0">
     <div class="wrap">
-      <div class="sec-title"><h2 class="t-l">Facilities</h2><p>Where we have photographs, you can see them. The full list of rooms and equipment will be <span class="tbc" title="To be confirmed by the school">confirmed by the school</span>.</p></div>
+      <div class="sec-title"><h2 class="t-l">Facilities</h2><p>Where we have photographs, you can see them. The figures below are the school's own, from its published infrastructure details.</p></div>
+      <dl class="kv campus-n">
+        <div><dt>Campus</dt><dd>3.97 acres</dd></div>
+        <div><dt>Built-up area</dt><dd>77,722 sq ft</dd></div>
+        <div><dt>Classrooms</dt><dd>83<small>plus 20 other rooms</small></dd></div>
+        <div><dt>Laboratories</dt><dd>8<small>Physics, Chemistry, Biology, Maths and more</small></dd></div>
+        <div><dt>Libraries</dt><dd>2<small>16,936 books, junior and senior</small></dd></div>
+        <div><dt>Auditoriums</dt><dd>2<small>130 and 100 seats</small></dd></div>
+        <div><dt>IT-enabled rooms</dt><dd>3</dd></div>
+        <div><dt>Playgrounds</dt><dd>2<small>plus an indoor sports room</small></dd></div>
+      </dl>
 
+      <div class="fac-walk"><svg class="fac-path" aria-hidden="true" preserveAspectRatio="none" viewBox="0 0 100 300"><defs><mask id="fac-reveal" maskUnits="userSpaceOnUse"><path class="fac-reveal" pathLength="1" d="M27 10 C27 75, 73 80, 73 150 S27 225, 27 290" fill="none" stroke="#fff" stroke-width="40"/></mask></defs><path d="M27 10 C27 75, 73 80, 73 150 S27 225, 27 290" fill="none" mask="url(#fac-reveal)" vector-effect="non-scaling-stroke"/></svg>
       <article class="fac">
-        <figure class="frame clip" style="margin:0"><img src="assets/photos/slide-5.webp" width="1600" height="666" alt="Students singing on the decorated stage with musicians" style="object-position:50% 50%" loading="lazy" decoding="async" /></figure>
+        <figure class="frame clip" style="margin:0"><img src="assets/photos/slide-5.webp" width="1600" height="666" alt="Students singing on the decorated stage with musicians" style="object-position:50% 50%" loading="lazy" decoding="async" /><figcaption>The choir on the school stage</figcaption></figure>
         <div class="txt"><h3>The stage</h3><p class="lead">Annual Day, folk dances from across India and prize days all happen here, in front of the whole school.</p><ul><li>Room for full-class choirs and dance troupes</li></ul></div>
       </article>
       <article class="fac">
-        <figure class="frame clip" style="margin:0"><img src="assets/photos/slide-7.webp" width="1600" height="666" alt="Junior band members on the paved courtyard under the trees" style="object-position:40% 50%" loading="lazy" decoding="async" /></figure>
+        <figure class="frame clip" style="margin:0"><img src="assets/photos/slide-7.webp" width="1600" height="666" alt="Junior band members on the paved courtyard under the trees" style="object-position:40% 50%" loading="lazy" decoding="async" /><figcaption>The junior band in the courtyard</figcaption></figure>
         <div class="txt"><h3>Lawns and courtyards</h3><p class="lead">Wide lawns, shady trees and paved courtyards for assemblies, band practice, the march-past and recess.</p><ul><li>Open ground for sport and outdoor play</li><li>Shade for recess on hot days</li></ul></div>
       </article>
       <article class="fac">
-        <figure class="arch clip" style="margin:0"><img src="assets/photos/p-painting.webp" width="235" height="225" alt="A student painting a bright sunset silhouette" loading="lazy" decoding="async" /></figure>
+        <figure class="arch clip print" style="margin:0"><img src="assets/photos/p-painting.webp" width="235" height="225" alt="A student painting a bright sunset silhouette" loading="lazy" decoding="async" /><figcaption>A sunset painted in art class</figcaption></figure>
         <div class="txt"><h3>Art and craft</h3><p class="lead">Painting, sketching and craft are part of every week, from Nursery onwards. The best work goes up on the corridor walls.</p></div>
       </article>
+      </div>
+      <div class="cday" aria-label="A school day on campus">
+        <h3 class="cday-h">A day on campus</h3>
+        <ol class="cday-line">
+          <li><b>Before 8:00</b><span>Children come in through the main gate</span></li>
+          <li><b>8:00</b><span>First period in the classrooms</span></li>
+          <li><b>10:40</b><span>Break on the lawns and in the courtyards</span></li>
+          <li><b>10:50</b><span>Classes, labs, library and games periods</span></li>
+          <li><b>1:30</b><span>Home time</span></li>
+        </ol>
+      </div>
     </div>
   </section>
 
@@ -83,7 +105,7 @@
         <div><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18V6l10-2v12"/><circle cx="6" cy="18" r="3"/><circle cx="16" cy="16" r="3"/></svg><h3>Music and dance</h3><p>Space for the choir, the school band and dance practice.</p></div>
         <div><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="16" height="16" rx="3"/><path d="M12 8v8M8 12h8"/></svg><h3>Medical room</h3><p>First aid on site and a quiet room for children who feel unwell.</p></div>
         <div><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3c4 5 6 8 6 11a6 6 0 0 1-12 0c0-3 2-6 6-11z"/></svg><h3>Drinking water</h3><p>Purified drinking water and clean toilets on every floor.</p></div>
-        <div><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M7 20c2-3 2-6 0-9 3 1 6 1 10-1-1 4-1 7 0 10"/><path d="M12 4v4"/></svg><h3>Green campus</h3><p>Trees, hedges and lawns across four acres.</p></div>
+        <div><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M7 20c2-3 2-6 0-9 3 1 6 1 10-1-1 4-1 7 0 10"/><path d="M12 4v4"/></svg><h3>Green campus</h3><p>Trees, hedges and lawns across four acres.</p><span class="acres" aria-hidden="true"><svg viewBox="0 0 120 22" preserveAspectRatio="xMinYMid meet"><g fill="currentColor"><circle cx="8" cy="11" r="6"/><circle cx="24" cy="9" r="8"/><circle cx="42" cy="12" r="5"/><circle cx="58" cy="10" r="7"/><circle cx="76" cy="12" r="5.5"/><circle cx="92" cy="9" r="7.5"/><circle cx="110" cy="11" r="6"/></g><path d="M0 21h120" stroke="currentColor" stroke-width="1.2"/></svg><small>4 acres · Sector 7A, Faridabad</small></span></div>
       </div>
       <p class="note mt-m">Details on this page are drafted for the school to check and correct.</p>
     </div>
@@ -91,7 +113,7 @@
 
   <section class="sec sec--tint" id="safety">
     <div class="wrap cols">
-      <h2 class="t-l">Safety and wellbeing</h2>
+      <div class="safe-h"><h2 class="t-l">Safety and wellbeing</h2><aside class="safe-ask"><b>A question about your child's safety?</b><span>Write to the school office, and the right person will reply.</span><a class="textlink" href="contact.html">Contact the office</a></aside></div>
       <div>
         <p class="lead" style="margin-bottom:24px">Parents should never have to wonder whether their child is safe at school. These are the arrangements the website will publish once the school confirms them.</p>
         <ul class="ticks">
@@ -131,9 +153,13 @@
       </div>
     </div>
   </section>
+  <section class="sec visit">
+    <div class="wrap"><div class="visit-in"><div><h2 class="t-m">Come and see it</h2><p>The best way to know a school is to walk round it. Ask the office about a campus visit with your child.</p></div><a class="btn btn--go" href="contact.html">Ask about a visit</a></div></div>
+  </section>
 </main>
-<script src="js/data.js?v=9"></script>
+<script src="js/data.js?v=12"></script>
 <script src="js/ai.js?v=8"></script>
-<script src="js/school.js?v=15"></script>
+<script src="js/school.js?v=25"></script>
+<script src="js/alive.js?v=13"></script>
 </body>
 </html>

@@ -2313,3 +2313,18 @@ body.app .card-h h2 { letter-spacing: -.005em; }
 @keyframes rowLight { 0% { transform: translateX(-20%); opacity: 0; } 12% { opacity: 1; } 45% { opacity: 1; } 55%, 100% { transform: translateX(215%); opacity: 0; } }
 @media (max-width: 1000px) { .pgs-main::before { width: 60%; } @keyframes rowLight { 0% { transform: translateX(-20%); opacity: 0; } 12%, 45% { opacity: 1; } 55%, 100% { transform: translateX(80%); opacity: 0; } } }
 @media (prefers-reduced-motion: reduce) { .pgs-main::before { animation: none !important; opacity: 0; } }
+
+/* ---------- Login: alive, in step with the welcome page ---------- */
+.login-art > .lg-slides { position: absolute; inset: 0; z-index: 0; }
+.login-art .lg-slides img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; opacity: 0; transform: scale(1.06); transition: opacity 1.8s ease, transform 9s linear; }
+.login-art .lg-slides img.on { opacity: .55; transform: scale(1); }
+.login-art h2, .login-art p { animation: lgUp 1s var(--ease) .2s both; }
+.login-art p { animation-delay: .35s; }
+.login-box { position: relative; isolation: isolate; overflow: clip; background: #fff; border: 1px solid var(--line); border-radius: 28px; padding: 30px clamp(22px, 3vw, 36px) 30px; box-shadow: 0 1px 2px rgba(40,25,10,.04), 0 24px 50px -30px rgba(60,35,15,.35); width: min(470px, 100%); animation: lgUp .9s var(--ease) both; }
+.lg-rib { position: absolute; inset: 0 0 auto; height: 200px; z-index: -1; pointer-events: none; overflow: hidden; -webkit-mask-image: linear-gradient(180deg, #000 30%, transparent); mask-image: linear-gradient(180deg, #000 30%, transparent); }
+.lg-rib .rib { animation: ribIn 1.8s var(--ease) .1s both; }
+.login-box > *:not(.lg-rib) { animation: lgUp .8s var(--ease) both; }
+.login-box > :nth-child(3) { animation-delay: .08s; } .login-box > :nth-child(4) { animation-delay: .14s; } .login-box > :nth-child(5) { animation-delay: .2s; } .login-box > :nth-child(6) { animation-delay: .26s; } .login-box > :nth-child(7) { animation-delay: .32s; }
+@keyframes lgUp { from { opacity: 0; transform: translateY(10px); } }
+@media (max-width: 860px) { .login-panel { padding: 22px 14px 40px; } }
+@media (prefers-reduced-motion: reduce) { .login-art .lg-slides img, .login-box, .login-box > *, .login-art h2, .login-art p, .lg-rib .rib { animation: none !important; transition: opacity .3s !important; } }

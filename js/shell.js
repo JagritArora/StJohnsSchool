@@ -16,17 +16,17 @@
 
   const NAV = [
     ["about", "About", "about.html", [["Our story", "#story", "Since 1965"], ["Vision and mission", "#vision", "What we stand for"], ["Principal's message", "#principal", ""], ["Management", "#management", "Idicula Trust Society"]]],
-    ["academics", "Academics", "academics.html", [["Nursery to XII", "#stages", "Five stages, one school"], ["How we teach", "#approach", ""], ["Exams and assessment", "#assessment", ""], ["Senior secondary", "#senior", "Classes XI and XII"]]],
+    ["academics", "Academics", "academics.html", [["Nursery to XII", "#stages", "Five stages, one school"], ["How we teach", "#approach", ""], ["Exams and assessment", "#assessment", ""], ["Senior secondary", "#senior", "Classes XI and XII"], ["Toppers and achievements", "achievements.html", "Board results and awards"]]],
     ["admissions", "Admissions", "admissions.html", [["How to apply", "#process", "Five steps"], ["Age criteria", "#age", ""], ["Documents", "#documents", ""], ["Questions parents ask", "#faq", ""], ["Book a campus visit", "#enquire", ""]]],
     ["campus", "Campus", "campus.html", [["Facilities", "#facilities", "Four green acres"], ["Safety and wellbeing", "#safety", ""], ["School transport", "#transport", ""]]],
-    ["life", "Student life", "life.html", [["Activities", "#activities", "Music, band, dance, sport"], ["Photo gallery", "#gallery", ""], ["The school year", "#calendar", ""]]],
+    ["life", "Student life", "life.html", [["Activities", "#activities", "Music, band, dance, sport"], ["Clubs and council", "#clubs", "Clubs, Student Council, assembly"], ["Photo gallery", "#gallery", ""], ["The school year", "#calendar", ""]]],
     ["parents", "Parents", "parents.html", [["Timings", "#timings", ""], ["Uniform", "#uniform", ""], ["Fees and payment", "#fees", ""], ["Downloads", "#downloads", ""], ["The parent app", "#app", "Attendance, homework, marks"]]],
     ["news", "News", "news.html", []],
     ["contact", "Contact", "contact.html", []]
   ];
   const PAGES = [["home", "Home", "index.html"], ...NAV.map(([k, l, h]) => [k, l, h])];
   // The name shown on the section button once you scroll (the school's name sits beside it already).
-  const OTHER = { home: "Home", disclosure: "Disclosure", privacy: "Privacy", notfound: "Home" };
+  const OTHER = { home: "Home", disclosure: "Disclosure", privacy: "Privacy", notfound: "Home", achievements: "Achievements" };
   const pageName = OTHER[page] || (PAGES.find(([k]) => k === page) || [, "Home"])[1];
   const I = (S.ICONS = {
     user: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg>',
@@ -47,13 +47,12 @@
       <a class="logo" href="index.html" aria-label="St. John's School, home"><img src="assets/crest.svg" alt="" width="40" height="40" /><span class="logo-t"><b>St. John's School</b><small><span class="where">Sector 7A, Faridabad</span><span class="sec-now"></span></small></span></a>
       <button class="now" type="button" aria-haspopup="true" aria-expanded="false"><small>${pageName}</small><span class="now-t"><b></b></span></button>
       <div class="lanes">
-        <nav class="lane lane-main" aria-label="Main"><i class="ind" aria-hidden="true"></i><ul class="nav">${NAV.map(([k, l, href, subs]) => `<li><a href="${href}"${k === page ? ' aria-current="page"' : ""}>${l}</a>${subs.length ? `<div class="sub">${subs.map(([t, h, d]) => `<a href="${href}${h}">${t}${d ? `<span>${d}</span>` : ""}</a>`).join("")}</div>` : ""}</li>`).join("")}</ul></nav>
+        <nav class="lane lane-main" aria-label="Main"><i class="ind" aria-hidden="true"></i><ul class="nav">${NAV.map(([k, l, href, subs]) => `<li><a href="${href}"${k === page ? ' aria-current="page"' : ""}>${l}</a>${subs.length ? `<div class="sub">${subs.map(([t, h, d]) => `<a href="${h[0] === "#" ? href + h : h}">${t}${d ? `<span>${d}</span>` : ""}</a>`).join("")}</div>` : ""}</li>`).join("")}</ul></nav>
         <nav class="lane lane-sec" aria-label="On this page" inert><button class="here" type="button" aria-haspopup="true" aria-expanded="false">${pageName}${I.down}</button><div class="chips"><i class="ind" aria-hidden="true"></i></div></nav>
       </div>
       <div class="hdr-act">
         <button class="ibtn srch-btn" type="button" aria-label="Search the website" title="Search" aria-haspopup="dialog">${I.search}</button>
-        <a class="ibtn hide-m" href="login.html" aria-label="Parent and staff login" title="Parent and staff login">${I.user}</a>
-        <a class="btn btn--sm hide-m" href="admissions.html#enquire">Apply</a>
+        <a class="ibtn" href="login.html" aria-label="Parent and staff login" title="Parent and staff login">${I.user}</a>
         <button class="menu-btn" type="button" aria-haspopup="true" aria-expanded="false"><span>Menu</span></button>
       </div>
       <i class="prog" aria-hidden="true"></i>

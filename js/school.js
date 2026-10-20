@@ -15,7 +15,7 @@
   ftr.className = "ftr";
   ftr.innerHTML = `<div class="wrap ftr-in">
       <div><p class="motto">Learn to serve</p><p>St. John's School, Sector 7A, Faridabad, Haryana.<br />A CBSE school for Nursery to Class XII, founded in 1965 by Shri T.I. John and run by the Idicula Trust Society (Regd.).</p></div>
-      <div><h4>The school</h4><ul><li><a href="about.html">About us</a></li><li><a href="academics.html">Academics</a></li><li><a href="campus.html">Campus</a></li><li><a href="life.html">Student life</a></li></ul></div>
+      <div><h4>The school</h4><ul><li><a href="about.html">About us</a></li><li><a href="academics.html">Academics</a></li><li><a href="achievements.html">Toppers and achievements</a></li><li><a href="campus.html">Campus</a></li><li><a href="life.html">Student life</a></li></ul></div>
       <div><h4>Families</h4><ul><li><a href="admissions.html">Admissions</a></li><li><a href="parents.html">Parent corner</a></li><li><a href="news.html">News and events</a></li><li><a href="login.html">Parent app login</a></li></ul></div>
       <div><h4>Information</h4><ul><li><a href="disclosure.html">Mandatory public disclosure</a></li><li><a href="contact.html">Contact</a></li><li><a href="contact.html#careers">Careers</a></li><li><a href="privacy.html">Privacy</a></li><li><a href="plan.html">About this prototype</a></li></ul></div>
     </div>
@@ -257,20 +257,20 @@
   }));
 
   // ---------- Admissions: the age check ----------
-  // Age on 1 April of the admission session, against the bands in the table above it.
+  // Age on 31 March of the admission year, against the bands in the table above it.
   const ageF = $("#age-chk");
   if (ageF && S.state) ageF.addEventListener("submit", (e) => {
     e.preventDefault();
-    const v = $("#age-dob").value; if (!v) return;
-    const a = S.state.site.adm, yr = parseInt(a.session, 10) || 2027, on = new Date(yr, 3, 1), dob = new Date(v + "T00:00");
+    const dobEl = $("#age-dob"), v = dobEl.dataset.iso || dobEl.value; if (!v) return;
+    const a = S.state.site.adm, yr = parseInt(a.session, 10) || 2027, on = new Date(yr, 2, 31), dob = new Date(v + "T00:00");
     let m = (on.getFullYear() - dob.getFullYear()) * 12 + on.getMonth() - dob.getMonth(); if (on.getDate() < dob.getDate()) m--;
     const y = Math.floor(m / 12), mo = m % 12, age = `${y} year${y === 1 ? "" : "s"}${mo ? ` ${mo} month${mo === 1 ? "" : "s"}` : ""}`;
     const fit = y < 3 ? null : y < 4 ? "Nursery" : y < 5 ? "LKG" : y < 6 ? "UKG" : y < 7 ? "Class I" : "older";
-    let msg = `On 1 April ${yr}, your child will be <b>${age}</b>. `;
+    let msg = `On 31 March ${yr}, your child will be <b>${age}</b>. `;
     if (m < 0) msg = "That date is after the session begins. Please check the date of birth.";
     else if (!fit) msg += `That is under the age for Nursery in ${esc(a.session)}, so the year after is the one to apply for.`;
     else if (fit === "older") msg += `Class I needs six years or more, so the class depends on the last class your child passed. Choose "Other class" in the visit form and the office will tell you if a seat is free.`;
-    else msg += `That fits <b>${fit}</b>${fit === "Class I" ? "" : ", by the age bands above, which the school is still to confirm"}. ` + (a.open && a.classes.includes(fit) ? `Admission to ${fit} is open now.` : `Seats in ${fit} open only when a family moves; ask in the visit form.`);
+    else msg += `That fits <b>${fit}</b>. ` + (a.open && a.classes.includes(fit) ? `Admission to ${fit} is open now.` : `Seats in ${fit} open only when a family moves; ask in the visit form.`);
     $("#age-out").innerHTML = msg;
   });
 
@@ -474,4 +474,42 @@
     const r = el.getBoundingClientRect();
     el.style.setProperty("--mx", Math.round(e.clientX - r.left) + "px"); el.style.setProperty("--my", Math.round(e.clientY - r.top) + "px");
   }, { passive: true });
+})();
+
+// Campus: the dotted path between facilities draws itself as the page scrolls past it.
+(() => {
+  const walk = document.querySelector(".fac-walk"); if (!walk) return;
+  if (matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+  let raf = 0;
+  const draw = () => { raf = 0; const r = walk.getBoundingClientRect(), f = (innerHeight * 0.75 - r.top) / r.height; walk.style.setProperty("--walk", (1 - Math.max(0, Math.min(1, f))).toFixed(3)); };
+  addEventListener("scroll", () => { if (!raf) raf = requestAnimationFrame(draw); }, { passive: true });
+  addEventListener("resize", draw); draw();
+})();
+
+// The admissions tag never hides. If an open menu would cover it, it slides aside; if there's no
+// room beside, it goes just below the menu; failing that, it docks at the foot of the screen.
+(() => {
+  const set = (tag, x, y) => { tag.style.setProperty("--adx", x + "px"); tag.style.setProperty("--ady", y + "px"); };
+  const place = () => {
+    const tag = document.querySelector(".adm-tag"), hdr = tag && (tag.closest(".hdr") || document.querySelector(".hdr")); if (!tag || !hdr) return;
+    const o = document.querySelector(".sheet-open") ? document.querySelector(".sheet")
+      : [...document.querySelectorAll(".nav > li")].filter((li) => li.matches(":hover, :focus-within")).map((li) => li.querySelector(".sub")).find(Boolean);
+    if (!o) return set(tag, 0, 0);
+    // Measure from where the tag rests (layout box, centred), not where it is mid-slide.
+    const P = tag.offsetParent.getBoundingClientRect(), w = tag.offsetWidth, h = tag.offsetHeight;
+    const l0 = P.left + tag.offsetLeft - w / 2, t0 = P.top + tag.offsetTop;
+    const t = { left: l0, right: l0 + w, top: t0, bottom: t0 + h, width: w, height: h }, m = o.getBoundingClientRect(), gap = 12;
+    if (t.right <= m.left - 4 || t.left >= m.right + 4 || t.bottom <= m.top || t.top >= m.bottom) return set(tag, 0, 0);
+    if (m.left - gap - 12 >= t.width) return set(tag, m.left - gap - t.right, 0);
+    if (innerWidth - m.right - gap - 12 >= t.width) return set(tag, m.right + gap - t.left, 0);
+    // Never under the assistant button either: the floor is its top when it shares the tag's row.
+    const fab = document.querySelector(".ai-fab"), fr = fab && fab.getBoundingClientRect();
+    const floor = fr && fr.width && fr.left < t.right ? fr.top - 10 : innerHeight - 12;
+    const below = m.bottom + gap;
+    if (below + t.height <= floor) return set(tag, 0, below - t.top);
+    set(tag, 0, floor - t.height - t.top);
+  };
+  let raf = 0; const soon = () => { cancelAnimationFrame(raf); raf = requestAnimationFrame(place); setTimeout(place, 320); setTimeout(place, 600); };
+  ["mouseover", "focusin", "focusout", "click", "keydown"].forEach((e) => document.addEventListener(e, soon, true));
+  addEventListener("resize", soon); addEventListener("scroll", () => { if (document.querySelector(".hdr.sheet-open")) soon(); }, { passive: true });
 })();
