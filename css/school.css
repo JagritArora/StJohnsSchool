@@ -1758,3 +1758,125 @@ details.ach-year[open] > summary { margin-bottom: 14px; }
 .cs-list .tp-face { flex: none; width: 52px; height: 52px; box-shadow: 0 0 0 2px #fff, 0 0 0 3px color-mix(in srgb, var(--marigold) 60%, #fff); }
 .cs-list p { margin: 0; font-size: 14.5px; line-height: 1.5; color: var(--ink); }
 @media (max-width: 560px) { .cs-list { grid-template-columns: 1fr; } }
+
+/* Principal's photo: the school's file is a small oval on a white square, so crop to the oval and let it fill the frame. */
+#principal .arch { display: grid; place-items: center; }
+#principal .arch img { width: 92%; height: auto; aspect-ratio: auto; object-fit: contain; clip-path: ellipse(37.5% 43.5% at 50% 49.5%); filter: drop-shadow(0 18px 30px rgba(90, 29, 24, .25)); }
+
+/* Parent app phone: sized to the screen so the whole phone is always in view; the list fades out at its foot. */
+#app .phone { width: min(310px, 100%); aspect-ratio: auto; height: clamp(420px, calc(100svh - 190px), 600px); }
+#app .phone-scr { position: relative; }
+#app .phone-scr::after { content: ""; position: absolute; inset: auto 0 0; height: 70px; background: linear-gradient(rgba(255,255,255,0), #fff 75%); pointer-events: none; }
+@media (max-width: 860px) { #app .phone { height: auto; width: min(300px, 100%); min-height: 0; } }
+
+/* Parent app phone, dressed: soft glow behind, status bar, school header, tiles, tab bar. */
+.phone-stage { position: relative; justify-self: center; display: grid; place-items: center; }
+.phone-stage::before { content: ""; position: absolute; inset: 8% -18%; border-radius: 50%; background: radial-gradient(closest-side, rgba(242, 178, 51, .35), rgba(242, 178, 51, 0)); filter: blur(10px); }
+#app .phone--app { position: relative; background: linear-gradient(145deg, #2a2d33, #0d0f0e 45%); padding: 10px; box-shadow: 0 0 0 1px rgba(255,255,255,.12) inset, 0 40px 80px -24px rgba(0,0,0,.55); transform: rotate(-2deg); }
+#app .phone--app .phone-scr { padding: 10px 14px 0; gap: 9px; background: linear-gradient(#fbf7f0, #fff 30%); }
+.ph-status { display: flex; justify-content: space-between; align-items: center; font: 600 11.5px/1 var(--display); padding: 2px 8px 0; }
+.ph-notch { width: 78px; height: 22px; border-radius: 99px; background: #0d0f0e; }
+.ph-sig { display: flex; gap: 2px; align-items: end; }
+.ph-sig i { width: 3px; background: #1B1D1F; border-radius: 1px; }
+.ph-sig i:nth-child(1) { height: 5px; } .ph-sig i:nth-child(2) { height: 8px; } .ph-sig i:nth-child(3) { height: 11px; }
+.ph-top { display: flex; align-items: center; gap: 10px; margin: 4px 0 2px; }
+.ph-top img { width: 34px; height: 34px; }
+.ph-top small { display: block; font-size: 11px; color: var(--brick); font-weight: 600; }
+#app .ph-top h4 { font: 700 18px/1.15 var(--display); margin: 0; }
+.ph-kid { margin-left: auto; width: 32px; height: 32px; border-radius: 50%; display: grid; place-items: center; font: 700 14px/1 var(--display); color: #fff; background: linear-gradient(135deg, var(--marigold), var(--brick)); box-shadow: 0 0 0 2px #fff, 0 0 0 3px color-mix(in srgb, var(--marigold) 60%, #fff); }
+#app .phone--app .phone-row { justify-content: flex-start; background: #fff; border: 1px solid #ECEDEF; padding: 11px 12px; }
+#app .phone--app .phone-row > b:last-child, #app .phone--app .phone-row > span:last-child:not(.ph-dot) { margin-left: auto; }
+#app .phone--app .phone-row.ok { background: #E8F2EC; border-color: #D3E7DA; }
+#app .phone--app .phone-row.ai { background: linear-gradient(135deg, #FDF0EE, #FFF6E6); border-color: #F6DCD6; }
+.ph-dot { flex: none; width: 8px; height: 8px; border-radius: 50%; background: #9AA0A6; }
+.ph-dot--ok { background: #2F8A57; box-shadow: 0 0 0 4px rgba(47, 138, 87, .15); }
+.ph-dot--bus { background: var(--marigold); } .ph-dot--fee { background: #3B5BA9; } .ph-dot--pt { background: var(--brick); }
+.ph-pair { display: grid; grid-template-columns: 1fr 1fr; gap: 9px; }
+.ph-tile { background: #fff; border: 1px solid #ECEDEF; border-radius: 16px; padding: 11px 12px; display: grid; gap: 4px; }
+.ph-tile small { color: #5F6368; font-size: 11.5px; }
+.ph-tile b { font: 700 14px/1.2 var(--display); }
+.ph-score { font-size: 22px !important; color: var(--brick); }
+.ph-score em { font-style: normal; font-size: 13px; color: #5F6368; }
+.ph-tabs { position: absolute; left: 0; right: 0; bottom: 0; z-index: 2; display: flex; justify-content: space-around; padding: 14px 24px 16px; background: rgba(255,255,255,.96); border-top: 1px solid #ECEDEF; }
+.ph-tabs i { width: 20px; height: 20px; border-radius: 7px; background: #E3E5E8; }
+.ph-tabs i.on { background: var(--brick); }
+#app .phone-scr::after { bottom: 52px; height: 50px; z-index: 1; }
+@media (prefers-reduced-motion: no-preference) { #app .phone--app { transition: transform .5s var(--ease-out); } #app .phone-stage:hover .phone--app { transform: rotate(0); } }
+@media (max-width: 860px) { #app .phone--app { transform: none; } }
+#app .phone--app .phone-row > b:last-child { white-space: nowrap; }
+
+/* Parent app: what each part does, and how to sign in. */
+.app-lead { color: rgba(255,255,255,.82); font-size: 18px; max-width: 30em; }
+.app-feats { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; max-width: 40em; }
+.app-feats > div { padding: 14px 16px; border-radius: 16px; background: rgba(255,255,255,.07); border: 1px solid rgba(255,255,255,.12); }
+.app-feats b { display: block; font: 700 15.5px/1.25 var(--display); color: #fff; margin-bottom: 4px; }
+.app-feats span { display: block; font-size: 14px; line-height: 1.5; color: rgba(255,255,255,.75); }
+.app-steps { list-style: none; counter-reset: st; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 8px 18px; max-width: 40em; }
+.app-steps li { counter-increment: st; display: flex; align-items: center; gap: 8px; font-size: 14px; color: rgba(255,255,255,.85); }
+.app-steps li::before { content: counter(st); width: 22px; height: 22px; border-radius: 50%; display: grid; place-items: center; font: 700 12px/1 var(--display); background: var(--marigold); color: #3a2600; flex: none; }
+@media (max-width: 560px) { .app-feats { grid-template-columns: 1fr; } }
+#app .app-steps { margin-top: 22px; }
+
+/* Parent Corner: side cards so the left column carries something useful. */
+.cols > .side { position: sticky; top: 150px; display: grid; gap: 26px; }
+.rcpt { background: #fff; border: 1px solid var(--line); border-radius: 20px; padding: 18px; max-width: 340px; box-shadow: 0 24px 44px -30px rgba(90, 29, 24, .4); transform: rotate(-1.5deg); }
+.rcpt-h { display: flex; align-items: center; gap: 10px; padding-bottom: 12px; border-bottom: 1px dashed var(--line); }
+.rcpt-h img { width: 34px; height: 34px; }
+.rcpt-h b { display: block; font: 700 16px/1.2 var(--display); }
+.rcpt-h small { color: var(--ink-2); font-size: 12px; }
+.rcpt-ok { margin-left: auto; font: 700 12px/1 var(--display); color: #1F6B43; background: #E3F1E8; border: 1px solid #BFDDCB; padding: 6px 10px; border-radius: 99px; transform: rotate(4deg); }
+.rcpt dl { margin: 12px 0 0; display: grid; gap: 8px; }
+.rcpt dl div { display: flex; justify-content: space-between; gap: 12px; font-size: 14px; }
+.rcpt dt { color: var(--ink-2); } .rcpt dd { margin: 0; font-weight: 600; text-align: right; }
+.rcpt-f { margin: 14px 0 0; padding-top: 12px; border-top: 1px dashed var(--line); font-size: 12.5px; color: var(--ink-2); }
+.nextup { background: #fff; border: 1px solid var(--line); border-top: 4px solid var(--marigold); border-radius: 20px; padding: 20px; max-width: 340px; box-shadow: 0 24px 44px -30px rgba(90, 29, 24, .4); }
+.nextup small { color: var(--brick); font-weight: 650; font-size: 13px; }
+.nu-t { display: block; font: 700 21px/1.25 var(--display); margin: 6px 0; }
+.nu-d { color: var(--ink-2); font-size: 14.5px; }
+.nu-c { list-style: none; margin: 16px 0 0; padding: 14px 0 0; border-top: 1px solid var(--line); display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; text-align: center; font-size: 12.5px; color: var(--ink-2); }
+.nu-c b { display: block; font: 750 24px/1.1 var(--display); }
+.nu-c .k-exam b { color: var(--brick); } .nu-c .k-meeting b { color: #3B5BA9; } .nu-c .k-holiday b { color: #2F7A50; }
+.req-k { font-weight: 650; font-size: 14px; color: var(--ink); }
+.req-chips { list-style: none; margin: 10px 0 0; padding: 0; display: flex; flex-wrap: wrap; gap: 8px; max-width: 30em; }
+.req-chips li { font-size: 14px; padding: 7px 13px; border-radius: 99px; background: #fff; border: 1px solid color-mix(in srgb, #3B5BA9 22%, var(--line)); }
+.req-flow { list-style: none; margin: 26px 0 0; padding: 0; display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; max-width: 30em; }
+.req-flow li { position: relative; padding: 14px 12px; border-radius: 16px; background: rgba(255,255,255,.7); font-size: 13.5px; color: var(--ink-2); }
+.req-flow b { display: block; font: 700 16px/1.2 var(--display); color: var(--ink); margin-bottom: 2px; }
+.req-flow li + li::before { content: ""; position: absolute; left: -7px; top: 50%; width: 6px; height: 6px; border-top: 2px solid var(--ink-2); border-right: 2px solid var(--ink-2); transform: translate(-50%, -50%) rotate(45deg); opacity: .5; }
+.dl-sum { display: grid; gap: 16px; max-width: 340px; }
+.dl-sum .arch { aspect-ratio: 4 / 3; }
+.dl-sum img { width: 100%; height: 100%; object-fit: cover; }
+.dl-sum p { margin: 0; color: var(--ink-2); line-height: 1.7; }
+.dl-sum p b { font: 750 20px/1 var(--display); color: var(--brick); margin-right: 4px; }
+@media (max-width: 860px) { .cols > .side { position: static; } .rcpt, .nextup { max-width: none; transform: none; } .dl-sum .arch { display: none; } }
+
+/* Academics: a pointer to the Achievements page, with its headline numbers. */
+.ac-res { display: grid; grid-template-columns: 1fr 1.1fr; gap: clamp(24px, 4vw, 56px); align-items: center; padding: clamp(24px, 4vw, 44px); border-radius: 28px; background: linear-gradient(160deg, color-mix(in srgb, var(--marigold) 16%, #fff), #fff 70%); border: 1px solid color-mix(in srgb, var(--marigold) 40%, var(--line)); border-top: 4px solid var(--marigold); }
+.ac-stats { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.ac-stats li { background: #fff; border: 1px solid var(--line); border-radius: 18px; padding: 16px 18px; box-shadow: 0 14px 28px -24px rgba(90, 29, 24, .45); }
+.ac-stats b { display: block; font: 750 30px/1.1 var(--display); color: var(--brick); }
+.ac-stats span { display: block; margin-top: 4px; font-size: 14px; line-height: 1.45; color: var(--ink-2); }
+@media (max-width: 860px) { .ac-res { grid-template-columns: 1fr; } }
+
+/* Phone header: a long section name under the logo shortens with an ellipsis instead of pushing Menu off screen. */
+@media (max-width: 560px) { .logo { min-width: 0; } .logo-t { min-width: 0; } .logo-t small { display: block; max-width: 40vw; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; } }
+@media (max-width: 560px) { .compact .logo-t .sec-now:not(:empty) { display: inline-block; max-width: 34vw; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; vertical-align: bottom; } }
+
+/* Quiet side cards that fill tall empty columns. */
+.gcard { max-width: 300px; background: #fff; border: 1px solid var(--line); border-radius: 18px; padding: 18px 20px; font-size: 14.5px; line-height: 1.6; color: var(--ink-2); box-shadow: 0 18px 36px -30px rgba(90, 29, 24, .35); }
+.gcard p { margin: 0; } .gcard p + p { margin-top: 6px; }
+.gcard .gk { font-weight: 650; color: var(--ink); }
+.gcard dl, dl.gcard { margin: 0; display: grid; gap: 12px; }
+.gcard .gk + dl { margin-top: 10px; }
+.gcard dl div { display: grid; gap: 2px; }
+.gcard dl div + div { padding-top: 12px; border-top: 1px dashed var(--line); }
+.gcard dt { font: 700 17px/1.3 var(--display); color: var(--brick); }
+.gcard dd { margin: 0; }
+.gcard--motto { text-align: center; border-top: 4px solid var(--marigold); }
+.gcard--motto img { display: block; margin: 0 auto 10px; }
+.gcard--motto b { display: block; margin-top: 10px; font: 700 22px/1.2 var(--display); color: var(--brick); }
+.gphoto { margin: 0; max-width: 360px; }
+.gphoto img { width: 100%; aspect-ratio: 16 / 9; object-fit: cover; border-radius: 18px; display: block; }
+.gphoto figcaption { margin-top: 8px; font-size: 13px; color: var(--ink-2); }
+.cols > .side > .gcard { margin-top: 2px; }
+@media (max-width: 860px) { .gcard { max-width: none; } }

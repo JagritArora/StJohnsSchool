@@ -306,6 +306,14 @@
     const mb = calL.nextElementSibling && calL.nextElementSibling.classList.contains("cal-more") ? calL.nextElementSibling : null;
     if (mb) { calL.classList.add("folded"); mb.addEventListener("click", () => { const o = calL.classList.toggle("folded"); mb.setAttribute("aria-expanded", !o); mb.textContent = o ? `Show ${more} more dates` : "Show fewer"; }); }
     calL.innerHTML = up.map((e, k) => `<li class="k-${e.kind.toLowerCase()}"><time datetime="${e.date}"><b>${new Date(e.date + "T00:00").getDate()}</b>${S.fmt(e.date, { month: "short" })}</time><div><b>${esc(e.title)}</b><span>${e.kind} · ${S.fmt(e.date, { weekday: "long" })}${e.end && e.end !== e.date ? `, until ${S.fmt(e.end, { day: "numeric", month: "short" })}` : ""}</span></div><button class="cal-add" type="button" data-cal="${k}" aria-label="Add ${esc(e.title)} to my calendar">Add</button></li>`).join("");
+    // Beside the list: the next date, counted down, and how many of each kind are left this session.
+    const nu = $("#nextup"), n0 = up[0];
+    if (nu && n0) {
+      const days = Math.round((new Date(n0.date + "T00:00") - new Date(S.todayKey + "T00:00")) / 864e5);
+      const cnt = (k) => up.filter((e) => e.kind === k).length;
+      nu.innerHTML = `<small>Next up</small><b class="nu-t">${esc(n0.title)}</b><span class="nu-d">${days <= 0 ? "Today" : days === 1 ? "Tomorrow" : `In ${days} days`} · ${S.fmt(n0.date, { weekday: "long", day: "numeric", month: "long" })}</span><ul class="nu-c"><li class="k-exam"><b>${cnt("Exam")}</b>exams</li><li class="k-meeting"><b>${cnt("Meeting")}</b>meetings</li><li class="k-holiday"><b>${cnt("Holiday")}</b>holidays</li></ul>`;
+      nu.hidden = false;
+    }
     calL.addEventListener("click", (e) => { const b = e.target.closest("[data-cal]"); if (b) { const x = up[+b.dataset.cal]; ics([x], x.title.toLowerCase().replace(/[^a-z0-9]+/g, "-")); } });
     $("#cal-all").addEventListener("click", () => ics(up, "st-johns-2026-27"));
   }

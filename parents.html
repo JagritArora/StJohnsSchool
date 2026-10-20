@@ -25,7 +25,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Figtree:wght@400..800&display=swap" rel="stylesheet" />
-<link rel="stylesheet" href="css/school.css?v=52" />
+<link rel="stylesheet" href="css/school.css?v=67" />
 <meta name="theme-color" content="#1C1F24" />
 <script>
 /* Before the first paint: fade photos in as they load, and hold headline motion until the fonts arrive. */
@@ -85,7 +85,14 @@
 
   <section class="sec" id="fees">
     <div class="wrap cols">
-      <h2 class="t-l">Fees and payment</h2>
+      <div class="side">
+        <h2 class="t-l">Fees and payment</h2>
+        <div class="rcpt" aria-hidden="true">
+          <div class="rcpt-h"><img src="assets/crest.svg" alt="" /><div><b>Fee receipt</b><small>St. John's School, Faridabad</small></div><span class="rcpt-ok">Paid</span></div>
+          <dl><div><dt>Instalment</dt><dd>October to December</dd></div><div><dt>Paid by</dt><dd>UPI</dd></div><div><dt>Sent to</dt><dd>WhatsApp and email</dd></div></dl>
+          <p class="rcpt-f">What every parent gets, the moment a fee is paid.</p>
+        </div>
+      </div>
       <div>
         <p class="lead" style="margin-bottom:24px">Fees follow CBSE norms and are paid in instalments. The fee structure for the session is published in Downloads.</p>
         <ol class="process process--3">
@@ -100,7 +107,10 @@
 
   <section class="sec sec--tint" id="calendar">
     <div class="wrap cols">
-      <h2 class="t-l">Calendar</h2>
+      <div class="side">
+        <h2 class="t-l">Calendar</h2>
+        <div class="nextup" id="nextup" hidden></div>
+      </div>
       <div>
         <p class="lead">Exams, meetings and holidays for session 2026–27. Add one date, or all of them, to your phone's calendar.</p>
         <p class="note mt-s"><span class="tbc" title="The school will confirm its own calendar">Sample dates for now</span>. The school's own calendar replaces them.</p>
@@ -115,6 +125,9 @@
       <div>
         <h2 class="t-l">Requests</h2>
         <p class="lead mt-m">Ask the office for a certificate or a change without a trip to school. You'll get an SMS when it's ready.</p>
+        <p class="req-k mt-m">What you can ask for</p>
+        <ul class="req-chips"><li>Bonafide certificate</li><li>Transfer certificate</li><li>Character certificate</li><li>New address or phone</li><li>Bus route or stop</li><li>Duplicate ID card</li></ul>
+        <ol class="req-flow"><li><b>Send</b>the form here</li><li><b>Office</b>prepares it</li><li><b>SMS</b>when it's ready</li></ol>
       </div>
       <div>
         <form class="form" data-form="request">
@@ -134,7 +147,10 @@
 
   <section class="sec" id="downloads">
     <div class="wrap cols">
-      <h2 class="t-l">Downloads</h2>
+      <div class="side">
+        <h2 class="t-l">Downloads</h2>
+        <div class="dl-sum"><figure class="arch clip" style="margin:0"><img src="assets/photos/slide-8.webp" alt="Pre-primary children in red tracksuits on an outing" loading="lazy" decoding="async" /></figure><p><b>1</b> ready to download<br /><b>4</b> coming as the school publishes them</p></div>
+      </div>
       <ul class="docs">
         <li><a href="#downloads"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3h9l4 4v14H6z"/><path d="M14 3v5h5"/></svg><div><b>School prospectus</b><span>About the school, admission and rules</span></div><em>PDF</em></a></li>
         <li><a href="#downloads"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="5" width="16" height="15" rx="2"/><path d="M4 10h16M9 3v4M15 3v4"/></svg><div><b>Academic calendar 2026–27</b><span>Terms, exams, holidays and events</span></div><em>Coming soon</em></a></li>
@@ -149,34 +165,44 @@
     <div class="wrap split" style="align-items:center">
       <div>
         <h2 class="t-xl">Your child's day, on your phone</h2>
-        <ul class="ticks mt-m" style="max-width:32em">
-          <li>A message within minutes if your child is marked absent</li>
-          <li>Homework, marks and report cards as soon as teachers post them</li>
-          <li>The school bus, stop by stop</li>
-          <li>Fees by UPI, with instant receipts</li>
-          <li>Message the class teacher, apply for leave</li>
-          <li>A weekly summary, and an assistant that answers questions about your child</li>
-        </ul>
+        <p class="app-lead mt-s">One app for everything the school tells you, from the morning bell to the report card.</p>
+        <div class="app-feats mt-m">
+          <div><b>Attendance</b><span>A message within minutes if your child is marked absent, with the time they were marked present.</span></div>
+          <div><b>Homework and marks</b><span>Homework, test marks and report cards as soon as teachers post them.</span></div>
+          <div><b>School bus</b><span>Follow the bus stop by stop, so you know when to be at the gate.</span></div>
+          <div><b>Fees</b><span>Pay by UPI and get the receipt on your phone straight away.</span></div>
+          <div><b>Teachers and leave</b><span>Message the class teacher and apply for leave without a note in the diary.</span></div>
+          <div><b>Weekly summary</b><span>A short note each week, and an assistant that answers questions about your child.</span></div>
+        </div>
+        <ol class="app-steps mt-m">
+          <li>Sign in with the mobile number you gave the school</li>
+          <li>Enter the 4-digit code sent to it</li>
+          <li>Your child's day opens on the home screen</li>
+        </ol>
         <div class="row-btns mt-m"><a class="btn btn--light" href="login.html?role=parent">Try the parent app</a><a class="btn btn--line-light" href="login.html?role=staff">See the teacher's side</a></div>
       </div>
-      <div class="phone" aria-hidden="true">
+      <div class="phone-stage" aria-hidden="true"><div class="phone phone--app">
         <div class="phone-scr">
-          <h4>Good evening, Rohit</h4>
-          <div class="phone-row ok"><b>Aarav is in school today</b><span>8:41</span></div>
-          <div class="phone-row"><span>Maths worksheet</span><b>Due tomorrow</b></div>
-          <div class="phone-row"><span>Maths, Unit Test 2</span><b>17 / 20</b></div>
+          <div class="ph-status"><span>8:45</span><i class="ph-notch"></i><span class="ph-sig"><i></i><i></i><i></i></span></div>
+          <div class="ph-top"><img src="assets/crest.svg" alt="" /><div><small>St. John's School</small><h4>Good evening, Rohit</h4></div><span class="ph-kid">A</span></div>
+          <div class="phone-row ok"><span class="ph-dot ph-dot--ok"></span><b>Aarav is in school today</b><span>8:41</span></div>
+          <div class="ph-pair">
+            <div class="ph-tile"><small>Maths worksheet</small><b>Due tomorrow</b></div>
+            <div class="ph-tile"><small>Maths, Unit Test 2</small><b class="ph-score">17<em>/20</em></b></div>
+          </div>
           <div class="phone-row ai"><b>This week:</b> present 5 of 5 days. Strongest in Computer and Science. Hindi needs 15 minutes of reading aloud each day.</div>
-          <div class="phone-row"><span>Bus, Route 14</span><b>2 stops away</b></div>
-          <div class="phone-row"><span>Fee, October to December</span><b>Pay by UPI</b></div>
-          <div class="phone-row"><span>Parent–teacher meeting</span><b>Sat, 31 Oct</b></div>
+          <div class="phone-row"><span class="ph-dot ph-dot--bus"></span><span>Bus, Route 14</span><b>2 stops away</b></div>
+          <div class="phone-row"><span class="ph-dot ph-dot--fee"></span><span>Fee, October to December</span><b>Pay by UPI</b></div>
+          <div class="phone-row"><span class="ph-dot ph-dot--pt"></span><span>Parent–teacher meeting</span><b>Sat, 31 Oct</b></div>
+          <nav class="ph-tabs"><i class="on"></i><i></i><i></i><i></i></nav>
         </div>
-      </div>
+      </div></div>
     </div>
   </section>
 </main>
 <script src="js/data.js?v=12"></script>
 <script src="js/ai.js?v=8"></script>
-<script src="js/school.js?v=25"></script>
+<script src="js/school.js?v=26"></script>
 <script src="js/alive.js?v=13"></script>
 </body>
 </html>
