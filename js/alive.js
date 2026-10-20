@@ -80,7 +80,7 @@
       return w.replace(/[a-z]+(?:'[a-z]+)?/gi, (m, off, all) => (off && all[off - 1] === "'" ? m : m[0].toUpperCase() + m.slice(1)));
     }).join("");
   };
-  const SEL = "h1, h2, h3, h4, .month p, .month-ph, .facts dd, .nav > li > a, .nav .sub a, .chips a, .sheet a, .btn, .adm-go, .crumbs a, .ftr li a, .today-in b:not(.today-a b), .tab, .filters button, .here, .menu-btn span, .textlink, figcaption, .fac figcaption, .tag, summary";
+  const SEL = "h1, h2, h3, h4, .month p, .month-ph, .facts dd, .nav > li > a, .nav .sub a, .chips a, .sheet a, .btn, .adm-go, .crumbs a, .ftr li a, .today-in b:not(.today-a b), .tab, .filters button, .here, .menu-btn span, .textlink, figcaption, .fac figcaption, .tag, summary, .kv dt, .gcard .gk, .gcard dt, .fac-k dt, .fac-k dd, .req-k, .req-chips li, .req-flow b, .nu-t, .app-feats b, .rcpt-h b, .rcpt dt, .yr-tabs button, .club-tags li, .dl-sum b + span, .house b, .fcard b, .step b, .docs b, figcaption b, caption, thead th, .tsz-row > span, .nextup small, .cal-list b, .process li > b, .cal-more, .docs em";
   const titleCase = (scope = document) => $$(SEL, scope).forEach((el) => {
     if (el.closest(".ai-panel, .srch-res, [contenteditable]")) return;
     const txt = el.textContent.trim();
@@ -346,4 +346,29 @@
     const now = $(".adm-now");
     if (now) now.insertAdjacentHTML("afterend", `<p class="adm-proof"><a href="achievements.html">${latest} boards: ${xii.length} in Class XII and ${x.length} in Class X scored 90% and above</a></p>`);
   }
+})();
+
+/* Facilities: figures count up and their small visuals fill in once, when the panel comes into view. */
+(() => {
+  const p = document.querySelector(".campus-n");
+  if (!p) return;
+  const still = matchMedia("(prefers-reduced-motion: reduce)").matches;
+  const nums = [...p.querySelectorAll(".cn-num")];
+  const fmt = (v, n) => n.includes(".") ? v.toFixed(2) : Math.round(v).toLocaleString("en-IN");
+  const go = () => {
+    p.classList.add("is-in");
+    if (still) return;
+    nums.forEach((el, i) => {
+      const n = el.dataset.n, to = +n, t0 = performance.now() + i * 90, dur = 1100;
+      const step = t => {
+        const k = Math.min(1, Math.max(0, (t - t0) / dur)), e = 1 - Math.pow(1 - k, 3);
+        el.textContent = fmt(to * e, n);
+        if (k < 1) requestAnimationFrame(step);
+      };
+      el.textContent = fmt(0, n); requestAnimationFrame(step);
+    });
+  };
+  if (!("IntersectionObserver" in window)) return go();
+  const io = new IntersectionObserver(es => { if (es.some(e => e.isIntersecting)) { io.disconnect(); go(); } }, { threshold: .35 });
+  io.observe(p);
 })();

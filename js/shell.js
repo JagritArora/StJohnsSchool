@@ -240,3 +240,20 @@
   const start = () => { build(); tick(); hdr.classList.add("ready"); };
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", start); else start();
 })();
+
+/* Two-column layouts: on desktop the shorter side always stays in view while the longer side scrolls past. */
+(() => {
+  const mark = () => {
+    const wide = innerWidth > 860, room = innerHeight - 170;
+    document.querySelectorAll("main .cols, main .split, main .letter, main .fac").forEach(row => {
+      const kids = [...row.children].filter(k => getComputedStyle(k).position !== "absolute");
+      kids.forEach(k => k.classList.remove("stk"));
+      if (!wide || kids.length < 2) return;
+      const hs = kids.map(k => k.getBoundingClientRect().height), tall = Math.max(...hs);
+      kids.forEach((k, i) => { if (hs[i] < tall - 40 && hs[i] < room) k.classList.add("stk"); });
+    });
+  };
+  let t; const later = () => { clearTimeout(t); t = setTimeout(mark, 150); };
+  addEventListener("load", mark); addEventListener("resize", later);
+  if (document.readyState !== "loading") later(); else document.addEventListener("DOMContentLoaded", later);
+})();

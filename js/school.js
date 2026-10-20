@@ -136,7 +136,7 @@
   }
 
   // ---------- Gentle reveal for content below the first screen ----------
-  const RV = ".sec-title, .sec h2, .sec .lead, .stairs, .month, .fcard, .duo, .house, .year-head, .trio > div, .facgrid > div, .process li, .news li, .kv > div, .faq details, .ticks li, .story, .fac, .docs li, .paths li, .letter, .form, .tbl-wrap, .facts > div, .cta .row, .gal button, .filters, .pill-row";
+  const RV = ".sec-title, .sec h2, .sec .lead, .stairs, .month, .fcard, .duo, .house, .year-head, .trio > div, .facgrid > div, .process li, .news li, .kv > div, .faq details, .ticks li, .story, .fac, .docs li, .paths li, .letter, .form, .tbl-wrap, .facts > div, .cta .row, .gal, .filters, .pill-row";
   if (io) {
     const seen = new Set();
     $$(RV, $("main")).forEach((el) => {
@@ -385,7 +385,7 @@
     dots.innerHTML = cards.map(() => "<i></i>").join("");
     reel.after(dots);
     const gap = () => parseFloat(getComputedStyle(track).columnGap) || 18;
-    const step = () => { const m = cards[0]; return m ? (m.offsetWidth + gap()) * Math.max(1, Math.floor((track.clientWidth - 40) / (m.offsetWidth + gap()))) : track.clientWidth * 0.8; };
+    const step = () => { const m = cards[0]; return m ? m.offsetWidth + gap() : track.clientWidth * 0.8; }; // one month per click
     const sync = () => {
       prev.disabled = track.scrollLeft < 8; next.disabled = track.scrollLeft > track.scrollWidth - track.clientWidth - 8;
       const w = cards[0] ? cards[0].offsetWidth + gap() : 1, i = next.disabled ? cards.length - 1 : Math.round(track.scrollLeft / w);
