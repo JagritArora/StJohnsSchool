@@ -17,7 +17,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Figtree:wght@400..800&display=swap" rel="stylesheet" />
-<link rel="stylesheet" href="css/site.css?v=33" />
+<link rel="stylesheet" href="css/site.css?v=37" />
 <script>
 /* Before the first paint: fade photos in as they load. */
 (function (d) { d.documentElement.classList.add("js");
@@ -27,16 +27,25 @@
 </head>
 <body>
 <div class="proto-bar"><b>Prototype</b> · Any OTP or password works. <button data-reset style="background:none;border:0;color:inherit;font-weight:600;text-decoration:underline;cursor:pointer;padding:0">Reset demo data</button></div>
-<div class="login-wrap">
+<div class="login-wrap lg-play">
   <aside class="login-art">
     <div class="lg-slides" aria-hidden="true"><img src="assets/photos/slide-7.webp" alt="" class="on" /><img data-src="assets/photos/slide-2.webp" alt="" /><img data-src="assets/photos/slide-5.webp" alt="" /><img data-src="assets/photos/slide-9.webp" alt="" /></div>
     <a href="index.html" class="brand" style="position:absolute;top:28px;left:28px;color:#fff"><img src="assets/crest.svg" alt="" width="40" height="40" /><span class="brand-name">St. John's School</span></a>
+    <div class="lg-peek" aria-hidden="true">
+      <div class="lg-pk" data-pk="parent"><div class="lg-pk-h"><i>AS</i><span><b>Aarav Sharma</b><small>Class VII-B · Roll 1</small></span></div>
+        <ul><li><em class="ok"></em>Marked present<small>8:42 AM</small></li><li><em></em>Science homework due<small>Tomorrow</small></li><li><em></em>Half-yearly Science<small>91 / 100</small></li></ul></div>
+      <div class="lg-pk" data-pk="staff" hidden><div class="lg-pk-h"><i>NM</i><span><b>Ms. Neha Mathew</b><small>Class teacher · VII-B</small></span></div>
+        <ul><li><em class="ok"></em>Attendance taken<small>8:42 AM</small></li><li><em></em>Homework posted<small>Mathematics</small></li><li><em></em>Message from Rohit Sharma<small>New</small></li></ul></div>
+    </div>
     <h2>Every family and every teacher, on one page.</h2>
     <p>Attendance, homework, marks, fees and notices — the same records, seen by the people who need them.</p>
+    <div class="lg-dots" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
   </aside>
   <main class="login-panel">
+    <div class="lg-aura" aria-hidden="true"><i class="o1"></i><i class="o2"></i><i class="o3"></i><b class="ring"></b><b class="ring r2"></b><b class="ring r3"></b><b class="halo"></b></div>
     <div class="login-box"><div class="pg-head-bg lg-rib" aria-hidden="true"><div class="rib"><i class="rib-a"></i><i class="rib-b"></i><span class="rib-g"><i class="rib-a"></i></span></div></div>
       <a href="index.html" class="link-btn" style="text-decoration:none">← Back to website</a>
+      <p class="lg-hi" id="lg-hi">Welcome</p>
       <h1>Sign in</h1>
       <p class="muted">Choose who you are.</p>
       <div class="role-tabs" role="tablist">
@@ -95,7 +104,12 @@
 (function () {
   const imgs = [...document.querySelectorAll(".lg-slides img")]; let i = 0;
   imgs.forEach((im) => { if (im.dataset.src) im.src = im.dataset.src; });
-  if (!matchMedia("(prefers-reduced-motion: reduce)").matches) setInterval(() => { if (document.hidden) return; imgs[i].classList.remove("on"); i = (i + 1) % imgs.length; imgs[i].classList.add("on"); }, 7000);
+  if (!matchMedia("(prefers-reduced-motion: reduce)").matches) setInterval(() => { if (document.hidden) return; imgs[i].classList.remove("on"); i = (i + 1) % imgs.length; imgs[i].classList.add("on"); dots(); }, 7000);
+  const dl = [...document.querySelectorAll(".lg-dots i")];
+  function dots() { dl.forEach((d, k) => { d.classList.toggle("on", k === i); d.classList.toggle("done", k < i); }); }
+  dots();
+  const h = new Date().getHours();
+  document.getElementById("lg-hi").textContent = h < 12 ? "Good morning" : h < 17 ? "Good afternoon" : "Good evening";
   const box = document.querySelector(".login-box");
   document.addEventListener("pointermove", (e) => { const r = box.getBoundingClientRect(); box.style.setProperty("--nx", Math.max(0, Math.min(100, (e.clientX - r.left) / r.width * 100)) + "%"); }, { passive: true });
 })();
@@ -115,6 +129,7 @@
   const pick = (role, animate) => {
     tabs.forEach((t) => { const on = t.dataset.role === role; t.classList.toggle("on", on); t.setAttribute("aria-selected", on); });
     box.dataset.on = role;
+    document.querySelectorAll(".lg-pk").forEach((c) => { const on = c.dataset.pk === role; if (on && c.hidden && animate) { c.hidden = false; c.classList.remove("lg-pk-in"); void c.offsetWidth; c.classList.add("lg-pk-in"); } else c.hidden = !on; });
     const f = [...forms].find((x) => x.dataset.for === role);
     if (animate && f.hidden) swap(f, [...forms].filter((x) => x !== f), role === "staff" ? 1 : -1); else forms.forEach((x) => (x.hidden = x.dataset.for !== role));
     document.querySelectorAll("[data-demo-for]").forEach((d) => (d.hidden = d.dataset.demoFor !== role));
