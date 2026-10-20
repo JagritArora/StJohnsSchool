@@ -100,13 +100,16 @@
     tray = document.getElementById("needs-tray");
   }
   const closeTray = (focus) => { if (!tray || tray.hidden) return; tray.hidden = true; trayBtn.setAttribute("aria-expanded", "false"); if (focus) trayBtn.focus(); };
-  const openTray = () => {
-    const r = trayBtn.getBoundingClientRect();
-    tray.style.top = Math.round(r.bottom + 10) + "px"; tray.style.right = Math.max(12, Math.round(innerWidth - r.right - 4)) + "px";
+  // anchor: open under something else (the parent home's "needs you" tag) instead of the top-bar icon.
+  const openTray = (anchor) => {
+    const r = (anchor && anchor.getBoundingClientRect ? anchor : trayBtn).getBoundingClientRect();
+    tray.style.top = Math.round(r.bottom + 10) + "px";
+    if (anchor && anchor.getBoundingClientRect) { tray.style.right = "auto"; tray.style.left = Math.max(12, Math.min(Math.round(r.left), innerWidth - tray.offsetWidth - 12, innerWidth - 400)) + "px"; }
+    else { tray.style.left = ""; tray.style.right = Math.max(12, Math.round(innerWidth - r.right - 4)) + "px"; }
     tray.hidden = false; trayBtn.setAttribute("aria-expanded", "true"); trayBtn.classList.remove("nudge");
     (tray.querySelector(".need") || tray.querySelector("[data-tray-x]")).focus({ preventScroll: true });
   };
-  S.openNeeds = () => tray && openTray();
+  S.openNeeds = (anchor) => tray && openTray(anchor);
   S.setNeeds = (items, { empty } = {}) => {
     if (!tray) return;
     S.paint(tray.querySelector(".ntray-list"), S.needsHTML(items, { empty, more: 6 }));
@@ -123,12 +126,12 @@
     if (e.target.closest(".needs-btn")) { tray.hidden ? openTray() : closeTray(); return; }
     if (e.target.closest("[data-tray-x]")) { closeTray(true); return; }
     if (e.target.closest("#needs-tray .need")) { closeTray(); return; }
-    if (!e.target.closest("#needs-tray")) closeTray();
+    if (!e.target.closest("#needs-tray, [data-open-needs]")) closeTray();
   });
   document.addEventListener("keydown", (e) => { if (e.key === "Escape" && tray && !tray.hidden) closeTray(true); });
   addEventListener("resize", () => closeTray());
 
-  // tiles: [{ go, icon, name, line, tone (colour of the icon), flag (line needs a look), count, m (0–100: a thin bar under the line), mTip }]
+  // tiles: [{ go, icon, side (html beside the big figure), foot (html in place of the bar), name, line, tone (colour of the icon), flag (line needs a look), count, m (0–100: a thin bar under the line), mTip }]
   // Daily pages are wide tiles with a live figure or a week of bars (main: true, big, unit, bars, ref);
   // the rest sit under them as compact links, so every page stays one tap away.
   S.miniBars = (vals, { lo = 0, hi = 100, ref } = {}) => {
@@ -139,8 +142,8 @@
   const tileOf = (t, i) => `<button type="button" class="pg${t.main ? " main" : ""}${t.flag ? " flag" : ""}" data-go="${t.go}" style="--c:var(--${t.tone || "royal"});--mc:var(--${t.tone === "accent" ? "royal" : t.tone || "royal"});--i:${i}">
       <span class="pg-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">${t.icon}</svg></span>
       ${t.count ? `<span class="count">${t.count}</span>` : ""}
-      ${t.main && (t.big !== undefined || t.bars) ? `<span class="pg-v">${t.bars ? S.miniBars(t.bars, t.barsOpt || {}) : `<span class="pg-big">${t.big}${t.unit ? `<small>${t.unit}</small>` : ""}</span>`}</span>` : ""}
-      <b class="pg-n">${t.name}</b><span class="pg-l">${t.line || ""}</span>${meterOf(t)}${CHEV}</button>`;
+      ${t.main && (t.big !== undefined || t.bars) ? `<span class="pg-v">${t.bars ? S.miniBars(t.bars, t.barsOpt || {}) : `<span class="pg-big">${t.big}${t.unit ? `<small>${t.unit}</small>` : ""}</span>`}${t.side ? `<span class="pg-side">${t.side}</span>` : ""}</span>` : ""}
+      <b class="pg-n">${t.name}</b><span class="pg-l">${t.line || ""}</span>${t.foot || meterOf(t)}${CHEV}</button>`;
   const linkOf = (t, i) => `<button type="button" class="pgl-i${t.flag ? " flag" : ""}" data-go="${t.go}" style="--c:var(--${t.tone || "royal"});--i:${i}">
       <span class="pg-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">${t.icon}</svg></span>
       <span class="pgl-t"><b>${t.name}</b><span>${t.line || ""}</span></span>${t.count ? `<span class="count">${t.count}</span>` : ""}${CHEV}</button>`;

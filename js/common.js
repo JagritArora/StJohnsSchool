@@ -97,7 +97,9 @@
     let no = false; try { no = localStorage.getItem("sjs-install") === "no"; } catch (e) {}
     const ios = /iPhone|iPad|iPod/.test(navigator.userAgent) || (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
     let ask = null;
-    const show = () => { if (!standalone && !no) inst.hidden = false; };
+    // data-later: offer it from the second visit on, not to someone who has just arrived.
+    let visits = 1; try { visits = +(localStorage.getItem("sjs-visits") || 0); if (!sessionStorage.getItem("sjs-v")) { visits++; localStorage.setItem("sjs-visits", visits); sessionStorage.setItem("sjs-v", "1"); } } catch (e) {}
+    const show = () => { if (!standalone && !no && !(inst.dataset.later !== undefined && visits < 2)) inst.hidden = false; };
     addEventListener("beforeinstallprompt", (e) => { e.preventDefault(); ask = e; show(); });
     addEventListener("appinstalled", () => (inst.hidden = true));
     if (ios) { document.getElementById("install-how").textContent = "Tap the Share button, then Add to Home Screen."; document.getElementById("install-go").hidden = true; show(); }

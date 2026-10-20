@@ -2405,3 +2405,151 @@ body.app .card-h h2 { letter-spacing: -.005em; }
 .lg-aura .ring { border-width: 1px; border-color: color-mix(in srgb, var(--accent) 20%, transparent); animation-duration: 9s; }
 .lg-aura .ring.r2 { animation-delay: -3s; } .lg-aura .ring.r3 { animation-delay: -6s; }
 .lg-aura .halo { opacity: .3; animation-duration: 20s; }
+
+/* ---------- Parent home, round 18: larger type, a "needs you" tag, richer tiles ---------- */
+/* Type a step up throughout the parent portal: parents read this on phones, often in a hurry. */
+.par .main { font-size: 16px; }
+.par .hub-date { font-size: 15.5px; }
+.par .hub-line { font-size: 17px; }
+.par .hub-kid .kid-t h2 { font-size: 22px; }
+.par .hub-kid .kid-t span { font-size: 15.5px; }
+.par .kid-sw button { font-size: 15px; padding: 8px 15px; }
+.par .hm-day-h { font-size: 15px; }
+.par .hm-day-h b { font-size: 16.5px; }
+.par .dp { font-size: 14.5px; }
+.par .rb-ax { font-size: 13.5px; height: 18px; }
+.par .rb-now i { font-size: 13.5px; }
+.par .hm-cap { font-size: 16.5px; line-height: 1.5; }
+.par .hub-sec > h2 { font-size: 16.5px; }
+.par .pgl-h { font-size: 15.5px; }
+.par .pg-n { font-size: 17.5px; }
+.par .pg-l { font-size: 15px; line-height: 1.45; }
+.par .pg-big { font-size: 38px; }
+.par .pg-big small { font-size: 15.5px; }
+.par .pgl-t b { font-size: 16px; }
+.par .pgl-t span { font-size: 14.5px; }
+.par .install b { font-size: 17px; }
+.par .install span { font-size: 15px; }
+.par .card-h h2 { font-size: 19px; }
+.par .li .t b { font-size: 16px; }
+.par .li .t span, .par .muted { font-size: max(1em, 14.5px); }
+.par .x-head { font-size: 16.5px; line-height: 1.55; }
+.par .x-detail p { font-size: 15.5px; }
+.par .side-btn { font-size: 15.5px; }
+
+/* The child switcher sits right beside the child's name, so it reads as "whose page this is". */
+.par .hub-kid .kid-t { flex: 0 1 auto; }
+.par .hub-kid .kid-sw { margin-left: 8px; }
+@media (max-width: 640px) { .par .hub-kid .kid-t { flex: 1 1 200px; } .par .hub-kid .kid-sw { margin-left: 0; } }
+
+/* "Needs you" as a tag at the top of the sheet, cut from the same cloth as the website's admissions tag. */
+.need-tag-row { position: relative; z-index: 2; margin: -4px 0 16px; }
+.need-tag { position: relative; display: inline-flex; align-items: center; gap: 10px; max-width: 100%; min-height: 38px; padding: 4px 6px 4px 14px; border-radius: 999px; font: inherit; font-size: 15px; color: var(--ink); text-align: left; cursor: pointer; overflow: hidden; isolation: isolate;
+  background: linear-gradient(180deg, #FFFBF1, #F8E9C2); border: 1px solid color-mix(in srgb, var(--gold) 60%, transparent);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--gold) 16%, transparent), 0 1px 2px rgba(60, 40, 10, .06), 0 10px 24px -14px rgba(120, 80, 20, .45); transition: box-shadow .25s ease; }
+.need-tag::before { content: ""; position: absolute; z-index: -1; inset: 0; background: linear-gradient(100deg, transparent 30%, rgba(255, 255, 255, .85) 50%, transparent 70%); transform: translateX(-120%); animation: ntShine 6s ease-in-out 2s infinite; pointer-events: none; }
+.need-tag:hover { box-shadow: 0 0 0 3px color-mix(in srgb, var(--gold) 22%, transparent), 0 1px 2px rgba(60, 40, 10, .08), 0 14px 30px -14px rgba(120, 80, 20, .55); }
+.need-tag:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+.need-tag .live { position: relative; flex: none; width: 8px; height: 8px; border-radius: 50%; background: var(--accent); }
+.need-tag .live::after { content: ""; position: absolute; inset: -4px; border-radius: 50%; border: 2px solid var(--accent); opacity: 0; animation: ntLive 2.6s ease-out infinite; }
+.need-tag .nt-t { min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.need-tag .nt-t b { font-weight: 700; }
+.need-tag .nt-go { flex: none; display: inline-flex; align-items: center; gap: 6px; height: 28px; padding: 0 12px; border-radius: 999px; font-weight: 700; font-size: 14px; color: #fff; background: linear-gradient(180deg, #C44A3C, var(--accent)); }
+.need-tag .nt-go svg { width: 14px; height: 14px; transition: transform .25s ease; }
+.need-tag:hover .nt-go svg { transform: translateX(3px); }
+.need-tag.ok { cursor: default; padding-right: 16px; background: linear-gradient(180deg, #F7FBF6, #E3F0E1); border-color: color-mix(in srgb, var(--green) 40%, transparent); box-shadow: 0 0 0 3px color-mix(in srgb, var(--green) 10%, transparent); }
+.need-tag.ok::before { display: none; }
+.need-tag.ok .live { background: var(--green); } .need-tag.ok .live::after { border-color: var(--green); animation: none; }
+@keyframes ntLive { 0% { transform: scale(.5); opacity: .55; } 70%, 100% { transform: scale(1.5); opacity: 0; } }
+@keyframes ntShine { 0% { transform: translateX(-120%); } 22%, 100% { transform: translateX(120%); } }
+@media (max-width: 520px) { .need-tag { font-size: 14.5px; gap: 8px; padding-left: 12px; } .need-tag .nt-x { display: none; } }
+@media (prefers-reduced-motion: reduce) { .need-tag::before, .need-tag .live::after { animation: none; display: none; } }
+
+/* Richer daily tiles: a figure with what's behind it. */
+.par .pgs-main .pg-v { display: flex; align-items: flex-end; justify-content: space-between; gap: 10px; width: 100%; }
+.pg-side { flex: none; display: block; }
+.pg-spark .mb { height: 34px; width: 92px; gap: 4px; }
+.pg-delta { display: inline-flex; flex-direction: column; align-items: flex-end; font: 700 15px/1.1 var(--sans); font-variant-numeric: tabular-nums; }
+.pg-delta small { font-size: 13px; font-weight: 500; color: var(--muted); margin-top: 3px; }
+.pg-delta.up { color: var(--green); } .pg-delta.down { color: var(--accent-text); }
+.pg-chips { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px; }
+.pg-chip { display: inline-flex; align-items: center; height: 26px; padding: 0 10px; border-radius: 999px; font-size: 13.5px; font-weight: 600; color: color-mix(in srgb, var(--royal) 80%, var(--ink)); background: color-mix(in srgb, var(--royal) 9%, var(--surface)); border: 1px solid color-mix(in srgb, var(--royal) 18%, transparent); white-space: nowrap; }
+.pg-chip.soon { color: var(--gold-text); background: color-mix(in srgb, var(--gold) 14%, var(--surface)); border-color: color-mix(in srgb, var(--gold) 32%, transparent); }
+
+/* "Also here": six links in two full rows of three, not a row of four and a half row. */
+.par .pgl { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; }
+.par .pgl-i { padding: 13px 16px 13px 12px; }
+@media (max-width: 900px) { .par .pgl { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 560px) { .par .pgl { grid-template-columns: 1fr; } .par .pg-big { font-size: 32px; } .pg-spark .mb { width: 64px; height: 28px; } .par .pg-l { font-size: 14.5px; } }
+@media (max-width: 640px) { .par .dp { font-size: 12.5px; } }
+.pg-l .pg-sub { display: block; color: var(--muted); font-weight: 400; }
+/* Phones: the figure stays beside the page name; the lines underneath get the full width. */
+@media (max-width: 640px) {
+  .par .pg.main { grid-template-areas: "ic n v" "l l l" "f f f" "m m m"; row-gap: 0; }
+  .par .pg.main .pg-l { margin-top: 10px; font-size: 14.5px; }
+  .par .pg.main .pg-n { font-size: 16.5px; }
+  .par .pg.main .pg-v { flex-direction: row; align-items: center; gap: 12px; }
+  .par .pg.main .pg-big { font-size: 28px; }
+  .par .pg.main .pg-big small { display: inline; font-size: 14px; margin-left: 2px; }
+  .par .pg.main .pg-chips { grid-area: f; }
+  .par .pg-delta { font-size: 14px; }
+  .par .pg-spark .mb { width: 64px; height: 28px; }
+}
+
+/* Parent home: yesterday / today / tomorrow, with arrangements for teachers on leave. */
+.hd-h { align-items: center; margin-bottom: 14px; }
+.hd-sw button { font-size: 14.5px; padding: 6px 14px; }
+.par .hd-sw button { font-size: 15px; }
+.hd-kid { display: flex; gap: 10px; align-items: baseline; margin: 0 0 14px; font-size: 16px; line-height: 1.5; }
+.hd-kid > i { width: 9px; height: 9px; border-radius: 50%; background: var(--c); flex: none; transform: translateY(-1px); box-shadow: 0 0 0 4px color-mix(in srgb, var(--c) 16%, transparent); }
+.hd-kid .link-btn { font-size: inherit; }
+.dp.sub { background-image: repeating-linear-gradient(135deg, color-mix(in srgb, var(--c) 22%, transparent) 0 2px, transparent 2px 7px); box-shadow: inset 0 0 0 1.5px color-mix(in srgb, var(--gold) 80%, transparent); }
+.dp.sub.cur { box-shadow: inset 0 0 0 2px var(--c); }
+.hd-arr { margin-top: 16px; padding: 12px 14px; border-radius: 14px; background: color-mix(in srgb, var(--gold) 9%, var(--surface)); border: 1px solid color-mix(in srgb, var(--gold) 28%, transparent); }
+.hd-arr-h { display: block; font-size: 15px; margin-bottom: 6px; }
+.hd-arr ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; }
+.hd-arr li { display: grid; grid-template-columns: 112px 1fr; gap: 10px; font-size: 15px; line-height: 1.45; }
+.hd-arr li.cur .hd-p { color: var(--ink); font-weight: 700; }
+.hd-p { color: var(--muted); font-variant-numeric: tabular-nums; white-space: nowrap; }
+.hd-none, .hd-hw { margin: 12px 0 0; font-size: 15px; color: var(--muted); }
+.hd-hw b { color: var(--ink); font-weight: 600; }
+@media (max-width: 640px) { .hd-h > span { flex-basis: 100%; font-size: 14px; } .hd-sw button { padding: 6px 11px; font-size: 14px; } .hd-arr li { grid-template-columns: 1fr; gap: 0; } }
+/* Arranged periods: the regular subject struck through, the arrangement in its place. */
+.dp-a { display: grid; justify-items: center; gap: 2px; line-height: 1.1; min-width: 0; max-width: 100%; }
+.dp-a s { opacity: .6; font-weight: 500; text-decoration-thickness: 1.5px; }
+.dp-n { font-size: 12.5px; font-weight: 700; color: var(--ink); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%; padding: 0 4px; }
+.par .rb-track { height: 52px; }
+@media (max-width: 640px) { .dp-n { font-size: 10px; padding: 0 1px; } .par .rb-track { height: 48px; } }
+.dp-a .dp-n.dp-s { display: none; }
+@media (max-width: 640px) { .dp-a .dp-n.dp-l { display: none; } .dp-a .dp-n.dp-s { display: block; } }
+/* A subtle strike: thin, soft line over the regular subject; the teacher taking it reads clearly beneath. */
+.dp-a s { opacity: .55; text-decoration-thickness: 1px; text-decoration-color: color-mix(in srgb, currentColor 70%, transparent); }
+.dp-n { font-weight: 600; }
+/* Parent portal: "needs you" lives in the tag on the home sheet, so the top-bar icon and its count step aside. */
+.par .needs-btn { display: none; }
+/* Count badges: pinned to the icon's top-right and growing outward, so "9+" sits on the corner, not over the bell. */
+.bell .badge, .needs-btn .badge { top: -5px; right: auto; left: calc(50% + 7px); display: inline-flex; align-items: center; justify-content: center; padding: 0 5px; line-height: 1; font-variant-numeric: tabular-nums; letter-spacing: -.01em; }
+.bell .badge[hidden], .needs-btn .badge[hidden] { display: none; }
+
+/* Parent messages: pick the class teacher or any subject teacher. */
+.chat-to { display: flex; gap: 8px; overflow-x: auto; margin: 0 0 14px; padding: 2px 2px 8px; scrollbar-width: thin; }
+.ct-i { position: relative; flex: none; display: flex; align-items: center; gap: 10px; padding: 8px 14px 8px 8px; border: 1px solid var(--line); border-radius: 14px; background: var(--surface); text-align: left; font: inherit; color: inherit; cursor: pointer; transition: border-color .2s, background .2s; }
+.ct-i:hover { border-color: color-mix(in srgb, var(--accent) 40%, var(--line)); }
+.ct-i.on { border-color: var(--ink); background: color-mix(in srgb, var(--sunken) 60%, var(--surface)); }
+.ct-i:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.ct-i .avatar { width: 34px; height: 34px; font-size: 13px; flex: none; }
+.ct-t b { display: block; font-size: 15px; font-weight: 600; white-space: nowrap; }
+.ct-t span { display: block; font-size: 13.5px; color: var(--muted); white-space: nowrap; }
+.ct-i .count { min-width: 20px; height: 20px; border-radius: 999px; background: var(--accent); color: #fff; font: 600 12px/20px var(--sans); text-align: center; padding: 0 6px; }
+.ct-empty { margin: 18px 0; color: var(--muted); font-size: 15px; text-align: center; }
+.chat-to { -webkit-mask-image: linear-gradient(90deg, #000 calc(100% - 36px), transparent); mask-image: linear-gradient(90deg, #000 calc(100% - 36px), transparent); padding-right: 30px; }
+/* Phones: "Also here" as a two-column grid, not a slider. Each link stacks icon over name; an odd one out spans both columns. */
+@media (max-width: 640px) {
+  .par .pgl { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; overflow: visible; margin: 0; padding: 0; }
+  .par .pgl-i { max-width: none; flex-direction: column; align-items: flex-start; gap: 10px; padding: 12px 12px 13px; }
+  .par .pgl-i > svg:last-child { position: absolute; top: 14px; right: 10px; }
+  .par .pgl-t span { white-space: normal; }
+  .par .pgl-i .count { position: absolute; top: 12px; right: 30px; }
+  .par .pgl-i:last-child:nth-child(odd) { grid-column: 1 / -1; flex-direction: row; align-items: center; }
+}
+@media (max-width: 640px) { .par .pgl-i:last-child:nth-child(odd) > svg:last-child { top: 50%; margin-top: -8px; } }

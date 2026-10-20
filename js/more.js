@@ -220,22 +220,27 @@
     const keys = ["VII-B", ...["VIII", "IX", "X", "XI", "XII"].flatMap((c) => S.SECTIONS[c].map((s) => `${c}-${s}`))];
     keys.forEach((key) => {
       const x = S.sectionByKey(key), tt = S.timetableOf(key), who = key === "VII-B" ? S.VIIB.ttTeachers : x.subjTeachers;
-      Object.entries(tt).forEach(([d, row]) => row.forEach((subj, p) => { const t = who[subj]; if (t && S.TEACHERS.some((v) => v.name === t)) busy[`${t}|${d}|${p}`] = { key, subj }; }));
+      Object.entries(tt).forEach(([d, row]) => row.forEach((subj, p) => { const t = who[subj]; if (t && (key === "VII-B" ? /^(Mr|Mrs|Ms)\. /.test(t) : S.TEACHERS.some((v) => v.name === t))) busy[`${t}|${d}|${p}`] = { key, subj }; }));
     });
     return busy;
   };
-  S.leaveToday = () => {
-    if (!S.state.staffLeave[S.todayKey]) {
-      const pool = S.TEACHERS.filter((t) => t.id !== "SJS-T-0412"), r = S.rng(dayNum(S.todayKey));
-      const a = pool[Math.floor(r() * pool.length)]; let b; do { b = pool[Math.floor(r() * pool.length)]; } while (b === a);
-      S.state.staffLeave[S.todayKey] = [{ name: a.name, why: "Sick leave" }, { name: b.name, why: "Personal leave" }];
+  // Who is on leave on a date (any date, so parents can see yesterday's and tomorrow's arrangements too).
+  // One of the two is someone who teaches VII-B that day, so the demo family always has an arrangement to see.
+  S.leaveOn = (key) => {
+    if (!S.state.staffLeave[key]) {
+      const pool = S.TEACHERS.filter((t) => t.id !== "SJS-T-0412"), r = S.rng(dayNum(key)), d = new Date(key + "T00:00").getDay();
+      const vii = [...new Set((S.timetableOf("VII-B")[d] || []).map((x) => S.VIIB.ttTeachers[x]))].filter((t) => t && /^(Mr|Mrs|Ms)\. /.test(t) && t !== "Ms. Neha Mathew");
+      const a = vii.length ? { name: vii[Math.floor(r() * vii.length)] } : pool[Math.floor(r() * pool.length)]; let b; do { b = pool[Math.floor(r() * pool.length)]; } while (b.name === a.name);
+      S.state.staffLeave[key] = [{ name: a.name, why: "Sick leave" }, { name: b.name, why: "Personal leave" }];
     }
-    return S.state.staffLeave[S.todayKey];
+    return S.state.staffLeave[key];
   };
-  // Every period today that a teacher on leave would have taught, with free teachers to suggest.
-  S.coverToday = () => {
-    const d = S.today.getDay(); if (!d) return [];
-    const m = busyMap(), away = S.leaveToday().map((l) => l.name), n = d === 6 ? 5 : 8, rows = [];
+  S.leaveToday = () => S.leaveOn(S.todayKey);
+  // Every period on a date that a teacher on leave would have taught, with free teachers to suggest.
+  S.coverToday = () => S.coverOn(S.todayKey);
+  S.coverOn = (key) => {
+    const d = new Date(key + "T00:00").getDay(); if (!d || S.HOLIDAYS[key]) return [];
+    const m = busyMap(), away = S.leaveOn(key).map((l) => l.name), n = d === 6 ? 5 : 8, rows = [];
     away.forEach((t) => {
       for (let p = 0; p < n; p++) {
         const b = m[`${t}|${d}|${p}`]; if (!b) continue;
@@ -244,7 +249,7 @@
         const free = S.TEACHERS.filter((v) => !away.includes(v.name) && !m[`${v.name}|${d}|${p}`])
           .map((v) => ({ name: v.name, subject: v.subject, same: v.subject === subj, load: load(v) }))
           .sort((a, b2) => (b2.same - a.same) || (a.load - b2.load) || a.name.localeCompare(b2.name));
-        rows.push({ id: `${t}|${p}`, teacher: t, p, time: S.periodTimes[p], key: b.key, subj: b.subj, free: free.slice(0, 4) });
+        rows.push({ id: `${t}|${p}`, teacher: t, why: (S.leaveOn(key).find((l) => l.name === t) || {}).why, p, time: S.periodTimes[p], key: b.key, subj: b.subj, free: free.slice(0, 4) });
       }
     });
     return rows.sort((a, b) => a.p - b.p);

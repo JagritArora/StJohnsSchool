@@ -17,7 +17,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Figtree:wght@400..800&display=swap" rel="stylesheet" />
-<link rel="stylesheet" href="css/site.css?v=37" />
+<link rel="stylesheet" href="css/site.css?v=46" />
 <script>
 /* Before the first paint: fade photos in as they load. */
 (function (d) { d.documentElement.classList.add("js");
@@ -25,7 +25,7 @@
   d.addEventListener("load", m, true); d.addEventListener("error", m, true); })(document);
 </script>
 </head>
-<body class="app">
+<body class="app par">
 <div class="proto-bar"><b>Prototype</b> · Parent view with sample data. <a href="staff.html?id=SJS-T-0412" target="_blank">Open the teacher view in a new tab</a></div>
 <div class="app-shell">
   <!-- The bar on top: the school (back to the welcome page), the bell, messages and who's signed in. -->
@@ -40,6 +40,7 @@
     <section data-view="home" class="hm">
       <div class="hub">
         <div class="hub-top hero">
+          <div class="need-tag-row" id="need-tag"></div>
           <div class="hub-hello"><div><div class="hub-date" id="today-line"></div><h1 id="hello">Good morning, Rohit</h1></div></div>
           <div class="hub-kid">
             <span class="avatar kid-av">AS</span>
@@ -51,7 +52,7 @@
         </div>
         <div id="phase-card" class="hm-phase" hidden></div>
         <div class="hub-sec"><h2><span><span class="kid-first">Aarav</span>&#x27;s pages</span></h2><div id="hub-tiles"></div></div>
-      <div class="install" id="install" hidden>
+      <div class="install" id="install" data-later hidden>
         <img src="assets/icons/icon-192.png" alt="" width="44" height="44" />
         <div><b>Keep St. John's on your home screen</b><span id="install-how">It opens straight to Aarav's day, like an app.</span></div>
         <button class="btn btn-primary btn-sm" id="install-go" type="button">Add</button>
@@ -231,6 +232,7 @@
       <div class="card vp" data-vp="pmsg" data-v="forms" hidden style="max-width:720px"><div class="form-list" id="p-forms"></div></div>
       <div class="card vp" data-vp="pmsg" data-v="ptm" hidden style="max-width:720px"><div id="p-ptm"></div></div>
       <div class="card vp" data-vp="pmsg" data-v="chat" style="max-width:720px">
+        <div class="chat-to" id="chat-to" role="group" aria-label="Choose a teacher"></div>
         <div id="p-rec"></div>
         <p class="oh-note" id="p-hours"></p>
         <div class="thread" id="thread"></div>
@@ -269,10 +271,10 @@
 <script src="js/classes.js?v=8"></script>
 <script src="js/exams.js?v=8"></script>
 <script src="js/care.js?v=2"></script>
-<script src="js/common.js?v=11"></script>
+<script src="js/common.js?v=12"></script>
 <script src="js/charts.js?v=10"></script>
-<script src="js/hub.js?v=8"></script>
-<script src="js/more.js?v=4"></script>
+<script src="js/hub.js?v=10"></script>
+<script src="js/more.js?v=6"></script>
 <script src="js/demo.js?v=2"></script>
 <script src="js/ai.js?v=8"></script>
 <script>
@@ -329,14 +331,16 @@
   let exam = C, calMonth = new Date(S.today.getFullYear(), S.today.getMonth(), 1);
 
   function renderHome() {
-    S.$("#hello").textContent = S.greet() + ", " + me.parentFirst;
+    S.$("#hello").textContent = S.greet().replace(/\b[a-z]/g, (c) => c.toUpperCase()) + ", " + me.parentFirst;
     S.$("#today-line").textContent = S.fmtLong(S.today);
+    // The date shows once: when the corner of the sheet already carries it, the line above the greeting steps aside.
+    S.$("#today-line").hidden = !S.schoolClock().live;
     const st = S.statusOn(me.roll, S.todayKey), rec = S.cs.attendance[S.todayKey];
     const box = S.$("#today-status");
     const say = (c, b, rest) => { box.style.setProperty("--c", c); S.paint(box, `<i></i><span><b>${b}</b> ${rest}</span>`); };
     if (st === null) say("var(--warn)", "Attendance not marked yet.", `${S.teacher.name} takes roll call at 8:00 AM. You'll get a notification.`);
-    else if (st === "P") say("var(--green)", `${me.first} is in school today.`, `Marked present at ${rec.at} by ${S.teacher.name}.`);
-    else say("var(--accent)", `${me.first} is marked ${statusLabel[st].toLowerCase()} today.`, `Marked at ${rec.at} by ${S.teacher.name}. Not expected? <button class="link-btn" type="button" data-go="messages">Message the teacher</button>`);
+    else if (st === "P") say("var(--green)", `${me.first} is in school today.`, "");
+    else say("var(--accent)", `${me.first} is marked ${statusLabel[st].toLowerCase()} today.`, `Not expected? <button class="link-btn" type="button" data-go="messages">Message the teacher</button>`);
 
     const pend = S.cs.homework.filter((h) => !h.done), fee = fees().find((f) => !f.paid);
     const nextPtm = S.state.notices.filter((n) => n.tag === "PTM" && n.date >= S.todayKey).sort((x, y) => (x.date < y.date ? -1 : 1))[0];
@@ -383,7 +387,7 @@
       <p class="muted" style="font-size:13.5px;margin-top:10px">${list.length < 8 ? "Saturday is a half day, home by 11:30." : "School ends at 1:30 PM."}</p>`;
   }
   // Home: the school day as one ribbon of periods, with a marker that moves with the clock.
-  const TINY = { Maths: "Ma", English: "En", Hindi: "Hi", Science: "Sc", SSt: "SSt", "Comp.": "Co", Games: "Ga", Art: "Art", Library: "Lib", Music: "Mu", Values: "VE", Assembly: "As", Clubs: "Cl", Physics: "Ph", "Chem.": "Ch", "Bio.": "Bi", Accounts: "Ac", BSt: "BSt", "Eco.": "Ec", "App. Maths": "AM", "Phys. Ed.": "PE", IT: "IT" };
+  const TINY = { Maths: "Mat", English: "Eng", Hindi: "Hin", Science: "Sci", SSt: "SSt", "Comp.": "Com", Games: "Gam", Art: "Art", Library: "Lib", Music: "Mus", Values: "Val", Assembly: "Asm", Clubs: "Club", Physics: "Phy", "Chem.": "Chem", "Bio.": "Bio", Accounts: "Acc", BSt: "BSt", "Eco.": "Eco", "App. Maths": "AMa", "Phys. Ed.": "PE", IT: "IT" };
   const hhmm = (m) => `${((Math.floor(m / 60) + 11) % 12) + 1}:${String(m % 60).padStart(2, "0")}`;
   function renderDay() {
     const real = new Date(); real.setHours(0, 0, 0, 0);
@@ -409,11 +413,75 @@
     else if (brk) cap = `<b>Break</b> <span>until ${S.periodTimes[4]} · then ${list[4]} with ${who(list[4])}</span>`;
     else if (live && nowM >= t1) cap = `<b>School's over for today.</b> <span>${off}${ndName} begins with ${ndList[0]} at 8:00.</span>`;
     else cap = `<b>${live ? "Today" : "The day"} begins with ${list[0]}</b> <span>at 8:00, with ${who(list[0])} · ${endNote}</span>`;
-    const html = `<div class="hm-day-h"><b>${live ? "Today" : S.fmt(day, { weekday: "long", day: "numeric", month: "short" })}</b><span>${list.length} periods · ${S.periodTimes[0]} to ${hhmm(t1)}</span></div>
+    const html = `<div class="hm-day-h"><b>${live || S.iso(day) === S.todayKey ? "Today" : S.fmt(day, { weekday: "long", day: "numeric", month: "short" })}</b><span>${list.length} periods · ${S.periodTimes[0]} to ${hhmm(t1)}</span></div>
       <div class="rb${during ? " live" : ""}"><div class="rb-track" role="img" aria-label="${list.length} periods: ${list.join(", ")}">${seg}</div>${during ? `<span class="rb-now" style="--x:${(x * 100).toFixed(2)}%"><i>${hhmm(nowM)}</i></span>` : ""}</div>
       <div class="rb-ax"><span style="left:0">${S.periodTimes[0]}</span>${list.length > 4 ? `<span style="left:${pct(mins(ENDS[3]))}">Break ${ENDS[3]}</span>` : ""}<span style="left:100%">${hhmm(t1)}</span></div>
       <p class="hm-cap">${cap}</p>`;
-    S.paint(S.$("#hm-day"), html); S.paint(S.$("#hub-day"), html);
+    S.paint(S.$("#hm-day"), html); renderHubDay();
+  }
+  // Home: yesterday, today or tomorrow. Each shows the periods as they really ran (or will run), with
+  // substitutes for teachers on leave, and what the day meant for the child: present, away, on leave, a holiday.
+  let hubDay = 0;
+  document.addEventListener("click", (e) => { const b = e.target.closest("[data-hd]"); if (!b) return; hubDay = +b.dataset.hd; renderHubDay(); });
+  function renderHubDay() {
+    const real = new Date(); real.setHours(0, 0, 0, 0);
+    const prev = (() => { let x = S.addDays(S.today, -1); for (let i = 0; i < 20 && !S.isSchoolDay(x); i++) x = S.addDays(x, -1); return x; })();
+    const days = [prev, S.today, S.nextSchoolDay(S.today, 1)];
+    const lab = (d, i) => i === 1 ? "Today" : S.iso(d) === S.iso(S.addDays(S.today, i - 1 ? 1 : -1)) ? (i ? "Tomorrow" : "Yesterday") : (i ? "Next: " : "Last: ") + S.fmt(d, { weekday: "short", day: "numeric" });
+    const day = days[hubDay + 1], key = S.iso(day), list = S.isSchoolDay(day) ? S.timetable[day.getDay()] || [] : [];
+    const live = hubDay === 0 && real.getTime() === S.today.getTime() && list.length, nowM = new Date().getHours() * 60 + new Date().getMinutes();
+    const past = hubDay < 0 || (live && nowM >= mins(ENDS[list.length - 1]));
+    const who = (sub) => S.ttTeachers[sub] || "";
+    // Arrangements for this class on this day: who's away, and who takes the period instead.
+    const done = (S.state.cover || {})[key] || {};
+    const arr = (S.coverOn ? S.coverOn(key) : []).filter((r) => r.key === me.sec.key).map((r) => ({ ...r, by: done[r.id] || (key < S.todayKey && r.free[0] ? r.free[0].name : "") }));
+    const subAt = (p) => arr.find((r) => r.p === p);
+    const cur = live ? list.findIndex((x, p) => nowM >= mins(S.periodTimes[p]) && nowM < mins(ENDS[p])) : -1;
+    const tabs = `<div class="seg hd-sw" role="group" aria-label="Choose a day">${days.map((d, i) => `<button type="button" data-hd="${i - 1}" aria-pressed="${i - 1 === hubDay}"${i - 1 === hubDay ? ' class="on"' : ""}>${lab(d, i)}</button>`).join("")}</div>`;
+    const head = `<div class="hm-day-h hd-h">${tabs}<span>${list.length ? `${S.fmt(day, { weekday: "long", day: "numeric", month: "short" })} · ${list.length} periods · ${S.periodTimes[0]} to ${hhmm(mins(ENDS[list.length - 1]))}` : S.fmt(day, { weekday: "long", day: "numeric", month: "short" })}</span></div>`;
+    // What the day meant for the child.
+    const st = key <= S.todayKey ? S.statusOn(me.roll, key) : null, rec = key === S.todayKey ? S.cs.attendance[key] : null;
+    const lv = S.cs.leaves.find((l) => l.roll === me.roll && l.from <= key && (l.to || l.from) >= key);
+    let kid = "";
+    if (!list.length) kid = `<p class="hd-kid" style="--c:var(--royal)"><i></i><span><b>No school${S.HOLIDAYS[key] ? `: ${S.esc(S.HOLIDAYS[key])}` : day.getDay() === 0 ? " on Sunday" : ""}.</b></span></p>`;
+    else if (hubDay < 0) kid = st === "P" ? `<p class="hd-kid" style="--c:var(--green)"><i></i><span><b>${me.first} was in school.</b></span></p>`
+      : st === "A" ? `<p class="hd-kid" style="--c:var(--accent)"><i></i><span><b>${me.first} was marked absent.</b> If this is wrong, <button class="link-btn" type="button" data-go="messages">message the teacher</button>.</span></p>`
+      : st === "L" ? `<p class="hd-kid" style="--c:var(--gold)"><i></i><span><b>${me.first} was on leave.</b> ${lv ? S.esc(lv.why) + "." : "Approved by the class teacher."} Ask a friend for the day's notes, or see homework.</span></p>` : "";
+    else if (hubDay > 0) kid = lv ? `<p class="hd-kid" style="--c:var(--gold)"><i></i><span><b>${me.first} is on leave${lv.status === "Waiting" ? " (awaiting approval)" : ""}.</b> ${S.esc(lv.why || "")}</span></p>` : "";
+    else if (lv && st !== "P") kid = `<p class="hd-kid" style="--c:var(--gold)"><i></i><span><b>${me.first} is on leave today.</b> ${S.esc(lv.why || "")}</span></p>`;
+    if (!list.length) { S.paint(S.$("#hub-day"), head + kid); return; }
+    const t0 = mins(S.periodTimes[0]), t1 = mins(ENDS[list.length - 1]);
+    const during = live && nowM >= t0 && nowM < t1, x = during ? (nowM - t0) / (t1 - t0) : 0;
+    const pct = (m) => (((m - t0) / (t1 - t0)) * 100).toFixed(2) + "%";
+    let seg = "", k = 0;
+    list.forEach((sub, p) => {
+      if (p === 4) seg += `<span class="dp brk" style="--i:${k++}" title="Break, ${ENDS[3]} to ${S.periodTimes[4]}"></span>`;
+      const short = SHORT[sub] || sub, a = subAt(p), gone = past || (live && nowM >= mins(ENDS[p]));
+      const tip = a ? `${S.periodTimes[p]}–${ENDS[p]} · ${a.by ? `Arrangement: ${a.by}` : "Arrangement being made"}` : `${S.periodTimes[p]}–${ENDS[p]} · ${who(sub)}`;
+      // An arranged period: the regular one struck through, the arrangement written in its place.
+      // The teacher taking the period, by title and surname ("Mrs. Menon"); just the surname on phones.
+      const by = a ? (a.by ? a.by.replace(/^(Mr|Mrs|Ms)\. \S+ /, "$1. ") : "Arrangement") : "";
+      seg += `<span class="dp c-${HUE[sub] || "none"}${gone && hubDay === 0 ? " past" : ""}${p === cur ? " cur" : ""}${a ? " sub" : ""}" style="--i:${k++}"${S.tipAttr(tip, sub + (a ? " · arrangement" : ""))}>${a ? `<span class="dp-a"><s class="dp-l">${short}</s><s class="dp-s" aria-hidden="true">${TINY[short] || short.slice(0, 2)}</s><span class="dp-n dp-l">${S.esc(by)}</span><span class="dp-n dp-s" aria-hidden="true">${S.esc(a.by ? a.by.split(" ").pop() : "Arr.")}</span></span>` : `<span class="dp-l">${short}</span><span class="dp-s" aria-hidden="true">${TINY[short] || short.slice(0, 2)}</span>`}</span>`;
+    });
+    const ax = `<div class="rb-ax"><span style="left:0">${S.periodTimes[0]}</span>${list.length > 4 ? `<span style="left:${pct(mins(ENDS[3]))}">Break ${ENDS[3]}</span>` : ""}<span style="left:100%">${hhmm(t1)}</span></div>`;
+    // One line on where the day stands (today), or how it began / ran.
+    let cap;
+    const brk = live && nowM >= mins(ENDS[3]) && nowM < mins(S.periodTimes[4]);
+    const whoAt = (p) => { const a = subAt(p); return a ? (a.by || "a substitute") : who(list[p]); };
+    if (cur >= 0) { const nx = list[cur + 1]; cap = `<b>Period ${cur + 1}: ${list[cur]}</b> now, with ${S.esc(whoAt(cur))}${subAt(cur) ? " (arrangement)" : ""} <span>until ${ENDS[cur]}${nx ? ` · then ${cur === 3 ? "break, then " : ""}${nx}` : " · last period"}</span>`; }
+    else if (brk) cap = `<b>Break</b> <span>until ${S.periodTimes[4]} · then ${list[4]} with ${S.esc(whoAt(4))}</span>`;
+    else if (hubDay === 0 && live && nowM >= t1) cap = `<b>School's over for today.</b> <span>All ${list.length} periods done.</span>`;
+    else if (hubDay < 0) cap = `<b>${list.length} periods</b> <span>· ${arr.length ? `${arr.length} taken by a substitute` : "all with the usual teachers"}.</span>`;
+    else cap = `<b>${hubDay > 0 ? "Begins" : "The day begins"} with ${list[0]}</b> <span>at 8:00, with ${S.esc(whoAt(0))} · ${list.length < 8 ? "Saturday is a half day, home by 11:30." : "School ends at 1:30 PM."}</span>`;
+    // Arrangements, spelled out.
+    const arrHTML = "", _unused = arr.length ? `<div class="hd-arr"><b class="hd-arr-h">Arrangements${hubDay < 0 ? " that day" : ""}</b><ul>${arr.map((a) => `<li${a.p === cur ? ' class="cur"' : ""}><span class="hd-p">P${a.p + 1} · ${a.time}</span><span><b>${S.esc(a.subj)}</b>: ${S.esc(a.teacher)} ${hubDay < 0 ? "was" : "is"} on ${S.esc((a.why || "leave").toLowerCase())}. ${a.by ? `${S.esc(a.by)} ${hubDay < 0 ? "took" : "takes"} the class.` : "A substitute is being arranged."}</span></li>`).join("")}</ul></div>`
+      : `<p class="hd-none">No arrangements: every period ${hubDay < 0 ? "was" : "is"} with the usual teacher.</p>`;
+    // Homework due on that day, so tomorrow's tab answers "is anything due?"
+    const hw = hubDay >= 0 ? S.cs.homework.filter((h) => h.due === key && !h.done) : [];
+    const hwHTML = hw.length ? `<p class="hd-hw">Homework due ${hubDay ? "that day" : "today"}: ${hw.map((h) => `<b>${S.esc(h.subj)}</b> (${S.esc(h.title)})`).join(", ")}</p>` : "";
+    S.paint(S.$("#hub-day"), head + kid +
+      `<div class="rb${during ? " live" : ""}"><div class="rb-track" role="img" aria-label="${list.length} periods: ${list.join(", ")}">${seg}</div>${during ? `<span class="rb-now" style="--x:${(x * 100).toFixed(2)}%"><i>${hhmm(nowM)}</i></span>` : ""}</div>` +
+      ax + `<p class="hm-cap">${cap}</p>` + arrHTML + hwHTML);
   }
   function renderPivot() {
     const real = new Date(); real.setHours(0, 0, 0, 0);
@@ -924,21 +992,37 @@
   (function () { let r = 7, h = '<rect width="21" height="21" fill="#fff"/>'; const rnd = () => ((r = (r * 1103515245 + 12345) >>> 0) / 4294967296); for (let y = 0; y < 21; y++) for (let x = 0; x < 21; x++) { const f = (x < 7 && y < 7) || (x > 13 && y < 7) || (x < 7 && y > 13); if (f) { const a = x > 13 ? x - 14 : x, b = y > 13 ? y - 14 : y; if (a === 0 || a === 6 || b === 0 || b === 6 || (a > 1 && a < 5 && b > 1 && b < 5)) h += `<rect x="${x}" y="${y}" width="1" height="1" fill="#111"/>`; } else if (rnd() > 0.52) h += `<rect x="${x}" y="${y}" width="1" height="1" fill="#111"/>`; } S.$("#qr").innerHTML = h; })();
   S.$("#pay-done").addEventListener("click", () => { const f = fees().find((x) => !x.paid); f.paid = S.todayKey; S.save(); S.$("#pay-modal").classList.remove("open"); renderFees(); renderHome(); S.toast("Payment received · receipt sent on WhatsApp and email"); });
 
+  // Chat with the class teacher or any subject teacher of the class; each has a thread of its own.
+  let chatWith = "";
+  const subjTeachers = () => { const by = {}; Object.entries(S.ttTeachers).forEach(([sub, t]) => { if (/^(Mr|Mrs|Ms)\. /.test(t) && t !== S.teacher.name) (by[t] = by[t] || []).push(SHORT[sub] || sub); }); const rank = (subs) => Math.min(...subs.map((x) => { const i = S.subjects.findIndex((v) => (SHORT[v] || v) === x); return i < 0 ? 99 : i; }));
+    return Object.entries(by).map(([name, subs]) => ({ name, subs: [...new Set(subs)] })).sort((a, b) => rank(a.subs) - rank(b.subs)); };
+  const chatName = () => chatWith || S.teacher.name;
+  const chatThread = () => chatWith ? (S.state.threads[`${S.kidKey}|${chatWith}`] || (S.state.threads[`${S.kidKey}|${chatWith}`] = [])) : thread();
+  document.addEventListener("click", (e) => { const b = e.target.closest("[data-chat-to]"); if (!b) return; chatWith = b.dataset.chatTo; renderThread(); });
   function renderThread() {
-    const t = thread(); S.sealThread(t);
-    S.$("#p-rec").innerHTML = S.recordNote(t);
-    S.$("#thread").innerHTML = t.map((m) => `<div class="msg ${m.from === "parent" ? "me" : "bot"}${m.voice ? " voice" : ""}">${S.msgBody(m)}<span class="when">${m.from === "teacher" ? S.teacher.name + " · " : ""}${S.esc(m.at)}${m.after ? " · after hours" : ""}</span></div>`).join("");
-    S.$("#p-hours").innerHTML = `${CLOCK}${S.esc(S.teacher.name)} reads messages ${S.hoursText(S.teacher.name)}, Monday to Saturday.${S.inHours(S.teacher.name) ? "" : ` Anything you send now reaches them ${S.nextOpen(S.teacher.name)}.`}`;
+    const list = subjTeachers(); if (chatWith && !list.some((x) => x.name === chatWith)) chatWith = "";
+    const unread = (t) => t.filter((m) => m.from === "teacher" && m.fresh).length;
+    const ini = (n) => n.replace(/^(Mr|Mrs|Ms)\. /, "").split(" ").map((w) => w[0]).join("").slice(0, 2);
+    S.$("#chat-to").innerHTML = [{ name: "", show: S.teacher.name, role: "Class teacher" }, ...list.map((x) => ({ name: x.name, show: x.name, role: x.subs.join(", ") }))].map((x) => {
+      const t = x.name ? S.state.threads[`${S.kidKey}|${x.name}`] || [] : thread(), n = unread(t);
+      return `<button type="button" class="ct-i${x.name === chatWith ? " on" : ""}" data-chat-to="${S.esc(x.name)}" aria-pressed="${x.name === chatWith}"><span class="avatar ${x.name === chatWith ? "" : "soft"}">${ini(x.show)}</span><span class="ct-t"><b>${S.esc(x.show)}</b><span>${S.esc(x.role)}</span></span>${n ? `<span class="count">${n}</span>` : ""}</button>`; }).join("");
+    const who = chatName(), t = chatThread(); S.sealThread(t);
+    S.$("#msg-sub").textContent = chatWith ? `With ${who}, ${list.find((x) => x.name === chatWith).subs.join(" and ")} teacher ${me.label}` : `With ${who}, class teacher ${me.label}`;
+    S.$("#msg-form input").placeholder = chatWith ? `Write to ${who}…` : "Write to the class teacher…";
+    S.$("#p-rec").innerHTML = t.length ? S.recordNote(t) : "";
+    S.$("#thread").innerHTML = t.length ? t.map((m) => `<div class="msg ${m.from === "parent" ? "me" : "bot"}${m.voice ? " voice" : ""}">${S.msgBody(m)}<span class="when">${m.from === "teacher" ? S.esc(who) + " · " : ""}${S.esc(m.at)}${m.after ? " · after hours" : ""}</span></div>`).join("")
+      : `<p class="ct-empty">No messages with ${S.esc(who)} yet. Write about ${me.first}\'s ${S.esc(list.find((x) => x.name === chatWith).subs.join(" and "))}: homework, a test, or how it\'s going.</p>`;
+    S.$("#p-hours").innerHTML = `${CLOCK}${S.esc(who)} reads messages ${S.hoursText(who)}, Monday to Saturday.${S.inHours(who) ? "" : ` Anything you send now reaches them ${S.nextOpen(who)}.`}`;
     S.$("#thread").scrollTop = 1e6;
     renderCare();
   }
   // Only the parent writes here: a parent check first, good for ten minutes.
-  const chatCheck = () => S.parentCheck({ key: me.key, hold: true, why: `Messages to ${S.teacher.name} go out in your name. Confirm it's you, not ${me.first}.` });
+  const chatCheck = () => S.parentCheck({ key: me.key, hold: true, why: `Messages to ${chatName()} go out in your name. Confirm it's you, not ${me.first}.` });
   // Outside the teacher's office hours a message is kept, without an alert, until they start.
   const postMine = (m) => {
-    const open = S.inHours(S.teacher.name);
-    S.post(thread(), Object.assign({ from: "parent", at: "Today, " + S.timeNow(), fresh: true, check: "PIN" }, open ? {} : { after: true }, m)); S.save(); renderThread();
-    S.toast(open ? "Sent to " + S.teacher.name : `Sent. ${S.teacher.name} sees it ${S.nextOpen(S.teacher.name)}.`);
+    const who = chatName(), open = S.inHours(who);
+    S.post(chatThread(), Object.assign({ from: "parent", at: "Today, " + S.timeNow(), fresh: true, check: "PIN" }, open ? {} : { after: true }, m)); S.save(); renderThread();
+    S.toast(open ? "Sent to " + who : `Sent. ${who} sees it ${S.nextOpen(who)}.`);
   };
   S.$("#msg-form").addEventListener("submit", async (e) => {
     e.preventDefault(); const i = e.target.querySelector("input"); if (!i.value.trim()) return;
@@ -1084,18 +1168,32 @@
     if (unread) N.push({ d: S.todayKey, tone: "royal", icon: NI.msg, t: `${unread === 1 ? "A new message" : unread + " new messages"} from ${S.esc(S.teacher.name)}`, sub: "Class teacher", when: "Today", act: "Read", go: "messages" });
     N.sort((a, b) => (a.d < b.d ? -1 : 1));
     S.setNeeds(N, { empty: "Nothing needs you today." });
+    // The same list as a tag at the top of the sheet, like the website's admissions tag: what's waiting, one tap to see it.
+    const VERB = { Sign: "sign a form", Pay: "pay the fee", Book: "book the PTM", Read: "read", Datesheet: "check the datesheet", See: "see homework" };
+    const firsts = [...new Set(N.map((x) => VERB[x.act] || x.act.toLowerCase()))].slice(0, 2).join(", ");
+    S.paint(S.$("#need-tag"), N.length
+      ? `<button type="button" class="need-tag" data-open-needs><i class="live" aria-hidden="true"></i><span class="nt-t"><b>${N.length} thing${N.length === 1 ? "" : "s"}</b> need${N.length === 1 ? "s" : ""} you<span class="nt-x">: ${firsts}${N.length > 2 ? "…" : ""}</span></span><span class="nt-go">See all<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span></button>`
+      : `<span class="need-tag ok"><i class="live" aria-hidden="true"></i><span class="nt-t"><b>All caught up.</b> Nothing needs you today.</span></span>`);
 
     const pct = S.attendancePct(me.roll), avg = S.avgOf(me[C]), ex = myExams().length;
     const nts = S.noticesFor(me).filter((n) => n.date >= S.todayKey), hi = nts.filter((n) => S.levelOf(n) === "high" && !S.ackOf(n.id, me.key)).length;
     const toSign = S.formsFor(me.sec.key).filter((x) => !S.formAnswer(x, me.roll)).length, rem = S.remarksFor(me.sec.key, me.roll, false).length;
     const booked = ptm && S.noticeFor(ptm, me) ? S.ptmOfKid(ptm.date, me.key) : [];
     const pick = S.pickupsOf(me.key).length, next = f && f.mode !== "ts" ? ` · ${S.esc(f.e.name)} ${daysTo(f.e.papers[G][0].date) > 0 ? "in " + daysTo(f.e.papers[G][0].date) + " days" : "on now"}` : "";
+    // Richer daily tiles: the days behind the attendance figure, homework due dates, the change since the last exam, and how much of the year's fees is paid.
+    const days = sessionDays(), away = days.filter((k) => ["A", "L"].includes(S.statusOn(me.roll, k))).length, mos = monthsOf();
+    const attSide = `<span class="pg-spark" title="Month by month">${S.miniBars(mos.map((r) => r.me), { lo: 60, hi: 100, ref: 75 })}</span>`;
+    const hwFoot = pend.length ? `<span class="pg-chips">${pend.slice(0, 3).map((h) => `<span class="pg-chip${daysTo(h.due) <= 1 ? " soon" : ""}">${S.esc(SHORT[h.subj] || h.subj)} · ${daysTo(h.due) === 0 ? "today" : daysTo(h.due) === 1 ? "tomorrow" : S.fmt(h.due, { day: "numeric", month: "short" })}</span>`).join("")}</span>` : "";
+    const pAvg = P && me[P] ? S.avgOf(me[P]) : null, dAvg = pAvg === null ? null : Math.round((avg - pAvg) * 10) / 10;
+    const resSide = dAvg === null ? "" : `<span class="pg-delta ${dAvg >= 0 ? "up" : "down"}">${dAvg >= 0 ? "▲" : "▼"} ${Math.abs(dAvg)}<small>since ${S.esc(L(P))}</small></span>`;
+    const rows = S.subjects.map((x) => ({ x, v: me[C][x] })).sort((a, b) => b.v - a.v), nm = (x) => SHORT[x] || x;
+    const allF = fees(), paidAmt = allF.filter((x) => x.paid).reduce((a, x) => a + x.amount, 0), totAmt = allF.reduce((a, x) => a + x.amount, 0), fd = fee ? daysTo(fee.due) : 0;
     S.paint(S.$("#hub-tiles"), S.tilesHTML([
       { go: "timetable", icon: I.timetable, tone: "teal", name: "Today and timetable", line: nowLine() },
-      { go: "attendance", icon: I.attendance, tone: "green", name: "Attendance", line: "Present this session", flag: pct < 85, m: pct, main: true, big: pct, unit: "%" },
-      { go: "homework", icon: I.homework, tone: "royal", name: "Homework", line: pend.length ? `Next: ${S.esc(pend[0].subj)}, ${S.fmt(pend[0].due)}` : "All done", count: S.cs.homework.filter((h) => h.fresh && !h.done).length, main: true, big: pend.length, unit: " to do", m: S.cs.homework.length ? ((S.cs.homework.length - pend.length) / S.cs.homework.length) * 100 : null },
-      { go: "results", icon: I.results, tone: "accent", name: ex ? "Exams and results" : "Results", line: `${L(C)}${next}`, m: avg, main: true, big: avg, unit: "%" },
-      { go: "fees", icon: I.fees, tone: "gold", name: "Fees", main: true, big: fee ? S.rupee(fee.amount) : "Paid", line: fee ? `Due ${S.fmt(fee.due, { day: "numeric", month: "long" })}` : "Nothing due", flag: fee && daysTo(fee.due) <= 14 },
+      { go: "attendance", icon: I.attendance, tone: "green", name: "Attendance", line: `Present this session · ${away ? `${away} day${away === 1 ? "" : "s"} missed of ${days.length}` : `not a day missed in ${days.length}`}`, flag: pct < 85, m: pct, main: true, big: pct, unit: "%", side: mos.length > 1 ? attSide : "" },
+      { go: "homework", icon: I.homework, tone: "royal", name: "Homework", line: pend.length ? `${S.cs.homework.length - pend.length} of ${S.cs.homework.length} done · due next:` : "All done", count: S.cs.homework.filter((h) => h.fresh && !h.done).length, main: true, big: pend.length, unit: " to do", m: S.cs.homework.length ? ((S.cs.homework.length - pend.length) / S.cs.homework.length) * 100 : null, foot: hwFoot },
+      { go: "results", icon: I.results, tone: "accent", name: ex ? "Exams and results" : "Results", line: `${L(C)}${next}<br />Best in ${S.esc(nm(rows[0].x))} · most to gain in ${S.esc(nm(rows[rows.length - 1].x))}`.replace("<br />", "<span class=\"pg-sub\">") + "</span>", m: avg, main: true, big: avg, unit: "%", side: resSide },
+      { go: "fees", icon: I.fees, tone: "gold", name: "Fees", main: true, big: fee ? S.rupee(fee.amount) : "Paid", line: fee ? `Due ${S.fmt(fee.due, { day: "numeric", month: "long" })} · ${fd < 0 ? `${-fd} day${fd === -1 ? "" : "s"} overdue` : fd === 0 ? "today" : `in ${fd} day${fd === 1 ? "" : "s"}`}<span class="pg-sub">${S.rupee(paidAmt)} of ${S.rupee(totAmt)} paid this year</span>` : `${S.rupee(paidAmt)} of ${S.rupee(totAmt)} paid this year`, flag: fee && fd <= 14, m: totAmt ? (paidAmt / totAmt) * 100 : null },
       { go: "notices", icon: I.notices, tone: "slate", name: "Notices", line: hi ? `${hi} important to read` : nts.length ? `${nts.length} coming up` : "Nothing new", flag: hi > 0 },
       { go: "messages", icon: I.messages, tone: "royal", name: "Messages", line: unread ? `${unread} new from ${S.esc(S.teacher.name)}` : `Chat with ${S.esc(S.teacher.name)}`, count: unread },
       { go: "messages/forms", icon: PI.care, tone: "green", name: "Remarks and forms", line: toSign ? `${toSign} form${toSign === 1 ? "" : "s"} to sign` : `${rem} remark${rem === 1 ? "" : "s"} from teachers`, flag: toSign > 0 },
@@ -1162,6 +1260,19 @@
     if (now !== lastAtt) { lastAtt = now; const st = S.statusOn(me.roll, S.todayKey); S.toast(st === "P" ? me.first + " marked present at school" : me.first + " marked " + statusLabel[st].toLowerCase() + " today"); }
     renderAll();
   });
+  document.addEventListener("click", (e) => { const t = e.target.closest("[data-open-needs]"); if (t) { const tr = S.$("#needs-tray"); if (tr && !tr.hidden) tr.hidden = true; else S.openNeeds(t); } });
+  // Title Case on the welcome page, as on the website: headings, page names and buttons. Sentences stay as written.
+  const SMALL = new Set("a an the and but or nor for so yet as at by in of on to up via with from into per vs".split(" "));
+  const tc = (str) => { let n = 0; const real = str.split(/\s+/).filter(Boolean).length; return str.split(/(\s+)/).map((w) => {
+    if (!w.trim()) return w; const i = n++, core = w.replace(/^[^A-Za-z]+/, "");
+    if (!core || /^['’]/.test(w) || /[A-Z0-9]/.test(core.slice(1)) || /[a-z]\.[a-z]/i.test(core)) return w;
+    if (i && i < real - 1 && SMALL.has(core.toLowerCase().replace(/[^a-z']/g, ""))) return w;
+    return w.replace(/[a-z]+(?:'[a-z]+)?/i, (m) => m[0].toUpperCase() + m.slice(1)); }).join(""); };
+  const homeTitles = () => S.$$('[data-view="home"] :is(h1, .hub-sec > h2, .pgl-h, .pg-n, .pgl-t b, .hm-day-h b, .install b, .nt-go, .btn)').forEach((el) => {
+    if (/[.?!]$/.test(el.textContent.trim())) return;
+    const walk = document.createTreeWalker(el, NodeFilter.SHOW_TEXT); let t;
+    while ((t = walk.nextNode())) { const v = tc(t.nodeValue); if (v !== t.nodeValue) t.nodeValue = v; } });
+  homeTitles(); document.addEventListener("sjs:sync", () => setTimeout(homeTitles)); document.addEventListener("sjs:redraw", () => setTimeout(homeTitles)); setInterval(homeTitles, 60000);
   S.mountAI("parent");
 })();
 </script>

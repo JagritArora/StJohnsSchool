@@ -51,7 +51,6 @@
         <nav class="lane lane-sec" aria-label="On this page" inert><button class="here" type="button" aria-haspopup="true" aria-expanded="false">${pageName}${I.down}</button><div class="chips"><i class="ind" aria-hidden="true"></i></div></nav>
       </div>
       <div class="hdr-act">
-        <button class="ibtn srch-btn" type="button" aria-label="Search the website" title="Search" aria-haspopup="dialog">${I.search}</button>
         <a class="ibtn" href="login.html" aria-label="Parent and staff login" title="Parent and staff login">${I.user}</a>
         <button class="menu-btn" type="button" aria-haspopup="true" aria-expanded="false"><span>Menu</span></button>
       </div>
@@ -231,7 +230,7 @@
     run(); setTimeout(() => $(".srch input", srch).focus(), 30);
   };
   const closeSearch = () => { if (!srch || !srch.classList.contains("open")) return; srch.classList.remove("open"); document.documentElement.classList.remove("srch-on"); if (lastFocus) lastFocus.focus({ preventScroll: true }); };
-  $(".srch-btn", hdr).addEventListener("click", openSearch);
+  // The search button is gone from the header; "/" still opens search from the keyboard.
   document.addEventListener("keydown", (e) => {
     if (e.key === "Escape") closeSearch();
     if (e.key === "/" && !/^(INPUT|TEXTAREA|SELECT)$/.test(document.activeElement.tagName) && !document.activeElement.isContentEditable) { e.preventDefault(); openSearch(); }

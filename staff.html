@@ -17,7 +17,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Figtree:wght@400..800&display=swap" rel="stylesheet" />
-<link rel="stylesheet" href="css/site.css?v=37" />
+<link rel="stylesheet" href="css/site.css?v=46" />
 <script>
 /* Before the first paint: fade photos in as they load. */
 (function (d) { d.documentElement.classList.add("js");
@@ -574,10 +574,10 @@
   S.NAV_ICONS = I;
 })();
 </script>
-<script src="js/common.js?v=11"></script>
+<script src="js/common.js?v=12"></script>
 <script src="js/charts.js?v=10"></script>
-<script src="js/hub.js?v=8"></script>
-<script src="js/more.js?v=4"></script>
+<script src="js/hub.js?v=10"></script>
+<script src="js/more.js?v=6"></script>
 <script src="js/ai.js?v=8"></script>
 <script>
 (function () {
@@ -1054,9 +1054,13 @@
   });
 
   // ---------- Messages: one thread per demo parent of the class ----------
-  function threads() { return parentsHere.map((p) => ({ key: p.key, kid: S.kid(p.key), msgs: S.thread(p.key) })); }
+  // Class parents' threads, plus any parent who wrote to this teacher as a subject teacher (kept as "kid|teacher").
+  function threads() {
+    const own = Object.keys(S.state.threads || {}).filter((k) => k.endsWith("|" + T.name) && S.state.threads[k].length).map((k) => { const kk = k.slice(0, -T.name.length - 1); return { key: k, kid: S.kid(kk), msgs: S.state.threads[k] }; }).filter((v) => v.kid);
+    return [...parentsHere.map((p) => ({ key: p.key, kid: S.kid(p.key), msgs: S.thread(p.key) })), ...own];
+  }
   function renderThread() {
-    const all = threads(), t = all.find((v) => v.key === openThread) || all[0];
+    const all = threads(), t = all.find((v) => v.key === openThread) || all[0]; if (t) openThread = t.key;
     S.$("#threads").innerHTML = all.map((v) => { const last = v.msgs[v.msgs.length - 1], n = v.msgs.filter((m) => m.from === "parent" && m.fresh).length; return `<button type="button" class="li todo${v === t ? " on" : ""}" data-thread="${v.key}"><span class="avatar ${v === t ? "" : "soft"}">${v.kid.initials}</span><div class="t"><b>${S.esc(v.kid.name)}'s ${v.kid.relation.toLowerCase()}${n ? ` <span class="pill red">${n}</span>` : ""}</b><span>${last ? (last.voice ? "Voice message" : S.esc(last.text)) : ""}</span></div></button>`; }).join("") || '<p class="muted" style="font-size:14.5px">No parent threads in this demo class.</p>';
     if (!t) { S.$("#thread").innerHTML = ""; return; }
     S.$("#msg-in").placeholder = `Reply to ${t.kid.first}'s ${t.kid.relation.toLowerCase()}…`;
