@@ -1,0 +1,114 @@
+/* "Ask St. John's": the living bits. Search box, topics, welcome, reactions and motion.
+   Loaded after school.css (website) or site.css (portals); falls back to each one's colours. */
+.ai-panel { --ai-c: var(--royal, var(--accent)); --ai-r: var(--brick, var(--accent)); --ai-g: var(--marigold, #E2A53B); --ai-p: var(--paper, var(--bg)); --ai-p2: var(--paper-2, var(--surface)); --ai-i2: var(--ink-2, var(--muted)); }
+.ai-tease { --ai-c: var(--royal, var(--accent)); }
+
+/* Header: a slow shimmer, rising sparkles, a live dot and a subtitle that changes. */
+.ai-head { position: relative; overflow: hidden; isolation: isolate; background: linear-gradient(120deg, var(--ai-c), color-mix(in srgb, var(--ai-c) 70%, #7A3FA0) 50%, var(--ai-c)); background-size: 220% 100%; animation: ai-shim 9s ease-in-out infinite alternate; }
+@keyframes ai-shim { to { background-position: 100% 0; } }
+.ai-sparks { position: absolute; inset: 0; z-index: -1; pointer-events: none; }
+.ai-sparks i { position: absolute; left: var(--x); bottom: -8px; width: 5px; height: 5px; border-radius: 50%; background: var(--ai-g); opacity: 0; transform: scale(var(--s)); animation: ai-rise 5s var(--d) linear infinite; }
+@keyframes ai-rise { 10% { opacity: .9; } 100% { opacity: 0; transform: translateY(-90px) scale(var(--s)); } }
+.ai-head .av { position: relative; animation: ai-bob 3.2s ease-in-out infinite; }
+.ai-head .av svg { animation: ai-twinkle 2.6s ease-in-out infinite; }
+.ai-head .av u { position: absolute; inset: -3px; border-radius: 16px; border: 2px solid var(--ai-g); opacity: 0; animation: ai-ring 3.2s ease-out infinite; }
+@keyframes ai-bob { 50% { transform: translateY(-3px) rotate(-4deg); } }
+@keyframes ai-twinkle { 50% { transform: scale(1.18) rotate(12deg); } }
+@keyframes ai-ring { 0% { opacity: .7; transform: scale(.9); } 70%, 100% { opacity: 0; transform: scale(1.35); } }
+.ai-sub { display: flex; align-items: center; gap: 6px; }
+.ai-dot { width: 7px; height: 7px; border-radius: 50%; background: #5BD68A; box-shadow: 0 0 0 0 rgba(91, 214, 138, .6); animation: ai-ping 2s infinite; flex: none; opacity: 1 !important; }
+@keyframes ai-ping { 70% { box-shadow: 0 0 0 7px rgba(91, 214, 138, 0); } 100% { box-shadow: 0 0 0 0 rgba(91, 214, 138, 0); } }
+.ai-rot { display: inline-block; transition: opacity .25s, transform .25s; }
+.ai-rot.swap { opacity: 0 !important; transform: translateY(-6px); }
+
+/* Welcome card. */
+.ai-hello { text-align: center; padding: 6px 4px 2px; animation: ai-pop .6s var(--ease-out, ease) backwards; }
+.ai-hello .wave { display: inline-block; font-size: 34px; transform-origin: 70% 80%; animation: ai-wave 2.4s ease-in-out .4s 2; }
+@keyframes ai-wave { 10%, 30% { transform: rotate(16deg); } 20%, 40% { transform: rotate(-10deg); } 50% { transform: none; } }
+.ai-hello h4 { margin: 4px 0 4px; font: 700 20px/1.2 var(--display, inherit); }
+.ai-hello p { margin: 0 auto; max-width: 30ch; font-size: 14.5px; line-height: 1.5; color: var(--ai-i2); }
+.ai-hello .ai-count { margin-top: 8px; font-size: 12.5px; }
+.ai-hello .ai-count b { color: var(--ai-r); font-size: 14px; }
+.ai-tiles { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-top: 14px; }
+.ai-tiles button { display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 12px 6px 10px; border-radius: 18px; border: 1.5px solid var(--line); background: var(--ai-p); font-family: inherit; font-weight: 600; font-size: 12.5px; line-height: 1.2; color: inherit; cursor: pointer; animation: ai-pop .5s calc(.25s + var(--i) * .07s) var(--ease-out, ease) backwards; transition: transform .25s, border-color .25s, box-shadow .25s; }
+.ai-tiles button span { font-size: 24px; transition: transform .35s cubic-bezier(.3, 1.6, .5, 1); }
+.ai-tiles button:hover { transform: translateY(-3px); border-color: var(--ai-r); box-shadow: 0 10px 20px -14px rgba(0, 0, 0, .4); }
+.ai-tiles button:hover span { transform: scale(1.25) rotate(-8deg); }
+@keyframes ai-pop { from { opacity: 0; transform: translateY(10px) scale(.94); } }
+
+/* Messages land with a little spring. */
+.ai-panel .msg { animation: ai-msg .45s cubic-bezier(.3, 1.4, .5, 1) backwards; }
+.ai-panel .msg.me { transform-origin: bottom right; }
+.ai-panel .msg.bot { transform-origin: bottom left; }
+@keyframes ai-msg { from { opacity: 0; transform: translateY(8px) scale(.9); } }
+.msg.miss { animation: ai-shake .5s; }
+@keyframes ai-shake { 20%, 60% { transform: translateX(-4px); } 40%, 80% { transform: translateX(4px); } }
+.ai-go { display: inline-block; margin-top: 8px; font-weight: 600; font-size: 13.5px; color: var(--ai-r); text-decoration: none; }
+.ai-go:hover { text-decoration: underline; }
+
+/* Questions as tappable cards: in topic answers and after each answer. */
+.ai-rel { display: flex; flex-direction: column; gap: 6px; margin-top: 10px; white-space: normal; }
+.ai-rel small { font-size: 11.5px; letter-spacing: .04em; text-transform: uppercase; color: var(--ai-i2); }
+.ai-rel button { text-align: left; padding: 9px 12px; border-radius: 14px; border: 1.5px solid var(--line); background: var(--ai-p); font-family: inherit; font-weight: 500; font-size: 13.5px; line-height: 1.35; color: inherit; cursor: pointer; animation: ai-pop .4s calc(.1s + var(--i) * .05s) var(--ease-out, ease) backwards; transition: border-color .2s, transform .2s, background .2s; }
+.ai-rel button:hover { border-color: var(--ai-r); transform: translateX(3px); background: color-mix(in srgb, var(--ai-r) 5%, var(--ai-p)); }
+.msg.pick { max-width: 94%; }
+.ai-after { align-self: flex-start; max-width: 88%; margin: -4px 0 4px 6px; animation: ai-pop .4s .1s backwards; }
+.ai-after .ai-rel { margin-top: 8px; }
+.ai-react { display: inline-flex; align-items: center; gap: 4px; font-size: 12.5px; color: var(--ai-i2); }
+.ai-react button { border: 0; background: none; font-size: 16px; padding: 2px 4px; cursor: pointer; filter: grayscale(.6); transition: transform .25s cubic-bezier(.3, 1.8, .5, 1), filter .2s; }
+.ai-react button:hover { transform: scale(1.3); filter: none; }
+.ai-react.done button { pointer-events: none; opacity: .35; }
+.ai-react.done button.on { opacity: 1; filter: none; transform: scale(1.3); }
+.ai-react em { font-style: normal; margin-left: 4px; animation: ai-pop .35s backwards; }
+.ai-react em a { color: var(--ai-r); }
+.ai-confetti { position: fixed; z-index: 200; pointer-events: none; }
+.ai-confetti i { position: absolute; width: 6px; height: 9px; border-radius: 2px; background: var(--c); animation: ai-burst .85s cubic-bezier(.2, .7, .4, 1) forwards; }
+@keyframes ai-burst { from { transform: rotate(var(--a)) translateY(0); opacity: 1; } to { transform: rotate(var(--a)) translateY(-46px) rotate(220deg); opacity: 0; } }
+
+/* Topics row above the search box. */
+.ai-topics { display: flex; gap: 6px; overflow-x: auto; padding: 10px 14px 4px; border-top: 1px solid var(--line); scrollbar-width: none; mask: linear-gradient(90deg, #000 88%, transparent); -webkit-mask: linear-gradient(90deg, #000 88%, transparent); }
+.ai-topics::-webkit-scrollbar { display: none; }
+.ai-topics button { flex: none; display: inline-flex; align-items: center; gap: 5px; padding: 6px 12px; border-radius: 999px; border: 1.5px solid var(--line); background: var(--ai-p); font-family: inherit; font-weight: 500; font-size: 13px; color: inherit; cursor: pointer; transition: border-color .2s, transform .2s; }
+.ai-topics button:hover { border-color: var(--ai-r); transform: translateY(-2px); }
+
+/* The search box: no send button, suggestions rise above it. */
+.ai-search { position: relative; display: flex; align-items: center; gap: 8px; margin: 8px 14px 4px; height: 48px; padding: 0 16px; border-radius: 999px; border: 1.5px solid var(--line); background: var(--ai-p); cursor: text; transition: border-color .25s, box-shadow .25s; }
+.ai-search:focus-within { border-color: var(--ai-r); box-shadow: 0 0 0 4px color-mix(in srgb, var(--ai-r) 12%, transparent); }
+.ai-search svg { width: 18px; height: 18px; flex: none; color: var(--ai-i2); transition: transform .3s; }
+.ai-search:focus-within svg { color: var(--ai-r); transform: rotate(-12deg) scale(1.1); }
+.ai-search input { flex: 1; min-width: 0; height: 100%; border: 0; background: none; outline: none; font: inherit; font-size: 15px; color: inherit; -webkit-appearance: none; appearance: none; }
+.ai-search input::-webkit-search-cancel-button { display: none; }
+.ai-ph { position: absolute; left: 42px; right: 16px; top: 50%; transform: translateY(-50%); font-size: 14.5px; color: var(--ai-i2); white-space: nowrap; overflow: hidden; pointer-events: none; }
+.ai-ph::after { content: ""; display: inline-block; width: 1.5px; height: 1.05em; margin-left: 1px; vertical-align: -2px; background: currentColor; animation: ai-caret 1s steps(1) infinite; }
+.ai-ph.off { display: none; }
+@keyframes ai-caret { 50% { opacity: 0; } }
+.ai-sugg { display: none; flex-direction: column; gap: 2px; margin: 0 14px; padding: 6px; border-radius: 18px; background: var(--ai-p); border: 1.5px solid var(--line); box-shadow: 0 -12px 30px -18px rgba(0, 0, 0, .35); max-height: 230px; overflow-y: auto; }
+.ai-sugg.on { display: flex; animation: ai-pop .25s backwards; }
+.ai-sugg button { display: flex; align-items: center; gap: 8px; text-align: left; padding: 8px 10px; border: 0; border-radius: 12px; background: none; font-family: inherit; font-weight: 500; font-size: 13.5px; line-height: 1.35; color: inherit; cursor: pointer; animation: ai-pop .3s calc(var(--i) * .04s) backwards; }
+.ai-sugg button span { font-size: 15px; flex: none; }
+.ai-sugg button em { font-style: normal; }
+.ai-sugg button em { font-style: normal; }
+.ai-sugg button.sel, .ai-sugg button:hover { background: color-mix(in srgb, var(--ai-r) 8%, var(--ai-p)); }
+.ai-sugg mark { background: color-mix(in srgb, var(--ai-g) 40%, transparent); color: inherit; border-radius: 3px; padding: 0 1px; }
+.ai-sugg .none { margin: 0; padding: 8px 10px; font-size: 13.5px; color: var(--ai-i2); }
+.ai-panel .ai-more { border-top: 0; padding-top: 6px; }
+
+/* The button breathes, and a "psst" bubble pops up beside it now and then. */
+.ai-fab:not(.hide) { animation: fab-in .7s .9s var(--ease-out, ease) backwards, ai-breathe 4s 2s ease-in-out infinite; }
+.ai-fab svg { animation: ai-twinkle 2.6s ease-in-out infinite; }
+@keyframes ai-breathe { 50% { box-shadow: 0 12px 30px -10px rgba(20, 30, 70, .45), 0 0 0 8px color-mix(in srgb, var(--royal, var(--accent)) 14%, transparent); } }
+.ai-tease { position: fixed; right: 20px; bottom: 88px; z-index: 89; max-width: 250px; padding: 10px 14px; border-radius: 18px 18px 6px 18px; border: 1px solid var(--line); background: var(--paper, var(--bg)); color: inherit; font-family: inherit; font-size: 13.5px; line-height: 1.4; text-align: left; box-shadow: 0 14px 30px -14px rgba(0, 0, 0, .35); cursor: pointer; opacity: 0; transform: translateY(10px) scale(.9); transform-origin: bottom right; pointer-events: none; transition: opacity .35s, transform .45s cubic-bezier(.3, 1.5, .5, 1); }
+.ai-tease.on { opacity: 1; transform: none; pointer-events: auto; }
+.ai-tease b { color: var(--ai-c); }
+.ai-tease span { display: inline-block; transition: opacity .25s, transform .25s; }
+.ai-tease span.swap { opacity: 0; transform: translateY(-5px); }
+@media (max-width: 700px) { .ai-tease { right: 14px; bottom: calc(80px + env(safe-area-inset-bottom)); max-width: 220px; } }
+
+@media (prefers-reduced-motion: reduce) {
+  .ai-head, .ai-head .av, .ai-head .av svg, .ai-head .av u, .ai-sparks i, .ai-dot, .ai-fab svg, .ai-hello .wave { animation: none !important; }
+  .ai-fab:not(.hide) { animation: none; }
+}
+.ai-head .ai-sub, .ai-head .ai-rot { color: #fff; }
+.ai-head .ai-rot { opacity: .85; }
+.ai-head .ai-sub, .ai-head .ai-rot { color: #fff; }
+.ai-head .ai-rot { opacity: .85; }

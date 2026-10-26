@@ -17,7 +17,9 @@
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Figtree:wght@400..800&display=swap" rel="stylesheet" />
-<link rel="stylesheet" href="css/site.css?v=98" />
+<link rel="stylesheet" href="css/site.css?v=113" />
+<link rel="stylesheet" href="css/ai.css?v=3" />
+<link rel="stylesheet" href="css/journey.css?v=11" />
 <script>
 /* Before the first paint: fade photos in as they load. */
 (function (d) { d.documentElement.classList.add("js");
@@ -151,6 +153,7 @@
       <div class="vp" data-vp="pres" data-v="marks">
       <div id="ut2-card"></div>
       <div id="res-phase"></div>
+      <div id="sj"></div>
       <div class="grid g21 res-glance">
         <div class="card x-card"><div class="card-h"><h2 id="res-x-h">Subject by subject</h2><span class="right muted x-sub">The black tick is the class average</span></div><div id="res-x"></div></div>
         <div class="res-side"><div class="ai-card res-ai"><button class="link-btn res-rc" type="button" data-rc data-no-start>Report card so far</button><span class="ai-tag"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l1.9 5.3L19 10l-5.1 1.7L12 17l-1.9-5.3L5 10l5.1-1.7z"/></svg>What the numbers say</span><div class="body" id="res-ai"></div></div><div class="card res-stand" id="res-stand"></div></div>
@@ -248,17 +251,19 @@
   <div style="display:flex;gap:10px;margin-top:20px"><button type="button" class="btn btn-ghost" data-close>Cancel</button><button class="btn btn-green" id="pay-done" style="flex:1">I've paid (demo)</button></div>
 </div></div>
 
-<script src="js/data.js?v=12"></script>
+<script src="js/data.js?v=14"></script>
 <script src="js/classes.js?v=9"></script>
 <script src="js/bus.js?v=5"></script>
 <script src="js/exams.js?v=8"></script>
+<script src="js/journey.js?v=13"></script>
 <script src="js/care.js?v=2"></script>
 <script src="js/common.js?v=14"></script>
 <script src="js/charts.js?v=10"></script>
 <script src="js/hub.js?v=12"></script>
-<script src="js/more.js?v=7"></script>
+<script src="js/more.js?v=8"></script>
 <script src="js/demo.js?v=2"></script>
-<script src="js/ai.js?v=8"></script>
+<script src="js/faq.js?v=1"></script>
+<script src="js/ai.js?v=11"></script>
 <script>
 (function () {
   const S = SJS;
@@ -879,7 +884,8 @@
   const TICK = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>';
 
   // Exams that have happened by this stage; "Change" needs two of them.
-  S.$("#exam").innerHTML = S.EX.list.map((k, i) => `<button class="${i ? "" : "on"}" data-e="${k}">${L(k)}</button>`).join("");
+  // The exam is picked from the bars in "year so far"; the old switcher is gone.
+  S.$("#exam").remove();
   if (!P) S.$('[data-vt="res"] [data-v="change"]').remove();
 
   function renderResults() {
@@ -947,6 +953,7 @@
       return `<div class="status ok" style="margin-bottom:16px"><span class="sq green"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M5 20V10M12 20V4M19 20v-7"/></svg></span><div><b>New: ${S.ENTRY.name} · ${k} — ${v} / ${S.ENTRY.max}</b><span>Published by ${S.esc(S.ttTeachers[k] || "the teacher")} · class average ${(vals.reduce((a, b) => a + b, 0) / vals.length).toFixed(1)} / ${S.ENTRY.max}</span></div></div>`;
     }).join("");
     renderPhaseResults(); renderResX(); renderResSwitch();
+    S.renderJourney(S.$("#sj"), me);
   }
 
   // ---------- Exams: the datesheet in focus, and what Home should flag ----------
@@ -1085,7 +1092,8 @@
     }
     box.innerHTML = "";
   }
-  document.addEventListener("click", (e) => { if (!e.target.closest("[data-rc]")) return; S.showDoc("Report card", S.docPage(`Report card · ${me.name}`, [S.reportCard(me, me.sec, { att: S.attendancePct(me.roll), remark: S.PHASE === "end" && S.remarkFor ? S.remarkFor(me) : "" })])); });
+  document.addEventListener("click", (e) => { if (!e.target.closest("[data-rc]")) return; const end = S.PHASE === "end", board = /^(X|XII)$/.test(me.cls);
+    S.showDoc("Report card", S.docPage(`Report card · ${me.name}`, [S.reportCardFull(me, { result: end && !board ? `Promoted to Class ${NEXT(me.cls)}` : "", remark: end && S.remarkFor ? S.remarkFor(me) : "" })]), { file: `${me.name.replace(/\s+/g, "-")}-Report-Card-2026-27.pdf` }); });
   // Grades on the CBSE eight-point scale.
   S.grade = (v) => (v >= 91 ? "A1" : v >= 81 ? "A2" : v >= 71 ? "B1" : v >= 61 ? "B2" : v >= 51 ? "C1" : v >= 41 ? "C2" : v >= 33 ? "D" : "E");
 
@@ -1111,13 +1119,25 @@
     if (S.PHASE === "end") {
       const avg = S.avgOf(me[C]), nf = S.FEE_Q(me.sec.ci + 1) || S.FEE_Q(me.sec.ci);
       box.hidden = false;
-      S.paint(box, `<div class="card phase-card result-hero">
-        <div class="rh-top"><div><span class="lbl">${board ? "Pre-board result" : "Final result · Session 2026–27"}</span><h2>${board ? "CBSE board exam under way" : `Promoted to Class ${NEXT(me.cls)}`}</h2><span class="muted">${avg}% overall · grade ${S.grade(avg)} · attendance ${S.attendancePct(me.roll)}%</span></div><button class="btn btn-primary btn-sm" type="button" data-go="results">See the report card</button></div>
-        <div class="list">
-          <div class="li"><span class="sq red">${S.fmt("2027-03-27", { day: "numeric" })}</span><div class="t"><b>Report-card PTM</b><span>Saturday, 27 March, 9:00 AM to 12:30 PM</span></div></div>
-          ${board ? `<div class="li"><span class="sq royal">4</span><div class="t"><b>Board exams end on 4 April</b><span>CBSE results are expected in May</span></div></div>` : `<div class="li"><span class="sq green">1</span><div class="t"><b>New session begins, Class ${NEXT(me.cls)}</b><span>Thursday, 1 April 2027</span></div></div>`}
-          <div class="li"><span class="sq gold">₹</span><div class="t"><b>Q1 2027–28 fee: ${S.rupee(nf)}</b><span>Due Saturday, 10 April 2027</span></div></div>
-        </div></div>`);
+      const att = S.attendancePct(me.roll), nx = NEXT(me.cls);
+      const day = (iso) => { const d = new Date(iso + "T00:00"); return `<span class="rh-cal"><small>${d.toLocaleDateString("en-IN", { month: "short" })}</small><b>${d.getDate()}</b><i>${d.toLocaleDateString("en-IN", { weekday: "short" })}</i></span>`; };
+      const steps = [
+        ["red", "2027-03-27", "Report-card PTM", "9:00 AM to 12:30 PM · collect the report card"],
+        board ? ["royal", "2027-04-04", "Board exams end", "CBSE results are expected in May"] : ["green", "2027-04-01", `Class ${nx} begins`, "First day of session 2027–28"],
+        ["gold", "2027-04-10", `Q1 fee: ${S.rupee(nf)}`, "Pay by UPI in the app"]
+      ];
+      S.paint(box, `<div class="card phase-card result-hero rh2${board ? " is-board" : ""}">
+        <span class="rh-confetti" aria-hidden="true">${Array.from({ length: 10 }, (_, i) => `<i style="--i:${i}"></i>`).join("")}</span>
+        <div class="rh-main">
+          <div class="rh-ring" style="--p:${avg}" role="img" aria-label="${avg}% overall"><b>${avg}<small>%</small></b><span>overall</span></div>
+          <div class="rh-txt"><span class="lbl">${board ? "Pre-board result" : "Final result · Session 2026–27"}</span>
+            <h2>${board ? "CBSE board exam under way" : `<span class="pop" aria-hidden="true">🎉</span> Promoted to Class ${nx}`}</h2>
+            <div class="rh-chips"><span><small>Grade</small><b>${S.grade(avg)}</b></span><span><small>Attendance</small><b>${att}%</b></span><span><small>Class</small><b>${me.label}</b></span></div></div>
+          <button class="btn btn-primary" type="button" data-go="results">See the report card →</button>
+        </div>
+        <p class="rh-next">What's next</p>
+        <ol class="rh-steps">${steps.map(([c, d, t, s2], i) => `<li class="${c}" style="--i:${i}">${day(d)}<div><b>${S.esc(t)}</b><span>${S.esc(s2)}</span></div></li>`).join("")}</ol>
+      </div>`);
       return;
     }
     box.hidden = true;
@@ -1127,7 +1147,8 @@
     const d = S.state.checks[me.key] || (S.state.checks[me.key] = {});
     d[b.dataset.chk] = !d[b.dataset.chk]; S.save(); renderPhaseHome();
   });
-  S.$("#exam").addEventListener("click", (e) => { const b = e.target.closest("button"); if (!b) return; exam = b.dataset.e; S.$("#exam").querySelectorAll("button").forEach((x) => x.classList.toggle("on", x === b)); renderResults(); });
+  // Tapping a bar also points the sections below at that exam, where they have it.
+  S.onJourneyPick = (id) => { const k = { ut1: "ut1", hy: "hy", fin: "fin", pb2: "fin" }[id]; if (k && S.EX.list.includes(k) && k !== exam) { exam = k; renderResults(); } };
 
   // Only fees the school has declared are shown: those already paid, and any instalment whose notice is out (a month before it falls due).
   // Later instalments can change (a late fee, an admission or activity charge), so their amounts stay off this page.
@@ -1499,5 +1520,7 @@
   S.mountAI("parent");
 })();
 </script>
+<script src="js/select.js?v=4"></script>
+<script src="js/date.js?v=3"></script>
 </body>
 </html>

@@ -17,7 +17,9 @@
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Figtree:wght@400..800&display=swap" rel="stylesheet" />
-<link rel="stylesheet" href="css/site.css?v=98" />
+<link rel="stylesheet" href="css/site.css?v=113" />
+<link rel="stylesheet" href="css/ai.css?v=3" />
+<link rel="stylesheet" href="css/journey.css?v=11" />
 <script>
 /* Before the first paint: fade photos in as they load. */
 (function (d) { d.documentElement.classList.add("js");
@@ -41,6 +43,7 @@
     <section data-view="home" data-roles="teacher" class="hm">
       <div class="hub">
         <div class="hub-top hero">
+          <div class="need-tag-row" id="need-tag"></div>
           <div class="hub-hello"><div><div class="hub-date" id="today-line"></div><h1 id="hello">Good morning, Neha</h1></div></div>
           <p class="hub-line" id="t-line"></p>
           <div class="tday" id="t-day"></div>
@@ -53,9 +56,10 @@
     <!-- MY CLASS: how the class (or, for a subject teacher, each section) is doing, and who needs a look -->
     <section data-view="class" data-roles="teacher">
       <div class="topbar"><div><h1 id="tc-h1">My class</h1><div class="sub" id="tc-sub">How the class is doing, subject by subject, and who needs a look.</div></div></div>
-      <div class="vt-row ptabs"><div class="seg vt" data-vt="tcls" aria-label="At a glance or needs attention"><button data-v="glance">At a glance</button><button data-v="watch">Needs attention</button></div></div>
+      <div class="vt-row ptabs hn-swrap ms3"><div class="seg vt" data-vt="tcls" aria-label="Year so far, at a glance or needs attention"><button data-v="year"><span class="hs-ring dsr" id="rg-tcls-year"><span></span></span><span class="hs-t"><b>Year so far</b><small id="rg-tcls-year-t"></small></span></button><button data-v="glance"><span class="hs-ring" id="rg-tcls-glance"><span></span></span><span class="hs-t"><b>At a glance</b><small id="rg-tcls-glance-t"></small></span></button><button data-v="watch"><span class="hs-ring due" id="rg-tcls-watch"><span></span></span><span class="hs-t"><b>Needs attention</b><small id="rg-tcls-watch-t"></small></span></button></div></div>
       <div class="pm-panes">
-        <div class="vp" data-vp="tcls" data-v="glance">
+        <div class="vp" data-vp="tcls" data-v="year"><div id="sj"></div></div>
+        <div class="vp" data-vp="tcls" data-v="glance" hidden>
           <div class="grid g4" id="t-stats" style="margin-bottom:16px"></div>
           <div class="card x-card"><div class="card-h"><h2 id="tc-x-h">Subject by subject</h2><span class="right muted x-sub" id="tc-x-sub"></span></div><div id="tc-x"></div></div>
         </div>
@@ -76,7 +80,8 @@
       <div class="topbar"><div><h1 id="att-h1">Attendance · VII-B</h1><div class="sub" id="att-sub">Tap a name to mark absent. Tap again for leave.</div></div>
         <div class="right"><button class="btn btn-ghost btn-sm" id="all-present">All present</button><button class="btn btn-primary btn-sm" id="att-save">Submit</button></div></div>
       <div id="att-done" style="margin-bottom:16px"></div>
-      <div class="vt-row ptabs"><div class="seg vt" data-vt="reg" aria-label="Attendance view"><button data-v="today">Mark today</button><button data-v="week">Last six days</button><button data-v="leave">Leave requests<span class="seg-n" id="n-leave" hidden></span></button><button data-v="register">Session register</button></div><div class="chips" id="att-count"></div></div>
+      <div class="vt-row ptabs hn-swrap ms4"><div class="seg vt" data-vt="reg" aria-label="Attendance view"><button data-v="today"><span class="hs-ring due" id="rg-reg-today"><span></span></span><span class="hs-t"><b>Mark today</b><small id="rg-reg-today-t"></small></span></button><button data-v="week"><span class="hs-ring dsr" id="rg-reg-week"><span></span></span><span class="hs-t"><b>Last six days</b><small id="rg-reg-week-t"></small></span></button><button data-v="leave"><span class="hs-ring mt" id="rg-reg-leave"><span></span></span><span class="hs-t"><b>Leave requests</b><small id="rg-reg-leave-t"></small></span></button><button data-v="register"><span class="hs-ring" id="rg-reg-register"><span></span></span><span class="hs-t"><b>Session register</b><small id="rg-reg-register-t"></small></span></button></div></div>
+      <div class="chips" id="att-count" style="margin:-6px 0 14px"></div>
       <div class="vp" data-vp="reg" data-v="today">
         <div class="att-meter" id="att-meter"></div>
         <div class="att-grid" id="att-grid"></div>
@@ -92,7 +97,7 @@
     <!-- HOMEWORK -->
     <section data-view="homework" data-roles="teacher">
       <div class="topbar"><div><h1>Homework</h1><div class="sub">Post once — every parent in the class sees it.</div></div></div>
-      <div class="vt-row ptabs"><div class="seg vt" data-vt="thw" aria-label="Homework or chapter plan"><button data-v="hw">Homework</button><button data-v="syl">Chapter plan</button></div></div>
+      <div class="vt-row ptabs hn-swrap"><div class="seg vt" data-vt="thw" aria-label="Homework or chapter plan"><button data-v="hw"><span class="hs-ring dsr" id="rg-thw-hw"><span></span></span><span class="hs-t"><b>Homework</b><small id="rg-thw-hw-t"></small></span></button><button data-v="syl"><span class="hs-ring" id="rg-thw-syl"><span></span></span><span class="hs-t"><b>Chapter plan</b><small id="rg-thw-syl-t"></small></span></button></div></div>
       <div class="pm-panes">
       <div class="vp" data-vp="thw" data-v="syl" hidden><div class="card" id="syl"></div></div>
       <div class="vp grid g21" data-vp="thw" data-v="hw">
@@ -116,7 +121,7 @@
       <div class="topbar"><div><h1 id="m-h1">Marks · Unit Test 2</h1><div class="sub" id="m-sub">Mathematics · VII-B · out of 20</div></div>
         <div class="right"><label class="m-pick"><span class="sr-only">Section</span><select id="m-sec" class="input" aria-label="Section"></select></label><button class="btn btn-ghost btn-sm" id="rc-all" type="button" hidden>Report cards</button><button class="btn btn-ghost btn-sm" id="fill-sample">Fill sample marks</button><button class="btn btn-primary btn-sm" id="publish">Publish to parents</button></div></div>
       <div class="grid g4" id="m-stats" style="margin-bottom:16px"></div>
-      <div class="vt-row ptabs"><div class="seg vt" data-vt="marks" aria-label="Marks view"><button data-v="entry">Enter marks</button><button data-v="spread">Spread</button></div></div>
+      <div class="vt-row ptabs hn-swrap"><div class="seg vt" data-vt="marks" aria-label="Marks view"><button data-v="entry"><span class="hs-ring due" id="rg-marks-entry"><span></span></span><span class="hs-t"><b>Enter marks</b><small id="rg-marks-entry-t"></small></span></button><button data-v="spread"><span class="hs-ring dsr" id="rg-marks-spread"><span></span></span><span class="hs-t"><b>Spread</b><small id="rg-marks-spread-t"></small></span></button></div></div>
       <div class="vp" data-vp="marks" data-v="entry"><div class="card"><div class="tbl-wrap"><table class="tbl" id="m-tbl"></table></div></div></div>
       <div class="vp" data-vp="marks" data-v="spread" hidden><div class="card"><div class="card-h"><h2 id="dots-h">Unit Test 2 · every student's mark</h2><span class="right muted" style="font-size:13.5px">One dot per student</span></div><div id="m-dots"></div>
         <div class="legend"><span><i class="dot" style="background:color-mix(in srgb, var(--royal) 75%, var(--surface))"></i><span id="dots-ok">8 or more</span></span><span><i class="dot" style="background:var(--accent)"></i><span id="dots-low">Below 8 — plan a re-test</span></span><span><i class="dash"></i>Class average</span></div></div></div>
@@ -159,25 +164,22 @@
       <div class="card" id="rm-table" style="margin-top:16px" hidden><div class="card-h"><h2 id="rm-h">All remarks · VII-B</h2></div><div class="tbl-wrap"><table class="tbl"><tbody id="rm-rows"></tbody></table></div></div>
     </section>
 
-    <!-- MESSAGES -->
-    <section data-view="messages" data-roles="teacher">
-      <div class="topbar"><div><h1>Messages</h1><div class="sub" id="msg-sub">Parents of VII-B</div></div><div class="right"><button class="btn btn-ghost btn-sm oh-btn" type="button" id="oh-btn"></button></div></div>
-      <div class="grid g21" style="grid-template-columns:1fr 1.6fr">
-        <div class="card"><div class="list threads" id="threads"></div></div>
-        <div class="card">
-          <div id="t-rec"></div>
-          <div class="thread" id="thread"></div>
-          <form id="msg-form" class="ai-form" style="padding:14px 0 0;margin-top:12px"><input placeholder="Reply…" aria-label="Message" id="msg-in" /><button type="submit" aria-label="Send"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button></form>
-        </div>
-      </div>
-    </section>
-
-    <!-- REMARKS AND FORMS: every student the teacher teaches, in any class -->
+    <!-- MESSAGES, REMARKS AND FORMS: chat with parents (class teachers), and notes on every student the teacher teaches -->
     <section data-view="care" data-roles="teacher">
-      <div class="topbar"><div><h1>Remarks and forms</h1><div class="sub">For every student you teach, in any class.</div></div><div class="right"><button class="btn btn-primary btn-sm" type="button" id="cf-new">New form</button></div></div>
-      <div class="vt-row ptabs"><div class="seg vt" data-vt="care" aria-label="Remarks, forms or meetings"><button data-v="rem">Remarks</button><button data-v="forms">Forms</button><button data-v="ptm">Meetings</button></div><label class="cr-pick"><span>Section</span><select id="cr-sec" class="input"></select></label></div>
+      <div class="topbar"><div><h1>Remarks and forms</h1><div class="sub">For every student you teach, in any class.</div></div><div class="right"><button class="btn btn-ghost btn-sm oh-btn" type="button" id="oh-btn"></button><button class="btn btn-primary btn-sm" type="button" id="cf-new">New form</button></div></div>
+      <div class="vt-row ptabs hn-swrap ms4"><div class="seg vt" data-vt="care" aria-label="Chat, remarks, forms or meetings"><button data-v="chat"><span class="hs-ring nt" id="rg-care-chat"><span></span></span><span class="hs-t"><b>Chat</b><small id="rg-care-chat-t"></small></span></button><button data-v="rem"><span class="hs-ring rm" id="rg-care-rem"><span></span></span><span class="hs-t"><b>Remarks</b><small id="rg-care-rem-t"></small></span></button><button data-v="forms"><span class="hs-ring due" id="rg-care-forms"><span></span></span><span class="hs-t"><b>Forms</b><small id="rg-care-forms-t"></small></span></button><button data-v="ptm"><span class="hs-ring mt" id="rg-care-ptm"><span></span></span><span class="hs-t"><b>Meetings</b><small id="rg-care-ptm-t"></small></span></button></div><label class="cr-pick"><span>Section</span><select id="cr-sec" class="input"></select></label></div>
       <div class="cr-panes">
-        <div class="vp grid cr-grid" data-vp="care" data-v="rem">
+        <div class="vp" data-vp="care" data-v="chat"><p class="muted cr-chat-sub" id="msg-sub">Parents of VII-B</p>
+      <div class="grid g21" style="grid-template-columns:1fr 1.6fr">
+          <div class="card"><div class="list threads" id="threads"></div></div>
+          <div class="card">
+            <div id="t-rec"></div>
+            <div class="thread" id="thread"></div>
+            <form id="msg-form" class="ai-form" style="padding:14px 0 0;margin-top:12px"><input placeholder="Reply…" aria-label="Message" id="msg-in" /><button type="submit" aria-label="Send"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button></form>
+          </div>
+        </div>
+        </div>
+        <div class="vp grid cr-grid" data-vp="care" data-v="rem" hidden>
           <div class="card cr-students"><input id="cr-q" class="input" type="search" placeholder="Find a student" aria-label="Find a student" /><div class="list" id="cr-list"></div></div>
           <div class="card" id="cr-main"></div>
         </div>
@@ -516,9 +518,10 @@
 
 
 
-<script src="js/data.js?v=12"></script>
+<script src="js/data.js?v=14"></script>
 <script src="js/classes.js?v=9"></script>
 <script src="js/exams.js?v=8"></script>
+<script src="js/journey.js?v=13"></script>
 <script src="js/care.js?v=2"></script>
 <script src="js/demo.js?v=2"></script>
 <script src="js/bus.js?v=5"></script>
@@ -575,7 +578,7 @@
     notices: '<path d="M4 10v4h3l6 4V6L7 10z"/><path d="M17 9a4 4 0 0 1 0 6"/>', classes: '<rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 10h18M9 10v10M15 10v10"/>', website: '<rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 9h18M7 6.5h.01M10 6.5h.01"/>'
   };
   const NAV = {
-    teacher: [["home", "Home"], ["class", me.classOf ? "My class" : "My sections"], ["attendance", "Attendance"], ["homework", "Homework"], ["marks", "Marks"], ["exams", "Exams"], ["care", "Remarks and forms"], ["assist", "AI assist"], ["messages", "Messages"]],
+    teacher: [["home", "Home"], ["class", me.classOf ? "My class" : "My sections"], ["attendance", "Attendance"], ["homework", "Homework"], ["marks", "Marks"], ["exams", "Exams"], ["care", me.classOf ? "Messages, remarks and forms" : "Remarks and forms"], ["assist", "AI assist"]],
     principal: [["overview", "Home"], ["attendance", "Attendance"], ["staff", "Staff and cover"], ["fees", "Fees"], ["classes", "Classes"], ["admissions", "Admissions"], ["exams", "Exams"], ["notices", "Notices"], ["gate", "Gate"], ["transport", "Transport"], ["log", "Activity log"], ["website", "Website"]],
     admin: [["overview", "Home"], ["attendance", "Attendance"], ["staff", "Staff and cover"], ["fees", "Fees"], ["classes", "Classes"], ["admissions", "Admissions"], ["exams", "Exams"], ["notices", "Notices"], ["gate", "Gate"], ["transport", "Transport"], ["log", "Activity log"], ["website", "Website"]]
   }[role].filter(([k]) => role !== "teacher" || me.classOf || !["attendance", "messages"].includes(k));
@@ -583,15 +586,16 @@
   document.getElementById("nav-side").innerHTML = NAV.map(btn).join("");
   // Phones: Home and the four pages used most; the rest are tiles on the welcome page.
   const BOTTOM = role === "teacher" ? ["home", "attendance", "homework", "marks", "care"] : ["overview", "attendance", "classes", "admissions", "notices"];
-  document.getElementById("nav-bottom").innerHTML = NAV.filter(([k]) => BOTTOM.includes(k)).map(([k, l]) => btn([k, k === "care" ? "Remarks" : l])).join("");
+  document.getElementById("nav-bottom").innerHTML = NAV.filter(([k]) => BOTTOM.includes(k)).map(([k, l]) => btn([k, k === "care" ? (me.classOf ? "Messages" : "Remarks") : l])).join("");
   S.NAV_ICONS = I;
 })();
 </script>
 <script src="js/common.js?v=14"></script>
 <script src="js/charts.js?v=10"></script>
 <script src="js/hub.js?v=12"></script>
-<script src="js/more.js?v=7"></script>
-<script src="js/ai.js?v=8"></script>
+<script src="js/more.js?v=8"></script>
+<script src="js/faq.js?v=1"></script>
+<script src="js/ai.js?v=11"></script>
 <script>
 (function () {
   const S = SJS;
@@ -625,6 +629,13 @@
   S.$("#hw-cls").innerHTML = mine.map((k) => `<option value="${k}">${secLabel(k)}</option>`).join("");
   S.$("#m-sec").innerHTML = mine.map((k) => `<option value="${k}">${secLabel(k)}</option>`).join("");
   if (mine.length < 2) S.$(".m-pick").hidden = true;
+  // Messages joined Remarks and forms, as on the parent's side; old links open the chat tab.
+  S.ALIAS.messages = isCT ? "care/chat" : "care";
+  if (isCT) { S.$('[data-view="care"] h1').textContent = "Messages, remarks and forms"; S.$('[data-view="care"] .topbar .sub').textContent = `Chat with the parents of ${secLabel(home)}, and notes on every student you teach.`; }
+  else {
+    S.$('[data-vt="care"] [data-v="chat"]').remove(); S.$('[data-vp="care"][data-v="chat"]').hidden = true; S.$("#oh-btn").style.display = "none"; // kept in the page: the chat code is shared
+    S.$('[data-vt="care"]').closest(".ptabs").classList.replace("ms4", "ms3"); S.$('[data-vp="care"][data-v="rem"]').hidden = false;
+  }
 
   // ---------- Home ----------
   const periodsToday = () => {
@@ -633,6 +644,7 @@
     return out.sort((a, b) => a[0] - b[0]);
   };
   function renderHome() {
+    rings();
     S.$("#hello").textContent = S.greet() + ", " + T.first;
     S.$("#today-line").textContent = S.fmtLong(S.today) + (isCT ? ` · Class teacher, ${secLabel(home)}` : ` · ${SUBJ}, ${mine.map(secLabel).join(", ")}`) + ` · ${S.PHASES[S.PHASE].label}`;
     const rec = S.cs.attendance[S.todayKey];
@@ -660,17 +672,16 @@
       <div class="card stat"><span class="lbl">Homework posted</span><div class="num">${posted}</div><div class="foot">Across your sections</div></div>`);
     renderMap(); renderPhase(); renderTHub(rec, present, waitLeaves, unread, clsAvg, prevAvg, subjAvg, per); renderTX();
     // The class on one line: everyone's average, the flagged ones in colour.
-    const flags = new Map(S.atRisk().map((v) => [v.s.roll, v.why]));
+    const flags = new Map(S.atRisk(isCT ? null : [SUBJ]).map((v) => [v.s.roll, v.why]));
     const avs = S.students.map((s) => S.avgOf(s[C]));
     S.paint(S.$("#t-swarm"), S.swarm(S.students.map((s, i) => ({ v: avs[i], cls: flags.has(s.roll) ? "flag" : "", tip: `${avs[i]}% average${flags.has(s.roll) ? " · " + flags.get(s.roll).join(", ") : ""}`, tipT: s.name })),
       { lo: Math.max(0, Math.min(40, Math.floor((Math.min(...avs) - 5) / 10) * 10)), W: S.narrow() ? 330 : 560, R: S.narrow() ? 5 : 5.5, marks: [{ v: clsAvg, label: `Class ${clsAvg}%` }], label: `Every student in ${secLabel(home)} by ${L(C).toLowerCase()} average` }));
-    S.$("#risk").innerHTML = S.atRisk().map((v) => `<div class="li"><span class="avatar soft">${v.s.initials}</span><div class="t"><b>${v.s.name}</b><span>${v.why.join(" · ")}</span></div><button class="end link-btn" data-ask="Remarks for ${v.s.first}">Draft note</button></div>`).join("") || '<p class="muted" style="font-size:14.5px">Nobody is flagged right now.</p>';
+    S.$("#risk").innerHTML = S.atRisk(isCT ? null : [SUBJ]).map((v) => `<div class="li"><span class="avatar soft">${v.s.initials}</span><div class="t"><b>${v.s.name}</b><span>${v.why.join(" · ")}</span></div><button class="end link-btn" data-ask="Remarks for ${v.s.first}">Draft note</button></div>`).join("") || '<p class="muted" style="font-size:14.5px">Nobody is flagged right now.</p>';
     renderTDay();
     S.$("#leaves").innerHTML = S.cs.leaves.length ? S.cs.leaves.map((l, i) => `<div class="li"><span class="avatar soft">${S.student(l.roll).initials}</span><div class="t"><b>${S.student(l.roll).name} · ${S.fmt(l.from)} – ${S.fmt(l.to)}</b><span>${S.esc(l.why)}</span></div><div class="end">${l.status === "Waiting" ? `<button class="btn btn-green btn-sm" data-approve="${i}">Approve</button>` : '<span class="pill green">Approved</span>'}</div></div>`).join("") : `<p class="muted" style="font-size:14.5px">No leave requests. ${isCT ? "Parents send them from the app." : "They go to the class teacher."}</p>`;
     if (S.$("#inbox")) S.$("#inbox").innerHTML = isCT ? threads().map((t) => { const last = [...t.msgs].reverse()[0], n = t.msgs.filter((m) => m.from === "parent" && m.fresh).length; return `<button type="button" class="li todo" data-thread="${t.key}" data-go="messages"><span class="avatar soft">${t.kid.initials}</span><div class="t"><b>${S.esc(t.kid.name)}'s ${t.kid.relation.toLowerCase()} ${n ? `<span class="pill red">${n} new</span>` : ""}</b><span>${last ? (last.voice ? "Voice message" : S.esc(last.text)) : "No messages yet"}</span></div></button>`; }).join("") || '<p class="muted" style="font-size:14.5px">No messages yet.</p>' : `<p class="muted" style="font-size:14.5px">Parents write to the class teacher; anything about ${SUBJ} is passed on to you.</p>`;
-    document.querySelectorAll('[data-count="messages"]').forEach((c) => { c.hidden = !unread; c.textContent = unread; });
+    document.querySelectorAll(isCT ? '[data-count="care"]' : '[data-count="messages"]').forEach((c) => { c.hidden = !unread; c.textContent = unread; });
     const waitingLeave = S.cs.leaves.filter((l) => l.status === "Waiting").length;
-    S.$("#n-leave").hidden = !waitingLeave; S.$("#n-leave").textContent = waitingLeave;
     document.querySelectorAll('[data-count="attendance"]').forEach((c) => { c.hidden = !isCT || !!rec; c.textContent = "!"; });
   }
 
@@ -678,7 +689,7 @@
   const PI = S.NAV_ICONS, short = (k) => S.fmt(k, { weekday: "short", day: "numeric", month: "short" });
   const daysTo = (k) => Math.round((new Date(k + "T00:00") - S.today) / 864e5);
   function renderTHub(rec, present, waitLeaves, unread, clsAvg, prevAvg, subjAvg, per) {
-    const N2 = [], flagged = S.atRisk();
+    const N2 = [], flagged = S.atRisk(isCT ? null : [SUBJ]);
     // The line under the greeting: the class's day so far, or the next period.
     const line = S.$("#t-line");
     if (isCT && rec) { line.style.setProperty("--c", "var(--green)"); S.paint(line, `<i></i><span><b>${present} of ${N()} in today.</b> Attendance went to parents at ${rec.at}.</span>`); }
@@ -697,21 +708,34 @@
     const ptm = S.nextPtm();
     if (ptm && daysTo(ptm.date) <= 14) { const bk = S.ptmOfTeacher(ptm.date, T.name).length; N2.push({ tone: "royal", icon: PI.ptm, t: `Parent–teacher meeting, ${S.fmt(ptm.date, { weekday: "long", day: "numeric", month: "short" })}`, sub: `${bk} parent${bk === 1 ? " has" : "s have"} booked a time with you`, when: `In ${daysTo(ptm.date)} days`, act: "Times", go: "care/ptm" }); }
     S.setNeeds(N2, { empty: "Nothing needs you right now." });
+    // The same list as a tag at the top of the welcome sheet, as on the parent's home: what's waiting, one tap to see it.
+    const VERB = { Take: "take attendance", Review: "review leave", Reply: "reply to parents", Enter: "enter marks", See: "see who needs a look", Times: "check PTM times" };
+    const firsts = [...new Set(N2.map((n) => VERB[n.act] || n.act.toLowerCase()))].slice(0, 2).join(", ");
+    S.paint(S.$("#need-tag"), N2.length
+      ? `<button type="button" class="need-tag" data-open-needs><i class="live" aria-hidden="true"></i><span class="nt-t"><b>${N2.length} thing${N2.length === 1 ? "" : "s"}</b> need${N2.length === 1 ? "s" : ""} you<span class="nt-x">: ${firsts}${N2.length > 2 ? "…" : ""}</span></span><span class="nt-go">See all<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span></button>`
+      : `<span class="need-tag ok"><i class="live" aria-hidden="true"></i><span class="nt-t"><b>All caught up.</b> Nothing needs you right now.</span></span>`);
 
     const posted = mine.reduce((a, k) => a + S.secState(k).homework.filter((h) => h.by === T.name).length, 0);
     const behind = /Mathematics/.test(SUBJ) ? mine.filter((k) => { const sec = S.sectionByKey(k), ch = S.chaptersOf ? S.chaptersOf(sec.cls, SUBJ) : []; return ch.length && S.sylDone(k, SUBJ).length < S.chaptersDueBy(ch.length, S.todayKey); }).length : 0;
     const nextEx = S.examsFor ? S.examsFor({ cls: x.cls, sec: x }).filter((e) => e.published && S.examStatus(e, S.groupOf({ cls: x.cls, sec: x })).k !== "done")[0] : null;
     const forms = (S.state.forms || []).filter((f) => f.by === T.name).length, bk = ptm ? S.ptmOfTeacher(ptm.date, T.name).length : 0;
     const entry = S.ENTRY && S.PHASE !== "start" ? S.entry(home, SUBJ) : null;
+    // Richer tiles, as on the parent's home: a change arrow, a week of bars, and chips for what comes next.
+    const dAvg = isCT ? (prevAvg === null ? null : clsAvg - prevAvg) : (P ? subjAvg - Math.round(mine.reduce((a, k) => { const y = S.sectionByKey(k); return a + y.students.reduce((b, s2) => b + s2[P][SUBJ], 0) / y.students.length; }, 0) / mine.length) : null);
+    const clsSide = dAvg === null ? "" : `<span class="pg-delta ${dAvg > 0 ? "up" : dAvg < 0 ? "down" : ""}">${dAvg > 0 ? "▲ " + dAvg : dAvg < 0 ? "▼ " + -dAvg : "Steady"}<small>since ${S.esc(L(P))}</small></span>`;
+    const clsFoot = `<span class="pg-chips">${flagged.length ? flagged.slice(0, 3).map((v) => `<span class="pg-chip soon">${S.esc(v.s.first)}</span>`).join("") + (flagged.length > 3 ? `<span class="pg-chip">+${flagged.length - 3}</span>` : "") : `<span class="pg-chip">Nobody flagged</span>`}</span>`;
+    const hwAhead = mine.flatMap((k) => S.secState(k).homework.filter((h) => h.by === T.name && h.due >= S.todayKey).map((h) => [k, h])).sort((a, b) => (a[1].due < b[1].due ? -1 : 1));
+    const hwFoot = hwAhead.length ? `<span class="pg-chips">${hwAhead.slice(0, 3).map(([k, h]) => `<span class="pg-chip${daysTo(h.due) <= 1 ? " soon" : ""}">${secLabel(k)} · ${daysTo(h.due) === 0 ? "today" : daysTo(h.due) === 1 ? "tomorrow" : S.fmt(h.due, { day: "numeric", month: "short" })}</span>`).join("")}</span>` : "";
+    const mkFoot = entry ? `<span class="pg-chips">${mine.map((k) => { const e = S.entry(k, SUBJ), n = Object.keys(e.marks).length, t = S.sectionByKey(k).students.length; return `<span class="pg-chip${e.published ? "" : " soon"}">${secLabel(k)} · ${e.published ? "published ✓" : `${n}/${t}`}</span>`; }).join("")}</span>` : "";
     S.paint(S.$("#t-tiles"), S.tilesHTML([
-      { go: "class", icon: PI.class, tone: "accent", name: isCT ? "My class" : "My sections", line: isCT ? `${clsAvg}% average${flagged.length ? ` · ${flagged.length} to watch` : ""}` : `${SUBJ} average ${subjAvg}%`, flag: flagged.length > 0, m: isCT ? clsAvg : subjAvg, main: true, big: isCT ? clsAvg : subjAvg, unit: "%" },
-      ...(isCT ? [{ go: "attendance", icon: PI.attendance, tone: "green", name: "Attendance", line: rec ? `${present} of ${N()} present today` : "Not marked yet", flag: !rec && !!S.today.getDay(), count: waitLeaves, m: null, main: true, bars: S.weekOf(S.focus), barsOpt: { lo: 60, hi: 100, ref: 90 } }] : []),
-      { go: "homework", icon: PI.homework, tone: "royal", name: "Homework", main: true, big: posted, unit: " posted", line: `${/Mathematics/.test(SUBJ) ? `Chapter plan ${behind ? `behind in ${behind}` : "on track"}` : "Across your sections"}`, flag: behind > 0 },
-      { go: "marks", icon: PI.marks, tone: "gold", name: "Marks", line: entry ? `${S.ENTRY.name}: ${entry.published ? "published" : Object.keys(entry.marks).length + " entered"}` : `${L(C)} average ${subjAvg}%`, m: entry ? (entry.published ? 100 : (Object.keys(entry.marks).length / N()) * 100) : null, main: true, big: entry ? (entry.published ? "Done" : Object.keys(entry.marks).length) : subjAvg, unit: entry ? (entry.published ? "" : ` / ${N()}`) : "%" },
+      { go: "class", icon: PI.class, tone: "accent", name: isCT ? "My class" : "My sections", line: isCT ? `${clsAvg}% average${flagged.length ? ` · ${flagged.length} to watch` : ""}` : `${SUBJ} average ${subjAvg}%`, flag: flagged.length > 0, main: true, big: isCT ? clsAvg : subjAvg, unit: "%", side: clsSide, foot: clsFoot },
+      ...(isCT ? [{ go: "attendance", icon: PI.attendance, tone: "green", name: "Attendance", line: rec ? `Present today · ${N() - present ? `${N() - present} away` : "everyone in"}<span class="pg-sub">${waitLeaves ? `${waitLeaves} leave request${waitLeaves === 1 ? "" : "s"} waiting` : "Bars: the last six school days"}</span>` : `Not marked yet<span class="pg-sub">Parents are waiting for the morning update</span>`, flag: !rec && !!S.today.getDay(), count: waitLeaves, m: rec ? (present / N()) * 100 : 0, main: true, big: rec ? present : "–", unit: ` / ${N()}`, side: `<span class="pg-spark" title="Last six school days">${S.miniBars(S.weekOf(S.focus), { lo: 60, hi: 100, ref: 90 })}</span>` }] : []),
+      { go: "homework", icon: PI.homework, tone: "royal", name: "Homework", main: true, big: hwAhead.length, unit: " due ahead", line: `${posted} posted across your sections<span class="pg-sub">${/Mathematics/.test(SUBJ) ? `Chapter plan ${behind ? `behind in ${behind}` : "on track"}${hwAhead.length ? " · due next:" : ""}` : hwAhead.length ? "Due next:" : "Nothing due"}</span>`, flag: behind > 0, foot: hwFoot },
+      { go: "marks", icon: PI.marks, tone: "gold", name: "Marks", line: entry ? `${S.ENTRY.name}: ${entry.published ? "published" : Object.keys(entry.marks).length + " entered"}` : `${L(C)} average ${subjAvg}%`, m: entry ? (entry.published ? 100 : (Object.keys(entry.marks).length / N()) * 100) : null, main: true, big: entry ? (entry.published ? "Done" : Object.keys(entry.marks).length) : subjAvg, unit: entry ? (entry.published ? "" : ` / ${N()}`) : "%", foot: mkFoot },
       { go: "exams", icon: PI.exams, tone: "slate", name: "Exams", line: nextEx ? `${S.esc(nextEx.name)} from ${S.fmt(S.examSpan(nextEx, S.groupOf({ cls: x.cls, sec: x })).from)}` : "Datesheets for every class" },
-      { go: "care", icon: PI.care, tone: "green", name: "Remarks and forms", line: forms ? `${forms} form${forms === 1 ? "" : "s"} sent · notes on any student` : "Notes on any student you teach" },
-      { go: "care/ptm", icon: PI.ptm, tone: "accent", name: "Meetings", line: ptm ? `${bk} booked for ${S.fmt(ptm.date)}` : "None planned yet" },
-      ...(isCT ? [{ go: "messages", icon: PI.messages, tone: "royal", name: "Messages", line: unread ? `${unread} new from parents` : `Parents of ${secLabel(home)}`, count: unread }] : []),
+      // One tile for the merged page, as on the parent's side: chat, remarks, forms and meetings.
+      { go: isCT ? "care/chat" : "care", icon: isCT ? PI.messages : PI.care, tone: "green", name: isCT ? "Messages, remarks and forms" : "Remarks and forms", count: isCT ? unread : 0,
+        line: `${isCT ? (unread ? `${unread} new from parents` : `Chat with parents of ${secLabel(home)}`) : forms ? `${forms} form${forms === 1 ? "" : "s"} sent · notes on any student` : "Notes on any student you teach"}<span class="pg-sub">${isCT && forms ? `${forms} form${forms === 1 ? "" : "s"} sent · ` : ""}meeting: ${ptm ? `${bk} booked for ${S.fmt(ptm.date)}` : "none planned yet"}</span>` },
       { go: "assist", icon: PI.assist, tone: "teal", name: "AI assist", line: "Remarks, practice sets and notes to parents" }
     ]));
   }
@@ -882,7 +906,7 @@
 
   // The class at a glance: attendance across, latest average up; flagged students in brick.
   function renderMap() {
-    const flagged = new Set(S.atRisk().map((v) => v.s.roll));
+    const flagged = new Set(S.atRisk(isCT ? null : [SUBJ]).map((v) => v.s.roll));
     const pts = S.students.map((s) => ({ s, x: S.attendancePct(s.roll), y: S.avgOf(s[C]), f: flagged.has(s.roll) }));
     const W = S.narrow() ? 380 : 560, H = S.narrow() ? 340 : 300, pl = 40, pr = 18, pt = 22, pb = 40;
     const x0 = Math.min(70, Math.floor(Math.min(...pts.map((p) => p.x)) / 5) * 5), y0 = 30;
@@ -917,6 +941,7 @@
     S.paint(S.$("#register"), `<svg class="chart heat" viewBox="0 0 ${W} ${H}" style="min-width:${Math.min(760, W)}px" role="img" aria-label="${secLabel(home)} attendance register for the session">${g}</svg>`);
   }
   function renderAtt() {
+    rings();
     if (!isCT) return;
     const rec = S.cs.attendance[S.todayKey];
     S.$("#att-grid").innerHTML = S.students.map((s) => { const st = draft[s.roll] || "P"; return `<button class="att" data-roll="${s.roll}" data-s="${st}"><div><span class="roll">${String(s.roll).padStart(2, "0")}</span><span class="nm">${s.name}</span></div><span class="st">${st}</span></button>`; }).join("");
@@ -945,6 +970,7 @@
 
   // ---------- Homework ----------
   function renderHw() {
+    rings();
     const list = mine.flatMap((k) => S.secState(k).homework.filter((h) => h.by === T.name).map((h) => [k, h]));
     S.$("#hw-list").innerHTML = list.length ? list.map(([k, h]) => `<div class="li"><span class="sq red"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3h9l4 4v14H6z"/><path d="M14 3v5h5"/></svg></span><div class="t"><b>${S.esc(h.title)}</b><span>${secLabel(k)} · due ${S.fmt(h.due)} · ${h.done ? "marked done by a parent" : "seen by parents"}</span></div></div>`).join("") : '<p class="muted" style="font-size:14.5px">Nothing posted yet.</p>';
   }
@@ -974,6 +1000,7 @@
   S.$("#dots-ok").textContent = `${LOW} or more`;
   S.$("#dots-low").textContent = MAX === 100 ? "Below 33 — needs a re-test" : `Below ${LOW} — plan a re-test`;
   function renderMarks() {
+    rings();
     const y = S.sectionByKey(mkey), e = S.entry(mkey, SUBJ), m = e.marks, vals = Object.values(m).map(Number).filter((v) => !isNaN(v)), n = y.students.length;
     const avg = vals.length ? (vals.reduce((a, b) => a + b, 0) / vals.length).toFixed(1) : "—";
     S.$("#m-sub").textContent = `${SUBJ} · ${secLabel(mkey)} · out of ${MAX}`;
@@ -986,7 +1013,7 @@
     renderDots();
     if (!S.$("#m-tbl").dataset.built) {
       const cols = [...S.EX.list].reverse().filter((k) => !(S.PHASE === "end" && k === "fin"));
-      S.$("#m-tbl").innerHTML = `<thead><tr><th>Roll</th><th>Student</th>${cols.map((k) => `<th class="num">${S.exLabel(k, y.cls)}</th>`).join("")}<th>${EN.name} (/${MAX})</th></tr></thead><tbody>` + y.students.map((s) => `<tr><td class="muted">${String(s.roll).padStart(2, "0")}</td><td>${s.name}</td>${cols.map((k) => `<td class="num muted">${s[k][SUBJ]}%</td>`).join("")}<td><input class="mark" data-roll="${s.roll}" inputmode="numeric" maxlength="${String(MAX).length}" value="${m[s.roll] ?? ""}" aria-label="${EN.name} marks for ${s.name}" /></td></tr>`).join("") + "</tbody>";
+      S.$("#m-tbl").innerHTML = `<thead><tr><th>Roll</th><th>Student</th>${cols.map((k) => `<th class="num">${S.exLabel(k, y.cls)}</th>`).join("")}<th>${EN.name} (/${MAX})</th></tr></thead><tbody>` + y.students.map((s) => `<tr><td class="muted">${String(s.roll).padStart(2, "0")}</td><td>${s.name}</td>${cols.map((k) => `<td class="num"><span class="wd t-${S.word(s[k][SUBJ]).t}">${s[k][SUBJ]}%</span></td>`).join("")}<td><input class="mark" data-roll="${s.roll}" inputmode="numeric" maxlength="${String(MAX).length}" value="${m[s.roll] ?? ""}" aria-label="${EN.name} marks for ${s.name}" /></td></tr>`).join("") + "</tbody>";
       S.$("#m-tbl").dataset.built = 1;
     }
   }
@@ -1021,12 +1048,12 @@
   S.$("#publish").addEventListener("click", () => {
     const y = S.sectionByKey(mkey), e = S.entry(mkey, SUBJ);
     if (Object.keys(e.marks).length < y.students.length) { S.toast(`Enter marks for all ${y.students.length} first — or use Fill sample marks`); return; }
-    e.published = true; S.save(); renderMarks(); S.toast(`Published · parents of ${secLabel(mkey)} can see the ${EN.name} marks now`);
+    e.published = true; S.save(); renderMarks(); renderYear(); S.toast(`Published · parents of ${secLabel(mkey)} can see the ${EN.name} marks now`);
   });
 
   // ---------- AI assist ----------
   S.$("#rm-s").innerHTML = S.students.map((s) => `<option value="${s.roll}">${s.name}</option>`).join("");
-  S.$("#rm-s").value = home === "VII-B" ? 11 : (S.atRisk()[0] || { s: S.students[0] }).s.roll;
+  S.$("#rm-s").value = home === "VII-B" ? 11 : (S.atRisk(isCT ? null : [SUBJ])[0] || { s: S.students[0] }).s.roll;
   let rmRun = 0;
   S.$("#rm-go").addEventListener("click", async () => {
     const st = S.student(S.$("#rm-s").value), out = S.$("#rm-out"), run = ++rmRun;
@@ -1073,6 +1100,7 @@
     return [...parentsHere.map((p) => ({ key: p.key, kid: S.kid(p.key), msgs: S.thread(p.key) })), ...own];
   }
   function renderThread() {
+    rings();
     const all = threads(), t = all.find((v) => v.key === openThread) || all[0]; if (t) openThread = t.key;
     S.$("#threads").innerHTML = all.map((v) => { const last = v.msgs[v.msgs.length - 1], n = v.msgs.filter((m) => m.from === "parent" && m.fresh).length; return `<button type="button" class="li todo${v === t ? " on" : ""}" data-thread="${v.key}"><span class="avatar ${v === t ? "" : "soft"}">${v.kid.initials}</span><div class="t"><b>${S.esc(v.kid.name)}'s ${v.kid.relation.toLowerCase()}${n ? ` <span class="pill red">${n}</span>` : ""}</b><span>${last ? (last.voice ? "Voice message" : S.esc(last.text)) : ""}</span></div></button>`; }).join("") || '<p class="muted" style="font-size:14.5px">No parent threads in this demo class.</p>';
     if (!t) { S.$("#thread").innerHTML = ""; return; }
@@ -1097,6 +1125,7 @@
   const KT = { praise: "green", progress: "royal", concern: "warn", conduct: "slate" };
   const remLine = (r) => `<div class="rem"><span class="rem-k t-${KT[r.kind]}">${S.REMARK_KINDS[r.kind]}</span>${r.share ? "" : '<span class="pill">Staff only</span>'}<p>${S.esc(r.text)}</p><span class="rem-by">${S.esc(r.by)} · ${S.esc(r.cap)} · ${S.fmt(r.at, { day: "numeric", month: "short" })}</span></div>`;
   function renderCare() {
+    rings();
     const x = S.sectionByKey(crSec), q = (S.$("#cr-q").value || "").trim().toLowerCase();
     const studs = x.students.filter((v) => !q || v.name.toLowerCase().includes(q) || String(v.roll) === q);
     if (!crRoll || !x.students.some((v) => v.roll === crRoll)) crRoll = x.students[0].roll;
@@ -1154,6 +1183,7 @@
 
   // ---------- Meetings: who booked a time with me at the next PTM ----------
   function renderTPtm() {
+    rings();
     const n = S.nextPtm(), box = S.$("#cm-ptm");
     if (!n) { S.paint(box, `<p class="muted">No parent-teacher meeting is planned. When the office sets one, parents book ten minutes with you from their app.</p>`); return; }
     const bk = S.ptmOfTeacher(n.date, T.name), other = S.PTM_SLOTS.filter((sl) => { const b = S.ptmTaken(n.date, T.name, sl); return b && b.other; }).length;
@@ -1165,6 +1195,7 @@
 
   // ---------- Chapter plan against the exam dates ----------
   function renderSyl() {
+    rings();
     const ex = S.examDates(), next = ex.find((x2) => x2.date >= S.todayKey);
     const left = next ? (() => { let c = 0; for (let d = new Date(S.today); S.iso(d) < next.date; d = S.addDays(d, 1)) if (S.isSchoolDay(d)) c++; return c; })() : 0;
     S.paint(S.$("#syl"), `<div class="card-h"><h2>Chapter plan · ${S.esc(SUBJ)}</h2><span class="right muted" style="font-size:13.5px">Sample plan. Tick a chapter when it's taught.</span></div>` + mine.map((k) => {
@@ -1204,12 +1235,89 @@
     const rb = S.$("#rc-all"); rb.hidden = false;
     rb.addEventListener("click", () => {
       const x = S.sectionByKey(T.classOf);
-      S.showDoc(`Report cards · ${secLabel(T.classOf)}`, S.docPage(`Report cards ${secLabel(T.classOf)}`, x.students.map((st) => S.reportCard(st, x, { remark: S.PHASE === "end" && S.remarkFor && T.classOf === "VII-B" ? S.remarkFor(st) : "" }))));
+      S.showDoc(`Report cards · ${secLabel(T.classOf)}`, S.docPage(`Report cards ${secLabel(T.classOf)}`, x.students.map((st) => S.reportCardFull(S.studentIn(x, st.roll), rcOpts(st)))), { file: `Report-Cards-${T.classOf}-2026-27.pdf` });
     });
+  }
+  // The same card the parent downloads, with the result line and remark the teacher has written.
+  function rcOpts(st) {
+    const end = S.PHASE === "end", board = /^(X|XII)$/.test(x.cls), next = S.sample.classes[x.ci + 1];
+    return { result: end && !board ? `Promoted to Class ${next}` : "", remark: end && S.remarkFor && T.classOf === "VII-B" ? S.remarkFor(st) : "" };
+  }
+  if (T.classOf) document.addEventListener("click", (e) => {
+    const b = e.target.closest("[data-rc1]"); if (!b) return;
+    const st = S.studentIn(x, +b.dataset.rc1);
+    S.showDoc(`Report card · ${st.name}`, S.docPage(`Report card ${st.name}`, [S.reportCardFull(st, rcOpts(st))]), { file: `${st.name.replace(/\s+/g, "-")}-Report-Card-2026-27.pdf` });
+  });
+
+  // ---------- The year so far: every test for the class, or for one student (the card parents see) ----------
+  let jSec = home, jWho = "class";
+  function renderYear() {
+    const sec = S.sectionByKey(jSec), box = S.$("#sj"), secs = isCT ? [home] : mine, subj = isCT ? null : SUBJ;
+    // One filter bar, as on the business pages: section, class-or-student toggle, then the student.
+    const ic = (d) => `<svg viewBox="0 0 24 24" aria-hidden="true">${d}</svg>`, IC = { sec: '<path d="M4 20V9l8-5 8 5v11"/><path d="M9 20v-6h6v6"/>', stu: '<circle cx="12" cy="8" r="4"/><path d="M4 21c1-4 4-6 8-6s7 2 8 6"/>' };
+    const head = `<div class="sj-pick">${secs.length > 1 ? `<label class="sj-fld">${ic(IC.sec)}<select id="sj-sec" aria-label="Section">${secs.map((k) => `<option value="${k}"${k === jSec ? " selected" : ""}>${secLabel(k)}</option>`).join("")}</select></label>` : `<span class="sj-fld fixed">${ic(IC.sec)}<b>${secLabel(jSec)}</b></span>`}<div class="sj-seg" role="group" aria-label="Class or student"><button type="button" data-jmode="class" class="${jWho === "class" ? "on" : ""}" aria-pressed="${jWho === "class"}">Class</button><button type="button" data-jmode="stu" class="${jWho !== "class" ? "on" : ""}" aria-pressed="${jWho !== "class"}">Student</button></div>${jWho !== "class" ? `<label class="sj-fld">${ic(IC.stu)}<select id="sj-who" aria-label="Student">${sec.students.map((v) => `<option value="${v.roll}"${+jWho === v.roll ? " selected" : ""}>${String(v.roll).padStart(2, "0")} · ${S.esc(v.name)}</option>`).join("")}</select></label>` : ""}${subj ? `<span class="sj-tag">${S.esc(subj)} only</span>` : ""}</div>`;
+    if (jWho === "class") {
+      S.renderJourney(box, { first: secLabel(jSec), key: "cls:" + jSec, sec, cls: sec.cls }, { cls: true, data: S.journeyClass(sec, subj ? [subj] : undefined), head, subj, onStudent: (r) => { jWho = r; renderYear(); },
+        title: `${secLabel(jSec)}'s year so far${subj ? " · " + subj : ""}`, sub: `Every ${subj ? subj + " " : ""}test this session, in order. Each bar is the class average; tap one to see who needs a look.` });
+    } else {
+      const me = S.studentIn(sec, jWho);
+      S.renderJourney(box, me, { data: subj ? S.journey(me, { only: [subj] }) : undefined, head, subj, title: `${me.name}'s year so far`, sub: `Roll ${String(me.roll).padStart(2, "0")} · ${secLabel(jSec)} · ${subj ? `${subj} only, as on the card ${me.first}'s parents see` : `the same card ${me.first}'s parents see`}.`,
+        foot: isCT && jSec === home && S.examsSoFar().length ? `<button class="btn btn-ghost btn-sm" type="button" data-rc1="${me.roll}">Report card</button>` : "" });
+    }
+  }
+  document.addEventListener("change", (e) => {
+    if (e.target.id === "sj-sec") { jSec = e.target.value; jWho = "class"; renderYear(); }
+    if (e.target.id === "sj-who") { jWho = e.target.value === "class" ? "class" : +e.target.value; renderYear(); }
+  });
+  document.addEventListener("click", (e) => { const m = e.target.closest("[data-jmode]"); if (!m) return; const next = m.dataset.jmode === "class" ? "class" : jWho === "class" ? (S.atRisk(isCT ? null : [SUBJ])[0] || {}).s?.roll || S.sectionByKey(jSec).students[0].roll : jWho; if (next !== jWho) { jWho = next; renderYear(); } });
+  renderYear();
+
+  // ---------- The ring switches: each tab shows what is left to do there, as on the parent's pages ----------
+  // Hoisted: the pages above call rings() while they first draw; the redraw waits a frame, so everything is ready.
+  var ringQ = 0;
+  function rings() { cancelAnimationFrame(ringQ); ringQ = requestAnimationFrame(renderRings); }
+  const ring = (id, p, mid, txt) => { const r = S.$("#rg-" + id); if (!r) return; r.style.setProperty("--p", Math.max(0, Math.min(100, Math.round(p)))); r.classList.toggle("clear", mid === "✓"); r.classList.toggle("idle", mid === "–"); r.firstElementChild.textContent = mid; S.$("#rg-" + id + "-t").textContent = txt; };
+  function renderRings() {
+    const n = N();
+    // My class
+    const avg = clsAvgOf(C), sAvg = subjAvgOf(C), flagged = S.atRisk(isCT ? null : [SUBJ]).length;
+    ring("tcls-year", isCT ? avg : sAvg, isCT ? avg : sAvg, `${isCT ? "Class" : SUBJ} average, ${L(C).toLowerCase()}`);
+    const subRows = isCT ? x.subjects.map((k) => Math.round(S.students.reduce((a, st) => a + st[C][k], 0) / n)) : mine.map((k) => { const y = S.sectionByKey(k); return Math.round(y.students.reduce((a, st) => a + st[C][SUBJ], 0) / y.students.length); });
+    const weak = subRows.filter((v) => v < 70).length;
+    ring("tcls-glance", ((subRows.length - weak) / subRows.length) * 100, weak || "✓", weak ? `${weak} ${isCT ? "subject" : "section"}${weak === 1 ? "" : "s"} under 70%` : `Every ${isCT ? "subject" : "section"} 70%+`);
+    ring("tcls-watch", ((n - flagged) / n) * 100, flagged || "✓", flagged ? `${flagged} student${flagged === 1 ? "" : "s"} to look at` : "Nobody flagged");
+    // Attendance
+    const rec = S.cs.attendance[S.todayKey], open = S.isSchoolDay(S.today), away = rec ? Object.keys(rec.marks || {}).length : 0;
+    ring("reg-today", rec ? 100 : 0, !open ? "–" : rec ? "✓" : "!", !open ? "No school today" : rec ? `${n - away} of ${n} in` : "Not marked yet");
+    const wk = S.weekOf(x).filter((v) => v != null), wAvg = wk.length ? Math.round(wk.reduce((a, b) => a + b, 0) / wk.length) : null;
+    ring("reg-week", wAvg || 0, wAvg ?? "–", wAvg == null ? "Nothing marked" : "Average present");
+    const wait = S.cs.leaves.filter((l) => l.status === "Waiting").length, lv = S.cs.leaves.length;
+    ring("reg-leave", lv ? ((lv - wait) / lv) * 100 : 100, wait || "✓", wait ? `${wait} waiting for you` : "None waiting");
+    const sess = Math.round(S.students.reduce((a, st) => a + S.attendancePct(st.roll), 0) / n * 10) / 10, under = S.students.filter((st) => S.attendancePct(st.roll) < 85).length;
+    ring("reg-register", sess, Math.round(sess), under ? `${under} under 85% this session` : "This session");
+    // Homework and chapter plan
+    const hw = mine.flatMap((k) => S.secState(k).homework.filter((h) => h.by === T.name)), ahead = hw.filter((h) => h.due >= S.todayKey).length;
+    ring("thw-hw", hw.length ? (ahead / hw.length) * 100 : 0, ahead, ahead ? `${ahead} due ahead · ${hw.length} posted` : `${hw.length} posted, none due`);
+    let tot = 0, got = 0, behind = 0;
+    mine.forEach((k) => { const c = S.chaptersOf(k.split("-")[0], SUBJ).length, d = S.sylDone(k, SUBJ).length; tot += c; got += d; if (d < S.chaptersDueBy(c, S.todayKey)) behind++; });
+    ring("thw-syl", tot ? (got / tot) * 100 : 0, behind || "✓", behind ? `Behind in ${behind} section${behind === 1 ? "" : "s"}` : `${got} of ${tot} chapters taught`);
+    // Marks
+    const y = S.sectionByKey(mkey), e = S.entry(mkey, SUBJ), vals = Object.values(e.marks).map(Number).filter((v) => !isNaN(v)), yn = y.students.length, low = vals.filter((v) => v < LOW).length;
+    ring("marks-entry", (vals.length / yn) * 100, e.published ? "✓" : yn - vals.length || "✓", e.published ? "Published to parents" : vals.length < yn ? `${vals.length} of ${yn} entered` : "All in · not published");
+    ring("marks-spread", vals.length ? ((vals.length - low) / vals.length) * 100 : 0, vals.length ? low || "✓" : "–", vals.length ? (low ? `${low} below ${LOW} / ${MAX}` : `Everyone ${LOW}+`) : "No marks yet");
+    // Messages, remarks, forms and meetings
+    if (isCT) { const ts = threads(), un = ts.reduce((a, t) => a + t.msgs.filter((m) => m.from === "parent" && m.fresh).length, 0), withNew = ts.filter((t) => t.msgs.some((m) => m.from === "parent" && m.fresh)).length;
+      ring("care-chat", ts.length ? ((ts.length - withNew) / ts.length) * 100 : 100, un || "✓", un ? `${un} new to read` : "All read"); }
+    const cy = S.sectionByKey(crSec), mineRem = S.state.remarks.filter((r) => r.by === T.name), noted = new Set(mineRem.filter((r) => r.sec === crSec).map((r) => r.roll)).size;
+    ring("care-rem", (noted / cy.students.length) * 100, mineRem.length || "–", `${noted} of ${cy.students.length} in ${secLabel(crSec)} noted`);
+    const fs = S.formsFor(crSec), fw = fs.reduce((a, f) => a + cy.students.length - Object.keys(f.replies).length, 0), fAll = fs.length * cy.students.length;
+    ring("care-forms", fAll ? ((fAll - fw) / fAll) * 100 : 100, fs.length ? fw || "✓" : "–", !fs.length ? "None sent" : fw ? `${fw} replies waiting` : "Every family replied");
+    const pt = S.nextPtm(), pb = pt ? S.ptmOfTeacher(pt.date, T.name).length : 0;
+    ring("care-ptm", pt ? (pb / S.PTM_SLOTS.length) * 100 : 0, pt ? pb : "–", pt ? `${pb} booked, ${S.fmt(pt.date, { day: "numeric", month: "short" })}` : "None planned");
   }
 
   document.addEventListener("sjs:view", (e) => {
-    if (e.detail === "messages") { const t = threads().find((v) => v.key === openThread); if (t) { t.msgs.forEach((m) => { if (m.from === "parent") m.fresh = false; }); S.save(); } }
+    if (e.detail === "care" && isCT) { const t = threads().find((v) => v.key === openThread); if (t) { t.msgs.forEach((m) => { if (m.from === "parent") m.fresh = false; }); S.save(); } }
     renderHome(); renderThread();
   });
   document.addEventListener("sjs:sync", () => {
@@ -1833,5 +1941,7 @@
 <script src="js/office.js?v=12"></script>
 <script src="js/desk.js?v=3"></script>
 <script src="js/transport.js?v=3"></script>
+<script src="js/select.js?v=4"></script>
+<script src="js/date.js?v=3"></script>
 </body>
 </html>

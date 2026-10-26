@@ -25,7 +25,9 @@
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Figtree:wght@400..800&display=swap" rel="stylesheet" />
-<link rel="stylesheet" href="css/school.css?v=80" />
+<link rel="stylesheet" href="css/school.css?v=81" />
+<link rel="stylesheet" href="css/ai.css?v=3" />
+<link rel="stylesheet" href="css/adm.css?v=2" />
 <meta name="theme-color" content="#1C1F24" />
 <script>
 /* Before the first paint: fade photos in as they load, and hold headline motion until the fonts arrive. */
@@ -51,7 +53,83 @@
     </div>
   </header>
 
-  <nav class="subnav" aria-label="On this page"><div class="wrap"><a href="#process">How to apply</a><a href="#age">Age criteria</a><a href="#documents">Documents</a><a href="#fees">Fees</a><a href="#faq">Questions</a><a href="#enquire">Book a visit</a></div></nav>
+  <section class="ao" id="open" aria-labelledby="ao-h">
+    <svg class="ao-doo" style="top:12%;left:46%;--c:var(--marigold);--s:34px;--t:13s" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2l2.9 6.3 6.9.7-5.2 4.6 1.5 6.8L12 17l-6.1 3.4 1.5-6.8L2.2 9l6.9-.7z"/></svg>
+    <svg class="ao-doo" style="top:46%;left:50%;--c:var(--royal);--s:40px;--t:17s;--x:20px;--y:-10px;--rr:-10deg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round" aria-hidden="true"><path d="M22 2L11 13"/><path d="M22 2l-7 20-4-9-9-4z"/></svg>
+    <svg class="ao-doo" style="top:8%;right:4%;--c:var(--hedge);--s:28px;--t:11s;--d:-3s" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path d="M17 3l4 4L8 20H4v-4z"/><path d="M14 6l4 4"/></svg>
+    <svg class="ao-doo" style="top:7%;left:34%;--c:var(--brick);--s:26px;--t:15s;--d:-6s" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 21s-7.5-4.6-9.5-9.2C1.2 8.6 3.4 5 7 5c2 0 3.3 1 5 3 1.7-2 3-3 5-3 3.6 0 5.8 3.6 4.5 6.8C19.5 16.4 12 21 12 21z"/></svg>
+    <div class="wrap ao-in">
+      <div>
+        <span class="ao-stamp"><i aria-hidden="true"></i><span class="ao-st">Admissions open · <span data-ao-session>2027–28</span></span></span>
+        <h2 id="ao-h">A seat is waiting for <span class="ao-word"><span class="on">a little dancer.</span><span>a young scientist.</span><span>a chess champion.</span><span>a storyteller.</span><span>a future doctor.</span><span>your child.</span><svg viewBox="0 0 300 12" preserveAspectRatio="none" aria-hidden="true"><path d="M3 9C60 3 140 2 297 6" fill="none" stroke="currentColor" stroke-width="5" stroke-linecap="round"/></svg></span></h2>
+        <p class="lead">Six decades of children have grown up on these four green acres in Sector 7. Come and see where yours will learn, play, sing and make lifelong friends.</p>
+        <ul class="ao-chips" aria-label="Classes"></ul>
+        <div class="row-btns"><a class="btn" href="#enquire">Book a campus visit</a><a class="btn btn--ghost" href="prospectus.html">Read the prospectus</a></div>
+        <p class="ao-facts"><span><b>Since 1965</b></span><span><b>CBSE</b> affiliation 530048</span><span><b>4 acres</b> of green campus</span><span><b>Nursery to XII</b></span></p>
+      </div>
+      <div class="ao-pics">
+        <figure class="pol pol--a"><img src="assets/photos/pp-firstday.webp" alt="Little ones on their first day of school" /><figcaption>First day of school</figcaption></figure>
+        <figure class="pol pol--b"><img src="assets/photos/pp-slide.webp" alt="Pre-primary children waving from the play area" /><figcaption>Our play area</figcaption></figure>
+        <figure class="pol pol--c"><img src="assets/photos/pp-room.webp" alt="Pre-primary children in the air-conditioned classroom" /><figcaption>The air-conditioned pre-primary wing</figcaption></figure>
+        <div class="ao-seal" aria-hidden="true"><svg viewBox="0 0 124 124"><defs><path id="ao-c" d="M62 62m-50 0a50 50 0 1 1 100 0a50 50 0 1 1-100 0"/></defs><text><textPath href="#ao-c">Learn to serve · Since 1965 · Faridabad ·</textPath></text></svg><b>60<small>YEARS</small></b></div>
+      </div>
+    </div>
+  </section>
+
+  <nav class="subnav" aria-label="On this page"><div class="wrap"><a href="#day">A day here</a><a href="#streams">Subjects</a><a href="#why">Why St. John's</a><a href="#process">How to apply</a><a href="#age">Age criteria</a><a href="#documents">Documents</a><a href="#fees">Fees</a><a href="#faq">Questions</a><a href="#enquire">Book a visit</a></div></nav>
+
+  <section class="sec" id="day">
+    <div class="wrap">
+      <div class="sec-title"><h2 class="t-l">Your child's day here</h2><p>Pick a stage to see the school day and what children love most at that age.</p></div>
+      <div class="dy-tabs" role="tablist" aria-label="Stage"></div>
+      <div class="dy"><div class="dy-pic"></div><div class="dy-body" aria-live="polite"></div></div>
+    </div>
+  </section>
+
+  <section class="sec sec--tint" id="streams">
+    <div class="wrap">
+      <div class="sec-title"><h2 class="t-l">Subjects in Classes IX and XI</h2><p>Class IX has five main subjects plus one skill subject. In Class XI, your child picks one of four streams.</p></div>
+      <div class="sg">
+        <div class="sg-h"><span class="sg-tag" style="--c:var(--royal)">Class IX</span><h3>Five main subjects, plus one skill subject</h3></div>
+        <div class="sg-nine">
+          <div class="st-box" style="--c:var(--royal)"><h4>Main subjects · everyone studies these</h4><ul><li>English Language &amp; Literature</li><li>Hindi Course-A / Sanskrit</li><li>Mathematics</li><li>Science</li><li>Social Science</li></ul></div>
+          <span class="sg-plus" aria-hidden="true">+</span>
+          <div class="st-box" style="--c:var(--marigold)"><h4>Skill subject · choose one</h4><ul><li>Artificial Intelligence</li><li>Introduction to Financial Markets</li><li>Information Technology</li><li>Hindustani Music Vocal</li><li>Painting</li><li>Physical Activity Trainer</li></ul></div>
+        </div>
+      </div>
+      <div class="sg">
+        <div class="sg-h"><span class="sg-tag" style="--c:var(--brick)">Class XI</span><h3>Pick one of four streams</h3><p>Tap a stream to see its subjects.</p></div>
+      <div class="st-grid">
+        <button class="st" type="button" data-n="0" style="--c:var(--hedge)"><span class="ic" aria-hidden="true">🩺</span><b>Medical</b><small>Physics, Chemistry, Biology</small></button>
+        <button class="st" type="button" data-n="1" style="--c:var(--royal)"><span class="ic" aria-hidden="true">📐</span><b>Non-Medical</b><small>Physics, Chemistry, Mathematics</small></button>
+        <button class="st" type="button" data-n="2" style="--c:var(--marigold)"><span class="ic" aria-hidden="true">📊</span><b>Commerce</b><small>Economics, Business Studies, Accountancy</small></button>
+        <button class="st" type="button" data-n="3" style="--c:var(--brick)"><span class="ic" aria-hidden="true">🏛️</span><b>Humanities</b><small>Economics, History, Political Science</small></button>
+      </div>
+      <div class="st-out"  aria-live="polite"></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="sec" id="why">
+    <div class="wrap">
+      <div class="sec-title"><h2 class="t-l">Why families choose St. John's</h2><p>Safe, green and busy with things to do, and still the school parents remember from their own childhood.</p></div>
+      <div class="why">
+        <div style="--c:var(--hedge)"><span class="ic" aria-hidden="true">🌳</span><h3>Four green acres</h3><p>Lush grounds under CCTV, a huge playground, and RO water in every cooler.</p></div>
+        <div class="pic"><img src="assets/photos/pp-bus.webp" alt="The school's yellow buses" loading="lazy" decoding="async" /><span>Our buses</span></div>
+        <div style="--c:var(--marigold)"><span class="ic" aria-hidden="true">🚌</span><h3>Safe school buses</h3><p>Every bus has CCTV, GPS, a speed governor and a female attendant.</p></div>
+        <div style="--c:var(--brick)"><span class="ic" aria-hidden="true">🩹</span><h3>Care on campus</h3><p>A medicare centre with trained staff and an ambulance, and a full-time school counsellor.</p></div>
+        <div style="--c:var(--royal)"><span class="ic" aria-hidden="true">🔬</span><h3>Labs and libraries</h3><p>Well-equipped science and computer labs, a senior library and an air-conditioned junior library.</p></div>
+        <div class="pic"><img src="assets/photos/pp-lab.webp" alt="A student at the microscope" loading="lazy" decoding="async" style="object-position:50% 30%" /><span>In the lab</span></div>
+        <div class="pic"><img src="assets/photos/pp-dance.webp" alt="Students performing a folk dance" loading="lazy" decoding="async" /><span>Annual function</span></div>
+        <div style="--c:var(--hedge)"><span class="ic" aria-hidden="true">🎭</span><h3>Arts every week</h3><p>Dance, music, drama, theatre, mime, mono acting, clay modelling and craft.</p></div>
+        <div style="--c:var(--marigold)"><span class="ic" aria-hidden="true">🎤</span><h3>Two seminar auditoriums</h3><p>Both air-conditioned, for seminars, workshops and skills training. A generator keeps the power on.</p></div>
+      </div>
+      <div class="mq" aria-label="Sports and activities"><div>
+        <span data-e="🏸">Badminton</span><span data-e="🏐">Volleyball</span><span data-e="🏀">Basketball</span><span data-e="🏃">Athletics</span><span data-e="⚽">Football</span><span data-e="🧘">Yoga</span><span data-e="♟️">Chess</span><span data-e="🎯">Carrom</span><span data-e="🚂">Toy train</span><span data-e="🌱">Composting</span><span data-e="🧹">Swachh Abhiyaan</span><span data-e="🚌">Excursions</span>
+        <span data-e="🏸" aria-hidden="true">Badminton</span><span data-e="🏐" aria-hidden="true">Volleyball</span><span data-e="🏀" aria-hidden="true">Basketball</span><span data-e="🏃" aria-hidden="true">Athletics</span><span data-e="⚽" aria-hidden="true">Football</span><span data-e="🧘" aria-hidden="true">Yoga</span><span data-e="♟️" aria-hidden="true">Chess</span><span data-e="🎯" aria-hidden="true">Carrom</span><span data-e="🚂" aria-hidden="true">Toy train</span><span data-e="🌱" aria-hidden="true">Composting</span><span data-e="🧹" aria-hidden="true">Swachh Abhiyaan</span><span data-e="🚌" aria-hidden="true">Excursions</span>
+      </div></div>
+    </div>
+  </section>
 
   <section class="sec" id="process">
     <div class="wrap">
@@ -59,7 +137,7 @@
       <ol class="process">
         <li><b>Enquire</b><span>Fill the short form on this page. The office calls you back, usually the same working day.</span></li>
         <li><b>Visit</b><span>See the classrooms, grounds and stage, and meet the admissions team.</span></li>
-        <li><b>Register</b><span>Collect and submit the admission form. Forms with false or incomplete information are not accepted.</span></li>
+        <li><b>Register</b><span>Register with a copy of the date of birth certificate and residence proof. Enter the name and date of birth exactly right: they cannot be changed later.</span></li>
         <li><b>Documents</b><span>Bring the originals for verification along with photocopies.</span></li>
         <li><b>Confirmation</b><span>Admission is on merit. Selected Nursery names go up on the notice board at reception, and on this website.</span></li>
       </ol>
@@ -118,6 +196,8 @@
       <div>
         <h2 class="t-l">Fees</h2>
         <p class="lead mt-s" style="opacity:.9">St. John's follows CBSE norms for fees. The fee structure for 2027–28 is shared with every family that enquires, and published in the parent corner.</p>
+        <p class="fee-hrs"><span><b>Fee counter</b> Monday to Friday, 8:15 AM to 12 PM</span><span><b>Saturday</b> 8:15 AM to 10:30 AM</span></p>
+        <p class="note mt-s">Apart from the security deposit, charges paid at regular or provisional admission are not refunded when a child leaves.</p>
       </div>
       <a class="btn btn--light" href="parents.html#fees">How fees are paid</a>
     </div>
@@ -136,6 +216,8 @@
         <details><summary>How will I know if my child has been selected?</summary><div class="a">Selected Nursery names are put up on the notice board at reception. With the new website, families who enquire online also get an SMS and can check here.</div></details>
         <details><summary>What happens if my child does not pass Class X after provisional admission to XI?</summary><div class="a">The provisional admission is cancelled automatically. It becomes regular once the CBSE Class X result and documents are submitted.</div></details>
         <details><summary>Does the school run buses?</summary><div class="a">Yes. Route details are shared at admission, and parents can follow the bus live in the parent app. See <a class="textlink" href="campus.html#transport">school transport</a>.</div></details>
+        <details><summary>Can the name or date of birth be corrected after the form is submitted?</summary><div class="a">No. Fill in the child's name and date of birth exactly as on the birth certificate, and complete every field. No change is allowed afterwards.</div></details>
+        <details><summary>What are the school timings?</summary><div class="a">Nursery and KG: Monday to Friday, 8:35 AM to 12:55 PM in summer and 9:00 AM to 1:20 PM in winter. Classes I to XII: Monday to Saturday, 7:35 AM to 1:45 PM in summer and 8:05 AM to 2:15 PM in winter.</div></details>
         <details><summary>Does submitting the form guarantee admission?</summary><div class="a">No. Submitting a form does not guarantee a seat. Provisional and regular admission are at the school's discretion.</div></details>
       </div>
     </div>
@@ -185,10 +267,12 @@
     </div>
   </section>
 </main>
-<script src="js/data.js?v=12"></script>
-<script src="js/ai.js?v=8"></script>
+<script src="js/data.js?v=14"></script>
+<script src="js/faq.js?v=1"></script>
+<script src="js/ai.js?v=11"></script>
 <script src="js/school.js?v=28"></script>
 <script src="js/results.js?v=2"></script>
 <script src="js/alive.js?v=17"></script>
+<script src="js/adm.js?v=2"></script>
 </body>
 </html>

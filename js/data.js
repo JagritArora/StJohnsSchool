@@ -289,10 +289,10 @@
   // Facts the school still has to give us. Each one fills every "to be added" marked data-fact="key".
   S.FACTS = [
     ["phone", "Office phone", "0129 224 2097, 0129 224 8895"], ["email", "Office email", "stjohnsschool@rediffmail.com"], ["hours", "Office hours", "8:00 AM to 2:00 PM, Monday to Saturday"],
-    ["pin", "PIN code", "121006"], ["affil", "CBSE affiliation number", ""], ["code", "CBSE school code", ""],
+    ["pin", "PIN code", "121006"], ["affil", "CBSE affiliation number", "530048"], ["code", "CBSE school code", ""],
     ["principal", "Principal's name and qualification", "Mrs Aparna Gautam Panda"], ["chair", "Chairperson and manager", "Ms. A. John, President"],
-    ["tPreS", "Pre-primary timings, summer", "8:00 AM to 12:00 PM"], ["tPreW", "Pre-primary timings, winter", "8:30 AM to 12:30 PM"],
-    ["tSchS", "Classes I to XII timings, summer", "7:50 AM to 1:50 PM"], ["tSchW", "Classes I to XII timings, winter", "8:20 AM to 2:20 PM"]
+    ["tPreS", "Pre-primary timings, summer", "8:35 AM to 12:55 PM"], ["tPreW", "Pre-primary timings, winter", "9:00 AM to 1:20 PM"],
+    ["tSchS", "Classes I to XII timings, summer", "7:35 AM to 1:45 PM"], ["tSchW", "Classes I to XII timings, winter", "8:05 AM to 2:15 PM"]
   ];
   S.siteSeed = () => ({
     adm: { open: true, session: "2027–28", classes: ["Nursery", "Class XI"] },
@@ -400,11 +400,12 @@
 
   // Students a teacher should look at, with the reason.
   // Uses the latest exam of the stage shown, and the one before it.
-  S.atRisk = () => S.students.map((s) => {
-    const why = [], pct = S.attendancePct(s.roll), C = S.EX.cur, P = S.EX.prev;
+  // only: the subjects to judge on (a subject teacher sees just their own).
+  S.atRisk = (only) => S.students.map((s) => {
+    const why = [], pct = S.attendancePct(s.roll), C = S.EX.cur, P = S.EX.prev, subs = only || S.subjects;
     if (pct < 85 && S.schoolDays.length >= 20) why.push(`attendance ${pct}%`); // too few days early on to judge
-    if (P) S.subjects.forEach((sub) => { const drop = s[P][sub] - s[C][sub]; if (drop >= 15) why.push(`${sub} fell ${drop} points (${s[P][sub]}% → ${s[C][sub]}%)`); });
-    const low = S.subjects.filter((sub) => s[C][sub] < 50);
+    if (P) subs.forEach((sub) => { const drop = s[P][sub] - s[C][sub]; if (drop >= 15) why.push(`${sub} fell ${drop} points (${s[P][sub]}% → ${s[C][sub]}%)`); });
+    const low = subs.filter((sub) => s[C][sub] < 50);
     if (low.length) why.push(`below 50% in ${low.join(", ")}`);
     return { s, why, pct };
   }).filter((x) => x.why.length);

@@ -89,16 +89,31 @@
   S.docHead = head;
   S.docPage = (title, pages) => `<!doctype html><html lang="en"><head><meta charset="utf-8"><title>${esc(title)}</title><style>${CSS}</style></head><body>${pages.map((p) => `<section class="page">${p}</section>`).join("")}</body></html>`;
   let docEl = null;
-  S.showDoc = (title, html) => {
+  // o.file: offer a real PDF download (made in the preview with html2pdf) next to Print.
+  const PDF_LIB = "https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js";
+  S.showDoc = (title, html, o = {}) => {
     if (!docEl) {
       docEl = document.createElement("div");
       docEl.className = "modal doc-modal"; docEl.id = "doc-modal";
-      docEl.innerHTML = `<div class="modal-card doc-card" role="dialog" aria-modal="true" aria-labelledby="doc-t"><div class="doc-h"><h3 id="doc-t"></h3><button class="btn btn-primary btn-sm" type="button" id="doc-print">Print or save as PDF</button><button class="icon-btn" type="button" data-close aria-label="Close"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg></button></div><iframe id="doc-f" title="Preview"></iframe></div>`;
+      docEl.innerHTML = `<div class="modal-card doc-card" role="dialog" aria-modal="true" aria-labelledby="doc-t"><div class="doc-h"><h3 id="doc-t"></h3><button class="btn btn-primary btn-sm" type="button" id="doc-dl" hidden>Download PDF</button><button class="btn btn-primary btn-sm" type="button" id="doc-print">Print or save as PDF</button><button class="icon-btn" type="button" data-close aria-label="Close"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg></button></div><iframe id="doc-f" title="Preview"></iframe></div>`;
       document.body.append(docEl);
       docEl.querySelector("#doc-print").addEventListener("click", () => docEl.querySelector("#doc-f").contentWindow.print());
+      docEl.querySelector("#doc-dl").addEventListener("click", async (e) => {
+        const b = e.currentTarget, w = docEl.querySelector("#doc-f").contentWindow, label = b.textContent;
+        b.disabled = true; b.textContent = "Making the PDF…";
+        try {
+          if (!w.html2pdf) await new Promise((ok, no) => { const sc = w.document.createElement("script"); sc.src = PDF_LIB; sc.onload = ok; sc.onerror = no; w.document.head.append(sc); });
+          await w.html2pdf().set({ margin: [8, 8, 10, 8], filename: docEl.dataset.file, image: { type: "jpeg", quality: 0.96 }, html2canvas: { scale: 2, useCORS: true, backgroundColor: "#ffffff" }, jsPDF: { unit: "mm", format: "a4" }, pagebreak: { mode: ["css", "legacy"] } }).from(w.document.body).save();
+          b.textContent = "Downloaded ✓";
+        } catch (err) { b.textContent = "Couldn't make it. Use Print"; }
+        setTimeout(() => { b.textContent = label; b.disabled = false; }, 2500);
+      });
     }
     docEl.querySelector("#doc-t").textContent = title;
     docEl.querySelector("#doc-f").srcdoc = html;
+    const dl = docEl.querySelector("#doc-dl"), pr = docEl.querySelector("#doc-print");
+    dl.hidden = !o.file; docEl.dataset.file = o.file || "";
+    pr.className = o.file ? "btn btn-ghost btn-sm" : "btn btn-primary btn-sm"; pr.textContent = o.file ? "Print" : "Print or save as PDF";
     docEl.classList.add("open");
   };
 

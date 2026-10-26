@@ -88,7 +88,7 @@
       if (has(q, /facilit|campus|sport|lab|library|music|band|dance|activit|fit india/))
         return "Life at St. John's goes well beyond the classroom: a green 4-acre campus, school band, choir and music, Indian and folk dance, sports and the <b>Fit India</b> programme, plus annual day and inter-house events. Have a look at the photos on the Student life page.";
       if (has(q, /time|timing|hour|open|close|when does/))
-        return "The office will publish school and office timings here. Until then, please call the school office (number on the Contact page).";
+        return "School timings:\n• Nursery & KG (Mon–Fri): summer 8:35 AM – 12:55 PM, winter 9:00 AM – 1:20 PM\n• Classes I – XII (Mon–Sat): summer 7:35 AM – 1:45 PM, winter 8:05 AM – 2:15 PM\n• Fee counter: Mon–Fri 8:15 AM – 12:00 PM, Sat 8:15 – 10:30 AM";
       if (has(q, /bus|transport|van|route/))
         return "School transport covers routes across Faridabad. The route list and stops will appear here once the school adds them; parents already enrolled can see their child's bus live in the parent app.";
       if (has(q, /contact|phone|call|email|number/)) return "You can reach the school office through the Contact page, or leave your number in the admissions form and the office will call you back.";
@@ -356,14 +356,13 @@ ${ROLE[mode]()}`;
   S.ICON = Object.assign(S.ICON || {}, ICON);
 
   const META = {
-    public: { title: "Ask St. John's", sub: "Admissions, campus, school life", hello: "Hello! I'm the St. John's assistant. Ask me about admissions, documents, the campus or school life.", chips: ["How do I apply for Nursery?", "Documents needed", "Class XI admission", "Is it CBSE?", "Where is the school?"] },
-    parent: { title: "Ask about Aarav", sub: "Sees only Aarav's records", hello: "Hello! Ask me anything about Aarav — attendance, marks, homework, fees or the bus.", chips: ["How is Aarav doing?", "What should we work on?", "Homework due", "What to pack tomorrow?", "Maths marks"] },
+    public: { title: "Ask St. John's", sub: "Admissions, campus, school life", hello: "Hello! I'm the St. John's assistant. Pick a question below about admissions, documents, the campus or school life.", chips: ["How do I apply for Nursery?", "Documents needed", "Class XI admission", "Fees", "School timings", "Is it CBSE?", "Bus service", "Where is the school?", "Contact the office"] },
+    parent: { title: "Ask about Aarav", sub: "Sees only Aarav's records", hello: "Hello! Pick a question below about Aarav — attendance, marks, homework, fees or holidays.", chips: ["How is Aarav doing?", "What should we work on?", "Homework due", "What to pack tomorrow?", "Attendance", "Maths marks", "Fees due", "Coming holidays"] },
     teacher: { title: "Teaching assistant", sub: "VII-B · your classes only", hello: "Good morning! I can draft remarks, make practice sets, write notes to parents and spot who needs help.", chips: ["Who needs attention?", "Quiz on fractions", "Remarks for Ishita", "Lesson plan: integers", "Note about the PTM"] },
     principal: { title: "School assistant", sub: "Whole-school view", hello: "Good morning. Ask for today's brief, attendance, fees or admissions.", chips: ["Today's brief", "Admission enquiries", "Fee collection", "Who needs attention?", "Staff today"] }
   };
 
   const esc = (s) => s.replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
-  const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
 
   S.mountAI = (mode) => {
     const m = JSON.parse(JSON.stringify(META[mode]).split("Aarav").join(S.me ? S.me.first : "Aarav").split("VII-B").join(cls()).split("Ishita").join(S.students[0] ? S.students[10 % S.students.length].first : "Ishita"));
@@ -373,19 +372,40 @@ ${ROLE[mode]()}`;
     fab.setAttribute("aria-label", m.title);
     const panel = document.createElement("div");
     panel.className = "ai-panel"; panel.setAttribute("role", "dialog"); panel.setAttribute("aria-label", m.title);
-    panel.innerHTML = `<div class="ai-head"><span class="av">${ICON.spark}</span><div><b>${m.title}</b><span>${m.sub}</span></div><button class="icon-btn" type="button" aria-label="Close">${ICON.x}</button></div>
+    const pub = mode === "public", TOP = S.FAQ_TOPICS || [];
+    const FAQ = S.FAQ || [];
+    // What the search box can find: this portal's own questions first, then the whole-website bank.
+    const pool = (pub ? [] : m.chips.map((c) => ({ q: c, k: "", own: true }))).concat(FAQ);
+    const sparks = Array.from({ length: 7 }, (_, i) => `<i style="--x:${8 + i * 13}%;--d:${(i * 0.9) % 5}s;--s:${0.6 + (i % 3) * 0.25}"></i>`).join("");
+    panel.innerHTML = `<div class="ai-head"><span class="ai-sparks" aria-hidden="true">${sparks}</span><span class="av">${ICON.spark}<u></u></span><div><b>${m.title}</b><span class="ai-sub"><span class="ai-dot"></span><span class="ai-rot">${m.sub}</span></span></div><button class="icon-btn" type="button" aria-label="Close">${ICON.x}</button></div>
       <div class="ai-log" aria-live="polite"></div>
-      <div class="ai-chips">${m.chips.map((c) => `<button type="button" data-q="${esc(c)}">${c}</button>`).join("")}</div>
-      <form class="ai-form"><input type="text" placeholder="Type a question…" aria-label="Your question" autocomplete="off" />${SR ? `<button type="button" class="ai-mic" aria-label="Ask by voice" aria-pressed="false">${ICON.mic}</button>` : ""}<button type="submit" aria-label="Send">${ICON.send}</button></form>
+      <div class="ai-sugg" role="listbox" aria-label="Matching questions"></div>
+      <div class="ai-topics">${pub ? TOP.map(([t, e], i) => `<button type="button" data-t="${esc(t)}" style="--i:${i}"><span>${e}</span>${esc(t)}</button>`).join("") : m.chips.map((c, i) => `<button type="button" data-q="${esc(c)}" style="--i:${i}">${esc(c)}</button>`).join("")}</div>
+      <label class="ai-search"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg><input type="search" aria-label="Search questions" autocomplete="off" enterkeyhint="search" /><span class="ai-ph" aria-hidden="true"></span></label>
+      <a class="ai-more" href="${pub ? "contact.html#message" : "#"}" data-more>Something else? Ask the school office ${ICON.send}</a>
       <div class="ai-foot"></div>`;
-    document.body.append(fab, panel);
-    const log = panel.querySelector(".ai-log"), input = panel.querySelector("input"), foot = panel.querySelector(".ai-foot");
+    // A little "psst" bubble by the button, once per visit, with a question people often ask.
+    const tease = document.createElement("button");
+    tease.type = "button"; tease.className = "ai-tease";
+    const teaseQs = pub ? ["What are the fees?", "Which streams are offered in Class XI?", "Does the school have buses?", "What is the age for Nursery, LKG, UKG and Class I?"] : m.chips.slice(0, 3);
+    tease.innerHTML = `<b>Psst… 👋</b> <span>${esc(teaseQs[0])}</span>`;
+    document.body.append(fab, panel, tease);
+    const log = panel.querySelector(".ai-log"), foot = panel.querySelector(".ai-foot");
     let greeted = false, busy = false;
     const hist = [], ctx = {}; // conversation so far, and what the built-in answers remember
 
     const add = (html, who) => { const d = document.createElement("div"); d.className = "msg " + who; d.innerHTML = html; log.append(d); log.scrollTop = log.scrollHeight; return d; };
-    const open = () => { panel.classList.add("open"); fab.classList.add("hide"); if (!greeted) { add(m.hello, "bot"); greeted = true; } setTimeout(() => input.focus({ preventScroll: true }), 250); };
-    const close = () => { panel.classList.remove("open"); fab.classList.remove("hide"); };
+    const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const sugg = panel.querySelector(".ai-sugg"), input = panel.querySelector(".ai-search input"), ph = panel.querySelector(".ai-ph");
+    const hour = new Date().getHours(), hi = hour < 12 ? "Good morning" : hour < 17 ? "Good afternoon" : "Good evening";
+    const welcome = () => {
+      const w = document.createElement("div"); w.className = "ai-hello";
+      w.innerHTML = `<span class="wave" aria-hidden="true">👋</span><h4>${hi}!</h4><p>${m.hello}</p>` +
+        (pub ? `<p class="ai-count"><b>${FAQ.length}</b> answers ready · pick a topic or just start typing</p><div class="ai-tiles">${TOP.slice(0, 6).map(([t, e], i) => `<button type="button" data-t="${esc(t)}" style="--i:${i}"><span>${e}</span>${esc(t)}</button>`).join("")}</div>` : "");
+      log.append(w);
+    };
+    const open = () => { panel.classList.add("open"); fab.classList.add("hide"); tease.classList.remove("on"); if (!greeted) { welcome(); greeted = true; } };
+    const close = () => { panel.classList.remove("open"); fab.classList.remove("hide"); hideSugg(); };
 
     // Footer: which engine is answering, and the switch.
     const vlang = "en-IN";
@@ -449,32 +469,107 @@ ${ROLE[mode]()}`;
           note = e.status === 401 ? ("Claude didn't accept the key, so this is the built-in answer.") : ("Couldn't reach Claude, so this is the built-in answer.");
         }
       }
+      let item = null;
       if (answer === null) {
-        const html = brains[mode](lower(text), ctx);
+        // A question from the bank answers from the bank; this portal's own questions from its records.
+        item = FAQ.find((f) => f.q === text);
+        const own = !pub && !item;
+        const html = item ? S.faqAnswer(item) : own ? brains[mode](lower(text), ctx) : notFound();
         await reveal(bubble, html, note);
         answer = plain(html);
+        if (item || own) related(item, bubble); else bubble.classList.add("miss");
       }
       hist.push({ role: "assistant", content: answer });
       busy = false;
     };
-
-    // Voice: speak the question; it is sent when you stop talking.
-    const mic = panel.querySelector(".ai-mic");
-    let rec = null;
-    if (mic) mic.addEventListener("click", () => {
-      if (rec) { rec.stop(); return; }
-      rec = new SR(); rec.lang = vlang; rec.interimResults = true;
-      let said = "";
-      rec.onresult = (e) => { said = [...e.results].map((r) => r[0].transcript).join(""); input.value = said; };
-      rec.onerror = (e) => { if (e.error === "not-allowed" || e.error === "service-not-allowed") add("The microphone is blocked for this page. Allow it in the browser's site settings, then tap the mic again.", "bot"); };
-      rec.onend = () => { rec = null; mic.classList.remove("rec"); mic.setAttribute("aria-pressed", "false"); if (said.trim() && !busy) { input.value = ""; ask(said); } };
-      rec.start(); mic.classList.add("rec"); mic.setAttribute("aria-pressed", "true");
-    });
+    const notFound = () => `Sorry, that information isn't available here yet. 🙏\nPlease reach out to the school office:\n• 📞 <b>${S.FAQ_PHONE ? S.FAQ_PHONE() : "0129 224 2097"}</b>\n• ✉️ ${S.FAQ_EMAIL ? S.FAQ_EMAIL() : "stjohnsschool@rediffmail.com"}\n<a class="ai-go" href="contact.html#message">Send the office a message →</a>`;
+    // After an answer: a quick "helpful?" and three more from the same topic.
+    const related = (item, bubble) => {
+      const more = item ? FAQ.filter((f) => f.g === item.g && f !== item).sort(() => Math.random() - 0.5).slice(0, 3) : [];
+      const d = document.createElement("div"); d.className = "ai-after";
+      d.innerHTML = `<span class="ai-react">Helpful? <button type="button" data-r="up" aria-label="Yes">👍</button><button type="button" data-r="down" aria-label="No">👎</button></span>` +
+        (more.length ? `<div class="ai-rel"><small>${esc(item.g)} · people also ask</small>${more.map((f, i) => `<button type="button" data-q="${esc(f.q)}" style="--i:${i}">${esc(f.q)}</button>`).join("")}</div>` : "");
+      bubble.after(d); log.scrollTop = log.scrollHeight;
+    };
+    const confetti = (at) => {
+      if (reduce) return;
+      const r = at.getBoundingClientRect(), box = document.createElement("span"); box.className = "ai-confetti";
+      box.style.left = r.left + r.width / 2 + "px"; box.style.top = r.top + "px";
+      box.innerHTML = Array.from({ length: 14 }, (_, i) => `<i style="--a:${i * 26}deg;--c:${["#C0392B", "#E2A53B", "#3B5BA5", "#3E8E5E"][i % 4]}"></i>`).join("");
+      document.body.append(box); setTimeout(() => box.remove(), 900);
+    };
+    // Show a topic's questions as a bot message.
+    const topic = (t) => {
+      open(); hideSugg();
+      const qs = FAQ.filter((f) => f.g === t), e = (TOP.find(([x]) => x === t) || [])[1] || "";
+      add(esc(`${e} ${t}`), "me");
+      const d = add(`Here's what I can tell you about <b>${esc(t.toLowerCase())}</b>:<div class="ai-rel">${qs.map((f, i) => `<button type="button" data-q="${esc(f.q)}" style="--i:${i}">${esc(f.q)}</button>`).join("")}</div>`, "bot");
+      d.classList.add("pick");
+    };
 
     fab.addEventListener("click", open);
+    tease.addEventListener("click", () => { const q = tease.querySelector("span").textContent; open(); ask(q); });
     panel.querySelector(".ai-head .icon-btn").addEventListener("click", close);
-    panel.querySelectorAll(".ai-chips button").forEach((b) => b.addEventListener("click", () => ask(b.dataset.q || b.textContent, b.textContent)));
-    panel.querySelector(".ai-form").addEventListener("submit", (e) => { e.preventDefault(); const v = input.value; input.value = ""; ask(v); });
+    // Every button inside the chat: topics, suggested questions, reactions.
+    panel.addEventListener("click", (e) => {
+      const b = e.target.closest("button"); if (!b || !panel.contains(b)) return;
+      if (b.dataset.t) { topic(b.dataset.t); return; }
+      if (b.dataset.q) { input.value = ""; hideSugg(); ask(b.dataset.q); return; }
+      if (b.dataset.r) {
+        const box = b.parentElement; if (box.classList.contains("done")) return;
+        box.classList.add("done"); b.classList.add("on");
+        if (b.dataset.r === "up") { confetti(b); box.insertAdjacentHTML("beforeend", "<em>Glad it helped!</em>"); }
+        else box.insertAdjacentHTML("beforeend", `<em>Sorry! <a href="contact.html#message">Ask the office</a></em>`);
+      }
+    });
+    // No AI behind the box: it searches the question bank as you type, so every answer is free.
+    // Anything the bank can't answer goes to a person, the contact form here, the school office in the portals.
+    panel.querySelector("[data-more]").addEventListener("click", (e) => { if (!pub) { e.preventDefault(); add("For anything else, message the school office from the <b>Messages</b> tab and they'll reply the same school day.", "bot"); } });
+
+    // ---- The search box ----
+    let hits = [], sel = 0;
+    const mark = (q, typed) => { let h = esc(q); typed.toLowerCase().split(/\s+/).filter((w) => w.length > 1).forEach((w) => { h = h.replace(new RegExp(`(^|[\\s(])(${w.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}[a-z]*)`, "gi"), "$1<mark>$2</mark>"); }); return h; };
+    function hideSugg() { sugg.classList.remove("on"); sugg.innerHTML = ""; hits = []; }
+    const showSugg = () => {
+      const v = input.value.trim();
+      ph.classList.toggle("off", !!input.value);
+      if (v.length < 2) { hideSugg(); return; }
+      hits = S.faqSearch ? S.faqSearch(v, pool).slice(0, 5) : []; sel = 0;
+      sugg.innerHTML = hits.length
+        ? hits.map((h, i) => `<button type="button" role="option" data-q="${esc(h.item.q)}" style="--i:${i}"${i ? "" : ' class="sel"'}>${h.item.g ? `<span>${(TOP.find(([x]) => x === h.item.g) || [, "💬"])[1]}</span>` : "<span>💬</span>"}<em>${mark(h.item.q, v)}</em></button>`).join("")
+        : `<p class="none">🤔 No match yet. Press Enter and I'll tell you who can help.</p>`;
+      sugg.classList.add("on");
+    };
+    input.addEventListener("input", showSugg);
+    input.addEventListener("focus", () => { ph.classList.add("off"); showSugg(); });
+    input.addEventListener("blur", () => { if (!input.value) ph.classList.remove("off"); });
+    input.addEventListener("keydown", (e) => {
+      const btns = [...sugg.querySelectorAll("button")];
+      if ((e.key === "ArrowDown" || e.key === "ArrowUp") && btns.length) {
+        e.preventDefault(); sel = (sel + (e.key === "ArrowDown" ? 1 : -1) + btns.length) % btns.length;
+        btns.forEach((b, i) => b.classList.toggle("sel", i === sel)); return;
+      }
+      if (e.key !== "Enter") return;
+      e.preventDefault();
+      const v = input.value.trim(); if (!v) return;
+      const pick = hits[sel] || (S.faqSearch ? S.faqSearch(v, pool)[0] : null);
+      input.value = ""; hideSugg(); ph.classList.remove("off");
+      if (pick) ask(pick.item.q);
+      else { open(); add(esc(v), "me"); const d = add('<span class="typing"><i></i><i></i><i></i></span>', "bot"); d.style.padding = "0"; reveal(d, notFound()).then(() => d.classList.add("miss")); }
+    });
+    // The placeholder types out example questions, one after another.
+    const EX = pub ? ["What are the fees?", "Is there a school bus?", "Age for Nursery", "Class XI streams", "School timings", "How do I get a TC?"] : m.chips;
+    if (reduce) ph.textContent = "Search: " + EX[0];
+    else { let n = 0, c = 0, back = false; const tick = () => { const w = EX[n]; if (!back) { c++; if (c > w.length) { back = true; return setTimeout(tick, 1600); } } else { c--; if (c === 0) { back = false; n = (n + 1) % EX.length; } } ph.textContent = "Try: " + w.slice(0, c); setTimeout(tick, back ? 28 : 65); }; tick(); }
+    // The subtitle under the name rotates through what it can help with.
+    const rot = panel.querySelector(".ai-rot"), subs = pub ? [m.sub, `${FAQ.length} answers, instantly`, "Fees · timings · buses · streams", "Free, and always here"] : [m.sub, "Answers from your records"];
+    if (!reduce) { let r = 0; setInterval(() => { if (!panel.classList.contains("open")) return; r = (r + 1) % subs.length; rot.classList.add("swap"); setTimeout(() => { rot.textContent = subs[r]; rot.classList.remove("swap"); }, 250); }, 3800); }
+    // The teaser bubble: shows once after a while, cycles a few questions, then goes.
+    if (!reduce) setTimeout(() => {
+      if (panel.classList.contains("open")) return;
+      let t = 0; tease.classList.add("on");
+      const iv = setInterval(() => { t++; if (t >= teaseQs.length || !tease.classList.contains("on")) { clearInterval(iv); tease.classList.remove("on"); return; } const sp = tease.querySelector("span"); sp.classList.add("swap"); setTimeout(() => { sp.textContent = teaseQs[t]; sp.classList.remove("swap"); }, 250); }, 3200);
+    }, 7000);
     document.addEventListener("keydown", (e) => { if (e.key === "Escape" && panel.classList.contains("open")) close(); });
     S.ask = ask; S.openAI = open;
   };
