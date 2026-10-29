@@ -1,7 +1,6 @@
-/* "Ask St. John's" — the AI assistant.
-   Prototype: answers are worked out from the demo data in data.js, so the
-   demo runs offline. In the live build the same widget calls Claude through
-   the school's server, which only passes it what that user may see. */
+/* "Ask St. John's" and the portal helpers: quick answers, worked out in the browser from the
+   school's own records and the question bank in faq.js. No AI service is called, so nothing
+   here costs anything to run, and no record leaves the page. */
 (function () {
   const S = window.SJS;
   const has = (q, re) => re.test(q);
@@ -110,7 +109,7 @@
       }
       const subj = subjIn(q);
       if (subj) {
-        const e = S.entry(S.focusKey, subj), u2 = S.PHASE !== "end" && e.published && e.marks[s.roll] != null ? `\n${S.ENTRY.name} (just published): <b>${e.marks[s.roll]}/${S.ENTRY.max}</b>.` : "";
+        const e = S.entry(S.focusKey, subj), u2 = S.PHASE !== "end" && e.published && e.marks[s.roll] != null && !isNaN(+e.marks[s.roll]) ? `\n${S.ENTRY.name} (just published): <b>${e.marks[s.roll]}/${S.ENTRY.max}</b>.` : "";
         return `${subj}: ${P() ? `${LB(P())} <b>${s[P()][subj]}%</b> → ` : ""}${LB(C())} <b>${s[C()][subj]}%</b> (class average ${S.classAvg(C(), subj)}%).${u2}\n` +
           (s[C()][subj] >= S.classAvg(C(), subj) ? s.first + " is above the class average here. 👍" : "This is below the class average. A short daily practice and a chat with the subject teacher at " + PTM() + " would help.");
       }
@@ -147,7 +146,7 @@
         return `Answer key — <b>${topicName[t]}</b>\n` + KEY[t].slice(0, 6).map((x, i) => `${i + 1}. ${x}`).join("\n");
       }
       if (has(q, /remark|report card|comment|feedback/)) {
-        if (!st) return `Which student? Try: “Remarks for ${S.students[0].first}” — or use the Report-card remarks tool in AI Assist to draft all ${S.students.length} at once.`;
+        if (!st) return `Which student? Try: “Remarks for ${S.students[0].first}” — or use the Report-card remarks tool in Writing help to draft all ${S.students.length} at once.`;
         return `Draft remark for <b>${st.name}</b> (edit before saving):\n\n${S.remarkFor(st)}`;
       }
       if (has(q, /quiz|question|paper|worksheet|test|practice/)) {
@@ -204,150 +203,11 @@
     return `<ul>${att}<li><b>${enqNew} new admission enquiries</b> waiting for a call — ${enq.filter((e) => e.cls === "Nursery").length} of all enquiries are for Nursery.</li>${fee}<li><b>${S.atRisk().length} students in VII-B</b> are flagged by the class teacher's assistant — worth a look before the PTM on 31 Oct.</li></ul>`;
   };
 
-  // ---------- Live answers from Claude ----------
-  // The prototype calls Claude straight from the browser with a key the
-  // presenter pastes in once; it stays in this browser's storage. In the live
-  // build the call goes through the school's server, which holds the key and
-  // only passes Claude the records that user is allowed to see.
-  const LS_KEY = "sjs-claude-key", MODEL = "claude-sonnet-5-5";
-  const store = {
-    get: (k) => { try { return localStorage.getItem(k); } catch (e) { return null; } },
-    set: (k, v) => { try { v == null ? localStorage.removeItem(k) : localStorage.setItem(k, v); } catch (e) {} }
-  };
-  S.claude = {
-    get on() { return !!store.get(LS_KEY); },
-    connect: (k) => store.set(LS_KEY, k),
-    disconnect: () => store.set(LS_KEY, null),
-    async stream({ system, messages, max = 700, onText }) {
-      const ac = new AbortController(), timer = setTimeout(() => ac.abort(), 30000);
-      try {
-        const res = await fetch("https://api.anthropic.com/v1/messages", {
-          method: "POST", signal: ac.signal,
-          headers: { "content-type": "application/json", "x-api-key": store.get(LS_KEY), "anthropic-version": "2023-06-01", "anthropic-dangerous-direct-browser-access": "true" },
-          body: JSON.stringify({ model: MODEL, max_tokens: max, stream: true, system: [{ type: "text", text: system, cache_control: { type: "ephemeral" } }], messages })
-        });
-        if (!res.ok) { const err = new Error("HTTP " + res.status); err.status = res.status; throw err; }
-        const rd = res.body.getReader(), dec = new TextDecoder();
-        let buf = "", out = "";
-        for (;;) {
-          const { done, value } = await rd.read();
-          if (done) break;
-          buf += dec.decode(value, { stream: true });
-          let i;
-          while ((i = buf.indexOf("\n\n")) >= 0) {
-            const line = buf.slice(0, i).split("\n").find((l) => l.startsWith("data:")); buf = buf.slice(i + 2);
-            if (!line) continue;
-            const d = JSON.parse(line.slice(5));
-            if (d.type === "content_block_delta" && d.delta.type === "text_delta") { out += d.delta.text; onText && onText(out); }
-            else if (d.type === "error") throw new Error(d.error.message);
-          }
-        }
-        return out.trim();
-      } finally { clearTimeout(timer); }
-    }
-  };
-
-  // What each assistant may see. The parent's assistant gets only that child's
-  // records; the teacher's only their class; the website's only public facts.
-  const marksLine = (s, ex) => S.subjects.map((x) => `${x} ${s[ex][x]}`).join(", ");
-  // Each assistant sees only the notices meant for its reader.
-  const noticesFor = (m) => m === "parent" && S.noticesFor ? S.noticesFor(S.me) : m === "public" ? S.state.notices.filter((n) => n.web !== false && !(n.to && (n.to.staff || n.to.bus || n.to.gender))) : S.state.notices;
-  const noticesTxt = (m) => noticesFor(m).map((n) => `- ${n.title} (${S.fmt(n.date, { weekday: "short", day: "numeric", month: "short" })}${n.level === "high" ? ", important" : ""}${S.audienceText && !S.isEveryone(n) ? ", for " + S.audienceText(n) : ""}): ${n.text}`).join("\n");
-  const holidaysTxt = () => Object.entries(S.HOLIDAYS).filter(([k]) => k >= S.todayKey).map(([k, v]) => `${S.fmt(k, { weekday: "short", day: "numeric", month: "short" })} ${v}`).join("; ");
-  const todayAtt = () => { const t = S.cs.attendance[S.todayKey]; return t ? `marked at ${t.at}; away: ${Object.keys(t.marks).map((r) => `${S.student(r).name} (${t.marks[r] === "L" ? "leave" : "absent"})`).join(", ") || "nobody"}` : "not marked yet"; };
-  const timetableTxt = () => { const nd = S.nextSchoolDay(S.today, 1); return `Today (${S.fmtLong(S.today)}): ${(S.timetable[S.today.getDay()] || []).join(", ")}\nNext school day (${S.fmtLong(nd)}): ${S.timetable[nd.getDay()].join(", ")}\nPeriods start at ${S.periodTimes.join(", ")}`; };
-  const SCHOOL = `St. John's School, Sector 7A, Faridabad, Haryana. Founded 1965 by Shri T.I. John; run by the Idicula Trust Society (Regd.). CBSE, Nursery to Class XII, on a 4-acre campus. Motto: "Learn to serve". Vision: nurture each child's potential and create lifelong learners and global citizens with innovation and strong values ("Vision with action can build the future"). Mission: honesty, compassion, secularism, tolerance and respect, with pride in the nation's heritage.`;
-
-  const admNow = () => { const a = S.admText("en"); return a.open ? `Admissions for ${a.session} are open for ${a.list}.` : `Admissions for ${a.session} are closed for now; the office calls back when registration opens.`; };
-  const factsTxt = () => {
-    const f = (S.state.site && S.state.site.facts) || {}, got = S.FACTS.filter(([k]) => (f[k] || "").trim());
-    const missing = ["fee amounts", "bus routes and stops"].concat(S.FACTS.filter(([k]) => !(f[k] || "").trim()).map(([, l]) => l.toLowerCase()));
-    return (got.length ? "PUBLISHED DETAILS\n" + got.map(([k, l]) => `- ${l}: ${f[k].trim()}`).join("\n") + "\n" : "") + `NOT PUBLISHED YET (say the office will confirm): ${missing.join(", ")}.`;
-  };
-  const ROLE = {
-    public: () => `You are talking to a visitor on the school website, usually a parent thinking about admission.
-SCHOOL
-${SCHOOL}
-Life at school: school band, choir and music, Indian and folk dance, sports and the Fit India programme, annual day and inter-house events.
-ADMISSIONS
-- ${admNow()} Admission is on merit and is valid once all documents are submitted.
-- Nursery: selected students are listed on the notice board at the school reception.
-- Class XI: provisional on the Class IX result; confirmed when the Class X CBSE result and pass certificate are submitted. If the student does not pass Class X, the provisional seat is cancelled. Streams on offer this year: the office confirms on the call back.
-- Documents: date of birth certificate, residence proof, 1 passport photo of the child and 1 of each parent with the child; Class XI also needs the original Transfer Certificate and the Class IX result, then the Class X mark sheet. Bring originals and photocopies.
-- How to apply: fill the enquiry form on the Admissions page and pick a day; the office calls back to confirm the campus visit.
-- Fees follow CBSE norms; the office shares the fee structure for the class after an enquiry.
-${factsTxt()}
-WEBSITE PAGES: Home, About, Academics, Admissions, Campus, Student life, News, Parents, Mandatory disclosure, Contact (map, message form, careers, alumni).
-UPCOMING NOTICES
-${noticesTxt("public")}
-Upcoming holidays: ${holidaysTxt()}`,
-
-    parent: () => {
-      const s = S.me, month = Object.keys(S.history).filter((k) => k.slice(0, 7) === S.todayKey.slice(0, 7) && S.history[k][s.roll]);
-      return `You are talking to ${s.parent}, parent of ${s.name}, Class ${cls()}, Roll ${s.roll}. You can see only ${s.first}'s records and school notices. If asked about another child, say you can only see ${s.first}'s records. Be encouraging and practical; suggest simple things to do at home. For leave, complaints or anything needing a person, point to the Messages tab or the class teacher.
-Stage of the session: ${S.PHASES[S.PHASE].label} (${S.PHASES[S.PHASE].when}).
-${s.first.toUpperCase()}
-Class teacher: ${S.teacher.name}. ${s.bus === "Own transport" ? "Comes by own transport." : `Bus: ${s.bus}; the Home tab shows the bus live and a notification comes two stops before.`}
-Attendance this session: ${S.attendancePct(s.roll)}% (CBSE needs 75% to sit the Class X board exam). Away this month: ${month.map((k) => `${S.fmt(k)} (${S.history[k][s.roll] === "L" ? "leave" : "absent"})`).join(", ") || "none"}. Today: ${({ P: "present", A: "absent", L: "on leave" })[S.statusOn(s.roll, S.todayKey)] || "not marked yet"}.
-${S.EX.list.map((k) => `${LB(k)} (%): ${marksLine(s, k)}`).join("\n")}
-Class average, ${LB(C()).toLowerCase()} (%): ${S.subjects.map((x) => `${x} ${S.classAvg(C(), x)}`).join(", ")}
-Homework: ${S.cs.homework.map((h) => `${h.subj}: ${h.title}, due ${S.fmt(h.due)}${h.done ? " (done)" : " (pending)"} — ${h.detail}`).join(" | ")}
-Fees: ${myFees().map((f) => `${f.q} ${S.rupee(f.amount)} due ${S.fmt(f.due)} ${f.paid ? "paid " + S.fmt(f.paid) : "unpaid"}`).join("; ")}. Pay by UPI from the Fees tab; receipt is instant.
-Timetable, ${cls()}:
-${timetableTxt()}
-${S.kidKey === "VII-B-1" ? `Sibling at school: ${S.sibling.name}, Class ${S.sibling.cls} (class teacher ${S.sibling.teacher}); those records are not loaded in this demo.\n` : ""}Coming up: ${PTM()}.
-NOTICES
-${noticesTxt("parent")}
-EXAMS AND DATESHEETS (${cls()})
-${S.examsTxt ? S.examsTxt(s) : ""}
-Upcoming holidays: ${holidaysTxt()}`;
-    },
-
-    teacher: () => `You are talking to ${S.staff ? S.staff.name : S.teacher.name}, who teaches ${S.staff ? S.staff.subject + " to " + S.staff.sections.join(", ") : "VII-B"}${S.staff && S.staff.classOf ? " and is class teacher of " + S.staff.classOf : ""}. You can see ${cls()} only. Stage of the session: ${S.PHASES[S.PHASE].label}. You draft report-card remarks, CBSE/NCERT practice sets with answer keys, lesson plans, and notes to parents — always as drafts the teacher checks. Remarks: 2–3 sentences, specific (cite marks or attendance), kind, with one concrete next step.
-${cls()} ROSTER (attendance %, then ${S.EX.list.map((k) => LB(k)).join(", ")} %; subjects: ${S.subjects.join(", ")})
-${S.students.map((s) => `${s.roll}. ${s.name} — att ${S.attendancePct(s.roll)}; ${S.EX.list.map((k) => S.subjects.map((x) => s[k][x]).join("/")).join("; ")}`).join("\n")}
-Class averages, ${LB(C()).toLowerCase()}: ${S.subjects.map((x) => `${x} ${S.classAvg(C(), x)}`).join(", ")}
-Flagged for attention: ${S.atRisk().map((x) => `${x.s.name} (${x.why.join("; ")})`).join(" | ") || "nobody"}
-Today's attendance: ${todayAtt()}
-Homework set: ${S.cs.homework.map((h) => `${h.subj}: ${h.title}, due ${S.fmt(h.due)}`).join(" | ")}
-Timetable:
-${timetableTxt()}
-Coming up: ${PTM()}.
-NOTICES
-${noticesTxt()}`,
-
-    principal: () => {
-      const enq = S.state.enquiries, cls = S.sample.classes, att = S.sample.attendance;
-      return `You are talking to the Principal. Whole-school figures below are samples for the demo (say "sample" when quoting them); VII-B and admissions are live from the demo. Be crisp, lead with the number, and suggest one action when useful. Stage of the session: ${S.PHASES[S.PHASE].label} (${S.PHASES[S.PHASE].when}).
-TODAY'S BRIEF
-${S.brief().replace(/<[^>]+>/g, " ").replace(/\s+/g, " ")}
-WHOLE SCHOOL (sample)
-Present today: ${attLine().replace(/<[^>]+>/g, "")} By class: ${cls.map((c, i) => `${c} ${c === "VII" ? "VII-B live: " + todayAtt() : att[i] + "%"}`).join(", ")}.
-Staff: 84 of 88 present; 2 on leave, 2 at the CBSE zonal meet; 6 periods substituted.
-${S.FEE_NOW.q} fees: ${S.FEE_NOW.got} collected of ${S.FEE_NOW.of} (${S.FEE_NOW.pct}%); ${S.FEE_NOW.families} families yet to pay; due ${S.fmt(S.FEE_NOW.due)}; ${S.FEE_NOW.upi}% of payments by UPI; reminders go 7 days and 1 day before.
-Flagged students school-wide: 46 (19 attendance under 85%, 27 dropped 15+ points since Unit Test 1).
-VII-B (live): flagged — ${S.atRisk().map((x) => `${x.s.name} (${x.why.join("; ")})`).join(" | ")}. Class averages, ${LB(C()).toLowerCase()}: ${S.subjects.map((x) => `${x} ${S.classAvg(C(), x)}`).join(", ")}.
-ADMISSION ENQUIRIES (live)
-${enq.map((e) => `- ${e.child}, ${e.cls}; parent ${e.parent}; received ${S.fmt(e.at)}; status ${e.status}${e.note ? "; note: " + e.note : ""}`).join("\n")}
-NOTICES SENT
-${noticesTxt()}
-Upcoming holidays: ${holidaysTxt()}`;
-    }
-  };
-
-  S.aiSystem = (mode) => `You are "${META[mode].title}", the AI assistant in the St. John's School app. Today is ${S.fmtLong(S.today)}.
-This is a prototype shown to the school with sample data. Answer only from the data below. If the answer isn't there, say so plainly and say who at school can confirm. Never invent numbers, names, fees, phone numbers or dates.
-Reply in simple Indian English, even if the question is in another language.
-Keep it short and warm: usually 2–6 short lines. Use "• " for list items and **bold** for the key number or name. No headings, tables or links.
-
-${ROLE[mode]()}`;
-
-  // Claude writes **bold** and "• " lists; everything else is shown as text.
-  const fmtAI = (t) => esc(t).replace(/\*\*(.+?)\*\*/g, "<b>$1</b>").replace(/^#+\s*/gm, "").replace(/^\s*[-*]\s+/gm, "• ");
   const plain = (h) => h.replace(/<br\s*\/?>/g, "\n").replace(/<[^>]+>/g, "");
 
   // ---------- Widget ----------
   const ICON = {
+    ask: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5.5A2.5 2.5 0 0 1 6.5 3h11A2.5 2.5 0 0 1 20 5.5v8a2.5 2.5 0 0 1-2.5 2.5H10l-4.5 4v-4h0A1.5 1.5 0 0 1 4 14.5z"/><path d="M9.8 7.7a2.3 2.3 0 1 1 3.2 2.1c-.6.3-1 .8-1 1.4v.3M12 13.6v.01"/></svg>',
     spark: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l1.9 5.3L19 10l-5.1 1.7L12 17l-1.9-5.3L5 10l5.1-1.7z"/><path d="M19 15l.8 2.2L22 18l-2.2.8L19 21l-.8-2.2L16 18l2.2-.8z"/></svg>',
     send: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>',
     mic: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5.5 11a6.5 6.5 0 0 0 13 0M12 17.5V21"/></svg>',
@@ -356,10 +216,10 @@ ${ROLE[mode]()}`;
   S.ICON = Object.assign(S.ICON || {}, ICON);
 
   const META = {
-    public: { title: "Ask St. John's", sub: "Admissions, campus, school life", hello: "Hello! I'm the St. John's assistant. Pick a question below about admissions, documents, the campus or school life.", chips: ["How do I apply for Nursery?", "Documents needed", "Class XI admission", "Fees", "School timings", "Is it CBSE?", "Bus service", "Where is the school?", "Contact the office"] },
+    public: { title: "Ask St. John's", sub: "Admissions, campus, school life", hello: "Hello! Pick a question below about admissions, documents, the campus or school life.", chips: ["How do I apply for Nursery?", "Documents needed", "Class XI admission", "Fees", "School timings", "Is it CBSE?", "Bus service", "Where is the school?", "Contact the office"] },
     parent: { title: "Ask about Aarav", sub: "Sees only Aarav's records", hello: "Hello! Pick a question below about Aarav — attendance, marks, homework, fees or holidays.", chips: ["How is Aarav doing?", "What should we work on?", "Homework due", "What to pack tomorrow?", "Attendance", "Maths marks", "Fees due", "Coming holidays"] },
-    teacher: { title: "Teaching assistant", sub: "VII-B · your classes only", hello: "Good morning! I can draft remarks, make practice sets, write notes to parents and spot who needs help.", chips: ["Who needs attention?", "Quiz on fractions", "Remarks for Ishita", "Lesson plan: integers", "Note about the PTM"] },
-    principal: { title: "School assistant", sub: "Whole-school view", hello: "Good morning. Ask for today's brief, attendance, fees or admissions.", chips: ["Today's brief", "Admission enquiries", "Fee collection", "Who needs attention?", "Staff today"] }
+    teacher: { title: "Ask about your class", sub: "VII-B · your classes only", hello: "Pick a question below: who needs attention, remarks, quizzes and notes to parents, all from your class records.", chips: ["Who needs attention?", "Quiz on fractions", "Remarks for Ishita", "Lesson plan: integers", "Note about the PTM"] },
+    principal: { title: "Ask about the school", sub: "Whole-school view", hello: "Pick a question below: today's brief, attendance, fees or admissions, from the school's records.", chips: ["Today's brief", "Admission enquiries", "Fee collection", "Who needs attention?", "Staff today"] }
   };
 
   const esc = (s) => s.replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
@@ -368,7 +228,7 @@ ${ROLE[mode]()}`;
     const m = JSON.parse(JSON.stringify(META[mode]).split("Aarav").join(S.me ? S.me.first : "Aarav").split("VII-B").join(cls()).split("Ishita").join(S.students[0] ? S.students[10 % S.students.length].first : "Ishita"));
     const fab = document.createElement("button");
     fab.className = "ai-fab"; fab.type = "button";
-    fab.innerHTML = ICON.spark + `<span>${m.title}</span>`;
+    fab.innerHTML = ICON.ask + `<span>${m.title}</span>`;
     fab.setAttribute("aria-label", m.title);
     const panel = document.createElement("div");
     panel.className = "ai-panel"; panel.setAttribute("role", "dialog"); panel.setAttribute("aria-label", m.title);
@@ -377,7 +237,7 @@ ${ROLE[mode]()}`;
     // What the search box can find: this portal's own questions first, then the whole-website bank.
     const pool = (pub ? [] : m.chips.map((c) => ({ q: c, k: "", own: true }))).concat(FAQ);
     const sparks = Array.from({ length: 7 }, (_, i) => `<i style="--x:${8 + i * 13}%;--d:${(i * 0.9) % 5}s;--s:${0.6 + (i % 3) * 0.25}"></i>`).join("");
-    panel.innerHTML = `<div class="ai-head"><span class="ai-sparks" aria-hidden="true">${sparks}</span><span class="av">${ICON.spark}<u></u></span><div><b>${m.title}</b><span class="ai-sub"><span class="ai-dot"></span><span class="ai-rot">${m.sub}</span></span></div><button class="icon-btn" type="button" aria-label="Close">${ICON.x}</button></div>
+    panel.innerHTML = `<div class="ai-head"><span class="ai-sparks" aria-hidden="true">${sparks}</span><span class="av">${ICON.ask}<u></u></span><div><b>${m.title}</b><span class="ai-sub"><span class="ai-dot"></span><span class="ai-rot">${m.sub}</span></span></div><button class="icon-btn" type="button" aria-label="Close">${ICON.x}</button></div>
       <div class="ai-log" aria-live="polite"></div>
       <div class="ai-sugg" role="listbox" aria-label="Matching questions"></div>
       <div class="ai-topics">${pub ? TOP.map(([t, e], i) => `<button type="button" data-t="${esc(t)}" style="--i:${i}"><span>${e}</span>${esc(t)}</button>`).join("") : m.chips.map((c, i) => `<button type="button" data-q="${esc(c)}" style="--i:${i}">${esc(c)}</button>`).join("")}</div>
@@ -397,7 +257,7 @@ ${ROLE[mode]()}`;
     const add = (html, who) => { const d = document.createElement("div"); d.className = "msg " + who; d.innerHTML = html; log.append(d); log.scrollTop = log.scrollHeight; return d; };
     const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
     const sugg = panel.querySelector(".ai-sugg"), input = panel.querySelector(".ai-search input"), ph = panel.querySelector(".ai-ph");
-    const hour = new Date().getHours(), hi = hour < 12 ? "Good morning" : hour < 17 ? "Good afternoon" : "Good evening";
+    const hour = new Date().getHours(), hi = hour < 4 ? "Good evening" : hour < 12 ? "Good morning" : hour < 17 ? "Good afternoon" : "Good evening";
     const welcome = () => {
       const w = document.createElement("div"); w.className = "ai-hello";
       w.innerHTML = `<span class="wave" aria-hidden="true">👋</span><h4>${hi}!</h4><p>${m.hello}</p>` +
@@ -407,29 +267,8 @@ ${ROLE[mode]()}`;
     const open = () => { panel.classList.add("open"); fab.classList.add("hide"); tease.classList.remove("on"); if (!greeted) { welcome(); greeted = true; } };
     const close = () => { panel.classList.remove("open"); fab.classList.remove("hide"); hideSugg(); };
 
-    // Footer: which engine is answering, and the switch.
-    const vlang = "en-IN";
-    const renderFoot = () => {
-      foot.innerHTML = (S.claude.on ? `<span class="seg"><span class="ai-live"><i></i>Live answers from Claude</span> · <button type="button" data-k="off">Disconnect</button></span>` : `<span class="seg">Built-in answers from sample data</span> · <span class="seg"><button type="button" data-k="on">Connect Claude</button></span>`);
-    };
-    renderFoot();
-    foot.addEventListener("click", (e) => {
-      const b = e.target.closest("[data-k]"); if (!b) return;
-      if (b.dataset.k === "off") { S.claude.disconnect(); renderFoot(); add("Disconnected. Answers now come from the built-in sample data.", "bot"); return; }
-      if (b.dataset.k === "cancel") { renderFoot(); return; }
-      if (b.dataset.k === "on") {
-        foot.innerHTML = `<form class="ai-key"><input type="password" placeholder="Paste an Anthropic API key" aria-label="Anthropic API key" autocomplete="off" spellcheck="false" /><button type="submit">Connect</button><button type="button" data-k="cancel">Cancel</button></form><span>The key stays in this browser only.</span>`;
-        foot.querySelector("input").focus();
-      }
-    });
-    foot.addEventListener("submit", (e) => {
-      e.preventDefault();
-      const k = foot.querySelector("input").value.trim();
-      if (!/^sk-ant-/.test(k)) { foot.querySelector("input").setCustomValidity("An Anthropic key starts with sk-ant-"); foot.querySelector("input").reportValidity(); return; }
-      S.claude.connect(k); renderFoot(); open();
-      add("Connected. I'll now answer live with Claude, from the same sample records.", "bot");
-    });
-    foot.addEventListener("input", (e) => e.target.setCustomValidity(""));
+    // Footer: where the answers come from.
+    foot.innerHTML = `${pub ? "Answers from the school's own information" : "Answers from your records"} · free, instant, private`;
 
     // Built-in answer, revealed a couple of words at a time, keeping tags whole.
     const reveal = (el, answer, note) => new Promise((done) => {
@@ -456,21 +295,8 @@ ${ROLE[mode]()}`;
       bubble.style.padding = "0";
       hist.push({ role: "user", content: text });
       let answer = null, note = "";
-      if (S.claude.on) {
-        try {
-          answer = await S.claude.stream({
-            system: S.aiSystem(mode), messages: hist.slice(-11),
-            onText: (t) => { bubble.style.padding = ""; bubble.innerHTML = fmtAI(t); log.scrollTop = log.scrollHeight; }
-          });
-          if (!answer) throw new Error("empty");
-          bubble.innerHTML = fmtAI(answer);
-        } catch (e) {
-          answer = null;
-          note = e.status === 401 ? ("Claude didn't accept the key, so this is the built-in answer.") : ("Couldn't reach Claude, so this is the built-in answer.");
-        }
-      }
       let item = null;
-      if (answer === null) {
+      {
         // A question from the bank answers from the bank; this portal's own questions from its records.
         item = FAQ.find((f) => f.q === text);
         const own = !pub && !item;

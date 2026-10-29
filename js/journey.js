@@ -118,9 +118,14 @@
     const filters = `<details class="sj-fd"><summary><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6h16M7 12h10M10 18h4"/></svg>${st.kinds.size < kinds.length ? `Tests <em>${st.kinds.size} of ${kinds.length}</em>` : "All tests"}</summary><div class="sj-f" role="group" aria-label="Which kinds of test">${kinds.map((k) => { const n = nodes.filter((x) => x.kind === k).length; return `<button type="button" class="k-${kindOf(k).c}${st.kinds.has(k) ? " on" : ""}" data-jk="${k}" aria-pressed="${st.kinds.has(k)}"><i></i>${esc(kindOf(k).name)}<small>${n}</small></button>`; }).join("")}</div></details>`;
     const subjBar = subs.length < 2 ? "" : `<label class="sj-fld sj-sub"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5.5A1.5 1.5 0 0 1 5.5 4H11v16H5.5A1.5 1.5 0 0 1 4 18.5zM13 4h5.5A1.5 1.5 0 0 1 20 5.5v13a1.5 1.5 0 0 1-1.5 1.5H13z"/></svg><select data-jsel aria-label="Subject"><option value="all">All subjects</option>${subs.map((x) => `<option value="${esc(x)}"${subj === x ? " selected" : ""}>${esc(x)}</option>`).join("")}</select></label>`;
 
+    // Reset view: every kind of test, the subject it opened on, the latest result, no table.
+    const allDone = nodes.filter(has), defSel = (allDone[allDone.length - 1] || nodes[0]).id;
+    const moved = st.kinds.size < kinds.length || subj !== (subs.includes(o.subj) ? o.subj : "all") || st.grid || (st.sel && st.sel !== defSel);
+    const reset = `<button type="button" class="sj-reset" data-jreset${moved ? "" : " disabled"} title="All tests, ${subs.includes(o.subj) ? short(o.subj) : "all subjects"} and the latest result"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4.5 12a7.5 7.5 0 1 0 2.2-5.3"/><path d="M4.5 4.5v4.2h4.2"/></svg>Reset view</button>`;
+    // The title and the filters share one header that stays in view while the card scrolls past.
     S.paint(box, `<div class="card sj">
-      <div class="sj-h"><div><h2>${esc(o.title || me.first + "'s year so far")}</h2><p>${o.sub || "Every test this session, in order."}</p></div></div>
-      <div class="sj-bar">${o.head || ""}<div class="sj-tools">${subjBar}${filters}${o.foot || ""}<button type="button" class="sj-more${st.grid ? " on" : ""}" data-jgrid aria-expanded="${st.grid}"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3.5" y="4.5" width="17" height="15" rx="2"/><path d="M3.5 9.5h17M3.5 14.5h17M9.5 4.5v15"/></svg>${st.grid ? "Hide table" : "Every mark"}<span>${done.length} × ${subs.length}</span></button></div></div>
+      <div class="sj-top"><div class="sj-h"><div><h2>${esc(o.title || me.first + "'s year so far")}</h2><p>${o.sub || "Every test this session, in order."}</p></div></div>
+      <div class="sj-bar">${o.head || ""}<div class="sj-tools">${subjBar}${filters}${o.foot || ""}<button type="button" class="sj-more${st.grid ? " on" : ""}" data-jgrid aria-expanded="${st.grid}"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3.5" y="4.5" width="17" height="15" rx="2"/><path d="M3.5 9.5h17M3.5 14.5h17M9.5 4.5v15"/></svg>${st.grid ? "Hide table" : "Every mark"}<span>${done.length} × ${subs.length}</span></button>${reset}</div></div></div>
       ${story}${tiles}
       <div class="sj-main">
         <div class="sj-pane"><p class="sj-step"><b>1</b> Every test, in order <span>Tap a bar</span></p>${bars(shown, subj, sel, me, o)}</div>
@@ -130,7 +135,23 @@
       <p class="sj-note">Tests are marked out of 20, 25 or 100, so marks are shown as a percentage to compare them fairly.</p>
     </div>`);
     const rl = box.querySelector(".sj-bars .on"); if (rl) rl.parentElement.scrollLeft = rl.offsetLeft - rl.parentElement.clientWidth / 2 + rl.clientWidth / 2;
+    box._sel = sel && sel.id;
+    stick();
   };
+
+  // While the header is pinned it slims down (no subtitle); a matching margin keeps the page from jumping.
+  function stick() {
+    const pb = document.querySelector(".pbar"), h = pb ? pb.offsetHeight : 0;
+    document.documentElement.style.setProperty("--pbar-h", h + "px");
+    document.querySelectorAll(".sj-top").forEach((t) => {
+      const card = t.parentElement, r = card.getBoundingClientRect(), on = r.top < h - 2 && r.bottom > h + 90;
+      if (on === t.classList.contains("stuck")) return;
+      const before = t.offsetHeight; t.classList.toggle("stuck", on); t.style.marginBottom = "";
+      if (on) t.style.marginBottom = parseFloat(getComputedStyle(t).marginBottom) + before - t.offsetHeight + "px";
+    });
+  }
+  addEventListener("scroll", stick, { passive: true });
+  addEventListener("resize", stick);
 
   // One bar per test, coloured by how good the mark is. Tap a bar to open that test.
   function bars(shown, subj, sel, me, o) {
@@ -217,8 +238,9 @@
   // One listener for the whole card.
   document.addEventListener("click", (e) => {
     const box = e.target.closest("#sj"); if (!box) return;
-    const t = e.target.closest("[data-jk],[data-js],[data-jn],[data-jgrid],[data-jstu]"); if (!t) return;
+    const t = e.target.closest("[data-jk],[data-js],[data-jn],[data-jgrid],[data-jstu],[data-jreset]"); if (!t) return;
     const j = box._j || { me: S.me, o: {} };
+    if (t.dataset.jreset != null) { st.kinds = null; st.sel = null; S.renderJourney(box, j.me, j.o); if (S.onJourneyPick && box._sel) S.onJourneyPick(box._sel); return; }
     if (t.dataset.jstu) { if (j.o.onStudent) j.o.onStudent(+t.dataset.jstu); return; }
     if (t.dataset.jk) { const k = t.dataset.jk; if (st.kinds.has(k) && st.kinds.size > 1) st.kinds.delete(k); else st.kinds.add(k); }
     else if (t.dataset.js) st.subj = t.dataset.js;

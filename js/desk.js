@@ -6,21 +6,38 @@
   if (!S.staff || !/^(principal|admin)$/.test(S.staff.role)) return;
   const esc = S.esc, role = S.staff.role, me = S.staff.name;
   const TICK = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>';
+  const CHK = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>';
   const short = (t) => t.replace(/^(Mr|Mrs|Ms)\.\s*/, "");
   const ini = (n) => short(n).split(" ").map((w) => w[0]).join("").slice(0, 2);
 
   // ---------- Cover ----------
   function renderCover() {
     const away = S.leaveToday(), rows = S.coverToday(), done = S.state.cover[S.todayKey] || (S.state.cover[S.todayKey] = {});
-    const left = rows.filter((r) => !done[r.id]).length;
-    S.paint(S.$("#d-cover"), `<div class="card-h"><h2>Periods to cover today</h2><span class="right pill ${left ? "warn" : "green"}">${left ? `${left} to assign` : "All covered"}</span></div>` +
+    const left = rows.filter((r) => !done[r.id]).length, picks = bestPicks(rows, done);
+    S.paint(S.$("#d-cover"), `<div class="card-h"><h2>Periods to cover today</h2><span class="right pill ${left ? "warn" : "green"}">${left ? `${left} to assign` : "All covered"}</span>${Object.keys(picks).length > 1 ? `<button type="button" class="cv-best cv-all" data-cv-all>${CHK}Assign all ${Object.keys(picks).length} suggested</button>` : ""}</div>` +
       (rows.length ? `<div class="list">${rows.map((r) => { const a = done[r.id]; return `<div class="li cv-li${a ? " on" : ""}" data-cv-row="${esc(r.id)}"><span class="sq ${a ? "green" : "warn"} cv-p">P${r.p + 1}</span><div class="t"><b>${esc(S.secName(r.key))} · ${esc(r.subj)} · ${r.time}</b><span>${a ? `Covered by ${esc(a)}` : `Usually ${esc(r.teacher)}`}</span></div>
-        <label class="cv-pick"><span class="sr-only">Cover teacher</span><select data-cv="${esc(r.id)}"><option value="">${a ? "Change" : "Assign"}</option>${r.free.map((f) => `<option value="${esc(f.name)}"${a === f.name ? " selected" : ""}>${esc(f.name)} · ${esc(f.subject)}${f.same ? ", same subject" : ""} · ${f.load} periods today</option>`).join("")}</select></label></div>`; }).join("")}</div>
+        <div class="cv-do">${!a && picks[r.id] ? `<button type="button" class="cv-best" data-cv-best="${esc(r.id)}" title="${esc(picks[r.id].subject)}${picks[r.id].same ? ", same subject" : ""} · ${picks[r.id].load} periods today">${CHK}${esc(short(picks[r.id].name))}</button>` : ""}<label class="cv-pick"><span class="sr-only">Cover teacher</span><select data-cv="${esc(r.id)}"><option value="">${a ? "Change" : "Assign"}</option>${r.free.map((f) => `<option value="${esc(f.name)}"${a === f.name ? " selected" : ""}>${esc(f.name)} · ${esc(f.subject)}${f.same ? ", same subject" : ""} · ${f.load} periods today</option>`).join("")}</select></label></div></div>`; }).join("")}</div>
         <p class="muted cv-note">Suggestions are teachers free in that period: the same subject first, then whoever has the lightest day.</p>` : `<p class="muted">No periods to cover today.</p>`));
     const pool = S.TEACHERS.filter((t) => !away.some((a) => a.name === t.name));
     S.paint(S.$("#d-leave"), `<div class="card-h"><h2>On leave today</h2></div><div class="list">${away.map((a) => `<div class="li"><span class="avatar soft">${ini(a.name)}</span><div class="t"><b>${esc(a.name)}</b><span>${esc(a.why)}</span></div></div>`).join("")}</div>
       <form id="lv-form" class="lv-form"><label class="sr-only" for="lv-t">Teacher</label><select id="lv-t" class="input">${pool.map((t) => `<option>${esc(t.name)}</option>`).join("")}</select><button class="btn btn-ghost btn-sm" type="submit">Mark on leave</button></form>`);
   }
+  // The best free teacher for each open period, never the same person twice in one period.
+  function bestPicks(rows, done) {
+    const taken = {}, out = {};
+    rows.forEach((r) => { if (done[r.id]) (taken[r.p] = taken[r.p] || new Set()).add(done[r.id]); });
+    rows.forEach((r) => { if (done[r.id]) return; const f = r.free.find((v) => !(taken[r.p] || new Set()).has(v.name)); if (f) { out[r.id] = f; (taken[r.p] = taken[r.p] || new Set()).add(f.name); } });
+    return out;
+  }
+  document.addEventListener("click", (e) => {
+    const one = e.target.closest("[data-cv-best]"), all = e.target.closest("[data-cv-all]"); if (!one && !all) return;
+    const rows = S.coverToday(), done = S.state.cover[S.todayKey], picks = bestPicks(rows, done);
+    const ids = one ? [one.dataset.cvBest] : Object.keys(picks);
+    ids.forEach((id) => { if (picks[id]) done[id] = picks[id].name; });
+    S.save(); renderCover();
+    if (one) { const r = rows.find((x) => x.id === ids[0]); S.landed(S.$(`[data-cv-row="${CSS.escape(r.id)}"]`)); S.toast(`Assigned: ${done[r.id]} takes ${S.secName(r.key)} ${r.subj}, period ${r.p + 1}. They have an app alert.`); }
+    else { ids.forEach((id) => S.landed(S.$(`[data-cv-row="${CSS.escape(id)}"]`))); S.toast(`Assigned all ${ids.length} periods to the suggested teachers. Each has an app alert.`); }
+  });
   document.addEventListener("change", (e) => {
     const sel = e.target.closest("[data-cv]"); if (!sel || !sel.value) return;
     const r = S.coverToday().find((x) => x.id === sel.dataset.cv); S.state.cover[S.todayKey][r.id] = sel.value; S.save(); renderCover();
@@ -93,7 +110,12 @@
   function renderLog() {
     const all = S.state.activity, ok = S.threadIntact(all), xs = [...all].reverse().filter((a) => !logQ || (a.from + " " + a.text).toLowerCase().includes(logQ.toLowerCase()));
     S.paint(S.$("#d-log-list"), (ok ? "" : `<p class="rec-note bad">${S.ICON_LOCK}This record has been changed since it was written. Please tell the school office.</p>`) +
-      (xs.length ? xs.slice(0, 60).map((a) => `<div class="li log-li"><span class="avatar soft">${esc(ini(a.from))}</span><div class="t"><b>${esc(a.text)}</b><span>${esc(a.from)} · ${esc(a.at)}</span></div></div>`).join("") : `<p class="muted">Nothing matches.</p>`));
+      (xs.length ? xs.slice(0, 60).map((a) => {
+        // The part before the colon is what changed (Admissions, Attendance VII-B …): it becomes a coloured tag.
+        const k = a.text.indexOf(":"), tag = k > 0 && k < 40 ? a.text.slice(0, k) : "", rest = tag ? a.text.slice(k + 1).trim() : a.text;
+        const tone = /attend/i.test(tag) ? "green" : /mark|exam|result/i.test(tag) ? "royal" : /admiss/i.test(tag) ? "accent" : /fee/i.test(tag) ? "gold" : /web|notice/i.test(tag) ? "teal" : /pick|bus|gate/i.test(tag) ? "slate" : "slate";
+        return `<div class="li log-li"><span class="avatar soft">${esc(ini(a.from))}</span><div class="t"><b>${tag ? `<span class="log-tag t-${tone}">${esc(tag)}</span>` : ""}${esc(rest)}</b><span>${esc(a.from)} · ${esc(a.at)}</span></div></div>`;
+      }).join("") : `<p class="muted">Nothing matches.</p>`));
     S.$("#d-log-n").innerHTML = `${S.ICON_LOCK}${all.length} entries · ${ok ? "nothing changed or removed" : "changed"}`;
   }
   document.addEventListener("input", (e) => { if (e.target.id === "log-q") { logQ = e.target.value.trim(); renderLog(); } });

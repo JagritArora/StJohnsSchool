@@ -188,7 +188,7 @@
     const c = S.schoolClock(), now = new Date(), t = S.hhmm(now.getHours() * 60 + now.getMinutes());
     const [big, small] = !c.live ? [S.fmt(S.today, { day: "numeric" }), S.fmt(S.today, { weekday: "long", month: "long" })]
       : [t, c.before ? `School starts at ${S.periodTimes[0]}` : c.after ? "School's over" : c.brk ? "Break" : c.cur >= 0 ? `Period ${c.cur + 1} of ${c.n}` : ""];
-    document.querySelectorAll(".hero-clock").forEach((el) => { el.querySelector("b").textContent = big; el.querySelector("span").textContent = small; });
+    document.querySelectorAll(".hero-clock").forEach((el) => { el.classList.toggle("is-live", !!c.live); el.querySelector("b").textContent = big; el.querySelector("span").textContent = small; });
   };
   const glint = () => {
     clock();

@@ -65,7 +65,7 @@
   // Every confirmed action by staff is written down with who and when. Sealed like the chat,
   // so a quiet edit later shows.
   S.logAct = (what, who) => { ensure(); S.post(S.state.activity, { from: who || (S.staff ? S.staff.name : "A parent"), text: what, at: S.fmt(S.todayKey) + ", " + S.timeNow() }); S.save(); };
-  const VIEW = { attendance: "Attendance", homework: "Homework", marks: "Marks", care: "Remarks and forms", messages: "Messages", assist: "AI assist", home: "Home", overview: "Home", classes: "Classes", admissions: "Admissions", website: "Website", exams: "Exams", notices: "Notices", class: "My class", staff: "Staff and cover", fees: "Fees", gate: "Gate", transport: "Transport", log: "Activity log" };
+  const VIEW = { attendance: "Attendance", homework: "Homework", marks: "Marks", care: "Remarks and forms", messages: "Messages", assist: "Writing help", home: "Home", overview: "Home", classes: "Classes", admissions: "Admissions", website: "Website", exams: "Exams", notices: "Notices", class: "My class", staff: "Staff and cover", fees: "Fees", gate: "Gate", transport: "Transport", log: "Activity log" };
   if (S.toast && /staff\.html$/.test(location.pathname)) {
     const plain = S.toast;
     S.toast = (msg, o = {}) => {
@@ -179,7 +179,7 @@
   S.ptmOfTeacher = (date, teacher) => Object.entries(S.state.ptm).filter(([k]) => k.startsWith(`${date}|${teacher}|`)).map(([k, b]) => ({ slot: k.split("|")[2], kid: b.kid, who: b.who })).sort((a, b) => S.PTM_SLOTS.indexOf(a.slot) - S.PTM_SLOTS.indexOf(b.slot));
   S.ics = (events, name) => {
     const d = (k) => k.replace(/-/g, ""), next = (k) => d(S.iso(S.addDays(new Date(k + "T00:00"), 1)));
-    const body = ["BEGIN:VCALENDAR", "VERSION:2.0", "PRODID:-//St. John's School//EN", ...events.flatMap((e, i) => ["BEGIN:VEVENT", `UID:${d(e.date)}-${i}-${seedOf(e.title)}@stjohns`, `DTSTAMP:${d(S.todayKey)}T000000Z`, `DTSTART;VALUE=DATE:${d(e.date)}`, `DTEND;VALUE=DATE:${next(e.date)}`, `SUMMARY:${e.title.replace(/[,;]/g, "\\$&")}`, e.note ? `DESCRIPTION:${e.note.replace(/[,;]/g, "\\$&")}` : "", "END:VEVENT"].filter(Boolean)), "END:VCALENDAR"].join("\r\n");
+    const body = ["BEGIN:VCALENDAR", "VERSION:2.0", "PRODID:-//St. John's School//EN", ...events.flatMap((e, i) => ["BEGIN:VEVENT", `UID:${d(e.date)}-${i}-${seedOf(e.title)}@stjohns`, `DTSTAMP:${d(S.todayKey)}T000000Z`, `DTSTART;VALUE=DATE:${d(e.date)}`, `DTEND;VALUE=DATE:${next(e.to || e.date)}`, `SUMMARY:${e.title.replace(/[,;]/g, "\\$&")}`, e.note ? `DESCRIPTION:${e.note.replace(/[,;]/g, "\\$&")}` : "", ...(e.alarm ? ["BEGIN:VALARM", `TRIGGER:-P${e.alarm}D`, "ACTION:DISPLAY", `DESCRIPTION:${e.title.replace(/[,;]/g, "\\$&")}`, "END:VALARM"] : []), "END:VEVENT"].filter(Boolean)), "END:VCALENDAR"].join("\r\n");
     const a = document.createElement("a"); a.href = URL.createObjectURL(new Blob([body], { type: "text/calendar" })); a.download = name + ".ics"; document.body.append(a); a.click(); a.remove();
   };
 

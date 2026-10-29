@@ -104,7 +104,7 @@
     if (p.date >= S.todayKey) return null;
     const k = KEY[e.id];
     if (k && S.EX.list.includes(k) && kid[k] && kid[k][p.subj] != null) return { v: kid[k][p.subj], of: 100 };
-    if (e.id === "ut2" && S.PHASE === "mid") { const en = S.entry(kid.sec.key, p.subj); return en.published && en.marks[kid.roll] != null ? { v: +en.marks[kid.roll], of: S.ENTRY.max } : { wait: true }; }
+    if (e.id === "ut2" && S.PHASE === "mid") { const en = S.entry(kid.sec.key, p.subj); return en.published && en.marks[kid.roll] != null && !isNaN(+en.marks[kid.roll]) ? { v: +en.marks[kid.roll], of: S.ENTRY.max } : { wait: true }; }
     const base = (kid.hy && kid.hy[p.subj]) || 70, h = S.hash(kid.roll * 97 + p.subj.length * 13, +p.date.replace(/-/g, "") % 100000);
     const v = Math.min(97, Math.max(30, base - 4 + (h - 0.5) * 22));
     return e.kind === "ts" ? { v: Math.floor(v / 4), of: 25 } : e.kind === "ut" ? { v: Math.floor(v / 5), of: 20 } : { v: Math.round(v), of: 100 };

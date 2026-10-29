@@ -17,9 +17,12 @@
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Figtree:wght@400..800&display=swap" rel="stylesheet" />
-<link rel="stylesheet" href="css/site.css?v=113" />
+<link rel="stylesheet" href="css/site.css?v=126" />
+<link rel="stylesheet" href="css/feel.css?v=7" />
+<link rel="stylesheet" href="css/ease.css?v=6" />
+<script>try{var t={"1.1":"l","1.2":"xl"}[localStorage.getItem("sjs-zoom")];if(t)document.documentElement.dataset.text=t;if(localStorage.getItem("sjs-lang")==="hi"){document.documentElement.lang="hi";document.write('<script src="js/hindi.js?v=3"><\/script>')}}catch(e){}</script>
 <link rel="stylesheet" href="css/ai.css?v=3" />
-<link rel="stylesheet" href="css/journey.css?v=11" />
+<link rel="stylesheet" href="css/journey.css?v=16" />
 <script>
 /* Before the first paint: fade photos in as they load. */
 (function (d) { d.documentElement.classList.add("js");
@@ -193,6 +196,7 @@
     <section data-view="fees">
       <div class="topbar"><div><h1>Fees</h1><div class="sub">Aarav Sharma · Session 2026–27 · amounts are samples</div></div></div>
       <div id="fee-due" class="fee-hero"></div>
+      <div class="ex-acts fee-cal" id="fee-cal" hidden><button type="button" class="ez-act" data-fee-cal><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="5" width="16" height="15" rx="2.5"/><path d="M4 10h16M9 3v4M15 3v4M12 13v4M10 15h4"/></svg>Add due dates to my calendar</button></div>
       <div class="fee-tiles" id="fee-tiles"></div>
       <div class="grid g21 fee-grid">
         <div class="card"><div class="card-h"><h2>Declared This Session</h2><div class="seg vt" data-vt="fee" aria-label="Instalments view"><button data-v="timeline">Timeline</button><button data-v="table">Table</button></div></div>
@@ -254,16 +258,16 @@
 <script src="js/data.js?v=14"></script>
 <script src="js/classes.js?v=9"></script>
 <script src="js/bus.js?v=5"></script>
-<script src="js/exams.js?v=8"></script>
-<script src="js/journey.js?v=13"></script>
+<script src="js/exams.js?v=9"></script>
+<script src="js/journey.js?v=14"></script>
 <script src="js/care.js?v=2"></script>
-<script src="js/common.js?v=14"></script>
+<script src="js/common.js?v=15"></script>
 <script src="js/charts.js?v=10"></script>
-<script src="js/hub.js?v=12"></script>
-<script src="js/more.js?v=8"></script>
+<script src="js/hub.js?v=13"></script>
+<script src="js/more.js?v=11"></script>
 <script src="js/demo.js?v=2"></script>
 <script src="js/faq.js?v=1"></script>
-<script src="js/ai.js?v=11"></script>
+<script src="js/ai.js?v=15"></script>
 <script>
 (function () {
   const S = SJS;
@@ -323,7 +327,7 @@
   let exam = C, calMonth = new Date(S.today.getFullYear(), S.today.getMonth(), 1);
 
   function renderHome() {
-    S.$("#hello").textContent = S.greet().replace(/\b[a-z]/g, (c) => c.toUpperCase()) + ", " + me.parentFirst;
+    S.$("#hello").textContent = S.greet() + ", " + me.parentFirst;
     S.$("#today-line").textContent = S.fmtLong(S.today);
     // The date shows once: when the corner of the sheet already carries it, the line above the greeting steps aside.
     S.$("#today-line").hidden = !S.schoolClock().live;
@@ -878,7 +882,7 @@
   S.$("#hw").addEventListener("change", (e) => { const id = e.target.dataset.hw; const h = S.cs.homework.find((x) => x.id === id); if (!h) return; h.done = e.target.checked; h.fresh = false; S.save(); renderHomework(); renderHome(); });
 
   // Marks a teacher has published at this stage, subject by subject.
-  const published = () => S.subjects.map((k) => { const e = S.entry(S.focusKey, k); return e.published && e.marks[me.roll] != null ? [k, e.marks[me.roll]] : null; }).filter(Boolean);
+  const published = () => S.subjects.map((k) => { const e = S.entry(S.focusKey, k); return e.published && e.marks[me.roll] != null && !isNaN(+e.marks[me.roll]) ? [k, e.marks[me.roll]] : null; }).filter(Boolean);
   const NEXT = (c) => S.sample.classes[S.sample.classes.indexOf(c) + 1];
   const board = /^(X|XII)$/.test(me.cls);
   const TICK = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>';
@@ -1011,6 +1015,7 @@
       }).join("") + `</ol>`;
       if (e.kind === "ts" && (hidden || tsAll)) h += `<button type="button" class="link-btn" id="ts-all">${tsAll ? "Show fewer" : `Show all ${ps.length} tests`}</button>`;
       h += `<p class="ex-note">${S.esc(e.note)}</p>`;
+      if (ps.some((p) => p.date >= S.todayKey)) h += `<div class="ex-acts"><button type="button" class="ez-act" data-ex-cal>${CAL_IC}Add to my calendar</button><button type="button" class="ez-act" data-ex-print>${PRINT_IC}Print for the fridge</button></div>`;
       if (st.k === "done" && RES_KEY[e.id] && S.EX.list.includes(RES_KEY[e.id])) h += `<button type="button" class="btn btn-ghost btn-sm" data-go="results">See the full results</button>`;
     }
     S.paint(S.$("#ex-main"), h);
@@ -1027,6 +1032,23 @@
     const all = myExams(), done = all.filter((x) => x.published && S.examStatus(x, G).k === "done").length;
     set(S.$("#rs-ds"), (done / all.length) * 100, np ? (np.n || "Now") : "✓", np ? `${np.e.name}: ${np.p.subj} ${np.n === 0 ? "today" : np.n === 1 ? "tomorrow" : `in ${np.n} days`}` : `${done} of ${all.length} exams done`);
   }
+  // The datesheet in the family calendar (a reminder the day before each paper), or on paper.
+  const CAL_IC = '<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="5" width="16" height="15" rx="2.5"/><path d="M4 10h16M9 3v4M15 3v4M12 13v4M10 15h4"/></svg>';
+  const PRINT_IC = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 9V4h10v5"/><rect x="4" y="9" width="16" height="8" rx="2"/><path d="M7 14h10v6H7z"/></svg>';
+  function datesheetDoc(e) {
+    const ps = e.papers[G];
+    return S.docPage(`Datesheet · ${e.name} · ${me.name}`, [`${S.docHead(`${S.esc(e.name)} · datesheet for ${S.esc(me.name)}, Class ${S.esc(me.label)}`)}
+      <div class="kv"><div><span class="muted">Papers</span><b>${ps.length}</b></div><div><span class="muted">From</span><b>${S.fmt(ps[0].date, { day: "numeric", month: "short" })}</b></div><div><span class="muted">To</span><b>${S.fmt(ps[ps.length - 1].date, { day: "numeric", month: "short" })}</b></div><div><span class="muted">Timing</span><b style="font-size:13.5px">${S.esc(e.time)}</b></div></div>
+      <table><thead><tr><th>Date</th><th>Day</th><th>Subject</th><th style="width:90px">Revised</th></tr></thead><tbody>${ps.map((p) => `<tr><td><b>${S.fmt(p.date, { day: "numeric", month: "long" })}</b></td><td>${S.fmt(p.date, { weekday: "long" })}</td><td><b>${S.esc(p.subj)}</b></td><td><span style="display:inline-block;width:16px;height:16px;border:1.5px solid #9aa0a8;border-radius:4px"></span></td></tr>`).join("")}</tbody></table>
+      ${e.note ? `<p style="margin-top:14px">${S.esc(e.note)}</p>` : ""}<p class="foot">From the St. John's parent app, ${S.fmt(S.todayKey, { day: "numeric", month: "long", year: "numeric" })}. If the school changes a date, the app shows it first.</p>`]);
+  }
+  document.addEventListener("click", (ev) => {
+    const cal = ev.target.closest("[data-ex-cal]"), pr = ev.target.closest("[data-ex-print]"); if (!cal && !pr) return;
+    const e = pickExam(); if (!e) return;
+    const ps = e.papers[G];
+    if (cal) { S.ics(ps.filter((p) => p.date >= S.todayKey).map((p) => ({ date: p.date, title: `${p.subj} paper · ${e.name} (${me.first})`, note: `${e.time}. ${S.groupLabel(G)}.`, alarm: 1 })), `${e.name.replace(/\s+/g, "-")}-${me.first}`); S.toast(`Open the file to add ${ps.filter((p) => p.date >= S.todayKey).length} papers to your calendar, each with a reminder the day before`, { done: false }); }
+    else S.showDoc(`${e.name} datesheet`, datesheetDoc(e), { file: `${e.name.replace(/\s+/g, "-")}-Datesheet-${me.first}.pdf` });
+  });
   document.addEventListener("click", (e) => {
     const b = e.target.closest("[data-ex]");
     if (b) { exSel = b.dataset.ex; tsAll = false; if (b.closest(".ex-list")) { renderExams(); if (S.narrow && S.narrow()) S.$("#ex-main").scrollIntoView({ block: "start" }); } else S.go("results/datesheets"); return; }
@@ -1187,8 +1209,16 @@
     S.paint(S.$("#fee-pace"), `<p class="fp-head">${!paid.length ? "Nothing paid yet this session." : early === paid.length ? `${me.first}'s fees have been paid before the due date every time, <b>${Math.round(paid.reduce((a, f) => a + dd(f.due, f.paid), 0) / paid.length)} days early</b> on average.` : `${paid.length - early} of ${paid.length} payments went in after the due date.`}</p>
       <div class="fp">${rows.map((r) => `<div class="fp-r${r.open ? " open" : r.d < 0 ? " late" : ""}"><span class="fp-l">${S.esc(q(r.f)[0])}</span><span class="fp-t"><i class="fp-0"></i>${r.open ? `<i class="fp-w" style="width:${Math.min(50, (dl(r.f.due) / mx) * 50)}%"></i>` : `<i class="fp-b" style="${r.d >= 0 ? `right:50%;width:${(r.d / mx) * 50}%` : `left:50%;width:${(-r.d / mx) * 50}%`}"></i>`}</span><span class="fp-v">${r.open ? (dl(r.f.due) < 0 ? `${-dl(r.f.due)}d overdue` : `${dl(r.f.due)}d left`) : r.d > 0 ? `${r.d}d early` : r.d === 0 ? "On the day" : `${-r.d}d late`}</span></div>`).join("")}</div>
       <div class="fp-ax"><span>Early</span><span>Due date</span><span>Late</span></div>`);
+    S.$("#fee-cal").hidden = !all.some((f) => !f.paid);
     const pb = S.$("#pay-btn"); if (pb) pb.onclick = () => { S.$("#pay-amt").textContent = `${S.rupee(due.amount)} · ${due.q} · St. John's School`; S.openModal("pay-modal"); };
   }
+  // Every unpaid instalment in the family calendar, with a reminder three days before; amounts only once the school declares them.
+  document.addEventListener("click", (e) => {
+    if (!e.target.closest("[data-fee-cal]")) return;
+    const all = fees(), open = all.filter((f) => !f.paid), dl = (k) => Math.round((new Date(k + "T00:00") - S.today) / 864e5);
+    S.ics(open.map((f) => ({ date: f.due, title: `School fee due · ${f.q.split(" · ")[0]} (${me.first})`, note: `${f.q}${dl(f.due) <= NOTICE_DAYS ? ` · ${S.rupee(f.amount)}` : " · amount comes on the school's notice"}. Pay by UPI in the St. John's app.`, alarm: 3 })), `St-Johns-Fees-${me.first}`);
+    S.toast(`Open the file to add ${open.length} due date${open.length === 1 ? "" : "s"} to your calendar, each with a reminder three days before`, { done: false });
+  });
   document.addEventListener("click", (e) => {
     const b = e.target.closest("[data-receipt]"); if (!b) return;
     const f = fees()[+b.dataset.receipt], no = `SJS/${f.paid.replace(/-/g, "").slice(2)}/${String(me.roll).padStart(2, "0")}${+b.dataset.receipt + 1}`;
@@ -1522,5 +1552,8 @@
 </script>
 <script src="js/select.js?v=4"></script>
 <script src="js/date.js?v=3"></script>
+<script src="js/portal.js?v=1"></script>
+<script src="js/feel.js?v=8"></script>
+<script src="js/ease.js?v=6"></script>
 </body>
 </html>

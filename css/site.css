@@ -3324,3 +3324,84 @@ input[type="date"].xs-open { border-color: color-mix(in srgb, var(--royal) 45%, 
 .xdp-f button { padding: 7px 12px; font-weight: 600 !important; color: var(--muted) !important; }
 .xdp-f .xdp-today { color: var(--royal-text) !important; }
 .xdp-f button:hover { background: color-mix(in srgb, var(--royal) 8%, transparent); }
+
+/* Sign-in page: a "today" card with a live clock, app features under the headline, +91 on the number, a reassurance line and a help line. */
+.lg-pk-h { gap: 12px; }
+.lg-pk-h i.lg-cal { width: 40px; height: 44px; border-radius: 10px; display: flex; flex-direction: column; overflow: hidden; background: rgba(255,255,255,.94); color: #1d2228; font-style: normal; place-items: initial; }
+.lg-cal small { display: block; padding: 2px 0 1px; font: 700 9.5px/1.2 var(--sans); letter-spacing: .08em; text-transform: uppercase; text-align: center; color: #fff; background: var(--accent); }
+.lg-cal b { display: block; flex: 1; display: grid; place-items: center; font: 800 18px/1 var(--sans); }
+.lg-pk-h > span:not(.lg-live) { flex: 1; min-width: 0; }
+.lg-live { display: inline-flex; align-items: center; gap: 6px; align-self: flex-start; padding: 3px 9px; border-radius: 999px; background: rgba(255,255,255,.12); font: 600 12px/1.4 var(--sans); font-variant-numeric: tabular-nums; color: rgba(255,255,255,.9); }
+.lg-live em { width: 6px; height: 6px; border-radius: 50%; background: #7FD3A0; animation: lgPulse 2.6s ease-out infinite; }
+.lg-feats { list-style: none; margin: 18px 0 0; padding: 0; display: flex; flex-wrap: wrap; gap: 8px; max-width: 470px; }
+.lg-feats li { display: inline-flex; align-items: center; gap: 7px; padding: 6px 12px 6px 9px; border-radius: 999px; background: rgba(255,255,255,.1); border: 1px solid rgba(255,255,255,.18); -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px); font: 600 13px/1.2 var(--sans); color: #fff; }
+.lg-feats svg { width: 15px; height: 15px; fill: none; stroke: currentColor; stroke-width: 1.9; stroke-linecap: round; stroke-linejoin: round; opacity: .85; }
+.lg-play .lg-feats li { animation: lgRise .7s var(--ease) both; }
+.lg-play .lg-feats li:nth-child(1) { animation-delay: .3s; } .lg-play .lg-feats li:nth-child(2) { animation-delay: .36s; } .lg-play .lg-feats li:nth-child(3) { animation-delay: .42s; }
+.lg-play .lg-feats li:nth-child(4) { animation-delay: .48s; } .lg-play .lg-feats li:nth-child(5) { animation-delay: .54s; } .lg-play .lg-feats li:nth-child(6) { animation-delay: .6s; }
+.lg-tel { position: relative; }
+.lg-tel span { position: absolute; left: 1px; top: 1px; bottom: 1px; display: grid; place-items: center; padding: 0 12px 0 14px; border-right: 1px solid var(--line); font-weight: 600; color: var(--muted); pointer-events: none; }
+.lg-tel input { width: 100%; padding-left: 62px; letter-spacing: .02em; }
+.lg-safe { display: flex; gap: 9px; align-items: flex-start; margin-top: 14px; font-size: 13px; line-height: 1.45; color: var(--muted); }
+.lg-safe svg { flex: none; width: 16px; height: 16px; margin-top: 1px; fill: none; stroke: var(--green); stroke-width: 1.9; stroke-linecap: round; stroke-linejoin: round; }
+.lg-help { position: relative; margin-top: 18px; text-align: center; font-size: 13.5px; color: var(--muted); }
+.lg-help a { color: var(--accent-text); font-weight: 600; text-decoration: none; white-space: nowrap; }
+.lg-help a:hover { text-decoration: underline; }
+.lg-pk-h .lg-live { display: inline-flex; }
+@media (max-width: 860px) { .login-panel { align-content: start; } }
+.demo-box > summary { white-space: nowrap; min-width: 0; }
+.demo-box > summary span { flex: 1 1 0; overflow: hidden; text-overflow: ellipsis; min-width: 0; }
+.login-panel > * { min-width: 0; max-width: 100%; }
+@media (max-width: 860px) {
+  .login-art h2 { font-size: 26px; }
+  .login-art > p { font-size: 14.5px; margin-top: 8px; }
+  .lg-feats { margin-top: 14px; gap: 6px; }
+  .lg-feats li { padding: 5px 10px 5px 8px; font-size: 12.5px; }
+}
+@media (prefers-reduced-motion: reduce) { .lg-live em { animation: none; } }
+
+/* Signed-in pages: a live dot by the hero clock, the help line at the foot, and the driver's greeting. */
+.hero-clock.is-live span::before { content: ""; display: inline-block; width: 7px; height: 7px; margin: 0 7px 1px 0; border-radius: 50%; background: var(--green); vertical-align: middle; box-shadow: 0 0 0 0 color-mix(in srgb, var(--green) 55%, transparent); animation: ptPulse 2.6s ease-out infinite; }
+@keyframes ptPulse { 70%, 100% { box-shadow: 0 0 0 7px color-mix(in srgb, var(--green) 0%, transparent); } }
+.pt-help { display: block; margin: 34px auto 0; padding-top: 18px; border-top: 1px dashed var(--line); max-width: 640px; text-align: center; font-size: 13.5px; color: var(--muted); }
+.pt-help svg { display: inline-block; vertical-align: -2px; margin-right: 6px; width: 15px; height: 15px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+.pt-help a { color: var(--accent-text); font-weight: 600; text-decoration: none; white-space: nowrap; }
+.pt-help a:hover { text-decoration: underline; }
+.pt-hello { display: flex; align-items: center; gap: 14px; margin: 4px 2px 16px; animation: lgRise .7s var(--ease) both; }
+.pt-hello > div { flex: 1; min-width: 0; }
+.pt-hello h1 { margin: 2px 0 0; font-size: 24px; line-height: 1.15; }
+.pt-date { display: block; font-size: 13.5px; color: var(--muted); }
+.pt-cal { flex: none; width: 46px; height: 50px; border-radius: 12px; display: flex; flex-direction: column; overflow: hidden; background: var(--surface); border: 1px solid var(--line); box-shadow: 0 6px 16px -10px rgba(20, 24, 33, .3); font-style: normal; text-align: center; }
+.pt-cal small { padding: 2px 0 1px; font: 700 10px/1.25 var(--sans); letter-spacing: .08em; text-transform: uppercase; color: #fff; background: var(--accent); }
+.pt-cal b { flex: 1; display: grid; place-items: center; font: 800 20px/1 var(--sans); color: var(--ink); }
+.pt-live { display: inline-flex; align-items: center; gap: 7px; align-self: center; padding: 6px 12px; border-radius: 999px; background: var(--surface); border: 1px solid var(--line); font: 600 13.5px/1 var(--sans); font-variant-numeric: tabular-nums; }
+.pt-live em { width: 7px; height: 7px; border-radius: 50%; background: var(--green); animation: ptPulse 2.6s ease-out infinite; }
+@media (prefers-reduced-motion: reduce) { .hero-clock.is-live span::before, .pt-live em, .pt-hello { animation: none; } }
+
+/* School pages (principal and office): the same ring switches; the website's six use an icon tile instead of a ring. */
+.ptabs.hn-swrap.ms6 .seg { grid-template-columns: repeat(3, minmax(0, 1fr)); max-width: 980px; }
+@media (max-width: 640px) { .ptabs.hn-swrap.ms6 .seg { grid-template-columns: 1fr 1fr; } }
+.hs-ic { position: relative; flex: none; width: 42px; height: 42px; border-radius: 13px; display: grid; place-items: center; background: color-mix(in srgb, var(--royal) 10%, var(--surface)); color: var(--royal-text); transition: background .3s, color .3s; }
+.hs-ic svg { width: 20px; height: 20px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+.seg button.on .hs-ic { background: var(--royal); color: #fff; }
+.hs-ic.due::after { content: ""; position: absolute; top: -2px; right: -2px; width: 10px; height: 10px; border-radius: 50%; background: var(--accent); box-shadow: 0 0 0 2px var(--surface); }
+@media (max-width: 640px) { .hs-ic { width: 36px; height: 36px; border-radius: 11px; } .hs-ic svg { width: 18px; height: 18px; } }
+.hs-ring.long > span { font-size: 11px; letter-spacing: -.03em; }
+.ptabs.hn-swrap .seg button .hs-ic svg { width: 20px; height: 20px; margin: 0; vertical-align: initial; }
+@media (max-width: 640px) { .ptabs.hn-swrap .seg button .hs-ic svg { width: 18px; height: 18px; } .hs-ring.long > span { font-size: 10px; } }
+
+/* Admissions: each child with initials; the status picker tinted by its stage. Activity log: a timeline with a tag for what changed. */
+.adm-who { display: flex; align-items: center; gap: 10px; }
+.adm-who .avatar { width: 32px; height: 32px; font-size: 12px; flex: none; }
+.adm-who > span:last-child { min-width: 0; }
+select.adm-st { border-color: color-mix(in srgb, var(--st) 35%, var(--line)); background-color: color-mix(in srgb, var(--st) 9%, var(--surface)); color: color-mix(in srgb, var(--st) 70%, var(--ink)); font-weight: 600; }
+#d-log-list { position: relative; }
+.log-li { position: relative; }
+.log-li:not(:last-child)::before { content: ""; position: absolute; left: 17px; top: 46px; bottom: -10px; width: 2px; border-radius: 2px; background: var(--line); }
+.log-tag { display: inline-block; margin-right: 8px; padding: 2px 8px; border-radius: 999px; font-size: 12px; font-weight: 600; vertical-align: 1px; --tc: var(--slate); background: color-mix(in srgb, var(--tc) 12%, var(--surface)); color: color-mix(in srgb, var(--tc) 75%, var(--ink)); }
+.log-tag.t-green { --tc: var(--green); } .log-tag.t-royal { --tc: var(--royal); } .log-tag.t-accent { --tc: var(--accent); } .log-tag.t-gold { --tc: var(--gold); } .log-tag.t-teal { --tc: var(--teal); }
+
+/* Exams: class and section pills sit level with the title */
+.xs-pick { align-items: center; align-self: center; gap: 10px; }
+@media (max-width: 760px) { .topbar .xs-pick { width: 100%; } }
+.xs-pick .sj-fld.fixed select { pointer-events: none; opacity: 1; color: var(--ink); -webkit-text-fill-color: var(--ink); }

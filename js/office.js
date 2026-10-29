@@ -14,9 +14,20 @@
   const box = S.$("#xs-main");
   if (box) {
     const mineCls = role === "teacher" ? S.sectionByKey(S.staff.classOf || S.staff.sections[0]).cls : "";
-    let fCls = mineCls, sel = null, grp = null;
-    S.$("#xs-cls").innerHTML = `<option value="">All classes</option>` + EXC.map((c) => `<option value="${c}">${S.classLabel(c)}</option>`).join("");
+    // A teacher sees only the classes she teaches, and picks the section when she has more than one there.
+    const mySecs = role === "teacher" ? [...new Set([S.staff.classOf, ...(S.staff.sections || [])].filter(Boolean))] : [];
+    const myCls = role === "teacher" ? EXC.filter((c) => mySecs.some((k) => S.sectionByKey(k).cls === c)) : EXC;
+    let fCls = mineCls, fSec = role === "teacher" ? S.staff.classOf || S.staff.sections[0] : "", sel = null, grp = null;
+    S.$("#xs-cls").innerHTML = (role === "teacher" ? "" : `<option value="">All classes</option>`) + myCls.map((c) => `<option value="${c}">${S.classLabel(c)}</option>`).join("");
     S.$("#xs-cls").value = fCls;
+    const secsOf = (c) => mySecs.filter((k) => S.sectionByKey(k).cls === c);
+    const paintSec = () => {
+      const ks = secsOf(fCls);
+      if (!ks.includes(fSec)) fSec = ks[0] || "";
+      S.$("#xs-secf").hidden = ks.length < 2;
+      S.$("#xs-sec").innerHTML = ks.map((k) => `<option value="${k}"${k === fSec ? " selected" : ""}>Section ${S.sectionByKey(k).sec}</option>`).join("");
+    };
+    if (role === "teacher") { paintSec(); if (myCls.length < 2) { S.$("#xs-cls").closest(".sj-fld").classList.add("fixed"); S.$("#xs-cls").disabled = true; } }
     if (!editor) S.$("#xs-sub").textContent = "Datesheets for your classes. The school office publishes them to parents.";
     const list = () => S.state.exams.filter((e) => !fCls || e.classes.includes(fCls)).sort((a, b) => (S.examSpan(a).from < S.examSpan(b).from ? -1 : 1));
     const spanTxt = (e, g) => { const { from, to } = S.examSpan(e, g); if (!from) return "No papers"; if (e.kind === "ts") return `Saturdays, ${fmt(from, { month: "short" })} to ${fmt(to, { month: "short" })}`; return from === to ? fmt(from) : `${fmt(from)} – ${fmt(to)}`; };
@@ -29,13 +40,13 @@
       if (ps.filter((q) => q.date === p.date).length > 1) return "Two papers this day";
       return "";
     };
-    const groupsOf = (e) => S.examGroups(e.classes).filter((g) => !fCls || g.split("-")[0] === fCls);
+    const groupsOf = (e) => S.examGroups(e.classes).filter((g) => (!fCls || g.split("-")[0] === fCls) && (!fSec || !g.includes("-") || g === fSec));
 
     function renderExams() {
       const xs = list();
       if (!xs.some((e) => e.id === sel)) { const on = xs.find((e) => S.examStatus(e).k !== "done"); sel = (on || xs[xs.length - 1] || {}).id || null; }
       const e = xs.find((x) => x.id === sel);
-      S.$("#xs-count").textContent = `${xs.length} exam${xs.length === 1 ? "" : "s"}${fCls ? " · " + S.classLabel(fCls) : ""}`;
+      S.$("#xs-count").textContent = `${xs.length} exam${xs.length === 1 ? "" : "s"}${fCls ? " · " + (fSec && secsOf(fCls).length > 1 ? S.classLabel(fCls) + "-" + S.sectionByKey(fSec).sec : S.classLabel(fCls)) : ""}`;
       S.paint(S.$("#xs-list"), xs.map((x) => {
         const st = S.examStatus(x);
         return `<button type="button" class="ex-row t-${toneOf(x)}${x === e ? " on" : ""}" data-xs="${x.id}" aria-pressed="${x === e}"><i class="ex-dot"></i><span class="t"><b>${esc(x.name)}</b><span>${S.classesText(x.classes)} · ${spanTxt(x)}</span></span><span class="xs-pills"><span class="pill ${pillOf(st)}">${st.label || "–"}</span>${x.published ? "" : `<span class="pill">Draft</span>`}</span></button>`;
@@ -68,7 +79,8 @@
     };
     const cur = () => S.state.exams.find((x) => x.id === sel);
     S.$("#xs-list").addEventListener("click", (ev) => { const b = ev.target.closest("[data-xs]"); if (!b) return; sel = b.dataset.xs; grp = null; renderExams(); if (S.narrow && S.narrow()) box.scrollIntoView({ block: "start" }); });
-    S.$("#xs-cls").addEventListener("change", (ev) => { fCls = ev.target.value; grp = null; renderExams(); });
+    S.$("#xs-cls").addEventListener("change", (ev) => { fCls = ev.target.value; grp = null; if (role === "teacher") paintSec(); renderExams(); });
+    S.$("#xs-sec").addEventListener("change", (ev) => { fSec = ev.target.value; grp = null; renderExams(); });
     box.addEventListener("change", (ev) => {
       const e = cur(); if (!e) return;
       const t = ev.target;

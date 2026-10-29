@@ -113,7 +113,7 @@
   S.$ = (sel, root = document) => root.querySelector(sel);
   S.$$ = (sel, root = document) => [...root.querySelectorAll(sel)];
   S.esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
-  S.greet = () => { const h = new Date().getHours(); return h < 12 ? "Good morning" : h < 17 ? "Good afternoon" : "Good evening"; };
+  S.greet = () => { const h = new Date().getHours(); return h < 4 ? "Good evening" : h < 12 ? "Good morning" : h < 17 ? "Good afternoon" : "Good evening"; };
 })();
 
 /* Motion that answers a change: numbers count up the first time a screen shows them, a

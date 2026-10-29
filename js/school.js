@@ -340,7 +340,7 @@
     $("#j-post").innerHTML = site.jobs.map((j) => `<option>${esc(j.title)}</option>`).join("") + "<option>Future openings</option>";
   }
 
-  // ---------- AI assistant ----------
+  // ---------- Ask St. John's: answers from the question bank, no AI service ----------
   if (S.mountAI) { S.mountAI("public"); $$("[data-ask]").forEach((b) => b.addEventListener("click", () => S.ask(b.dataset.ask, b.textContent))); }
 
   // ---------- Hero slideshow ----------
