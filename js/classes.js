@@ -77,6 +77,8 @@
       const secs = S.SECTIONS[g].filter((s) => SUBJECTS(ciOf(g), s).includes(x)).map((s) => `${g}-${s}`);
       let t;
       if (g === "VIII" && x === "Mathematics") { t = NEHA; }
+      // IX's Maths teacher takes XII Maths too. The name and ID are still drawn, so everyone else keeps theirs.
+      else if (g === "XII" && x === "Mathematics") { freshName(gi * 3 + k); idn++; t = S.TEACHERS.find((v) => v.subject === "Mathematics" && v.sections[0].startsWith("IX-")); t.sections.push(...secs); }
       else {
         const name = freshName(gi * 3 + k), id = "SJS-T-0" + idn++;
         t = { id, role: "teacher", name, first: name.split(" ")[1], initials: initials(name), subject: x, sections: secs, classOf: null, tone: ["green", "", "royal", "gold"][k % 4] };

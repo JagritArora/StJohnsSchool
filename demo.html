@@ -54,7 +54,7 @@
 <main class="dir">
   <div class="dir-h">
     <div><a href="login.html" class="link-btn" style="text-decoration:none">← Sign-in page</a><h1 style="margin-top:8px">Demo people and data</h1>
-      <p>Pick a stage of the session, then open anyone's view. Every teacher of Classes VIII to XII can sign in, and five families in each of those classes can too. Aarav Sharma's family in VII-B is the original demo.</p></div>
+      <p>Pick a stage of the session, then open anyone's view. The demo cast is kept small: the principal, one office admin, six teachers and five families, three in Class IX and two in Class XII. The rest of the school is there behind them, in the principal's and office views.</p></div>
     <div class="filters"><button class="btn btn-ghost btn-sm" type="button" data-csv="teachers">Download teachers (CSV)</button><button class="btn btn-ghost btn-sm" type="button" data-csv="parents">Download parents (CSV)</button><button class="btn btn-ghost btn-sm" type="button" data-csv="students">Download all students, VIII–XII (CSV)</button></div>
   </div>
 
@@ -96,8 +96,8 @@
   </section>
 </main>
 <script src="js/data.js?v=14"></script>
-<script src="js/classes.js?v=9"></script>
-<script src="js/demo.js?v=2"></script>
+<script src="js/classes.js?v=10"></script>
+<script src="js/demo.js?v=3"></script>
 <script src="js/common.js?v=15"></script>
 <script>
 (function () {
@@ -118,12 +118,13 @@
 
   // Teachers
   const gradeOf = (k) => k.split("-")[0];
-  S.$("#t-cls").insertAdjacentHTML("beforeend", GR.map((g) => `<option>${g}</option>`).join(""));
-  S.$("#p-cls").insertAdjacentHTML("beforeend", GR.map((g) => `<option>${g}</option>`).join(""));
+  S.$("#t-cls").insertAdjacentHTML("beforeend", ["IX", "XII"].map((g) => `<option>${g}</option>`).join(""));
+  S.$("#p-cls").insertAdjacentHTML("beforeend", ["IX", "XII"].map((g) => `<option>${g}</option>`).join(""));
   function renderTeachers() {
     const c = S.$("#t-cls").value, q = S.$("#t-q").value.trim().toLowerCase();
-    const list = S.TEACHERS.filter((t) => (!c || t.sections.some((k) => gradeOf(k) === c)) && (!q || `${t.name} ${t.subject} ${t.id} ${t.sections.join(" ")}`.toLowerCase().includes(q)));
-    S.$("#t-n").textContent = `${list.length} of ${S.TEACHERS.length}`;
+    const cast = S.CAST.teachers.map((id) => S.STAFF[id]);
+    const list = cast.filter((t) => (!c || t.sections.some((k) => gradeOf(k) === c)) && (!q || `${t.name} ${t.subject} ${t.id} ${t.sections.join(" ")}`.toLowerCase().includes(q)));
+    S.$("#t-n").textContent = `${list.length} of ${cast.length}`;
     S.$("#t-tbl").innerHTML = `<thead><tr><th>Staff ID</th><th>Name</th><th>Subject</th><th>Sections</th><th>Class teacher of</th><th class="num">Periods a week</th><th></th></tr></thead><tbody>` +
       list.map((t) => `<tr><td><b>${t.id}</b></td><td>${esc(t.name)}</td><td>${esc(t.subject)}</td><td>${t.sections.map(S.secName).join(", ")}</td><td>${t.classOf ? `<span class="pill green">${t.classOf}</span>` : '<span class="muted">—</span>'}</td><td class="num">${periods(t)}</td><td class="open"><button class="btn btn-ghost btn-sm" data-open="staff:${t.id}">Open</button></td></tr>`).join("") + "</tbody>";
   }
@@ -133,8 +134,9 @@
   // Parents
   function renderParents() {
     const c = S.$("#p-cls").value, q = S.$("#p-q").value.trim().toLowerCase();
-    const list = S.PARENTS.map((p) => ({ p, k: S.kid(p.key) })).filter(({ p, k }) => (!c || gradeOf(p.sec) === c) && (!q || `${p.parent} ${k.name} ${p.sec}`.toLowerCase().includes(q)));
-    S.$("#p-n").textContent = `${list.length} of ${S.PARENTS.length}`;
+    const fam = S.PARENTS.filter((p) => S.CAST.parents.includes(p.key));
+    const list = fam.map((p) => ({ p, k: S.kid(p.key) })).filter(({ p, k }) => (!c || gradeOf(p.sec) === c) && (!q || `${p.parent} ${k.name} ${p.sec}`.toLowerCase().includes(q)));
+    S.$("#p-n").textContent = `${list.length} of ${fam.length}`;
     S.$("#p-tbl").innerHTML = `<thead><tr><th>Parent</th><th>Phone</th><th>Child</th><th>Class</th><th class="num">Roll</th><th>Class teacher</th><th>Transport</th><th class="num">${S.exLabel(C)}</th><th class="num">Attendance</th><th></th></tr></thead><tbody>` +
       list.map(({ p, k }) => `<tr><td><b>${esc(p.parent)}</b><small>${p.relation}</small></td><td>${p.phone}</td><td>${esc(k.name)}</td><td>${k.label}${k.sec.stream ? `<small>${k.sec.stream}</small>` : ""}</td><td class="num">${k.roll}</td><td>${esc(k.sec.teacher)}</td><td>${esc(p.bus)}</td><td class="num">${avg(k[C], k.sec.subjects)}%</td><td class="num">${S.attOf(k.sec, k.roll)}%</td><td class="open"><button class="btn btn-ghost btn-sm" data-open="kid:${p.key}">Open</button></td></tr>`).join("") + "</tbody>";
   }
@@ -147,7 +149,7 @@
   S.$("#secs").innerHTML = keys.map((key) => {
     const x = S.sectionByKey(key), st = S.secStats(x), tt = S.timetableOf(key);
     const teach = Object.assign({ Games: "Mr. Satish Malik", Library: "Mrs. Kavita Bedi", Art: "Ms. Farah Ahmed", Music: "Mr. Paul D'Cruz" }, x.subjTeachers);
-    const fams = S.PARENTS.filter((p) => p.sec === key);
+    const fams = S.PARENTS.filter((p) => p.sec === key && S.CAST.parents.includes(p.key));
     return `<details><summary><b>${x.label}</b><span>${x.stream ? x.stream + " · " : ""}Class teacher ${esc(x.teacher)} · ${st.n} students · ${S.exLabel(C, x.cls).toLowerCase()} average ${st.cur}% · ${st.support} need support · ${fams.length} demo ${fams.length === 1 ? "family" : "families"}</span></summary>
       <div class="inner"><div><table class="tbl"><thead><tr><th>Subject</th><th>Teacher</th><th class="num">${S.exLabel(C, x.cls)}</th></tr></thead><tbody>${x.subjects.map((k) => `<tr><td>${k}</td><td>${esc(teach[k] || "")}</td><td class="num">${st.subj[k].cur}%</td></tr>`).join("")}</tbody></table>
         ${fams.length ? `<p class="muted" style="font-size:13.5px;margin-top:10px">Demo families: ${fams.map((p) => `<a href="parent.html?kid=${p.key}" data-open="kid:${p.key}">${esc(p.parent)}</a> (${esc(S.kid(p.key).first)})`).join(", ")}</p>` : ""}</div>

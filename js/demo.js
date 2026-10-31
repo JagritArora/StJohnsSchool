@@ -3,23 +3,22 @@
 (function () {
   const S = window.SJS;
   const esc = (t) => String(t).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
-  const GR = ["VII", "VIII", "IX", "X", "XI", "XII"];
-
-  // Everyone the demo can open, grouped for the dropdown.
+  
+  // The demo cast: a few people to open, so the picker stays short. The whole
+  // school's data still exists behind them for the principal and office views.
+  S.CAST = {
+    parents: ["IX-A-4", "IX-A-30", "IX-B-15", "XII-A-6", "XII-B-6"],
+    teachers: ["SJS-T-0508", "SJS-T-0507", "SJS-T-0509", "SJS-T-0530", "SJS-T-0536", "SJS-T-0529"]
+  };
+  const tLabel = (t) => `${t.name} · ${t.subject}${t.classOf ? ", class teacher " + t.classOf : ", " + t.sections.join(", ")}`;
   S.demoPeople = () => {
-    const groups = [{ label: "School leadership", items: [["staff:SJS-P-0001", "Principal"], ["staff:SJS-A-0107", "Office admin · Mrs. Anita Joseph"]] }];
-    GR.forEach((g) => {
-      const ts = S.TEACHERS.filter((t) => t.sections.some((k) => k.startsWith(g + "-")) && (g !== "VIII" || t.id !== "SJS-T-0412"));
-      if (ts.length) groups.push({ label: `Teachers · Class ${g}`, items: ts.map((t) => [`staff:${t.id}`, `${t.name} · ${t.id === "SJS-T-0412" ? "Mathematics, class teacher VII-B" : t.subject + (t.classOf ? ", class teacher " + t.classOf : "")}`]) });
-    });
-    GR.forEach((g) => {
-      const ps = S.PARENTS.filter((p) => p.sec.startsWith(g + "-"));
-      if (ps.length) groups.push({ label: `Parents · Class ${g}`, items: ps.map((p) => { const k = S.kid(p.key); return [`kid:${p.key}`, `${p.parent} · parent of ${k.name}, ${k.label}`]; }) });
-    });
-    // Brothers and sisters in other classes (Aarav's sister Ananya, in III-A).
-    const rest = S.PARENTS.filter((p) => !GR.some((g) => p.sec.startsWith(g + "-")));
-    if (rest.length) groups.push({ label: "Parents · other classes", items: rest.map((p) => { const k = S.kid(p.key); return [`kid:${p.key}`, `${p.parent} · parent of ${k.name}, ${k.label}`]; }) });
-    return groups;
+    const ts = S.CAST.teachers.map((id) => S.STAFF[id]).filter(Boolean);
+    const ps = S.CAST.parents.map((k) => S.PARENTS.find((p) => p.key === k)).filter(Boolean);
+    return [
+      { label: "School leadership", items: [["staff:SJS-P-0001", "Principal"], ["staff:SJS-A-0107", "Office admin · Mrs. Anita Joseph"]] },
+      { label: "Teachers", items: ts.map((t) => [`staff:${t.id}`, tLabel(t)]) },
+      { label: "Parents", items: ps.map((p) => { const k = S.kid(p.key); return [`kid:${p.key}`, `${p.parent} · parent of ${k.name}, ${k.label}`]; }) }
+    ];
   };
   S.openAs = (v) => {
     const [kind, id] = v.split(":");

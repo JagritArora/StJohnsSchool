@@ -72,7 +72,7 @@
       </form>
 
       <form id="f-staff" data-for="staff" hidden novalidate>
-        <div class="field"><label for="s-id">Staff ID</label><input id="s-id" autocomplete="username" autocapitalize="characters" spellcheck="false" placeholder="e.g. SJS-T-0412" /></div>
+        <div class="field"><label for="s-id">Staff ID</label><input id="s-id" autocomplete="username" autocapitalize="characters" spellcheck="false" placeholder="e.g. SJS-T-0508" /></div>
         <div class="field"><label for="s-pw">Password</label><input id="s-pw" type="password" autocomplete="current-password" value="demo-password" /></div>
         <p class="form-err" id="s-err" role="alert" hidden></p>
         <button class="btn btn-primary btn-block" style="margin-top:22px" type="submit">Sign in</button>
@@ -84,20 +84,20 @@
       <details class="demo-box">
         <summary>Demo sign-ins<span>Pick a family or a staff member</span></summary>
         <div data-demo-for="parent">
-          <div class="field" style="margin-top:12px"><label for="p-kid">Sign in as</label><select id="p-kid" class="input"></select><span class="hint">26 demo families: Aarav in VII-B, and five in every class from VIII to XII.</span></div>
+          <div class="field" style="margin-top:12px"><label for="p-kid">Sign in as</label><select id="p-kid" class="input"></select><span class="hint">5 demo families: three in Class IX, two in Class XII.</span></div>
         </div>
         <div class="demo-ids" data-demo-for="staff" hidden>
           <span class="muted">Demo staff IDs. The ID decides what you see.</span>
-          <button type="button" data-id="SJS-T-0412"><b>SJS-T-0412</b><span>Teacher · Ms. Neha Mathew, VII-B</span></button>
+          <button type="button" data-id="SJS-T-0508"><b>SJS-T-0508</b><span>Teacher · Mr. Ajay Talwar, class teacher IX-A</span></button>
           <button type="button" data-id="SJS-A-0107"><b>SJS-A-0107</b><span>Office admin · Mrs. Anita Joseph · routes under Transport</span></button>
           <button type="button" data-id="SJS-P-0001"><b>SJS-P-0001</b><span>Principal</span></button>
           <button type="button" data-id="SJS-D-0114"><b>SJS-D-0114</b><span>Bus driver · Harish Chauhan, Route 14</span></button>
           <label class="field" style="margin-top:6px"><span class="muted" style="font-size:13.5px">Or any bus driver</span><select id="d-pick" class="input"><option value="">Pick a driver…</option></select></label>
-          <label class="field" style="margin-top:6px"><span class="muted" style="font-size:13.5px">Or any teacher of Classes VIII to XII</span><select id="s-pick" class="input"><option value="">Pick a teacher…</option></select></label>
+          <label class="field" style="margin-top:6px"><span class="muted" style="font-size:13.5px">Or another demo teacher</span><select id="s-pick" class="input"><option value="">Pick a teacher…</option></select></label>
         </div>
         <div class="demo-loop">
           <b>Try the full loop</b>
-          <p>Sign in as the <b>teacher</b> (SJS-T-0412) and mark Aarav absent, then open the <b>parent</b> view: the absence shows up there straight away. Works best with the two views in side-by-side tabs.</p>
+          <p>Sign in as the <b>teacher</b> (SJS-T-0508) and mark Anika George of IX-A absent, then open the <b>parent</b> view: the absence shows up there straight away. Works best with the two views in side-by-side tabs.</p>
         </div>
       </details>
     </div>
@@ -105,9 +105,9 @@
   </main>
 </div>
 <script src="js/data.js?v=14"></script>
-<script src="js/classes.js?v=9"></script>
+<script src="js/classes.js?v=10"></script>
 <script src="js/bus.js?v=5"></script>
-<script src="js/demo.js?v=2"></script>
+<script src="js/demo.js?v=3"></script>
 <script src="js/common.js?v=15"></script>
 <script>
 /* The photos take turns, slowly; the ribbon glint follows the pointer. */
@@ -172,9 +172,10 @@
   document.getElementById("p-change").addEventListener("click", () => { otpSent = false; swap(document.getElementById("p-step1"), [document.getElementById("otp-wrap")], -1); document.getElementById("p-btn").textContent = "Send OTP"; document.getElementById("p-phone").focus(); });
   // OTP boxes: typing a digit moves on to the next box.
   document.querySelectorAll(".otp input").forEach((inp, i, all) => inp.addEventListener("input", () => { if (inp.value && all[i + 1]) all[i + 1].focus(); }));
-  // Demo pickers: every parent, and every teacher, grouped by class.
+  // Demo pickers: the demo cast only.
   const people = SJS.demoPeople(), esc = SJS.esc;
-  let lastKid = "VII-B-1"; try { lastKid = localStorage.getItem("sjs-kid") || lastKid; } catch (e) {}
+  let lastKid = "IX-A-4"; try { lastKid = localStorage.getItem("sjs-kid") || lastKid; } catch (e) {}
+  if (!SJS.CAST.parents.includes(lastKid)) lastKid = "IX-A-4";
   document.getElementById("p-kid").innerHTML = people.filter((g) => g.label.startsWith("Parents")).map((g) => `<optgroup label="${esc(g.label)}">${g.items.map(([v, l]) => `<option value="${esc(v.slice(4))}" ${v === "kid:" + lastKid ? "selected" : ""}>${esc(l)}</option>`).join("")}</optgroup>`).join("");
   document.getElementById("s-pick").insertAdjacentHTML("beforeend", people.filter((g) => g.label.startsWith("Teachers")).map((g) => `<optgroup label="${esc(g.label)}">${g.items.map(([v, l]) => `<option value="${esc(v.slice(6))}">${esc(l)}</option>`).join("")}</optgroup>`).join(""));
   document.getElementById("d-pick").insertAdjacentHTML("beforeend", SJS.routes().filter((r) => r.driver).map((r) => `<option value="${r.driver}">${esc(r.driver)} · ${esc(SJS.STAFF[r.driver].name)}, ${esc(r.id)}</option>`).join(""));
