@@ -66,7 +66,7 @@ export const paper = onRequest(
         .stream({
           model: MODEL,
           max_tokens: 32000,
-          output_config: { effort: "medium", format: { type: "json_schema", schema: SCHEMA } },
+          output_config: { effort: "high", format: { type: "json_schema", schema: SCHEMA } },
           system: systemPrompt(layout as Layout),
           messages: [{ role: "user", content: userPrompt(layout as Layout, lines, typeof prev === "string" ? prev : undefined, fixes) }],
         })

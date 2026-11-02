@@ -24,7 +24,7 @@ time      the line with the time allowed and/or the maximum marks ("Time: 3 hrs 
 insthead  the "General Instructions" heading itself
 inst      one general instruction
 chapter   a chapter title, e.g. "Ch-9 Biotechnology: Principles & Processes"${layout === "assignment" ? "" : " (if the paper has these)"}
-section   a section heading: "Section A", "SECTION – B", "Multiple Choice Questions", "Short Answer Questions", "Assertion & Reason"
+section   any heading over a group of questions: "Section A", "SECTION – B", "Multiple Choice Questions", "Short Answer Questions", "Assertion & Reason", and also ones not listed here: "MAP WORK", "Competency Based Questions", "Case Based Question", "Source-Based Questions", "PART – II"
 note      an un-numbered line that is not part of one question: under a section heading ("Choose the correct option.") or under a part (a list of terms the part refers to)
 q         the first line of a new question, whether its number is typed, auto-numbered or missing
 qopts     the first line of a new multiple-choice question that also carries all its options on the same line
@@ -50,6 +50,9 @@ tbl       a [table: …] line
 skip      only page numbers, "P.T.O.", "Turn over", end markers like "*** End of paper ***" and blank answer lines. Never a question, option, part or instruction.
 
 How to tell them apart:
+- Headings: a short line, often bold, centred, underlined or in capitals, with no question number and no question mark, standing between questions, is a section heading even when its wording is new to you. A heading is never a question.
+- Bullets (•, ▪, ➢, -, ✓ or a Word bullet in the auto-number) in front of lines inside a question or a case are labels, like (a): part, sub or caseq, never text. Different bullet shapes in one question are still the same kind of line.
+- Lettering that goes back to (a) or (i) after (c) or (d), with no OR between, means a new question has started. Its first line is the un-numbered line just above that (a) ("Give reasons for the following:"): label that line q. If there is no such line, the (a) line itself is the q.
 - Options are short choices for a multiple-choice question (usually four); parts are sub-questions needing written answers.
 - A line that starts with a question number (Q7, 7., 7), or a decimal auto-number such as "7.") begins a new question: q, qopts, assert, ar or case — never text, cont or note, even when it only says "Study the figure and answer the questions that follow".
 - A line that starts with its own label — (a), a), (i), i. — is opt, part, sub, stmt, archoice, caseq or caseopt, never text.
@@ -63,13 +66,31 @@ m (marks): ${layout === "box"
     ? `for every line labelled q, qopts, assert, ar or case give that question's marks as a number ("2"), from marks printed beside it ([2], (2 marks), an M flag) or from the instructions ("Section B has 5 questions of 2 marks each"). Use "" for every other line, and "" when you cannot tell.`
     : `always "".`}
 
+g (group): which question the line belongs to, counting the questions of the whole paper 1, 2, 3… in order, by your own count and not the teacher's numbers. Every q, qopts, assert, ar and case line starts the next number; every line inside that question (its options, parts, sub-parts, text, pictures, OR and the alternative after it, case questions and their options) carries the same number. Lines that belong to no question (head, time, insthead, inst, chapter, section, note under a heading, arintro, archoice, skip) carry 0.
+
+Examples of the hard cases (number | auto-number | flags | text  →  role, g):
+  20 |  |  | Q4. Answer briefly:                      → q, 4
+  21 |  |  | (c) What is a coalition government?      → part, 4
+  22 |  |  | (d) Which language is spoken in Wallonia? → part, 4
+  23 |  |  | Give reasons for the following:          → q, 5   (the lettering restarts below it)
+  24 |  |  | (a) Sri Lanka adopted a majoritarian…    → part, 5
+  25 |  | C | COMPETENCY BASED QUESTIONS               → section, 0
+  26 |  | B | Case Based Question                      → section, 0
+  27 |  |  | Read the passage and answer the questions that follow: → case, 6
+  28 |  |  | The Gandhi–Irwin Pact was signed in…     → text, 6
+  29 |  |  | • When was the pact signed?              → caseq, 6
+  30 |  |  | ➢ What did Gandhiji agree to do?         → caseq, 6
+  31 | ▪ |  | Name the city where it was held.          → caseq, 6
+  32 |  | C B | MAP WORK                                → section, 0
+  33 |  |  | Q9. On the outline map of India, locate: → q, 7
+
 Reply with the labels for every line, in order.`;
 }
 
 export function userPrompt(layout: Layout, lines: string, prev?: string, problems?: string[]) {
   let s = `Layout: ${layout}\nLines (number | auto-number | flags | text):\n${lines}`;
   if (prev && problems?.length) {
-    s += `\n\nYour last labels (number:role) were:\n${prev}\n\nThey have these problems:\n${problems.map((p) => "- " + p).join("\n")}\n\nFix them and reply with the full corrected list for every line.`;
+    s += `\n\nYour last labels (number:role/group) were:\n${prev}\n\nThey have these problems:\n${problems.map((p) => "- " + p).join("\n")}\n\nFix them and reply with the full corrected list for every line.`;
   }
   return s;
 }
@@ -81,8 +102,8 @@ export const SCHEMA = {
       type: "array",
       items: {
         type: "object",
-        properties: { i: { type: "integer" }, r: { type: "string", enum: [...ROLES] }, m: { type: "string" } },
-        required: ["i", "r", "m"],
+        properties: { i: { type: "integer" }, r: { type: "string", enum: [...ROLES] }, g: { type: "integer" }, m: { type: "string" } },
+        required: ["i", "r", "g", "m"],
         additionalProperties: false,
       },
     },

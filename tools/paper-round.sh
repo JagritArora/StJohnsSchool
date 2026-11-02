@@ -25,7 +25,7 @@ perl -e 'alarm shift; exec @ARGV' $((N * 3 * 60 + 60)) "$CHROME" --virtual-time-
   "http://localhost:8080/_round.html?id=SJS-T-0508" 2>/dev/null > /tmp/paper-round.$$ || true
 rm -f _round.html
 mkdir -p tools/papers/out
-python3 - /tmp/paper-round.$$ <<'PY'
+python3 - /tmp/paper-round.$$ "$@" <<'PY'
 import sys, re, html, json, base64
 s = open(sys.argv[1]).read()
 m = re.search(r'<pre id="ROUND"[^>]*>(.*?)</pre>', s, re.S)
@@ -43,7 +43,7 @@ for line in html.unescape(m.group(1)).split("\n"):
     open("tools/papers/out/" + name, "wb").write(base64.b64decode(r["docx"]))
     look = r["bad"] + r["want"] + r["problems"]
     fails += bool(look)
-    print(("LOOK" if look else "PASS"), f'{r["f"]:<28} {r["layout"]:<11} {r["q"]:>3} q  {r["by"]}{" ("+r["why"]+")" if r["why"] else ""}, {r["calls"]} call{"s" if r["calls"] != 1 else ""}, {r["ms"]/1000:.1f}s')
+    print(("LOOK" if look else "PASS"), f'{r["f"]:<28} {r["layout"]:<11} {r["q"]:>3} q  {r["by"]}{" ("+r["why"]+")" if r["why"] else ""}, {r["calls"]} call{"s" if r["calls"] != 1 else ""}, {r["tin"]+r["tout"]:,} tokens ≈ ₹{(r["tin"]*0.10+r["tout"]*0.50)/1e6*88:.2f}')
     for x in look: print("       !", x)
     if look or "-v" in sys.argv:
         for x in r["outline"]: print("       »", x[:300])

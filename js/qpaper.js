@@ -39,6 +39,9 @@
   const SKIP = /^(?:page\s*\d+(?:\s*(?:of|\/)\s*\d+)?|\d{1,3}|p\.?\s*t\.?\s*o\.?|turn over|[-_*=~.•]{3,}|\**\s*(?:all the best|best of luck|good luck)\s*!*\s*\**|\**\s*end of (?:the )?(?:question )?paper\s*\**|\*{2,}.*\*{2,})$/i;
   const SECNOTE = /^(?:choose|attempt|all|answer|read|this section|each|note|select|fill|write|questions?\b)/i;
   const OR = /^\(?\s*or\s*\)?$/i;
+  // A bullet in front of a sub-question: typed (• ➢ - ✓…) or Word's own bullet list. Any shape counts as the same label.
+  const BULLET = /^[•●○◦▪▫■□➢➤►▶✓✔❖◆◇⦿\-–—*]\s*(?=\S)/;
+  const isBullet = (L, p) => (L.n ? /^[^\w(]/.test(L.n) : BULLET.test(p) && !/^[-–—*]{2}/.test(p));
   const OPTLABEL = /^options?\s*[:\-]?\s*$/i;
   // Marks printed at the end of a line: [2] (2 marks) (2) "2 marks". A space before "(2)", so f(2) keeps its 2.
   const MARKT = /(?:\s*\[\s*(\d+(?:\.5)?)\s*(?:marks?|m)?\s*\]|\s*\(\s*(\d+(?:\.5)?)\s*(?:marks?|m)\s*\)|\s\(\s*(\d+(?:\.5)?)\s*\)|\s(\d+(?:\.5)?)\s*marks?)\s*$/i;
@@ -71,7 +74,7 @@
   const kindOf = (L, p) => {
     if (L.qn) return "num";
     const t = L.n ? L.n + " " : p;
-    if (L.n && /^•/.test(L.n)) return "";
+    if (isBullet(L, p)) return "bul";
     if (QNUM.test(t) && !/^\(?[a-z]\)/i.test(t)) return "num";
     if (ROMAN.test(t)) return "rom";
     if (LETTER.test(t)) return "let";
@@ -95,6 +98,12 @@
         phase = "body"; inQ = inAR = inCase = false;
         return set("section");
       }
+      // A heading the patterns don't know: short, bold/centred/underlined or in capitals, no number, no question mark, between questions.
+      const styled = isBold(L) || L.c || (L.segs || []).some((x) => x.f & 4 && x.t.trim()) || (/[A-Z]{3}/.test(p) && p === p.toUpperCase());
+      if (phase === "body" && !L.n && !k && styled && p.length < 60 && !/[?:]$/.test(p) && !VERBS.test(p) && !OR.test(p) && !SKIP.test(p) && !ASSERT.test(p) && !REASON.test(p) && !CASE.test(p)) {
+        inQ = inAR = inCase = false;
+        return set("section");
+      }
       if (phase === "top") {
         if (TIME.test(p)) return set("time");
         if (INSTH.test(p) || /^general instructions/i.test(p)) { sawInsth = true; return set("insthead"); }
@@ -113,6 +122,7 @@
       if (REASON.test(p) && (prev === "assert" || prev === "cont")) return set("reason");
       if (inAR && prev !== "assert" && (k === "let" || /^(?:both|a is|r is)\b/i.test(body)) && p.length < 120) return set("archoice");
       if (CASE.test(body) && (CASESTRIP.test(body) || p.length > 60)) { inCase = inQ = true; caseStyle = null; return set("case"); }
+      if (inCase && k === "bul") return set("caseq");
       if (inCase && (k === "num" || k === "let" || k === "rom")) {
         const shape = k + ((L.n || p).match(/^\s*\(?[0-9a-zA-Z]+\s*([.)])/) || [, ""])[1] + (/^\s*\(/.test(L.n || p) ? "(" : "");
         if (!caseStyle) caseStyle = shape;
@@ -125,7 +135,8 @@
         const opts = inlineOptions(body);
         return set(opts && opts[0] > 0 ? "qopts" : "q");
       }
-      if (k === "let") return set(!L.n && inlineOptions(p) ? "opts" : "part"); // options or parts: decided below, once the group is known
+      if (k === "let") return set(!L.n && inlineOptions(p) ? "opts" : "part");
+      if (k === "bul" && inQ) return set(prev === "part" || prev === "sub" ? prev : "part"); // options or parts: decided below, once the group is known
       if (k === "rom") return set(prev === "part" || prev === "sub" || prev === "note" || prev === "caseq" ? "sub" : "stmt");
       // An un-numbered line: the rest of the line above, a note, a line of its own in the question, or a question with no number.
       const before = lines[i - 1] ? plainOf(lines[i - 1]) : "";
@@ -184,7 +195,7 @@
     const segsOf = (L) => PD.trim(L.segs || []);
     const cut = (s, n) => PD.trim(PD.slice(s, n));
     const strip = (L, re) => { const s = segsOf(L), m = PD.plainOf(s).match(re); return m ? cut(s, m[0].length) : s; };
-    const unlabel = (L) => (L.n ? segsOf(L) : strip(L, LBL));
+    const unlabel = (L) => (L.n ? segsOf(L) : strip(L, BULLET.test(plainOf(L)) ? BULLET : LBL));
     const mk = (segs) => PD.markup(segs);
     const lit = (segs) => PD.plainOf(segs).replace(/￼/g, "").replace(/\s+/g, " ").trim();
     const say = (i, msg) => problems.push({ i, msg });
@@ -224,6 +235,8 @@
     }
     // Something that belongs under a question. With no question to go under, it stays as a line of its own.
     function block(o, i, what) {
+      // The rest of a case passage, before its first question, is part of the passage.
+      if (it && it.type === "case" && !it.questions.length && what === "A line" && target && lines[i]) { target.set(target.get() + " " + mk(segsOf(lines[i]))); return false; }
       if (it && (it.type === "ar" || it.type === "ar_intro" || it.type === "case")) {
         if (target && lines[i]) { target.set(target.get() + " " + mk(segsOf(lines[i]))); say(i, `${what} sits inside ${it.type === "case" ? "a case passage" : "an Assertion–Reason question"}`); }
         return false;
@@ -530,11 +543,70 @@
   }
 
   const layoutIs = (l, x) => l === x;
+  // ======================================================================= what the code puts right itself
+  // 1. Lettering back to (a) after (c) or later, with no OR or new question between: a new question starts here. Its
+  //    first line is the un-numbered line just above the (a) ("Give reasons for the following:"); without one, the (a) line.
+  // 2. Haiku's own question count (g) going up on an un-numbered line it didn't label as a question: that line starts one.
+  const STARTS = ["q", "qopts", "assert", "ar", "case"];
+  const letterAt = (L) => { const m = (L.n || plainOf(L)).match(LETTER); return m ? (m[1] || m[2]).toLowerCase().charCodeAt(0) - 97 : -1; };
+  function repair(lines, labels) {
+    const out = labels.map((l) => ({ ...l })), fixed = [];
+    let top = -1;
+    out.forEach((l, i) => {
+      if (STARTS.includes(l.r) || ["section", "chapter", "or", "optlabel", "stmt", "arintro"].includes(l.r)) { top = -1; return; }
+      if (!["part", "opt"].includes(l.r)) return;
+      const at = letterAt(lines[i]);
+      if (at < 0) return;
+      if (at === 0 && top >= 2) {
+        let j = i - 1; while (j >= 0 && out[j].r === "cont") j--;
+        const stem = j >= 0 && ["text", "note", "part", "sub"].includes(out[j].r) && letterAt(lines[j]) < 0 && !ROMAN.test(lines[j].n || plainOf(lines[j])) ? j : i;
+        out[stem] = { ...out[stem], r: "q" };
+        fixed.push({ i: stem, msg: `line ${stem} starts a new question: the lettering goes back to (a) on line ${i} after (${String.fromCharCode(97 + top)}); label line ${stem} q` });
+        top = 0; return;
+      }
+      top = Math.max(top, at);
+    });
+    // 3. A line with no number, no question mark and hardly a word (5’ C G 3’, Grass → Deer → Lion, a formula) can't start
+    //    a question: it stays with the question above.
+    let seenQ = false;
+    out.forEach((l, i) => {
+      if (!STARTS.includes(l.r)) return;
+      const L = lines[i], p = plainOf(L);
+      if (seenQ && l.r === "q" && !L.qn && !/\d/.test(L.n || "") && !QNUM.test(p) && !/\?/.test(p) && (p.match(/[A-Za-z]{3,}/g) || []).length < 2) {
+        out[i] = { ...l, r: "text" };
+        fixed.push({ i, msg: `line ${i} has no question number and hardly any words; it belongs to the question above (text), it doesn't start a new one` });
+        return;
+      }
+      seenQ = true;
+    });
+    let maxG = 0;
+    out.forEach((l, i) => {
+      const g = l.g | 0;
+      if (STARTS.includes(l.r)) { maxG = Math.max(maxG, g); return; }
+      const L = lines[i], p = plainOf(L);
+      if (g > maxG && ["text", "note", "cont", "part"].includes(l.r) && !L.img && !L.tbl && !L.n && !LBL.test(p) && !BULLET.test(p)) {
+        out[i] = { ...l, r: "q" };
+        fixed.push({ i, msg: `line ${i} is put in question ${g}, a new one, but labelled ${l.r}; label it q` });
+      }
+      maxG = Math.max(maxG, g);
+    });
+    return { labels: out, fixed };
+  }
+  // Haiku's two answers must agree: the role of each line and the question it belongs to.
+  function groups(labels) {
+    const out = []; let g = 0;
+    labels.forEach((l, i) => {
+      if (STARTS.includes(l.r)) { if ((l.g | 0) !== g + 1) out.push(`line ${i} is labelled ${l.r}, so it starts question ${g + 1}, but its group is ${l.g | 0}`); g = l.g | 0 || g + 1; }
+      else if ((l.g | 0) && (l.g | 0) !== g && !["img", "tbl"].includes(l.r)) out.push(`line ${i} is in group ${l.g | 0} but the question it sits in is ${g}`);
+    });
+    return out.slice(0, 15);
+  }
+
   // ======================================================================= sorting: Haiku, with the rules to fall back on
   async function sort(read, layout, status) {
     const ruled = rules(read.lines, layout);
     const api = S.PAPER_API || API;
-    if (!api) return { labels: ruled, by: "rules" };
+    if (!api) return { labels: repair(read.lines, ruled).labels, by: "rules" };
     const lines = forAI(read.lines);
     let labels = null, prev = "", problems = [], why = "", best = null, tries = 0;
     for (let attempt = 0; attempt < 3; attempt++) {
@@ -552,7 +624,7 @@
       if (!res) { why = "The AI formatter isn't reachable right now."; break; }
       if (!res.ok || !Array.isArray(data.labels)) { why = data.error || "The AI formatter isn't reachable right now."; break; }
       const got = [];
-      for (const l of data.labels) if (Number.isInteger(l.i) && ROLES_ALL.includes(l.r)) got[l.i] = { r: l.r, m: /^\d+(\.5)?$/.test(l.m || "") ? l.m : "" };
+      for (const l of data.labels) if (Number.isInteger(l.i) && ROLES_ALL.includes(l.r)) got[l.i] = { r: l.r, g: Number.isInteger(l.g) ? l.g : 0, m: /^\d+(\.5)?$/.test(l.m || "") ? l.m : "" };
       labels = read.lines.map((L, i) => (L.img ? { r: "img", m: "" } : L.tbl ? { r: "tbl", m: "" } : got[i] || ruled[i]));
       const missing = read.lines.map((_, i) => i).filter((i) => !got[i]);
       // What the page can see for itself: a typed question number starts a question, and a line with its own label (i) (a) is never plain text.
@@ -569,17 +641,21 @@
         if (r === "skip" && !SKIP.test(p) && p.length > 30) return `line ${i} is labelled skip, but it is not a page number or end line; give it its real role`;
         return "";
       }).filter(Boolean);
-      const out = assemble(read, labels, layout);
+      const fix = repair(read.lines, labels);
+      const out = assemble(read, fix.labels, layout);
       const was = problems.join("\n");
       tries = attempt + 1;
       problems = out.problems.map((p) => (p.i >= 0 ? `line ${p.i}: ${p.msg}` : p.msg)).concat(missing.length ? [`no label for line${missing.length > 1 ? "s" : ""} ${missing.slice(0, 20).join(", ")}`] : []).concat(seen)
-        .concat(claims(out, layout).filter((c) => !c.ok).map((c) => c.ai));
+        .concat(claims(out, layout).filter((c) => !c.ok).map((c) => c.ai))
+        .concat(fix.fixed.map((f) => f.msg), groups(labels));
       // Keep the try with the fewest problems; stop when one comes back clean or no better than the last.
       if (!best || problems.length < best.n) best = { labels, n: problems.length };
-      if (!problems.length || problems.join("\n") === was) break;
-      prev = labels.map((l, i) => `${i}:${l.r}${l.m ? "/" + l.m : ""}`).join(" ");
+      // Counts that disagree with the instructions get one more try; after that they are shown to the teacher, not paid for again.
+      const onlyCounts = problems.every((p) => /^the instructions (?:say|mention)|while the other multiple-choice/.test(p.replace(/^line \d+: /, "")));
+      if (!problems.length || problems.join("\n") === was || (attempt >= 1 && onlyCounts)) break;
+      prev = labels.map((l, i) => `${i}:${l.r}/${l.g | 0}${l.m ? " m" + l.m : ""}`).join(" ");
     }
-    return best ? { labels: best.labels, by: "ai", tries } : { labels: ruled, by: "rules", why };
+    return best ? { labels: repair(read.lines, best.labels).labels, by: "ai", tries } : { labels: repair(read.lines, ruled).labels, by: "rules", why };
   }
 
   // ======================================================================= the last check: the finished Word file, read back

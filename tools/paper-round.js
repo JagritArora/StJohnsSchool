@@ -5,10 +5,14 @@ addEventListener("load", () => setTimeout(async () => {
   const out = [], put = (o) => out.push(JSON.stringify(o));
   try {
     const Q = SJS.qp, PD = PaperDoc, files = window.ROUND_FILES, expect = await (await fetch("tools/papers/expect.json")).json().catch(() => ({}));
-    let calls = 0; const real = window.fetch;
-    window.fetch = (u, o) => { if (o && o.method === "POST") calls++; return real(u, o); };
+    let calls = 0, tin = 0, tout = 0; const real = window.fetch;
+    window.fetch = (u, o) => {
+      if (!(o && o.method === "POST")) return real(u, o);
+      calls++;
+      return real(u, o).then((r) => { r.clone().json().then((d) => { if (d.usage) { tin += d.usage.input; tout += d.usage.output; } }).catch(() => {}); return r; });
+    };
     for (const f of files) for (const layout of ["normal", "box", "assignment"]) {
-      const t0 = Date.now(); calls = 0;
+      const t0 = Date.now(); calls = tin = tout = 0;
       try {
         // "sample": the built-in sample, pasted as text the way a teacher would.
         const read = f === "sample" ? Q.fromPaste(Q.SAMPLE) : await PD.read(await (await real("tools/papers/" + encodeURIComponent(f))).arrayBuffer());
@@ -21,9 +25,10 @@ addEventListener("load", () => setTimeout(async () => {
         const known = (t) => (e.known || []).some((k) => t.includes(k));
         if (e.sections != null && layout !== "assignment" && e.sections !== r.sections) want.push(`expected ${e.sections} sections, got ${r.sections}`);
         const b = new Uint8Array(await v.blob.arrayBuffer()); let bin = ""; for (const x of b) bin += String.fromCharCode(x);
-        put({ f, layout, by: s.by, why: s.why || "", calls, ms: Date.now() - t0, q: r.count, secs: r.sections,
+        await new Promise((r) => setTimeout(r, 50));
+        put({ f, layout, by: s.by, why: s.why || "", calls, tin, tout, ms: Date.now() - t0, q: r.count, secs: r.sections,
           bad: checks.filter((c) => !c.ok && !known(c.text)).map((c) => c.text), knownBad: checks.filter((c) => !c.ok && known(c.text)).map((c) => c.text), ok: checks.filter((c) => c.ok).map((c) => c.text), want,
-          outline: (layout === "assignment" ? r.paper.chapters.flatMap((c) => c.sections) : r.paper.sections).map((x) => (x.title || "—") + ": " + x.items.filter((y) => y.type !== "ar_intro").map((y) => String(y.q || y.assertion || y.passage || (y.blocks && y.blocks[0] && y.blocks[0].parts && y.blocks[0].parts[0].text) || "").replace(/[*_^~\\]/g, "").slice(0, 28)).join(" | ")),
+          outline: (layout === "assignment" ? r.paper.chapters.flatMap((c) => c.sections) : r.paper.sections).concat([{ title: "count " + r.count + ", top " + [...r.top].join(","), items: [] }]).map((x) => (x.title || "—") + " (" + x.items.filter((y) => y.type !== "ar_intro").length + "/" + x.items.length + ")" + (x.notes ? " notes:" + x.notes.length : "") + ": " + x.items.filter((y) => y.type !== "ar_intro").map((y) => String(y.q || y.assertion || y.passage || (y.blocks && y.blocks[0] && y.blocks[0].parts && y.blocks[0].parts[0].text) || "").replace(/[*_^~\\]/g, "").slice(0, 28)).join(" | ")),
           problems: r.problems.map((p) => (p.i >= 0 ? `line ${p.i + 1}: ` : "") + p.msg), warnings: r.warnings, docx: btoa(bin) });
       } catch (err) { put({ f, layout, error: String(err && err.stack || err) }); }
     }
