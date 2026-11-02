@@ -3,7 +3,6 @@
    - PTM slots with each teacher
    - "I've read this" on important notices, and read counts for the office
    - a teacher's office hours for chat
-   - chapter plan against exam dates
    - report cards and a student's summary sheet, as printable pages
    - notices from the office wait for the principal's approval
    - cover for teachers on leave, fee follow-up, the activity log and the weekly summary
@@ -45,7 +44,6 @@
     if (!s.ptm) s.ptm = {};
     if (!s.acks) s.acks = {};
     if (!s.hours) s.hours = {};
-    if (!s.syl) s.syl = {};
     if (!s.pending) s.pending = [];
     if (!s.feeFollow) s.feeFollow = {};
     if (!s.cover) s.cover = {};
@@ -65,7 +63,7 @@
   // Every confirmed action by staff is written down with who and when. Sealed like the chat,
   // so a quiet edit later shows.
   S.logAct = (what, who) => { ensure(); S.post(S.state.activity, { from: who || (S.staff ? S.staff.name : "A parent"), text: what, at: S.fmt(S.todayKey) + ", " + S.timeNow() }); S.save(); };
-  const VIEW = { attendance: "Attendance", homework: "Homework", marks: "Marks", care: "Remarks and forms", messages: "Messages", assist: "Writing help", home: "Home", overview: "Home", classes: "Classes", admissions: "Admissions", website: "Website", exams: "Exams", notices: "Notices", class: "My class", staff: "Staff and cover", fees: "Fees", gate: "Gate", transport: "Transport", log: "Activity log" };
+  const VIEW = { attendance: "Attendance", homework: "Homework", marks: "Marks", care: "Remarks and forms", messages: "Messages", assist: "Writing help", corner: "Teachers' Corner", home: "Home", overview: "Home", classes: "Classes", admissions: "Admissions", website: "Website", exams: "Exams", notices: "Notices", class: "My class", staff: "Staff and cover", fees: "Fees", gate: "Gate", transport: "Transport", log: "Activity log" };
   if (S.toast && /staff\.html$/.test(location.pathname)) {
     const plain = S.toast;
     S.toast = (msg, o = {}) => {
@@ -206,25 +204,6 @@
     const next = new Date(now); if (!later) next.setDate(next.getDate() + 1); if (next.getDay() === 0) next.setDate(next.getDate() + 1);
     return `${later ? "today" : next.getDay() === (now.getDay() + 1) % 7 ? "tomorrow" : next.toLocaleDateString("en-IN", { weekday: "long" })} at ${t12(h.from)}`;
   };
-
-  // ---------- Chapter plan against exam dates ----------
-  // A sample plan the teacher can tick through; the school's real plan replaces it.
-  const CHAPTERS = {
-    "VII|Mathematics": ["Integers", "Fractions and decimals", "Data handling", "Simple equations", "Lines and angles", "The triangle and its properties", "Comparing quantities", "Rational numbers", "Perimeter and area", "Algebraic expressions", "Exponents and powers", "Symmetry", "Visualising solid shapes"],
-    "VIII|Mathematics": ["Rational numbers", "Linear equations in one variable", "Understanding quadrilaterals", "Data handling", "Squares and square roots", "Cubes and cube roots", "Comparing quantities", "Algebraic expressions and identities", "Mensuration", "Exponents and powers", "Direct and inverse proportions", "Factorisation", "Introduction to graphs"]
-  };
-  S.chaptersOf = (cls, subj) => CHAPTERS[cls + "|" + subj] || Array.from({ length: 12 }, (_, i) => `Unit ${i + 1}`);
-  const TEACH_FROM = "2026-04-01", TEACH_TO = "2027-02-13"; // the plan ends a week before the finals
-  const teachDays = (a, b) => { let n = 0; for (let d = new Date(a + "T00:00"); S.iso(d) < b; d = S.addDays(d, 1)) if (S.isSchoolDay(d)) n++; return n; };
-  const TOTAL = teachDays(TEACH_FROM, TEACH_TO);
-  // Chapters that should be done by a date, on an even pace.
-  S.chaptersDueBy = (n, k) => Math.min(n, Math.round((teachDays(TEACH_FROM, k) / TOTAL) * n));
-  S.sylDone = (sec, subj) => {
-    const key = sec + "|" + subj;
-    if (!S.state.syl[key]) { const n = S.chaptersOf(sec.split("-")[0], subj).length, due = S.chaptersDueBy(n, S.todayKey), lag = S.hash(seedOf(key), 3) < 0.4 ? 1 : 0; S.state.syl[key] = Array.from({ length: Math.max(0, S.PHASE === "end" ? n : due - lag) }, (_, i) => i); }
-    return S.state.syl[key];
-  };
-  S.examDates = () => S.CALENDAR.filter(([, t]) => /Unit Test|Half-yearly|Final exams/.test(t)).map(([d, t]) => ({ date: d, title: t }));
 
   // ---------- Cover for teachers on leave ----------
   // Who teaches what, when: from every timetable the demo builds (VII-B and VIII to XII).

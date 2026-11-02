@@ -160,7 +160,7 @@
       if (has(q, /note|parents|notice|ptm|meeting/)) return `Draft note to ${cls()} parents:\n\nDear parents, please come to <b>${PTM()}</b>. If you can't come, reply here and we'll find another time.\n— ${(S.staff ? S.staff.name : S.teacher.name).replace(/^(Mr|Mrs|Ms)\.\s*/, "")}\n\nEdit it, then send it from AI assist → Note to parents.`;
       if (has(q, /risk|attention|struggl|weak|concern|worr|follow/)) {
         const list = S.atRisk();
-        return `<b>${list.length} students</b> need attention in ${cls()}:\n` + list.map((x) => `• <b>${x.s.name}</b> — ${x.why.join("; ")}`).join("\n") + "\n\nI can draft a note to each parent, or book them first at the PTM.";
+        return `<b>${list.length} students</b> in ${cls()} to follow up:\n` + list.map((x) => `• <b>${x.s.name}</b> — ${x.why.join("; ")}`).join("\n") + "\n\nI can draft a note to each parent, or book them first at the PTM.";
       }
       if (has(q, /absent|attendance|present/)) {
         const t = S.cs.attendance[S.todayKey];
@@ -173,7 +173,7 @@
         const top = [...S.students].sort((a, b) => S.avgOf(b[C()]) - S.avgOf(a[C()])).slice(0, 3);
         return LB(C()) + " class averages:\n" + S.subjects.map((x) => `• ${x}: ${S.classAvg(C(), x)}%`).join("\n") + `\nTop three: ${top.map((s) => `${s.name} (${S.avgOf(s[C()])}%)`).join(", ")}.`;
       }
-      return "I can draft report-card remarks, make practice sets and lesson plans, draft notes to parents, and tell you who needs attention. Try: “Quiz on fractions” or “Remarks for Kabir”.";
+      return "I can draft report-card remarks, make practice sets and lesson plans, and draft notes to parents. Try: “Quiz on fractions” or “Remarks for Kabir”.";
     },
 
     principal(q) {
@@ -218,8 +218,8 @@
   const META = {
     public: { title: "Ask St. John's", sub: "Admissions, campus, school life", hello: "Hello! Pick a question below about admissions, documents, the campus or school life.", chips: ["How do I apply for Nursery?", "Documents needed", "Class XI admission", "Fees", "School timings", "Is it CBSE?", "Bus service", "Where is the school?", "Contact the office"] },
     parent: { title: "Ask about Aarav", sub: "Sees only Aarav's records", hello: "Hello! Pick a question below about Aarav — attendance, marks, homework, fees or holidays.", chips: ["How is Aarav doing?", "What should we work on?", "Homework due", "What to pack tomorrow?", "Attendance", "Maths marks", "Fees due", "Coming holidays"] },
-    teacher: { title: "Ask about your class", sub: "VII-B · your classes only", hello: "Pick a question below: who needs attention, remarks, quizzes and notes to parents, all from your class records.", chips: ["Who needs attention?", "Quiz on fractions", "Remarks for Ishita", "Lesson plan: integers", "Note about the PTM"] },
-    principal: { title: "Ask about the school", sub: "Whole-school view", hello: "Pick a question below: today's brief, attendance, fees or admissions, from the school's records.", chips: ["Today's brief", "Admission enquiries", "Fee collection", "Who needs attention?", "Staff today"] }
+    teacher: { title: "Ask about your class", sub: "VII-B · your classes only", hello: "Pick a question below: remarks, quizzes and notes to parents, all from your class records.", chips: ["Quiz on fractions", "Remarks for Ishita", "Lesson plan: integers", "Note about the PTM"] },
+    principal: { title: "Ask about the school", sub: "Whole-school view", hello: "Pick a question below: today's brief, attendance, fees or admissions, from the school's records.", chips: ["Today's brief", "Admission enquiries", "Fee collection", "Staff today"] }
   };
 
   const esc = (s) => s.replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));

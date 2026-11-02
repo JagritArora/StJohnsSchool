@@ -113,6 +113,17 @@
   S.$ = (sel, root = document) => root.querySelector(sel);
   S.$$ = (sel, root = document) => [...root.querySelectorAll(sel)];
   S.esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+  // Homework details: only what the editor offers (bold, italic, underline, lists, lines) is kept; every
+  // other tag and attribute goes. Plain text from before the editor keeps its line breaks.
+  const RICH = { B: "b", STRONG: "b", I: "i", EM: "i", U: "u", UL: "ul", OL: "ol", LI: "li", P: "p", DIV: "p", BR: "br" };
+  S.rich = (t) => {
+    t = String(t || "");
+    if (!/<[a-z]/i.test(t)) return S.esc(t).replace(/\n/g, "<br>");
+    const box = document.createElement("template"); box.innerHTML = t; // inert: nothing in it runs or loads
+    const clean = (n) => [...n.childNodes].map((c) => { const k = c.nodeType === 1 && RICH[c.tagName];
+      return c.nodeType === 3 ? S.esc(c.data) : c.nodeType !== 1 ? "" : k === "br" ? "<br>" : k ? `<${k}>${clean(c)}</${k}>` : clean(c); }).join("");
+    return clean(box.content);
+  };
   S.greet = () => { const h = new Date().getHours(); return h < 4 ? "Good evening" : h < 12 ? "Good morning" : h < 17 ? "Good afternoon" : "Good evening"; };
 })();
 

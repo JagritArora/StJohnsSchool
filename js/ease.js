@@ -1,5 +1,5 @@
 /* Ease of use, shared by the parent, staff and driver pages:
-   your name in the top bar opens a small menu (text size, and Hindi on the parent's side);
+   your name in the top bar opens a small menu (text size);
    when the connection drops, work is kept on this device and goes out when it's back;
    the section and filters you picked last time come back; every staff table downloads
    for Excel; and the pages are kept on the device so they open at once, even offline. */
@@ -10,10 +10,9 @@
   const get = (k) => { try { return localStorage.getItem(k); } catch (e) { return null; } };
   const put = (k, v) => { try { v == null || v === "" ? localStorage.removeItem(k) : localStorage.setItem(k, v); } catch (e) {} };
   const svg = (d) => `<svg viewBox="0 0 24 24" aria-hidden="true">${d}</svg>`;
-  const drv = document.body.classList.contains("drv"), parent = !!S.me && !S.staff, root = document.documentElement;
-  const hi = root.lang === "hi";
+  const drv = document.body.classList.contains("drv"), root = document.documentElement;
 
-  // ---------- Your name opens settings: text size, language ----------
+  // ---------- Your name opens settings: text size ----------
   const who = $(".pbar-who"), out = $('.pbar-r a[href*="login"]');
   // Shared with the school website's own text-size buttons (shell.js), so one choice carries across.
   const SIZES = [["1", "Standard", 14], ["1.1", "Large", 17], ["1.2", "Larger", 20]], ATTR = { "1.1": "l", "1.2": "xl" };
@@ -26,14 +25,11 @@
       menu = document.createElement("div"); menu.className = "ez-menu"; menu.setAttribute("role", "dialog"); menu.setAttribute("aria-label", "Settings");
       menu.innerHTML = `<div class="ez-me"><span class="avatar">${esc(($(".avatar", who) || {}).textContent || "")}</span><span><b>${esc(name)}</b><small>${esc(role)}</small></span></div>
         <p class="ez-k">Text size</p><div class="ez-seg" role="group" aria-label="Text size">${SIZES.map(([v, l, px]) => `<button type="button" data-size="${v}" aria-pressed="${v === size()}"><span style="font-size:${px}px">A</span><small>${l}</small></button>`).join("")}</div>
-        ${parent ? `<p class="ez-k">Language · भाषा</p><div class="ez-seg two" role="group" aria-label="Language"><button type="button" data-lang="en" aria-pressed="${!hi}" translate="no"><span>English</span></button><button type="button" data-lang="hi" aria-pressed="${hi}" lang="hi"><span>हिन्दी</span></button></div>
-        <p class="ez-note">${hi ? "Menus, headings, buttons and dates are in Hindi. Notes from teachers stay as they wrote them." : "Hindi covers menus, headings, buttons and dates. Notes from teachers stay as they wrote them."}</p>` : ""}
         ${out ? `<a class="ez-out" href="${esc(out.getAttribute("href"))}">${svg('<path d="M15 4h4v16h-4M10 8l-4 4 4 4M6 12h10"/>')}Sign out</a>` : ""}`;
       document.body.append(menu);
       menu.addEventListener("click", (e) => {
         const b = e.target.closest("button"); if (!b) return;
         if (b.dataset.size != null) setSize(b.dataset.size);
-        if (b.dataset.lang) { if ((b.dataset.lang === "hi") !== hi) { put("sjs-lang", b.dataset.lang === "hi" ? "hi" : null); location.reload(); } }
       });
     }
     const r = who.getBoundingClientRect();
@@ -44,7 +40,7 @@
   const closeMenu = () => { if (!menu || !menu.classList.contains("on")) return; menu.classList.remove("on"); who.setAttribute("aria-expanded", "false"); };
   if (who && !drv) {
     who.classList.add("ez-who"); who.setAttribute("role", "button"); who.tabIndex = 0;
-    who.setAttribute("aria-haspopup", "dialog"); who.setAttribute("aria-expanded", "false"); who.setAttribute("aria-label", "Settings: text size" + (parent ? " and language" : ""));
+    who.setAttribute("aria-haspopup", "dialog"); who.setAttribute("aria-expanded", "false"); who.setAttribute("aria-label", "Settings: text size");
     who.insertAdjacentHTML("beforeend", `<i class="ez-chev" aria-hidden="true"></i>`);
     who.addEventListener("click", () => (menu && menu.classList.contains("on") ? closeMenu() : openMenu()));
     who.addEventListener("keydown", (e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); who.click(); } });

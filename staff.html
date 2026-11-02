@@ -17,9 +17,9 @@
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Figtree:wght@400..800&display=swap" rel="stylesheet" />
-<link rel="stylesheet" href="css/site.css?v=126" />
+<link rel="stylesheet" href="css/site.css?v=135" />
 <link rel="stylesheet" href="css/feel.css?v=7" />
-<link rel="stylesheet" href="css/ease.css?v=6" />
+<link rel="stylesheet" href="css/ease.css?v=8" />
 <script>try{var t={"1.1":"l","1.2":"xl"}[localStorage.getItem("sjs-zoom")];if(t)document.documentElement.dataset.text=t}catch(e){}</script>
 <link rel="stylesheet" href="css/ai.css?v=3" />
 <link rel="stylesheet" href="css/journey.css?v=16" />
@@ -53,27 +53,19 @@
         </div>
         <div id="t-phase"></div>
         <div class="hub-sec"><h2>Your pages</h2><div id="t-tiles"></div></div>
+        <div class="hub-sec tc-sec"><h2>Teachers' Corner</h2><div id="t-corner"></div></div>
       </div>
     </section>
 
-    <!-- MY CLASS: how the class (or, for a subject teacher, each section) is doing, and who needs a look -->
+    <!-- MY CLASS: how the class (or, for a subject teacher, each section) is doing -->
     <section data-view="class" data-roles="teacher">
-      <div class="topbar"><div><h1 id="tc-h1">My class</h1><div class="sub" id="tc-sub">How the class is doing, subject by subject, and who needs a look.</div></div></div>
-      <div class="vt-row ptabs hn-swrap ms3"><div class="seg vt" data-vt="tcls" aria-label="Year so far, at a glance or needs attention"><button data-v="year"><span class="hs-ring dsr" id="rg-tcls-year"><span></span></span><span class="hs-t"><b>Year so far</b><small id="rg-tcls-year-t"></small></span></button><button data-v="glance"><span class="hs-ring" id="rg-tcls-glance"><span></span></span><span class="hs-t"><b>At a glance</b><small id="rg-tcls-glance-t"></small></span></button><button data-v="watch"><span class="hs-ring due" id="rg-tcls-watch"><span></span></span><span class="hs-t"><b>Needs attention</b><small id="rg-tcls-watch-t"></small></span></button></div></div>
+      <div class="topbar"><div><h1 id="tc-h1">My class</h1><div class="sub" id="tc-sub">How the class is doing, subject by subject.</div></div></div>
+      <div class="vt-row ptabs hn-swrap"><div class="seg vt" data-vt="tcls" aria-label="Year so far or at a glance"><button data-v="year"><span class="hs-ring dsr" id="rg-tcls-year"><span></span></span><span class="hs-t"><b>Year so far</b><small id="rg-tcls-year-t"></small></span></button><button data-v="glance"><span class="hs-ring" id="rg-tcls-glance"><span></span></span><span class="hs-t"><b>At a glance</b><small id="rg-tcls-glance-t"></small></span></button></div></div>
       <div class="pm-panes">
         <div class="vp" data-vp="tcls" data-v="year"><div id="sj"></div></div>
         <div class="vp" data-vp="tcls" data-v="glance" hidden>
           <div class="grid g4" id="t-stats" style="margin-bottom:16px"></div>
           <div class="card x-card"><div class="card-h"><h2 id="tc-x-h">Subject by subject</h2><span class="right muted x-sub" id="tc-x-sub"></span></div><div id="tc-x"></div></div>
-        </div>
-        <div class="vp" data-vp="tcls" data-v="watch" hidden>
-        <div class="ai-card">
-          <div class="card-h" style="margin:0"><span class="ai-tag"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 21V4M5 4h11l-2 4 2 4H5"/></svg>Needs attention · from marks and attendance</span><button type="button" class="info-btn" data-info="risk-note" data-info-t="How students are flagged" aria-label="More: how students are flagged" aria-haspopup="dialog" aria-expanded="false">i</button><div class="seg vt" data-vt="risk" aria-label="Show as"><button data-v="list">List</button><button data-v="spread">Spread</button><button data-v="map">Class map</button></div></div>
-          <div class="vp" data-vp="risk" data-v="list"><div class="list" id="risk" style="margin-top:10px"></div></div>
-          <div class="vp" data-vp="risk" data-v="spread" hidden><div id="t-swarm" style="margin-top:14px"></div></div>
-          <div class="vp" data-vp="risk" data-v="map" hidden><div id="class-map" style="margin-top:12px"></div></div>
-          <p class="info-src" id="risk-note">Flags attendance under 85%, a drop of 15+ points since Unit Test 1, or any subject under 50%.</p>
-        </div>
         </div>
       </div>
     </section>
@@ -100,26 +92,24 @@
     <!-- HOMEWORK -->
     <section data-view="homework" data-roles="teacher">
       <div class="topbar"><div><h1>Homework</h1><div class="sub">Post once — every parent in the class sees it.</div></div></div>
-      <div class="vt-row ptabs hn-swrap"><div class="seg vt" data-vt="thw" aria-label="Homework or chapter plan"><button data-v="hw"><span class="hs-ring dsr" id="rg-thw-hw"><span></span></span><span class="hs-t"><b>Homework</b><small id="rg-thw-hw-t"></small></span></button><button data-v="syl"><span class="hs-ring" id="rg-thw-syl"><span></span></span><span class="hs-t"><b>Chapter plan</b><small id="rg-thw-syl-t"></small></span></button></div></div>
       <div class="pm-panes">
-      <div class="vp" data-vp="thw" data-v="syl" hidden><div class="card" id="syl"></div></div>
       <div class="vp grid g21" data-vp="thw" data-v="hw">
         <form class="card" id="hw-form">
           <div class="card-h"><h2>New homework</h2></div>
           <div class="row2"><div class="field"><label for="hw-cls">Class</label><select id="hw-cls"></select></div><div class="field"><label for="hw-due">Due</label><input type="date" id="hw-due" required /></div></div>
           <div class="field hw-also" id="hw-also" hidden><label id="hw-also-l">Also post to</label><div class="hw-chips" id="hw-chips" role="group" aria-labelledby="hw-also-l"></div></div>
           <div class="field"><label for="hw-title">Title</label><input id="hw-title" required placeholder="e.g. Fractions — practice set" /></div>
-          <div class="field"><label for="hw-detail">Details</label><textarea id="hw-detail" required style="min-height:150px"></textarea></div>
+          <div class="field"><label id="hw-detail-l">Details</label><div class="rt"><div class="rt-bar" role="toolbar" aria-label="Formatting" aria-controls="hw-detail"><button type="button" data-rt="bold" title="Bold (⌘B)" aria-label="Bold" aria-pressed="false"><b>B</b></button><button type="button" data-rt="italic" title="Italic (⌘I)" aria-label="Italic" aria-pressed="false"><i>I</i></button><button type="button" data-rt="underline" title="Underline (⌘U)" aria-label="Underline" aria-pressed="false"><u>U</u></button><i class="rt-sep" aria-hidden="true"></i><button type="button" data-rt="insertUnorderedList" title="Bullets" aria-label="Bulleted list" aria-pressed="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10 6h10M10 12h10M10 18h10"/><circle cx="5" cy="6" r="1.2" fill="currentColor" stroke="none"/><circle cx="5" cy="12" r="1.2" fill="currentColor" stroke="none"/><circle cx="5" cy="18" r="1.2" fill="currentColor" stroke="none"/></svg></button><button type="button" data-rt="insertOrderedList" title="Numbers" aria-label="Numbered list" aria-pressed="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10 6h10M10 12h10M10 18h10"/><path d="M4 5l1.5-1v5M3.8 13.2c.4-.9 2.6-.9 2.6.4 0 1-2.6 1.6-2.6 2.9h2.7" stroke-width="1.5"/></svg></button><i class="rt-sep" aria-hidden="true"></i><button type="button" data-rt="removeFormat" title="Clear formatting" aria-label="Clear formatting"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 5h12M12 5l-3 14M15 13l5 5M20 13l-5 5"/></svg></button></div><div class="rt-ed empty" id="hw-detail" contenteditable="true" role="textbox" aria-multiline="true" aria-labelledby="hw-detail-l" data-ph="What to do, page numbers, what to bring…"></div></div></div>
           <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:18px">
             <button type="button" class="btn btn-ghost" id="hw-ai"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20h4L19 9l-4-4L4 16z"/><path d="M13.5 6.5l4 4"/></svg>Fill in from the title</button>
             <button class="btn btn-primary" type="submit" style="flex:1">Post to parents</button>
           </div>
         </form>
         <div class="hw-side"><div class="card"><div class="card-h"><h2>Posted</h2></div><div class="list" id="hw-list"></div></div>
-        <div class="card qp-soon" id="qp-soon"><div class="qp-top"><span class="qp-ic"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 3h9l4 4v14H6z"/><path d="M14 3v5h5M9 12h6M9 15.5h6M9 19h3"/></svg></span><div><b>Format a question paper</b><span class="pill">Coming soon</span></div></div>
-          <p>Paste or upload your questions and get them in the school's own layout: header, sections, numbering and marks, the same for every teacher. It only formats; your questions stay word for word.</p>
-          <div class="qp-l"><span>Unit test</span><span>Half-yearly</span><span>Worksheet</span><span>Assignment</span></div>
-          <button type="button" class="btn btn-ghost btn-sm" disabled>Format a paper</button></div></div>
+        <div class="card qp-soon" id="qp-soon"><div class="qp-top"><span class="qp-ic"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 3h9l4 4v14H6z"/><path d="M14 3v5h5M9 12h6M9 15.5h6M9 19h3"/></svg></span><div><b>Format a question paper</b><span class="pill green">Ready</span></div></div>
+          <p>Upload your Word file and get it back in the school's layout: header, sections, numbering and marks, the same for every teacher. It only formats; your questions stay word for word.</p>
+          <div class="qp-l"><span>Exam paper</span><span>Exam with marks column</span><span>Assignment</span></div>
+          <button type="button" class="btn btn-ghost btn-sm" data-go="corner/paper">Format a paper</button></div></div>
       </div>
       </div>
     </section>
@@ -162,7 +152,6 @@
           <div class="card-h"><span class="ai-tag">Quick questions</span></div>
           <p class="muted" style="font-size:15px">Questions about your class, in plain words.</p>
           <div class="ai-qs" style="margin-top:14px">
-            <button class="chip" style="padding:10px 14px" data-ask="Who needs attention?">Who needs attention?</button>
             <button class="chip" style="padding:10px 14px" data-ask="Remarks for Kabir">Remarks for Kabir</button>
             <button class="chip" style="padding:10px 14px" data-ask="Lesson plan on fractions">Lesson plan on fractions</button>
             <button class="chip" style="padding:10px 14px" data-ask="Class averages and toppers">Class averages and toppers</button>
@@ -170,6 +159,129 @@
         </div>
       </div>
       <div class="card" id="rm-table" style="margin-top:16px" hidden><div class="card-h"><h2 id="rm-h">All remarks · VII-B</h2></div><div class="tbl-wrap"><table class="tbl"><tbody id="rm-rows"></tbody></table></div></div>
+    </section>
+
+    <!-- TEACHERS' CORNER: what a teacher reaches for while teaching: classroom tools, planning, references (js/corner.js) -->
+    <section data-view="corner" data-roles="teacher">
+      <div class="topbar"><div><h1>Teachers' Corner</h1><div class="sub">Everything for teaching in one place: classroom tools, lesson plans, question papers, the staff room, tasks and references.</div></div></div>
+      <div class="vt-row ptabs hn-swrap ms6"><div class="seg vt" data-vt="corner" aria-label="In class, planning, question paper, staff room, tasks or references"><button data-v="class"><span class="hs-ic"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="13.5" r="7"/><path d="M12 13.5V10M10 3h4"/></svg></span><span class="hs-t"><b>In class</b><small>Name picker, groups, timer</small></span></button><button data-v="plan"><span class="hs-ic"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="4" width="16" height="17" rx="2"/><path d="M8 2.5v3M16 2.5v3M8 11h8M8 15h5"/></svg></span><span class="hs-t"><b>Planning</b><small>Lesson plans and drafts</small></span></button><button data-v="paper"><span class="hs-ic"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 3h9l4 4v14H6z"/><path d="M14 3v5h5M9 12h7M9 16h5"/></svg></span><span class="hs-t"><b>Question paper</b><small>Upload, format, download</small></span></button><button data-v="room"><span class="hs-ic"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5h16v11H9l-5 4z"/><path d="M8 9h8M8 12h5"/></svg></span><span class="hs-t"><b>Staff room</b><small id="tc-room-t">Chat and groups</small></span></button><button data-v="tasks"><span class="hs-ic"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="4.5" width="14" height="16.5" rx="2.5"/><path d="M9.5 4.5V3.2h5v1.3"/><path d="M8.8 12.6l2.2 2.2 4.4-4.6"/></svg></span><span class="hs-t"><b>Tasks</b><small id="tc-tasks-t">Assign and remind</small></span></button><button data-v="ref"><span class="hs-ic"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 6c-2-1.5-5-2-8-1.5v13c3-.5 6 0 8 1.5 2-1.5 5-2 8-1.5v-13c-3-.5-6 0-8 1.5z"/><path d="M12 6v13"/></svg></span><span class="hs-t"><b>References</b><small>CBSE, NCERT, DIKSHA</small></span></button></div></div>
+      <div class="pm-panes">
+        <div class="vp" data-vp="corner" data-v="class">
+          <div class="grid g3 tc-grid">
+            <div class="card tc-card">
+              <div class="card-h"><h2>Name picker</h2></div>
+              <div class="field" style="margin-top:0"><label for="tc-pk-sec">Class</label><select id="tc-pk-sec"></select></div>
+              <div class="tc-pk-out" id="tc-pk-out" aria-live="polite">Tap “Pick a Name”</div>
+              <p class="muted tc-note" id="tc-pk-n"></p>
+              <div class="tc-row"><button class="btn btn-primary btn-sm" type="button" id="tc-pk-go">Pick a name</button><button class="btn btn-ghost btn-sm" type="button" id="tc-pk-reset">Start again</button></div>
+            </div>
+            <div class="card tc-card">
+              <div class="card-h"><h2>Student groups</h2></div>
+              <div class="field" style="margin-top:0"><label for="tc-gp-sec">Class</label><select id="tc-gp-sec"></select></div>
+              <div class="row2"><div class="field"><label for="tc-gp-size">Group size</label><select id="tc-gp-size"><option>2</option><option>3</option><option selected>4</option><option>5</option><option>6</option><option>8</option></select></div><div class="field"><label for="tc-gp-mode">Mix</label><select id="tc-gp-mode"><option value="mixed">Mixed ability</option><option value="random">Random</option></select></div></div>
+              <p class="muted tc-note">Mixed ability spreads the latest marks evenly across the groups.</p>
+              <div class="tc-row"><button class="btn btn-primary btn-sm" type="button" id="tc-gp-go">Make groups</button></div>
+            </div>
+            <div class="card tc-card tc-tm-card" id="tc-tm-card">
+              <div class="card-h"><h2>Class timer</h2><button class="right icon-btn" type="button" id="tc-tm-full" aria-label="Full screen, for the projector" title="Full screen"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></svg></button></div>
+              <div class="tc-tm" id="tc-tm"><span id="tc-tm-t" aria-live="off">5:00</span></div>
+              <div class="tc-presets" role="group" aria-label="Minutes"><button type="button" data-tm="1">1</button><button type="button" data-tm="3">3</button><button type="button" data-tm="5">5</button><button type="button" data-tm="10">10</button><button type="button" data-tm="15">15</button><button type="button" id="tc-tm-add" aria-label="Add a minute">+1</button></div>
+              <div class="tc-row"><button class="btn btn-primary btn-sm" type="button" id="tc-tm-go">Start</button><button class="btn btn-ghost btn-sm" type="button" id="tc-tm-reset">Reset</button></div>
+            </div>
+          </div>
+          <div class="card tc-gp-card" style="margin-top:16px"><div class="tc-groups" id="tc-gp-out"><p class="muted">Groups show here.</p></div></div>
+        </div>
+        <div class="vp" data-vp="corner" data-v="plan" hidden>
+          <div class="grid g21">
+            <div class="card">
+              <div class="card-h"><h2>Lesson plan</h2></div>
+              <div class="field" style="margin-top:0"><label for="tc-lp-t">Topic</label><input id="tc-lp-t" autocomplete="off" /></div>
+              <div class="row2"><div class="field"><label for="tc-lp-sec">Class</label><select id="tc-lp-sec"></select></div><div class="field"><label for="tc-lp-len">Length</label><select id="tc-lp-len"><option value="40">One period · 40 min</option><option value="80">Double period · 80 min</option></select></div></div>
+              <div class="tc-row"><button class="btn btn-primary btn-sm" type="button" id="tc-lp-go">Make the plan</button><button class="btn btn-ghost btn-sm" type="button" id="tc-lp-print" hidden>Print</button></div>
+              <div id="tc-lp-out"></div>
+            </div>
+            <div class="card"><div class="card-h"><h2>More drafting tools</h2></div><div class="pgl tc-links" id="tc-more"></div></div>
+          </div>
+        </div>
+        <div class="vp" data-vp="corner" data-v="paper" hidden>
+          <div class="grid g21">
+            <div class="card">
+              <div class="card-h"><h2>Question paper</h2><span class="right muted" style="font-size:13.5px">Formats only: your questions stay word for word</span></div>
+              <fieldset class="qp-lay"><legend>Layout</legend>
+                <label><input type="radio" name="qp-layout" value="normal" checked /><span><b>Exam paper</b><small>Numbered 1, 2, 3 straight down the page</small></span></label>
+                <label><input type="radio" name="qp-layout" value="box" /><span><b>Exam with marks column</b><small>Q.No · Question · Marks in a table</small></span></label>
+                <label><input type="radio" name="qp-layout" value="assignment" /><span><b>Assignment</b><small>Chapter-wise, sections A, B, C</small></span></label>
+              </fieldset>
+              <label class="qp-drop" id="qp-drop"><input type="file" id="qp-file" accept=".docx,application/vnd.openxmlformats-officedocument.wordprocessingml.document" class="sr-only" />
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 3h9l4 4v14H6z"/><path d="M14 3v5h5M12 17v-6M9.5 13.5 12 11l2.5 2.5"/></svg>
+                <span><b id="qp-fname">Choose your Word file</b><small>or drop the .docx here</small></span></label>
+              <details class="qp-paste" id="qp-paste"><summary>Or paste the questions</summary>
+                <textarea id="qp-src" class="qp-src" spellcheck="false" aria-label="Questions" placeholder="Section A&#10;1. Which of these is a rational number? [1]&#10;(a) √2  (b) π  (c) 3/4  (d) √5&#10;2. Solve: 3x + 5 = 20 [2]&#10;&#10;Section B&#10;3. Prove that the sum of the angles of a triangle is 180°. (4 marks)"></textarea>
+                <button class="btn btn-ghost btn-sm" type="button" id="qp-paste-go">Use these questions</button></details>
+              <p class="qp-sum" id="qp-sum" aria-live="polite"></p>
+              <div id="qp-details" hidden>
+                <div class="field"><label for="qp-head">Heading lines</label><textarea id="qp-head" style="min-height:84px"></textarea></div>
+                <div class="row2 qp-exam"><div class="field"><label for="qp-time">Time</label><input id="qp-time" autocomplete="off" placeholder="3 hours" /></div><div class="field"><label for="qp-max">Maximum marks</label><input id="qp-max" inputmode="numeric" autocomplete="off" placeholder="70" /></div></div>
+                <div class="field qp-exam"><label for="qp-ins">General instructions</label><textarea id="qp-ins" style="min-height:96px"></textarea></div>
+              </div>
+              <div class="tc-row"><button class="btn btn-primary btn-sm" type="button" id="qp-go" disabled>Download the Word file</button><button class="btn btn-ghost btn-sm" type="button" id="qp-sample">Try a sample</button></div>
+            </div>
+            <div class="card">
+              <div class="card-h"><h2>Before you download</h2></div>
+              <ul class="qp-help">
+                <li>Upload the paper as you wrote it. Numbers, letters and spacing don't need to be tidy.</li>
+                <li>The layout numbers everything itself: questions, options a. b. c. d., parts and sections.</li>
+                <li>Bold, italics, F<sub>1</sub>, p<sup>2</sup>, pictures, tables and equations come across as they were.</li>
+                <li>For the marks column, put marks beside a question as <b>[2]</b> or give them in the instructions.</li>
+                <li>Your words aren't changed. Anything that needs a look is listed here.</li>
+              </ul>
+              <div class="qp-outline" id="qp-outline"></div>
+            </div>
+          </div>
+        </div>
+        <div class="vp" data-vp="corner" data-v="room" hidden>
+          <div class="sr-grid">
+            <div class="card sr-side">
+              <div class="card-h"><h2>Staff room</h2><button class="right btn btn-ghost btn-sm" type="button" id="sr-new">New group</button></div>
+              <div class="field" style="margin-top:0"><label for="sr-to">Message a teacher</label><select id="sr-to"></select></div>
+              <div class="sr-list" id="sr-list"></div>
+            </div>
+            <div class="card sr-main">
+              <div class="sr-chat" id="sr-chat">
+                <div class="card-h sr-head" id="sr-head"></div>
+                <div class="thread sr-thread" id="sr-thread"></div>
+                <form class="sr-send" id="sr-form"><label class="sr-only" for="sr-msg">Message</label><input class="input" id="sr-msg" autocomplete="off" placeholder="Write a message" /><button class="btn btn-primary" type="submit">Send</button></form>
+              </div>
+              <form class="sr-group" id="sr-group" hidden>
+                <div class="card-h"><h2>New group</h2></div>
+                <div class="field" style="margin-top:0"><label for="sr-g-name">Group name</label><input id="sr-g-name" autocomplete="off" placeholder="e.g. IX-A teachers" /></div>
+                <div class="field"><span class="sr-k" id="sr-g-l">Members</span><div class="sr-quick" id="sr-quick"></div><input class="input sr-filter" id="sr-g-find" type="search" autocomplete="off" placeholder="Find a teacher" aria-label="Find a teacher" /><div class="sr-members" id="sr-members" role="group" aria-labelledby="sr-g-l"></div></div>
+                <div class="tc-row"><button class="btn btn-primary btn-sm" type="submit">Make the group</button><button class="btn btn-ghost btn-sm" type="button" id="sr-g-x">Cancel</button><span class="muted sr-g-n" id="sr-g-n"></span></div>
+              </form>
+            </div>
+          </div>
+        </div>
+        <div class="vp" data-vp="corner" data-v="tasks" hidden>
+          <div class="grid g21">
+            <div>
+              <div class="card"><div class="card-h"><h2>For you</h2><span class="right muted" id="tk-mine-n" style="font-size:13.5px"></span></div><div class="list" id="tk-mine"></div></div>
+              <div class="card" style="margin-top:16px"><div class="card-h"><h2>You assigned</h2></div><div class="list" id="tk-sent"></div></div>
+            </div>
+            <form class="card" id="tk-form">
+              <div class="card-h"><div class="seg tk-kind" role="group" aria-label="Task or reminder"><button type="button" data-k="task" class="on" aria-pressed="true">Task</button><button type="button" data-k="rem" aria-pressed="false">Reminder</button></div></div>
+              <div class="field" style="margin-top:0"><label for="tk-to">To</label><select id="tk-to" required></select></div>
+              <div class="field"><label for="tk-t" id="tk-t-l">Task</label><input id="tk-t" required autocomplete="off" placeholder="e.g. Enter Unit Test 2 marks" /></div>
+              <div class="field"><label for="tk-due" id="tk-due-l">Due</label><input type="date" id="tk-due" /></div>
+              <div class="field"><label for="tk-note">Note <span class="muted">(optional)</span></label><textarea id="tk-note" style="min-height:80px"></textarea></div>
+              <p class="muted tc-note" id="tk-help">Each teacher ticks it off; you see who has, and can remind the rest in one tap.</p>
+              <div class="tc-row"><button class="btn btn-primary btn-sm" type="submit" id="tk-go">Assign the task</button></div>
+            </form>
+          </div>
+        </div>
+        <div class="vp" data-vp="corner" data-v="ref" hidden>
+          <div class="card"><div class="card-h"><h2>References</h2><span class="right muted" style="font-size:13.5px">Official sites open in a new tab</span></div><div class="pgl tc-links" id="tc-ref"></div></div>
+        </div>
+      </div>
     </section>
 
     <!-- MESSAGES, REMARKS AND FORMS: chat with parents (class teachers), and notes on every student the teacher teaches -->
@@ -529,7 +641,7 @@
 <script src="js/data.js?v=14"></script>
 <script src="js/classes.js?v=10"></script>
 <script src="js/exams.js?v=9"></script>
-<script src="js/journey.js?v=14"></script>
+<script src="js/journey.js?v=15"></script>
 <script src="js/care.js?v=2"></script>
 <script src="js/demo.js?v=3"></script>
 <script src="js/bus.js?v=5"></script>
@@ -572,6 +684,7 @@
     attendance: '<rect x="4" y="5" width="16" height="15" rx="2"/><path d="M4 10h16M9 3v4M15 3v4M9 15l2 2 4-4"/>',
     homework: '<path d="M6 3h9l4 4v14H6z"/><path d="M14 3v5h5M9 13h7M9 17h5"/>', marks: '<path d="M5 20V10M12 20V4M19 20v-7"/>',
     assist: '<path d="M4 20h4L19 9l-4-4L4 16z"/><path d="M13.5 6.5l4 4"/>',
+    corner: '<path d="M12 6c-2-1.5-5-2-8-1.5v13c3-.5 6 0 8 1.5 2-1.5 5-2 8-1.5v-13c-3-.5-6 0-8 1.5z"/><path d="M12 6v13"/>',
     messages: '<path d="M4 5h16v11H9l-5 4z"/>', admissions: '<circle cx="10" cy="8" r="4"/><path d="M3 21c1-4 4-6 7-6 1.5 0 3 .4 4.2 1.3M17 14v6M14 17h6"/>',
     care: '<path d="M5 4h11l3 3v13H5z"/><path d="M9 10h6M9 14h4M15 17l1.5 1.5L19.5 15"/>',
     exams: '<rect x="5" y="4" width="14" height="17" rx="2"/><path d="M9 4V3h6v1M9 10h6M9 14h6M9 18h3"/>',
@@ -586,7 +699,7 @@
     notices: '<path d="M4 10v4h3l6 4V6L7 10z"/><path d="M17 9a4 4 0 0 1 0 6"/>', classes: '<rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 10h18M9 10v10M15 10v10"/>', website: '<rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 9h18M7 6.5h.01M10 6.5h.01"/>'
   };
   const NAV = {
-    teacher: [["home", "Home"], ["class", me.classOf ? "My class" : "My sections"], ["attendance", "Attendance"], ["homework", "Homework"], ["marks", "Marks"], ["exams", "Exams"], ["care", me.classOf ? "Messages, remarks and forms" : "Remarks and forms"], ["assist", "Writing help"]],
+    teacher: [["home", "Home"], ["class", me.classOf ? "My class" : "My sections"], ["attendance", "Attendance"], ["homework", "Homework"], ["marks", "Marks"], ["exams", "Exams"], ["care", me.classOf ? "Messages, remarks and forms" : "Remarks and forms"], ["assist", "Writing help"], ["corner", "Teachers' Corner"]],
     principal: [["overview", "Home"], ["attendance", "Attendance"], ["staff", "Staff and cover"], ["fees", "Fees"], ["classes", "Classes"], ["admissions", "Admissions"], ["exams", "Exams"], ["notices", "Notices"], ["gate", "Gate"], ["transport", "Transport"], ["log", "Activity log"], ["website", "Website"]],
     admin: [["overview", "Home"], ["attendance", "Attendance"], ["staff", "Staff and cover"], ["fees", "Fees"], ["classes", "Classes"], ["admissions", "Admissions"], ["exams", "Exams"], ["notices", "Notices"], ["gate", "Gate"], ["transport", "Transport"], ["log", "Activity log"], ["website", "Website"]]
   }[role].filter(([k]) => role !== "teacher" || me.classOf || !["attendance", "messages"].includes(k));
@@ -598,12 +711,13 @@
   S.NAV_ICONS = I;
 })();
 </script>
-<script src="js/common.js?v=15"></script>
+<script src="js/common.js?v=16"></script>
 <script src="js/charts.js?v=10"></script>
 <script src="js/hub.js?v=13"></script>
-<script src="js/more.js?v=11"></script>
+<script src="js/more.js?v=13"></script>
+<script src="js/staffroom.js?v=2"></script>
 <script src="js/faq.js?v=1"></script>
-<script src="js/ai.js?v=15"></script>
+<script src="js/ai.js?v=16"></script>
 <script>
 (function () {
   const S = SJS;
@@ -634,8 +748,7 @@
   S.$("#rm-all").textContent = `Draft all ${N()}`;
   S.$("#msg-sub").textContent = `Parents of ${secLabel(home)}`;
   S.$("#tc-h1").textContent = isCT ? "My class · " + secLabel(home) : "My sections";
-  S.$("#tc-sub").textContent = isCT ? `How ${secLabel(home)} is doing, subject by subject, and who needs a look.` : `How your ${SUBJ} sections are doing, and who in ${secLabel(home)} needs a look.`;
-  S.$("#risk-note").textContent = `Flags attendance under 85%${P ? `, a drop of 15+ points since the ${L(P).toLowerCase()}` : ""}, or any subject under 50%${P ? "" : " last session"}.`;
+  S.$("#tc-sub").textContent = isCT ? `How ${secLabel(home)} is doing, subject by subject.` : `How your ${SUBJ} sections are doing.`;
   if (!/Mathematics/.test(SUBJ)) { S.$("#ps-card").remove(); S.$("#ps-tab").remove(); }
   S.$("#hw-cls").innerHTML = mine.map((k) => `<option value="${k}">${secLabel(k)}</option>`).join("");
   S.$("#m-sec").innerHTML = mine.map((k) => `<option value="${k}">${secLabel(k)}</option>`).join("");
@@ -681,13 +794,7 @@
       <div class="card stat"><span class="lbl">Students</span><div class="num">${mine.reduce((a, k) => a + S.sectionByKey(k).students.length, 0)}</div><div class="foot">${mine.map(secLabel).join(", ")}</div></div>
       <div class="card stat"><span class="lbl">${SUBJ} average</span>${numRow(`${subjAvg}<small>%</small>`, S.spark(subRun, { tone: "var(--royal)", label: runLbl }))}<div class="foot">${P ? S.delta(subRun[subRun.length - 1] - subRun[subRun.length - 2], { tip: `${L(P)} ${subRun[subRun.length - 2]}%` }) + " since the " + L(P).toLowerCase() : L(C) + ", your sections"}</div>${S.meter(subjAvg, { tone: "var(--accent)" })}</div>
       <div class="card stat"><span class="lbl">Homework posted</span><div class="num">${posted}</div><div class="foot">Across your sections</div></div>`);
-    renderMap(); renderPhase(); renderTHub(rec, present, waitLeaves, unread, clsAvg, prevAvg, subjAvg, per); renderTX();
-    // The class on one line: everyone's average, the flagged ones in colour.
-    const flags = new Map(S.atRisk(isCT ? null : [SUBJ]).map((v) => [v.s.roll, v.why]));
-    const avs = S.students.map((s) => S.avgOf(s[C]));
-    S.paint(S.$("#t-swarm"), S.swarm(S.students.map((s, i) => ({ v: avs[i], cls: flags.has(s.roll) ? "flag" : "", tip: `${avs[i]}% average${flags.has(s.roll) ? " · " + flags.get(s.roll).join(", ") : ""}`, tipT: s.name })),
-      { lo: Math.max(0, Math.min(40, Math.floor((Math.min(...avs) - 5) / 10) * 10)), W: S.narrow() ? 330 : 560, R: S.narrow() ? 5 : 5.5, marks: [{ v: clsAvg, label: `Class ${clsAvg}%` }], label: `Every student in ${secLabel(home)} by ${L(C).toLowerCase()} average` }));
-    S.$("#risk").innerHTML = S.atRisk(isCT ? null : [SUBJ]).map((v) => `<div class="li"><span class="avatar soft">${v.s.initials}</span><div class="t"><b>${v.s.name}</b><span>${v.why.join(" · ")}</span></div><button class="end link-btn" data-ask="Remarks for ${v.s.first}">Draft note</button></div>`).join("") || '<p class="muted" style="font-size:14.5px">Nobody is flagged right now.</p>';
+    renderPhase(); renderTHub(rec, present, waitLeaves, unread, clsAvg, prevAvg, subjAvg, per); renderTX();
     renderTDay();
     S.$("#leaves").innerHTML = S.cs.leaves.length ? S.cs.leaves.map((l, i) => `<div class="li"><span class="avatar soft">${S.student(l.roll).initials}</span><div class="t"><b>${S.student(l.roll).name} · ${S.fmt(l.from)} – ${S.fmt(l.to)}</b><span>${S.esc(l.why)}</span></div><div class="end">${l.status === "Waiting" ? `<button class="btn btn-green btn-sm" data-approve="${i}">Approve</button>` : '<span class="pill green">Approved</span>'}</div></div>`).join("") : `<p class="muted" style="font-size:14.5px">No leave requests. ${isCT ? "Parents send them from the app." : "They go to the class teacher."}</p>`;
     if (S.$("#inbox")) S.$("#inbox").innerHTML = isCT ? threads().map((t) => { const last = [...t.msgs].reverse()[0], n = t.msgs.filter((m) => m.from === "parent" && m.fresh).length; return `<button type="button" class="li todo" data-thread="${t.key}" data-go="messages"><span class="avatar soft">${t.kid.initials}</span><div class="t"><b>${S.esc(t.kid.name)}'s ${t.kid.relation.toLowerCase()} ${n ? `<span class="pill red">${n} new</span>` : ""}</b><span>${last ? (last.voice ? "Voice message" : S.esc(last.text)) : "No messages yet"}</span></div></button>`; }).join("") || '<p class="muted" style="font-size:14.5px">No messages yet.</p>' : `<p class="muted" style="font-size:14.5px">Parents write to the class teacher; anything about ${SUBJ} is passed on to you.</p>`;
@@ -700,7 +807,7 @@
   const PI = S.NAV_ICONS, short = (k) => S.fmt(k, { weekday: "short", day: "numeric", month: "short" });
   const daysTo = (k) => Math.round((new Date(k + "T00:00") - S.today) / 864e5);
   function renderTHub(rec, present, waitLeaves, unread, clsAvg, prevAvg, subjAvg, per) {
-    const N2 = [], flagged = S.atRisk(isCT ? null : [SUBJ]);
+    const N2 = [];
     // The line under the greeting: the class's day so far, or the next period.
     const line = S.$("#t-line");
     if (isCT && rec) { line.style.setProperty("--c", "var(--green)"); S.paint(line, `<i></i><span><b>${present} of ${N()} in today.</b> Attendance went to parents at ${rec.at}.</span>`); }
@@ -715,33 +822,34 @@
       if (open.length) N2.push({ tone: "gold", icon: PI.marks, t: `${S.ENTRY.name} marks in ${SUBJ}: ${open.length === mine.length && open.length > 1 ? "all your sections" : open.map((o) => secLabel(o.k)).join(", ")}`,
         sub: open.map((o) => `${secLabel(o.k)} ${Object.keys(o.e.marks).length ? Object.keys(o.e.marks).length + " of " + o.n + " entered" : "not started"}`).join(" · ") + ` · out of ${S.ENTRY.max}`, act: "Enter", go: "marks", attrs: ` data-msec="${open[0].k}"` });
     }
-    if (flagged.length) N2.push({ tone: "warn", icon: PI.class, t: `${flagged.length} student${flagged.length === 1 ? "" : "s"} in ${secLabel(home)} need${flagged.length === 1 ? "s" : ""} a look`, sub: flagged.slice(0, 3).map((v) => v.s.first).join(", ") + (flagged.length > 3 ? " and more" : "") + " · spotted by AI", act: "See", go: "class/watch" });
     const ptm = S.nextPtm();
     if (ptm && daysTo(ptm.date) <= 14) { const bk = S.ptmOfTeacher(ptm.date, T.name).length; N2.push({ tone: "royal", icon: PI.ptm, t: `Parent–teacher meeting, ${S.fmt(ptm.date, { weekday: "long", day: "numeric", month: "short" })}`, sub: `${bk} parent${bk === 1 ? " has" : "s have"} booked a time with you`, when: `In ${daysTo(ptm.date)} days`, act: "Times", go: "care/ptm" }); }
+    // From the staff room: tasks other teachers sent, and unread chat.
+    if (S.tasksFor) S.tasksFor(T.id).forEach((k) => N2.push({ tone: "royal", icon: PI.corner, t: S.esc(k.title), sub: `From ${S.esc(S.STAFF[k.by] ? S.STAFF[k.by].name : "a teacher")}`, when: k.due ? `Due ${short(k.due)}` : "", act: "Open", go: "corner/tasks" }));
+    const chatN = S.staffUnread ? S.staffUnread() : 0;
+    if (chatN) N2.push({ tone: "royal", icon: PI.messages, t: `${chatN} new message${chatN === 1 ? "" : "s"} in the staff room`, sub: "From other teachers", act: "Read", go: "corner/room" });
     S.setNeeds(N2, { empty: "Nothing needs you right now." });
     // The same list as a tag at the top of the welcome sheet, as on the parent's home: what's waiting, one tap to see it.
-    const VERB = { Take: "take attendance", Review: "review leave", Reply: "reply to parents", Enter: "enter marks", See: "see who needs a look", Times: "check PTM times" };
+    const VERB = { Take: "take attendance", Review: "review leave", Reply: "reply to parents", Enter: "enter marks", Times: "check PTM times", Open: "open a task", Read: "read the staff room" };
     const firsts = [...new Set(N2.map((n) => VERB[n.act] || n.act.toLowerCase()))].slice(0, 2).join(", ");
     S.paint(S.$("#need-tag"), N2.length
       ? `<button type="button" class="need-tag" data-open-needs><i class="live" aria-hidden="true"></i><span class="nt-t"><b>${N2.length} thing${N2.length === 1 ? "" : "s"}</b> need${N2.length === 1 ? "s" : ""} you<span class="nt-x">: ${firsts}${N2.length > 2 ? "…" : ""}</span></span><span class="nt-go">See all<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span></button>`
       : `<span class="need-tag ok"><i class="live" aria-hidden="true"></i><span class="nt-t"><b>All caught up.</b> Nothing needs you right now.</span></span>`);
 
     const posted = mine.reduce((a, k) => a + S.secState(k).homework.filter((h) => h.by === T.name).length, 0);
-    const behind = /Mathematics/.test(SUBJ) ? mine.filter((k) => { const sec = S.sectionByKey(k), ch = S.chaptersOf ? S.chaptersOf(sec.cls, SUBJ) : []; return ch.length && S.sylDone(k, SUBJ).length < S.chaptersDueBy(ch.length, S.todayKey); }).length : 0;
     const nextEx = S.examsFor ? S.examsFor({ cls: x.cls, sec: x }).filter((e) => e.published && S.examStatus(e, S.groupOf({ cls: x.cls, sec: x })).k !== "done")[0] : null;
     const forms = (S.state.forms || []).filter((f) => f.by === T.name).length, bk = ptm ? S.ptmOfTeacher(ptm.date, T.name).length : 0;
     const entry = S.ENTRY && S.PHASE !== "start" ? S.entry(home, SUBJ) : null;
     // Richer tiles, as on the parent's home: a change arrow, a week of bars, and chips for what comes next.
     const dAvg = isCT ? (prevAvg === null ? null : clsAvg - prevAvg) : (P ? subjAvg - Math.round(mine.reduce((a, k) => { const y = S.sectionByKey(k); return a + y.students.reduce((b, s2) => b + s2[P][SUBJ], 0) / y.students.length; }, 0) / mine.length) : null);
     const clsSide = dAvg === null ? "" : `<span class="pg-delta ${dAvg > 0 ? "up" : dAvg < 0 ? "down" : ""}">${dAvg > 0 ? "▲ " + dAvg : dAvg < 0 ? "▼ " + -dAvg : "Steady"}<small>since ${S.esc(L(P))}</small></span>`;
-    const clsFoot = `<span class="pg-chips">${flagged.length ? flagged.slice(0, 3).map((v) => `<span class="pg-chip soon">${S.esc(v.s.first)}</span>`).join("") + (flagged.length > 3 ? `<span class="pg-chip">+${flagged.length - 3}</span>` : "") : `<span class="pg-chip">Nobody flagged</span>`}</span>`;
     const hwAhead = mine.flatMap((k) => S.secState(k).homework.filter((h) => h.by === T.name && h.due >= S.todayKey).map((h) => [k, h])).sort((a, b) => (a[1].due < b[1].due ? -1 : 1));
     const hwFoot = hwAhead.length ? `<span class="pg-chips">${hwAhead.slice(0, 3).map(([k, h]) => `<span class="pg-chip${daysTo(h.due) <= 1 ? " soon" : ""}">${secLabel(k)} · ${daysTo(h.due) === 0 ? "today" : daysTo(h.due) === 1 ? "tomorrow" : S.fmt(h.due, { day: "numeric", month: "short" })}</span>`).join("")}</span>` : "";
     const mkFoot = entry ? `<span class="pg-chips">${mine.map((k) => { const e = S.entry(k, SUBJ), n = Object.keys(e.marks).length, t = S.sectionByKey(k).students.length; return `<span class="pg-chip${e.published ? "" : " soon"}">${secLabel(k)} · ${e.published ? "published ✓" : `${n}/${t}`}</span>`; }).join("")}</span>` : "";
     S.paint(S.$("#t-tiles"), S.tilesHTML([
-      { go: "class", icon: PI.class, tone: "accent", name: isCT ? "My class" : "My sections", line: isCT ? `${clsAvg}% average${flagged.length ? ` · ${flagged.length} to watch` : ""}` : `${SUBJ} average ${subjAvg}%`, flag: flagged.length > 0, main: true, big: isCT ? clsAvg : subjAvg, unit: "%", side: clsSide, foot: clsFoot },
+      { go: "class", icon: PI.class, tone: "accent", name: isCT ? "My class" : "My sections", line: isCT ? `${clsAvg}% average` : `${SUBJ} average ${subjAvg}%`, main: true, big: isCT ? clsAvg : subjAvg, unit: "%", side: clsSide },
       ...(isCT ? [{ go: "attendance", icon: PI.attendance, tone: "green", name: "Attendance", line: rec ? `Present today · ${N() - present ? `${N() - present} away` : "everyone in"}<span class="pg-sub">${waitLeaves ? `${waitLeaves} leave request${waitLeaves === 1 ? "" : "s"} waiting` : "Bars: the last six school days"}</span>` : `Not marked yet<span class="pg-sub">Parents are waiting for the morning update</span>`, flag: !rec && !!S.today.getDay(), count: waitLeaves, m: rec ? (present / N()) * 100 : 0, main: true, big: rec ? present : "–", unit: ` / ${N()}`, side: `<span class="pg-spark" title="Last six school days">${S.miniBars(S.weekOf(S.focus), { lo: 60, hi: 100, ref: 90 })}</span>` }] : []),
-      { go: "homework", icon: PI.homework, tone: "royal", name: "Homework", main: true, big: hwAhead.length, unit: " due ahead", line: `${posted} posted across your sections<span class="pg-sub">${/Mathematics/.test(SUBJ) ? `Chapter plan ${behind ? `behind in ${behind}` : "on track"}${hwAhead.length ? " · due next:" : ""}` : hwAhead.length ? "Due next:" : "Nothing due"}</span>`, flag: behind > 0, foot: hwFoot },
+      { go: "homework", icon: PI.homework, tone: "royal", name: "Homework", main: true, big: hwAhead.length, unit: " due ahead", line: `${posted} posted across your sections<span class="pg-sub">${hwAhead.length ? "Due next:" : "Nothing due"}</span>`, foot: hwFoot },
       { go: "marks", icon: PI.marks, tone: "gold", name: "Marks", line: entry ? `${S.ENTRY.name}: ${entry.published ? "published" : Object.keys(entry.marks).length + " entered"}` : `${L(C)} average ${subjAvg}%`, m: entry ? (entry.published ? 100 : (Object.keys(entry.marks).length / N()) * 100) : null, main: true, big: entry ? (entry.published ? "Done" : Object.keys(entry.marks).length) : subjAvg, unit: entry ? (entry.published ? "" : ` / ${N()}`) : "%", foot: mkFoot },
       { go: "exams", icon: PI.exams, tone: "slate", name: "Exams", line: nextEx ? `${S.esc(nextEx.name)} from ${S.fmt(S.examSpan(nextEx, S.groupOf({ cls: x.cls, sec: x })).from)}` : "Datesheets for every class" },
       // One tile for the merged page, as on the parent's side: chat, remarks, forms and meetings.
@@ -830,7 +938,7 @@
           note: `Class average <b>${r.v}%</b> in the ${L(last).toLowerCase()}${d !== null ? `, ${d === 0 ? "level with" : `${d > 0 ? "up" : "down"} ${Math.abs(d)} on`} ${L(before)}` : ""}. ` +
             (r.under.length ? `<b>${r.under.length} student${r.under.length === 1 ? "" : "s"} under 50%</b>: ${r.under.slice(0, 5).map((st) => S.esc(st.first)).join(", ")}${r.under.length > 5 ? " and more" : ""}. ` : "Nobody is under 50%. ") +
             `Taught by ${S.esc(x.subjTeachers[r.subj] || "the subject teacher")}.`,
-          acts: r.under.length ? `<button class="btn btn-ghost btn-sm" type="button" data-x-ask="Who needs attention in ${S.esc(r.subj)}?">Ask who needs help</button>` : "" }; });
+          }; });
       head = `${secLabel(home)} averages <b>${clsAvgOf(last)}%</b> in the ${L(last).toLowerCase()}. ` + (drop && drop.v - drop.was <= -3 ? `<b>${drop.subj}</b> slipped the most, ${drop.was}% to ${drop.v}%.` : before ? `Every subject is within two points of ${L(before)}; <b>${low.subj}</b> is the lowest at ${low.v}%.` : `<b>${low.subj}</b> is the lowest at ${low.v}%.`);
       S.$("#tc-x-sub").textContent = before ? `The black tick is ${L(before)}` : "";
     } else {
@@ -916,26 +1024,6 @@
     d[b.dataset.tchk] = !d[b.dataset.tchk]; S.save(); renderPhase();
   });
 
-  // The class at a glance: attendance across, latest average up; flagged students in brick.
-  function renderMap() {
-    const flagged = new Set(S.atRisk(isCT ? null : [SUBJ]).map((v) => v.s.roll));
-    const pts = S.students.map((s) => ({ s, x: S.attendancePct(s.roll), y: S.avgOf(s[C]), f: flagged.has(s.roll) }));
-    const W = S.narrow() ? 380 : 560, H = S.narrow() ? 340 : 300, pl = 40, pr = 18, pt = 22, pb = 40;
-    const x0 = Math.min(70, Math.floor(Math.min(...pts.map((p) => p.x)) / 5) * 5), y0 = 30;
-    const X = (v) => pl + ((v - x0) / (100 - x0)) * (W - pl - pr), Y = (v) => pt + ((100 - v) / (100 - y0)) * (H - pt - pb);
-    let g = `<rect class="sc-zone" x="${X(x0)}" y="${pt}" width="${X(85) - X(x0)}" height="${H - pt - pb}" opacity=".6" /><rect class="sc-zone" x="${X(85)}" y="${Y(50)}" width="${X(100) - X(85)}" height="${Y(y0) - Y(50)}" opacity=".6" />`;
-    for (let v = x0; v <= 100; v += S.narrow() ? 10 : 5) g += `<line class="grid-l" x1="${X(v)}" x2="${X(v)}" y1="${pt}" y2="${H - pb}" opacity=".6" /><text x="${X(v)}" y="${H - pb + 16}" text-anchor="middle">${v}</text>`;
-    for (let v = y0; v <= 100; v += 10) g += `<line class="grid-l" x1="${pl}" x2="${W - pr}" y1="${Y(v)}" y2="${Y(v)}" opacity=".6" /><text x="${pl - 8}" y="${Y(v) + 4}" text-anchor="end">${v}</text>`;
-    g += `<line class="ref-l" x1="${X(85)}" x2="${X(85)}" y1="${pt}" y2="${H - pb}" /><line class="ref-l" x1="${pl}" x2="${W - pr}" y1="${Y(50)}" y2="${Y(50)}" />`;
-    g += `<text class="zone-t" x="${X(x0) + 6}" y="${pt + 14}">Under 85% attendance</text><text class="zone-t" x="${W - pr - 6}" y="${Y(y0) - 8}" text-anchor="end">Average under 50%</text>`;
-    g += `<text x="${W - pr}" y="${H - 6}" text-anchor="end">Attendance this session (%) →</text><text x="${pl}" y="${pt - 9}">↑ ${L(C)} average (%)</text>`;
-    pts.sort((a, b) => a.f - b.f).forEach((p) => {
-      g += `<circle class="hit" cx="${X(p.x)}" cy="${Y(p.y)}" r="11"${S.tipAttr(`Attendance ${p.x}% · ${L(C).toLowerCase()} ${p.y}%`, p.s.name)} /><circle class="sc-dot${p.f ? " flag" : ""}" cx="${X(p.x)}" cy="${Y(p.y)}" r="5.5" pointer-events="none" />`;
-      if (p.f) g += `<text class="sc-name" x="${X(p.x) + 9}" y="${Y(p.y) + 4}" pointer-events="none">${p.s.first}</text>`;
-    });
-    S.paint(S.$("#class-map"), `<svg class="chart" viewBox="0 0 ${W} ${H}" role="img" aria-label="${secLabel(home)}: attendance against ${L(C).toLowerCase()} average, one dot per student">${g}</svg>`);
-  }
-
   // ---------- Attendance (class teachers) ----------
   function renderRegister() {
     const days = Object.keys(S.history).sort(); if (S.cs.attendance[S.todayKey]) days.push(S.todayKey);
@@ -1013,20 +1101,34 @@
   S.$("#hw-cls").addEventListener("change", hwAlso);
   hwAlso();
   S.$("#hw-title").placeholder = `e.g. ${SUBJ} — practice set`;
+  // Details: a small editor with the basics (bold, italic, underline, lists). Pasted text comes in plain,
+  // and S.rich keeps only those formats when it's posted.
+  const ed = S.$("#hw-detail"), rtBar = S.$("#hw-form .rt-bar");
+  const rtEmpty = () => { const none = !ed.textContent.trim(); ed.classList.toggle("empty", none); if (!none) ed.removeAttribute("aria-invalid"); return none; };
+  const rtState = () => rtBar.querySelectorAll("[data-rt]").forEach((b) => { if (b.dataset.rt !== "removeFormat") b.setAttribute("aria-pressed", document.queryCommandState(b.dataset.rt)); });
+  document.execCommand("defaultParagraphSeparator", false, "p");
+  rtBar.addEventListener("mousedown", (e) => { if (e.target.closest("[data-rt]")) e.preventDefault(); }); // the selection stays in the text
+  rtBar.addEventListener("click", (e) => { const b = e.target.closest("[data-rt]"); if (!b) return; ed.focus(); document.execCommand(b.dataset.rt); rtEmpty(); rtState(); });
+  ed.addEventListener("paste", (e) => { e.preventDefault(); document.execCommand("insertText", false, e.clipboardData.getData("text/plain")); });
+  ed.addEventListener("input", rtEmpty);
+  document.addEventListener("selectionchange", () => { if (document.activeElement === ed) rtState(); });
+  S.$("#hw-detail-l").addEventListener("click", () => ed.focus());
   S.$("#hw-ai").addEventListener("click", () => {
     const t = S.$("#hw-title").value || (/Mathematics/.test(SUBJ) ? "Fractions — practice set" : `${SUBJ} — revision questions`);
     if (!S.$("#hw-title").value) S.$("#hw-title").value = t;
-    if (/Mathematics/.test(SUBJ)) { const p = S.practice(t, 5); S.$("#hw-detail").value = `Practice on ${p.name}. Do these in your Maths notebook and show all steps:\n` + p.qs.map((q, i) => `${i + 1}. ${q}`).join("\n"); }
-    else S.$("#hw-detail").value = `Read the chapter again and answer the end-of-chapter questions in your ${SUBJ} notebook. Underline the key terms and bring one question you'd like to discuss in class.`;
+    if (/Mathematics/.test(SUBJ)) { const p = S.practice(t, 5); ed.innerHTML = `<p>Practice on <b>${S.esc(p.name)}</b>. Do these in your Maths notebook and show all steps:</p><ol>${p.qs.map((q) => `<li>${S.esc(q)}</li>`).join("")}</ol>`; }
+    else ed.innerHTML = `<p>Read the chapter again and answer the end-of-chapter questions in your ${S.esc(SUBJ)} notebook.</p><ul><li><u>Underline</u> the key terms.</li><li>Bring <b>one question</b> you'd like to discuss in class.</li></ul>`;
+    rtEmpty();
     S.toast("Draft ready — edit it before posting");
   });
   S.$("#hw-form").addEventListener("submit", (e) => {
     e.preventDefault();
+    if (rtEmpty()) { ed.setAttribute("aria-invalid", "true"); ed.focus(); S.toast("Write the details for parents first", { done: false }); return; }
     const ks = [S.$("#hw-cls").value, ...[...S.$("#hw-chips").querySelectorAll("input:checked")].map((c) => c.value)];
     const at = Date.now(), n = ks.reduce((a, k) => a + S.sectionByKey(k).students.length, 0);
-    ks.forEach((k, i) => S.secState(k).homework.unshift({ id: "h" + (at + i), subj: SUBJ, cls: k, title: S.$("#hw-title").value.trim(), detail: S.$("#hw-detail").value.trim(), due: S.$("#hw-due").value, by: T.name, done: false, fresh: true }));
+    ks.forEach((k, i) => S.secState(k).homework.unshift({ id: "h" + (at + i), subj: SUBJ, cls: k, title: S.$("#hw-title").value.trim(), detail: S.rich(ed.innerHTML), due: S.$("#hw-due").value, by: T.name, done: false, fresh: true }));
     const k = ks[0];
-    S.save(); e.target.reset(); S.$("#hw-cls").value = k; hwAlso(); S.$("#hw-due").value = S.iso(S.nextSchoolDay(S.today, 2)); renderHw(); renderHome();
+    S.save(); e.target.reset(); ed.innerHTML = ""; rtEmpty(); S.$("#hw-cls").value = k; hwAlso(); S.$("#hw-due").value = S.iso(S.nextSchoolDay(S.today, 2)); renderHw(); renderHome();
     S.toast(ks.length > 1 ? `Posted to ${new Intl.ListFormat("en").format(ks.map((x) => secLabel(x)))} · ${n} parents notified` : `Posted · ${n} parents of ${secLabel(k)} notified`);
   });
 
@@ -1375,29 +1477,6 @@
   }
   renderTPtm();
 
-  // ---------- Chapter plan against the exam dates ----------
-  function renderSyl() {
-    rings();
-    const ex = S.examDates(), next = ex.find((x2) => x2.date >= S.todayKey);
-    const left = next ? (() => { let c = 0; for (let d = new Date(S.today); S.iso(d) < next.date; d = S.addDays(d, 1)) if (S.isSchoolDay(d)) c++; return c; })() : 0;
-    S.paint(S.$("#syl"), `<div class="card-h"><h2>Chapter plan · ${S.esc(SUBJ)}</h2><span class="right muted" style="font-size:13.5px">Sample plan. Tick a chapter when it's taught.</span></div>` + mine.map((k) => {
-      const ch = S.chaptersOf(k.split("-")[0], SUBJ), done = S.sylDone(k, SUBJ), n = ch.length, due = S.chaptersDueBy(n, S.todayKey), need = next ? S.chaptersDueBy(n, next.date) : n, gap = done.length - due;
-      return `<div class="syl-sec"><div class="syl-h"><b>${secLabel(k)}</b><span class="pill ${gap >= 0 ? "green" : "warn"}">${gap >= 0 ? "On pace" : `${-gap} chapter${gap < -1 ? "s" : ""} behind`}</span><span class="muted">${done.length} of ${n} taught</span></div>
-        ${S.meter((done.length / n) * 100, { tone: gap >= 0 ? "var(--green)" : "var(--warn)", mark: (due / n) * 100, tip: `The line marks where an even pace would be today: chapter ${due}` })}
-        <p class="syl-next">${next ? `${S.esc(next.title)} on ${S.fmt(next.date, { day: "numeric", month: "short" })} covers chapters 1 to ${need}: <b>${Math.max(0, need - done.length)} to go</b> in ${left} school days.` : "Every exam this session is done."}</p>
-        <details class="syl-list"><summary>Chapters</summary><div class="chk">${ch.map((c, i) => `<button type="button" class="chk-i${done.includes(i) ? " on" : ""}" data-syl="${k}|${i}" aria-pressed="${done.includes(i)}"><span class="box">${done.includes(i) ? '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>' : ""}</span><span class="t"><b>${i + 1}. ${S.esc(c)}</b></span></button>`).join("")}</div></details></div>`;
-    }).join(""));
-  }
-  const openSyl = new Set();
-  document.addEventListener("toggle", (e) => { const d = e.target.closest && e.target.closest(".syl-list"); if (d) { const k = d.querySelector("[data-syl]").dataset.syl.split("|")[0]; d.open ? openSyl.add(k) : openSyl.delete(k); } }, true);
-  document.addEventListener("click", (e) => {
-    const b = e.target.closest("[data-syl]"); if (!b) return;
-    const [k, i] = b.dataset.syl.split("|"), done = S.sylDone(k, SUBJ), j = done.indexOf(+i);
-    if (j >= 0) done.splice(j, 1); else done.push(+i);
-    S.save(); renderSyl(); S.$$("#syl .syl-list").forEach((d) => { if (openSyl.has(d.querySelector("[data-syl]").dataset.syl.split("|")[0])) d.open = true; });
-  });
-  renderSyl();
-
   // ---------- Office hours for messages ----------
   const ohB = S.$("#oh-btn");
   if (ohB) {
@@ -1440,7 +1519,7 @@
     const head = `<div class="sj-pick">${secs.length > 1 ? `<label class="sj-fld">${ic(IC.sec)}<select id="sj-sec" aria-label="Section">${secs.map((k) => `<option value="${k}"${k === jSec ? " selected" : ""}>${secLabel(k)}${isCT ? (k === home ? " · my class" : " · " + SUBJ) : ""}</option>`).join("")}</select></label>` : `<span class="sj-fld fixed">${ic(IC.sec)}<b>${secLabel(jSec)}</b></span>`}<div class="sj-seg" role="group" aria-label="Class or student"><button type="button" data-jmode="class" class="${jWho === "class" ? "on" : ""}" aria-pressed="${jWho === "class"}">Class</button><button type="button" data-jmode="stu" class="${jWho !== "class" ? "on" : ""}" aria-pressed="${jWho !== "class"}">Student</button></div>${jWho !== "class" ? `<label class="sj-fld">${ic(IC.stu)}<select id="sj-who" aria-label="Student">${sec.students.map((v) => `<option value="${v.roll}"${+jWho === v.roll ? " selected" : ""}>${String(v.roll).padStart(2, "0")} · ${S.esc(v.name)}</option>`).join("")}</select></label>` : ""}${subj ? `<span class="sj-tag">${S.esc(subj)} only</span>` : ""}</div>`;
     if (jWho === "class") {
       S.renderJourney(box, { first: secLabel(jSec), key: "cls:" + jSec, sec, cls: sec.cls }, { cls: true, data: S.journeyClass(sec, subj ? [subj] : undefined), head, subj, onStudent: (r) => { jWho = r; renderYear(); },
-        title: `${secLabel(jSec)}'s year so far${subj ? " · " + subj : ""}`, sub: `Every ${subj ? subj + " " : ""}test this session, in order. Each bar is the class average; tap one to see who needs a look.` });
+        title: `${secLabel(jSec)}'s year so far${subj ? " · " + subj : ""}`, sub: `Every ${subj ? subj + " " : ""}test this session, in order. Each bar is the class average; tap one to see every student's mark.` });
     } else {
       const me = S.studentIn(sec, jWho);
       S.renderJourney(box, me, { data: subj ? S.journey(me, { only: [subj] }) : undefined, head, subj, title: `${me.name}'s year so far`, sub: `Roll ${String(me.roll).padStart(2, "0")} · ${secLabel(jSec)} · ${subj ? `${subj} only, as on the card ${me.first}'s parents see` : `the same card ${me.first}'s parents see`}.`,
@@ -1462,12 +1541,11 @@
   function renderRings() {
     const n = N();
     // My class
-    const avg = clsAvgOf(C), sAvg = subjAvgOf(C), flagged = S.atRisk(isCT ? null : [SUBJ]).length;
+    const avg = clsAvgOf(C), sAvg = subjAvgOf(C);
     ring("tcls-year", isCT ? avg : sAvg, isCT ? avg : sAvg, `${isCT ? "Class" : SUBJ} average, ${L(C).toLowerCase()}`);
     const subRows = isCT ? x.subjects.map((k) => Math.round(S.students.reduce((a, st) => a + st[C][k], 0) / n)) : mine.map((k) => { const y = S.sectionByKey(k); return Math.round(y.students.reduce((a, st) => a + st[C][SUBJ], 0) / y.students.length); });
     const weak = subRows.filter((v) => v < 70).length;
     ring("tcls-glance", ((subRows.length - weak) / subRows.length) * 100, weak || "✓", weak ? `${weak} ${isCT ? "subject" : "section"}${weak === 1 ? "" : "s"} under 70%` : `Every ${isCT ? "subject" : "section"} 70%+`);
-    ring("tcls-watch", ((n - flagged) / n) * 100, flagged || "✓", flagged ? `${flagged} student${flagged === 1 ? "" : "s"} to look at` : "Nobody flagged");
     // Attendance
     const rec = S.cs.attendance[S.todayKey], open = S.isSchoolDay(S.today), away = rec ? Object.keys(rec.marks || {}).length : 0;
     ring("reg-today", rec ? 100 : 0, !open ? "–" : rec ? "✓" : "!", !open ? "No school today" : rec ? `${n - away} of ${n} in` : "Not marked yet");
@@ -1477,12 +1555,6 @@
     ring("reg-leave", lv ? ((lv - wait) / lv) * 100 : 100, wait || "✓", wait ? `${wait} waiting for you` : "None waiting");
     const sess = Math.round(S.students.reduce((a, st) => a + S.attendancePct(st.roll), 0) / n * 10) / 10, under = S.students.filter((st) => S.attendancePct(st.roll) < 85).length;
     ring("reg-register", sess, Math.round(sess), under ? `${under} under 85% this session` : "This session");
-    // Homework and chapter plan
-    const hw = mine.flatMap((k) => S.secState(k).homework.filter((h) => h.by === T.name)), ahead = hw.filter((h) => h.due >= S.todayKey).length;
-    ring("thw-hw", hw.length ? (ahead / hw.length) * 100 : 0, ahead, ahead ? `${ahead} due ahead · ${hw.length} posted` : `${hw.length} posted, none due`);
-    let tot = 0, got = 0, behind = 0;
-    mine.forEach((k) => { const c = S.chaptersOf(k.split("-")[0], SUBJ).length, d = S.sylDone(k, SUBJ).length; tot += c; got += d; if (d < S.chaptersDueBy(c, S.todayKey)) behind++; });
-    ring("thw-syl", tot ? (got / tot) * 100 : 0, behind || "✓", behind ? `Behind in ${behind} section${behind === 1 ? "" : "s"}` : `${got} of ${tot} chapters taught`);
     // Marks
     const y = S.sectionByKey(mkey), e = S.entry(mkey, SUBJ), vals = Object.values(e.marks).map(Number).filter((v) => !isNaN(v)), yn = y.students.length, low = vals.filter((v) => v < LOW).length;
     ring("marks-entry", (vals.length / yn) * 100, e.published ? "✓" : yn - vals.length || "✓", e.published ? "Published to parents" : vals.length < yn ? `${vals.length} of ${yn} entered` : "All in · not published");
@@ -1502,8 +1574,9 @@
     if (e.detail === "care" && isCT) { const t = threads().find((v) => v.key === openThread); if (t) { t.msgs.forEach((m) => { if (m.from === "parent") m.fresh = false; }); S.save(); } }
     renderHome(); renderThread();
   });
+  S.refreshHome = renderHome; // the staff room redraws "Needs you" after a task or a chat
   document.addEventListener("sjs:sync", () => {
-    renderHome(); renderHw(); renderThread(); renderCare(); renderTPtm(); renderSyl();
+    renderHome(); renderHw(); renderThread(); renderCare(); renderTPtm();
     const fresh = threads().find((t) => { const m = t.msgs[t.msgs.length - 1]; return m && m.from === "parent" && m.fresh; });
     if (fresh) S.toast(`New message from ${fresh.kid.first}'s ${fresh.kid.relation.toLowerCase()}`);
   });
@@ -2147,12 +2220,16 @@
 </script>
 <script src="js/office.js?v=15"></script>
 <script src="js/desk.js?v=6"></script>
+<script src="js/corner.js?v=4"></script>
+<script src="js/paperdoc.js?v=1"></script>
+<script src="js/qpaper.js?v=9"></script>
 <script src="js/transport.js?v=3"></script>
 <script src="js/select.js?v=4"></script>
 <script src="js/date.js?v=3"></script>
 <script src="js/portal.js?v=1"></script>
 <script src="js/upload.js?v=3"></script>
-<script src="js/feel.js?v=8"></script>
-<script src="js/ease.js?v=6"></script>
+<script src="js/feel.js?v=9"></script>
+<script src="js/ease.js?v=7"></script>
+<script src="js/case.js?v=3"></script>
 </body>
 </html>

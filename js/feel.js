@@ -53,8 +53,8 @@
     const P = pages().filter((p) => fit(p.label)).map((p) => ({ kind: "Pages", t: p.label, go: p.go }));
     const N = people().filter((p) => q && fit(p.t)).slice(0, 8).map((p) => Object.assign({ kind: role === "teacher" ? "Students" : "Classes" }, p));
     const T = notices().filter((n) => q && fit(n.t)).slice(0, 5).map((n) => Object.assign({ kind: "Notices" }, n));
-    const SET = ["text size", "font", "bigger", "larger", "zoom", "settings"].concat(parent ? ["hindi", "language", "bhasha", "हिन्दी", "भाषा"] : []);
-    const X = q && S.openSettings && SET.some((w) => w.startsWith(q) || q.startsWith(w.split(" ")[0])) ? [{ kind: "Settings", t: parent ? "Text size and language" : "Text size", sub: parent ? "Larger text, or switch to हिन्दी" : "Make the text larger", settings: true }] : [];
+    const SET = ["text size", "font", "bigger", "larger", "zoom", "settings"];
+    const X = q && S.openSettings && SET.some((w) => w.startsWith(q) || q.startsWith(w.split(" ")[0])) ? [{ kind: "Settings", t: "Text size", sub: "Make the text larger", settings: true }] : [];
     hits = [...P.slice(0, q ? 6 : 12), ...N, ...T, ...X]; sel = 0;
     const IC = { Pages: '<path d="M6 3h9l4 4v14H6z"/><path d="M14 3v5h5"/>', Students: '<circle cx="12" cy="8" r="4"/><path d="M4 21c1-4 4-6 8-6s7 2 8 6"/>', Classes: '<path d="M4 20V9l8-5 8 5v11"/><path d="M9 20v-6h6v6"/>', Notices: '<path d="M4 10v4l4 1 8 4V5L8 9z"/>', Settings: '<circle cx="12" cy="12" r="8"/><path d="M12 4a8 8 0 0 1 0 16z" fill="currentColor"/>' };
     let last = "";

@@ -1,1 +1,11 @@
 .DS_Store
+node_modules/
+functions/lib/
+functions/.secret*
+functions/.env*
+.firebase/
+*.log
+# Formatter test round: teachers' papers stay on this Mac
+tools/papers/
+_round.html
+_audit_*.html

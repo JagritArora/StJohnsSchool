@@ -17,10 +17,10 @@
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Figtree:wght@400..800&display=swap" rel="stylesheet" />
-<link rel="stylesheet" href="css/site.css?v=126" />
+<link rel="stylesheet" href="css/site.css?v=135" />
 <link rel="stylesheet" href="css/feel.css?v=7" />
-<link rel="stylesheet" href="css/ease.css?v=6" />
-<script>try{var t={"1.1":"l","1.2":"xl"}[localStorage.getItem("sjs-zoom")];if(t)document.documentElement.dataset.text=t;if(localStorage.getItem("sjs-lang")==="hi"){document.documentElement.lang="hi";document.write('<script src="js/hindi.js?v=3"><\/script>')}}catch(e){}</script>
+<link rel="stylesheet" href="css/ease.css?v=8" />
+<script>try{var t={"1.1":"l","1.2":"xl"}[localStorage.getItem("sjs-zoom")];if(t)document.documentElement.dataset.text=t}catch(e){}</script>
 <link rel="stylesheet" href="css/ai.css?v=3" />
 <link rel="stylesheet" href="css/journey.css?v=16" />
 <script>
@@ -259,15 +259,15 @@
 <script src="js/classes.js?v=10"></script>
 <script src="js/bus.js?v=5"></script>
 <script src="js/exams.js?v=9"></script>
-<script src="js/journey.js?v=14"></script>
+<script src="js/journey.js?v=15"></script>
 <script src="js/care.js?v=2"></script>
-<script src="js/common.js?v=15"></script>
+<script src="js/common.js?v=16"></script>
 <script src="js/charts.js?v=10"></script>
 <script src="js/hub.js?v=13"></script>
-<script src="js/more.js?v=11"></script>
+<script src="js/more.js?v=13"></script>
 <script src="js/demo.js?v=3"></script>
 <script src="js/faq.js?v=1"></script>
-<script src="js/ai.js?v=15"></script>
+<script src="js/ai.js?v=16"></script>
 <script>
 (function () {
   const S = SJS;
@@ -844,7 +844,7 @@
     S.$("#hw").innerHTML = !hw.length ? `<p class="chart-empty">${f === "done" ? "Nothing marked done yet." : "All done. Nothing left to do."}</p>` : hw.map((h) => { const n = Math.round((new Date(h.due + "T00:00") - S.today) / 864e5), when = n <= 0 ? "Due today" : n === 1 ? "Due tomorrow" : "Due " + S.fmt(h.due, { weekday: "long", day: "numeric", month: "short" });
       return `<div class="hn-item${h.done ? " done" : ""}${!h.done && n <= 1 ? " soon" : ""}">
       <div class="hn-b"><div class="hn-pills"><span class="hn-subj">${S.esc(h.subj)}</span>${h.fresh ? '<span class="pill red">New</span>' : ""}<span class="hn-when">${h.done ? "Done" : when}</span></div>
-      <h3>${S.esc(h.title)}</h3><p>${S.esc(h.detail)}</p><small>From ${S.esc(h.by)}</small></div>
+      <h3>${S.esc(h.title)}</h3><div class="hn-d">${S.rich(h.detail)}</div><small>From ${S.esc(h.by)}</small></div>
       <label class="hn-done"><input type="checkbox" data-hw="${h.id}" ${h.done ? "checked" : ""} class="sr-only" />${h.done ? '<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>Done' : "Mark as done"}</label></div>`; }).join("");
     renderHwCal();
   }
@@ -1535,25 +1535,14 @@
     renderAll();
   });
   document.addEventListener("click", (e) => { const t = e.target.closest("[data-open-needs]"); if (t) { const tr = S.$("#needs-tray"); if (tr && !tr.hidden) tr.hidden = true; else S.openNeeds(t); } });
-  // Title Case on the welcome page, as on the website: headings, page names and buttons. Sentences stay as written.
-  const SMALL = new Set("a an the and but or nor for so yet as at by in of on to up via with from into per vs".split(" "));
-  const tc = (str) => { let n = 0; const real = str.split(/\s+/).filter(Boolean).length; return str.split(/(\s+)/).map((w) => {
-    if (!w.trim()) return w; const i = n++, core = w.replace(/^[^A-Za-z]+/, "");
-    if (!core || /^['’]/.test(w) || /[A-Z0-9]/.test(core.slice(1)) || /[a-z]\.[a-z]/i.test(core)) return w;
-    if (i && i < real - 1 && SMALL.has(core.toLowerCase().replace(/[^a-z']/g, ""))) return w;
-    return w.replace(/[a-z]+(?:'[a-z]+)?/i, (m) => m[0].toUpperCase() + m.slice(1)); }).join(""); };
-  const homeTitles = () => S.$$('[data-view="home"] :is(h1, .hub-sec > h2, .pgl-h, .pg-n, .pgl-t b, .hm-day-h b, .install b, .nt-go, .btn)').forEach((el) => {
-    if (/[.?!]$/.test(el.textContent.trim())) return;
-    const walk = document.createTreeWalker(el, NodeFilter.SHOW_TEXT); let t;
-    while ((t = walk.nextNode())) { const v = tc(t.nodeValue); if (v !== t.nodeValue) t.nodeValue = v; } });
-  homeTitles(); document.addEventListener("sjs:sync", () => setTimeout(homeTitles)); document.addEventListener("sjs:redraw", () => setTimeout(homeTitles)); setInterval(homeTitles, 60000);
   S.mountAI("parent");
 })();
 </script>
 <script src="js/select.js?v=4"></script>
 <script src="js/date.js?v=3"></script>
 <script src="js/portal.js?v=1"></script>
-<script src="js/feel.js?v=8"></script>
-<script src="js/ease.js?v=6"></script>
+<script src="js/feel.js?v=9"></script>
+<script src="js/ease.js?v=7"></script>
+<script src="js/case.js?v=3"></script>
 </body>
 </html>
