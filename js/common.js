@@ -141,7 +141,7 @@
     if (!(end >= 3)) return;
     const fmt = (v) => (m[0].includes(",") ? v.toLocaleString("en-IN", { minimumFractionDigits: dp, maximumFractionDigits: dp }) : v.toFixed(dp));
     const t0 = performance.now(), dur = 800;
-    const step = (t) => { const k = Math.min(1, (t - t0) / dur); tn.nodeValue = k < 1 ? raw.replace(m[0], fmt(end * (1 - Math.pow(1 - k, 3)))) : raw; if (k < 1) requestAnimationFrame(step); };
+    const step = (t) => { const k = Math.max(0, Math.min(1, (t - t0) / dur)); tn.nodeValue = k < 1 ? raw.replace(m[0], fmt(end * (1 - Math.pow(1 - k, 3)))) : raw; if (k < 1) requestAnimationFrame(step); };
     tn.nodeValue = raw.replace(m[0], fmt(0)); requestAnimationFrame(step);
   };
   const countIn = () => { if (reduce) return; document.querySelectorAll("[data-view].active .stat .num, [data-view].active .hm-n").forEach((el) => { if (!el._counted && el.offsetParent && !el.closest(".info-src")) count(el); }); };

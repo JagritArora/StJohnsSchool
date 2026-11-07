@@ -17,12 +17,12 @@
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Figtree:wght@400..800&display=swap" rel="stylesheet" />
-<link rel="stylesheet" href="css/site.css?v=137" />
+<link rel="stylesheet" href="css/site.css?v=140" />
 <link rel="stylesheet" href="css/feel.css?v=7" />
 <link rel="stylesheet" href="css/ease.css?v=8" />
 <script>try{var t={"1.1":"l","1.2":"xl"}[localStorage.getItem("sjs-zoom")];if(t)document.documentElement.dataset.text=t}catch(e){}</script>
 <link rel="stylesheet" href="css/ai.css?v=3" />
-<link rel="stylesheet" href="css/journey.css?v=16" />
+<link rel="stylesheet" href="css/journey.css?v=17" />
 <script>
 /* Before the first paint: fade photos in as they load. */
 (function (d) { d.documentElement.classList.add("js");
@@ -58,6 +58,15 @@
     </section>
 
     <!-- MY CLASS: how the class (or, for a subject teacher, each section) is doing -->
+    <!-- MY TIMETABLE: the week period by period, with follow-ups planned against real classes (js/ttteach.js) -->
+    <section data-view="timetable" data-roles="teacher">
+      <div class="topbar"><div><h1>My timetable</h1><div class="sub">Your week, period by period. Tap a class to plan what to follow up on in it.</div></div></div>
+      <div id="ttt-view">
+        <div class="ttt-bar"><div class="ttt-wkn"><button type="button" class="icon-btn" data-ttw="-1" aria-label="Previous week">‹</button><div class="ttt-wkt"><b id="ttt-wk"></b><span id="ttt-range"></span></div><button type="button" class="icon-btn" data-ttw="1" aria-label="Next week">›</button><button type="button" class="btn btn-ghost btn-sm" data-ttw="0" id="ttt-today" hidden>Back to this week</button></div><div class="legend ttt-key" id="ttt-key"></div></div>
+        <div class="ttt-wrap"><div class="card ttt-weekc"><div id="ttt-week"></div></div><div class="card ttt-side" id="ttt-side"></div></div>
+      </div>
+    </section>
+
     <section data-view="class" data-roles="teacher">
       <div class="topbar"><div><h1 id="tc-h1">My class</h1><div class="sub" id="tc-sub">How the class is doing, subject by subject.</div></div></div>
       <div class="vt-row ptabs hn-swrap"><div class="seg vt" data-vt="tcls" aria-label="Year so far or at a glance"><button data-v="year"><span class="hs-ring dsr" id="rg-tcls-year"><span></span></span><span class="hs-t"><b>Year so far</b><small id="rg-tcls-year-t"></small></span></button><button data-v="glance"><span class="hs-ring" id="rg-tcls-glance"><span></span></span><span class="hs-t"><b>At a glance</b><small id="rg-tcls-glance-t"></small></span></button></div></div>
@@ -75,7 +84,7 @@
       <div class="topbar"><div><h1 id="att-h1">Attendance · VII-B</h1><div class="sub" id="att-sub">Tap a name to mark absent. Tap again for leave.</div></div>
         <div class="right"><button class="btn btn-ghost btn-sm" id="all-present">All present</button><span class="split"><button class="btn btn-primary btn-sm" id="att-save">Submit</button><button class="btn btn-primary btn-sm split-more" id="att-later" type="button" aria-label="Submit later or keep as a draft" aria-haspopup="menu">⋯</button></span></div></div>
       <div id="att-done" style="margin-bottom:16px"></div>
-      <div class="vt-row ptabs hn-swrap ms4"><div class="seg vt" data-vt="reg" aria-label="Attendance view"><button data-v="today"><span class="hs-ring due" id="rg-reg-today"><span></span></span><span class="hs-t"><b>Mark today</b><small id="rg-reg-today-t"></small></span></button><button data-v="week"><span class="hs-ring dsr" id="rg-reg-week"><span></span></span><span class="hs-t"><b>Last six days</b><small id="rg-reg-week-t"></small></span></button><button data-v="leave"><span class="hs-ring mt" id="rg-reg-leave"><span></span></span><span class="hs-t"><b>Leave requests</b><small id="rg-reg-leave-t"></small></span></button><button data-v="register"><span class="hs-ring" id="rg-reg-register"><span></span></span><span class="hs-t"><b>Session register</b><small id="rg-reg-register-t"></small></span></button></div></div>
+      <div class="vt-row ptabs hn-swrap ms4"><div class="seg vt" data-vt="reg" aria-label="Attendance view"><button data-v="today"><span class="hs-ring due" id="rg-reg-today"><span></span></span><span class="hs-t"><b>Mark today</b><small id="rg-reg-today-t"></small></span></button><button data-v="week"><span class="hs-ring dsr" id="rg-reg-week"><span></span></span><span class="hs-t"><b>Last six days</b><small id="rg-reg-week-t"></small></span></button><button data-v="leave"><span class="hs-ring mt" id="rg-reg-leave"><span></span></span><span class="hs-t"><b>Leave requests</b><small id="rg-reg-leave-t"></small></span></button><button data-v="students"><span class="hs-ring" id="rg-reg-students"><span></span></span><span class="hs-t"><b>Students</b><small id="rg-reg-students-t"></small></span></button></div></div>
       <div class="chips" id="att-count" style="margin:-6px 0 14px"></div>
       <div class="vp" data-vp="reg" data-v="today">
         <div class="att-meter" id="att-meter"></div>
@@ -83,9 +92,17 @@
       </div>
       <div class="vp" data-vp="reg" data-v="week" hidden><div class="card x-card"><div class="card-h"><h2>The last six school days</h2><span class="right muted x-sub">Share of the class present</span></div><div id="t-att-x"></div></div></div>
       <div class="vp" data-vp="reg" data-v="leave" hidden><div class="card"><div class="card-h"><h2>Leave requests from parents</h2></div><div class="list" id="leaves"></div></div></div>
-      <div class="vp" data-vp="reg" data-v="register" hidden>
-        <div class="card"><div class="card-h"><h2 id="reg-h">VII-B · every school day this session</h2><span class="right muted" style="font-size:13.5px">Point at a square for the day</span></div><div class="heat-wrap" id="register"></div>
-          <div class="legend"><span><i style="background:color-mix(in srgb, var(--green) 30%, var(--surface))"></i>Present</span><span><i style="background:var(--accent)"></i>Absent</span><span><i style="background:var(--warn)"></i>Leave</span><span><i style="border:1px dashed var(--muted)"></i>Holiday</span><span style="color:var(--accent-text);font-weight:600">Name in red: under 85% this session</span></div></div>
+      <div class="vp" data-vp="reg" data-v="students" hidden>
+        <div class="at-wrap">
+          <div class="card at-list">
+            <div class="card-h"><h2 id="at-h">Students</h2><select id="at-sec" class="input right at-secsel" aria-label="Class" hidden></select></div>
+            <div class="at-tools"><input id="at-q" class="input" type="search" placeholder="Find a student by name or roll" autocomplete="off" aria-label="Find a student" /><select id="at-sort" class="input" aria-label="Order"><option value="low">Lowest first</option><option value="away">Most days away</option><option value="roll">Roll number</option></select></div>
+            <div class="at-filt" id="at-filt" role="group" aria-label="Show"></div>
+            <div class="at-sel" id="at-sel"></div>
+            <div class="at-rows" id="at-rows"></div>
+          </div>
+          <div class="card at-track" id="at-track"></div>
+        </div>
       </div>
     </section>
 
@@ -247,19 +264,20 @@
           </div>
         </div>
         <div class="vp" data-vp="corner" data-v="tasks" hidden>
-          <div class="grid g21">
-            <div>
+          <div class="tk-grid">
+            <div class="tk-lists">
               <div class="card"><div class="card-h"><h2>For you</h2><span class="right muted" id="tk-mine-n" style="font-size:13.5px"></span></div><div class="list" id="tk-mine"></div></div>
-              <div class="card" style="margin-top:16px"><div class="card-h"><h2>You assigned</h2></div><div class="list" id="tk-sent"></div></div>
+              <div class="card"><div class="card-h"><h2>You assigned</h2></div><div class="list" id="tk-sent"></div></div>
             </div>
             <form class="card" id="tk-form">
-              <div class="card-h"><div class="seg tk-kind" role="group" aria-label="Task or reminder"><button type="button" data-k="task" class="on" aria-pressed="true">Task</button><button type="button" data-k="rem" aria-pressed="false">Reminder</button></div></div>
-              <div class="field" style="margin-top:0"><label for="tk-to">To</label><select id="tk-to" required></select></div>
-              <div class="field"><label for="tk-t" id="tk-t-l">Task</label><input id="tk-t" required autocomplete="off" placeholder="e.g. Enter Unit Test 2 marks" /></div>
-              <div class="field"><label for="tk-due" id="tk-due-l">Due</label><input type="date" id="tk-due" /></div>
-              <div class="field"><label for="tk-note">Note <span class="muted">(optional)</span></label><textarea id="tk-note" style="min-height:80px"></textarea></div>
-              <p class="muted tc-note" id="tk-help">Each teacher ticks it off; you see who has, and can remind the rest in one tap.</p>
-              <div class="tc-row"><button class="btn btn-primary btn-sm" type="submit" id="tk-go">Assign the task</button></div>
+              <div class="card-h"><h2>Give a task or set a reminder</h2><div class="seg tk-kind" role="group" aria-label="Task or reminder"><button type="button" data-k="task" class="on" aria-pressed="true">Task</button><button type="button" data-k="rem" aria-pressed="false">Reminder</button></div></div>
+              <div class="tk-fields">
+                <div class="field"><label for="tk-to">To</label><select id="tk-to" required></select></div>
+                <div class="field"><label for="tk-t" id="tk-t-l">Task</label><input id="tk-t" required autocomplete="off" placeholder="e.g. Enter Unit Test 2 marks" /></div>
+                <div class="field"><label for="tk-due" id="tk-due-l">Due</label><input type="date" id="tk-due" /></div>
+                <div class="field tk-note"><label for="tk-note">Note <span class="muted">(optional)</span></label><textarea id="tk-note" style="min-height:64px"></textarea></div>
+              </div>
+              <div class="tk-foot"><p class="muted tc-note" id="tk-help">Each teacher ticks it off; you see who has, and can remind the rest in one tap.</p><button class="btn btn-primary btn-sm" type="submit" id="tk-go">Assign the task</button></div>
             </form>
           </div>
         </div>
@@ -671,6 +689,7 @@
     care: '<path d="M5 4h11l3 3v13H5z"/><path d="M9 10h6M9 14h4M15 17l1.5 1.5L19.5 15"/>',
     exams: '<rect x="5" y="4" width="14" height="17" rx="2"/><path d="M9 4V3h6v1M9 10h6M9 14h6M9 18h3"/>',
     day: '<circle cx="12" cy="12" r="8.5"/><path d="M12 7.5V12l3 2"/>',
+    timetable: '<rect x="4" y="4" width="16" height="16" rx="2"/><path d="M4 9.5h16M9.5 9.5V20M14.5 9.5V20"/>',
     class: '<circle cx="9" cy="8" r="3.2"/><path d="M3.5 19c.6-3.2 2.8-5 5.5-5s4.9 1.8 5.5 5"/><path d="M15.5 5.3a3 3 0 0 1 0 5.4M17.5 14.3c1.6.7 2.6 2.3 3 4.7"/>',
     staff: '<circle cx="12" cy="8" r="3.5"/><path d="M5 20c.7-3.6 3.4-5.6 7-5.6s6.3 2 7 5.6"/><path d="M17.5 4.5l1.5 1.5 3-3"/>',
     fees: '<rect x="3" y="6" width="18" height="13" rx="2"/><path d="M3 10h18M7 15h3"/>',
@@ -681,7 +700,7 @@
     notices: '<path d="M4 10v4h3l6 4V6L7 10z"/><path d="M17 9a4 4 0 0 1 0 6"/>', classes: '<rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 10h18M9 10v10M15 10v10"/>', website: '<rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 9h18M7 6.5h.01M10 6.5h.01"/>'
   };
   const NAV = {
-    teacher: [["home", "Home"], ["class", me.classOf ? "My class" : "My sections"], ["attendance", "Attendance"], ["homework", "Homework"], ["marks", "Marks"], ["exams", "Exams"], ["care", me.classOf ? "Messages, remarks and forms" : "Remarks and forms"], ["assist", "Writing help"], ["corner", "Teachers' Corner"]],
+    teacher: [["home", "Home"], ["timetable", "My timetable"], ["class", me.classOf ? "My class" : "My sections"], ["attendance", "Attendance"], ["homework", "Homework"], ["marks", "Marks"], ["exams", "Exams"], ["care", me.classOf ? "Messages, remarks and forms" : "Remarks and forms"], ["assist", "Writing help"], ["corner", "Teachers' Corner"]],
     principal: [["overview", "Home"], ["attendance", "Attendance"], ["staff", "Staff and cover"], ["fees", "Fees"], ["classes", "Classes"], ["admissions", "Admissions"], ["exams", "Exams"], ["notices", "Notices"], ["gate", "Gate"], ["transport", "Transport"], ["log", "Activity log"], ["website", "Website"]],
     admin: [["overview", "Home"], ["attendance", "Attendance"], ["staff", "Staff and cover"], ["fees", "Fees"], ["classes", "Classes"], ["admissions", "Admissions"], ["exams", "Exams"], ["notices", "Notices"], ["gate", "Gate"], ["transport", "Transport"], ["log", "Activity log"], ["website", "Website"]]
   }[role].filter(([k]) => role !== "teacher" || me.classOf || !["attendance", "messages"].includes(k));
@@ -693,9 +712,9 @@
   S.NAV_ICONS = I;
 })();
 </script>
-<script src="js/common.js?v=16"></script>
+<script src="js/common.js?v=17"></script>
 <script src="js/charts.js?v=10"></script>
-<script src="js/hub.js?v=13"></script>
+<script src="js/hub.js?v=14"></script>
 <script src="js/more.js?v=13"></script>
 <script src="js/staffroom.js?v=2"></script>
 <script src="js/faq.js?v=1"></script>
@@ -724,7 +743,6 @@
 
   // Static labels that named VII-B.
   S.$("#att-h1").textContent = "Attendance · " + secLabel(home);
-  S.$("#reg-h").textContent = `${secLabel(home)} · every school day this session`;
   S.$("#tr-lbl").textContent = `Draft for ${secLabel(home)} parents (editable)`;
   S.$("#rm-h").textContent = "All remarks · " + secLabel(home);
   S.$("#rm-all").textContent = `Draft all ${N()}`;
@@ -833,11 +851,11 @@
       ...(isCT ? [{ go: "attendance", icon: PI.attendance, tone: "green", name: "Attendance", line: rec ? `Present today · ${N() - present ? `${N() - present} away` : "everyone in"}<span class="pg-sub">${waitLeaves ? `${waitLeaves} leave request${waitLeaves === 1 ? "" : "s"} waiting` : "Bars: the last six school days"}</span>` : `Not marked yet<span class="pg-sub">Parents are waiting for the morning update</span>`, flag: !rec && !!S.today.getDay(), count: waitLeaves, m: rec ? (present / N()) * 100 : 0, main: true, big: rec ? present : "–", unit: ` / ${N()}`, side: `<span class="pg-spark" title="Last six school days">${S.miniBars(S.weekOf(S.focus), { lo: 60, hi: 100, ref: 90 })}</span>` }] : []),
       { go: "homework", icon: PI.homework, tone: "royal", name: "Homework", main: true, big: hwAhead.length, unit: " due ahead", line: `${posted} posted across your sections<span class="pg-sub">${hwAhead.length ? "Due next:" : "Nothing due"}</span>`, foot: hwFoot },
       { go: "marks", icon: PI.marks, tone: "gold", name: "Marks", line: entry ? `${S.ENTRY.name}: ${entry.published ? "published" : Object.keys(entry.marks).length + " entered"}` : `${L(C)} average ${subjAvg}%`, m: entry ? (entry.published ? 100 : (Object.keys(entry.marks).length / N()) * 100) : null, main: true, big: entry ? (entry.published ? "Done" : Object.keys(entry.marks).length) : subjAvg, unit: entry ? (entry.published ? "" : ` / ${N()}`) : "%", foot: mkFoot },
+      { go: "timetable", icon: PI.timetable, tone: "teal", name: "My timetable", line: (() => { const fu = ((S.state.follow || {})[T.id] || []).filter((f) => !f.done && f.k >= S.todayKey).length; let d = new Date(S.today), n = 0; for (let i = 0; i < 7; i++, d = S.addDays(d, 1)) { const g = d.getDay(); for (let p = 0; p < S.periodsOn(d); p++) if (mine.some((k) => (S.timetableOf(k)[g] || [])[p] === SUBJ)) n++; } return `${n} classes in the next 7 days<span class="pg-sub">${fu ? `${fu} follow-up${fu === 1 ? "" : "s"} planned` : "Plan follow-ups class by class"}</span>`; })() },
       { go: "exams", icon: PI.exams, tone: "slate", name: "Exams", line: nextEx ? `${S.esc(nextEx.name)} from ${S.fmt(S.examSpan(nextEx, S.groupOf({ cls: x.cls, sec: x })).from)}` : "Datesheets for every class" },
       // One tile for the merged page, as on the parent's side: chat, remarks, forms and meetings.
       { go: isCT ? "care/chat" : "care", icon: isCT ? PI.messages : PI.care, tone: "green", name: isCT ? "Messages, remarks and forms" : "Remarks and forms", count: isCT ? unread : 0,
-        line: `${isCT ? (unread ? `${unread} new from parents` : `Chat with parents of ${secLabel(home)}`) : forms ? `${forms} form${forms === 1 ? "" : "s"} sent · notes on any student` : "Notes on any student you teach"}<span class="pg-sub">${isCT && forms ? `${forms} form${forms === 1 ? "" : "s"} sent · ` : ""}meeting: ${ptm ? `${bk} booked for ${S.fmt(ptm.date)}` : "none planned yet"}</span>` },
-      { go: "assist", icon: PI.assist, tone: "teal", name: "Writing help", line: "Remarks, practice sets and notes to parents · ready-made, no AI" }
+        line: `${isCT ? (unread ? `${unread} new from parents` : `Chat with parents of ${secLabel(home)}`) : forms ? `${forms} form${forms === 1 ? "" : "s"} sent · notes on any student` : "Notes on any student you teach"}<span class="pg-sub">${isCT && forms ? `${forms} form${forms === 1 ? "" : "s"} sent · ` : ""}meeting: ${ptm ? `${bk} booked for ${S.fmt(ptm.date)}` : "none planned yet"}</span>` }
     ]));
   }
   // ---------- Your day: every period in a row, yours in colour, a marker at the time now ----------
@@ -1007,21 +1025,6 @@
   });
 
   // ---------- Attendance (class teachers) ----------
-  function renderRegister() {
-    const days = Object.keys(S.history).sort(); if (S.cs.attendance[S.todayKey]) days.push(S.todayKey);
-    const nameW = 128, step = Math.max(4, Math.min(8, Math.floor(1100 / Math.max(1, days.length)))), cw = Math.max(3, step - 2), rh = 16, T0 = 20, pcW = 52;
-    const W = nameW + days.length * step + pcW, H = T0 + N() * rh;
-    let g = "", lastM = "";
-    days.forEach((k, i) => { const m = k.slice(0, 7); if (m !== lastM) { lastM = m; g += `<text x="${nameW + i * step}" y="11">${S.fmt(k, { month: "short" })}</text>`; } });
-    S.students.forEach((s, r) => {
-      const y = T0 + r * rh, pct = S.attendancePct(s.roll), flag = pct < 85;
-      if (r % 2) g += `<rect class="rowband" x="0" y="${y - 1}" width="${W}" height="${rh}" />`;
-      g += `<text class="nm${flag ? " flag" : ""}" x="0" y="${y + 11}">${String(s.roll).padStart(2, "0")}  ${S.esc(s.name)}</text>`;
-      days.forEach((k, i) => { const st = S.statusOn(s.roll, k); g += `<rect class="c ${st}${k === S.todayKey ? " T" : ""}" x="${nameW + i * step}" y="${y + 1}" width="${cw}" height="${rh - 4}"${S.tipAttr({ P: "Present", A: "Absent", L: "Leave" }[st] || "", `${s.name} · ${S.fmt(k, { weekday: "short", day: "numeric", month: "short" })}`)} />`; });
-      g += `<text class="pc${flag ? " flag" : ""}" x="${W}" y="${y + 11}" text-anchor="end">${pct}%</text>`;
-    });
-    S.paint(S.$("#register"), `<svg class="chart heat" viewBox="0 0 ${W} ${H}" style="min-width:${Math.min(760, W)}px" role="img" aria-label="${secLabel(home)} attendance register for the session">${g}</svg>`);
-  }
   function renderAtt() {
     rings();
     if (!isCT) return;
@@ -1030,7 +1033,7 @@
     const a = Object.values(draft).filter((v) => v === "A").length, l = Object.values(draft).filter((v) => v === "L").length;
     S.$("#att-count").innerHTML = `<span class="pill green">${N() - a - l} present</span><span class="pill red">${a} absent</span><span class="pill warn">${l} leave</span>`;
     S.$("#att-meter").innerHTML = S.stack([{ v: N() - a - l, tone: "var(--green)", tip: `${N() - a - l} present` }, { v: a, tone: "var(--accent)", tip: `${a} absent` }, { v: l, tone: "var(--warn)", tip: `${l} on leave` }]);
-    if (S.vt.reg === "register") renderRegister();
+    if (S.attTrack) S.attTrack();
     S.$("#att-done").innerHTML = rec ? `<div class="status ok"><span class="sq green">✓</span><div><b>Submitted at ${rec.at}</b><span>Change anything and submit again — parents get the correction.</span></div></div>` : "";
     S.$("#att-sub").textContent = S.fmtLong(S.today) + " · tap a name to mark absent, again for leave.";
   }
@@ -1536,7 +1539,7 @@
     const wait = S.cs.leaves.filter((l) => l.status === "Waiting").length, lv = S.cs.leaves.length;
     ring("reg-leave", lv ? ((lv - wait) / lv) * 100 : 100, wait || "✓", wait ? `${wait} waiting for you` : "None waiting");
     const sess = Math.round(S.students.reduce((a, st) => a + S.attendancePct(st.roll), 0) / n * 10) / 10, under = S.students.filter((st) => S.attendancePct(st.roll) < 85).length;
-    ring("reg-register", sess, Math.round(sess), under ? `${under} under 85% this session` : "This session");
+    ring("reg-students", sess, Math.round(sess), under ? `${under} under 85% this session` : "This session");
     // Marks
     const y = S.sectionByKey(mkey), e = S.entry(mkey, SUBJ), vals = Object.values(e.marks).map(Number).filter((v) => !isNaN(v)), yn = y.students.length, low = vals.filter((v) => v < LOW).length;
     ring("marks-entry", (vals.length / yn) * 100, e.published ? "✓" : yn - vals.length || "✓", e.published ? "Published to parents" : vals.length < yn ? `${vals.length} of ${yn} entered` : "All in · not published");
@@ -1562,7 +1565,6 @@
     const fresh = threads().find((t) => { const m = t.msgs[t.msgs.length - 1]; return m && m.from === "parent" && m.fresh; });
     if (fresh) S.toast(`New message from ${fresh.kid.first}'s ${fresh.kid.relation.toLowerCase()}`);
   });
-  document.addEventListener("sjs:vt", (e) => { if (e.detail.key === "reg" && e.detail.v === "register") renderRegister(); });
   document.addEventListener("sjs:redraw", () => { renderHome(); renderDots(); });
   S.vtInit();
   renderHome(); renderAtt(); renderHw(); renderMarks(); renderThread(); if (S.$("#ps-go")) S.$("#ps-go").click(); S.$("#rm-out").value = S.remarkFor(S.student(S.$("#rm-s").value));
@@ -2202,10 +2204,12 @@
 </script>
 <script src="js/office.js?v=15"></script>
 <script src="js/desk.js?v=6"></script>
-<script src="js/corner.js?v=5"></script>
+<script src="js/corner.js?v=6"></script>
+<script src="js/attrack.js?v=1"></script>
+<script src="js/ttteach.js?v=1"></script>
 <script src="js/paperdoc.js?v=1"></script>
 <script src="js/qpaper.js?v=12"></script>
-<script src="js/transport.js?v=3"></script>
+<script src="js/transport.js?v=4"></script>
 <script src="js/select.js?v=4"></script>
 <script src="js/date.js?v=3"></script>
 <script src="js/portal.js?v=1"></script>

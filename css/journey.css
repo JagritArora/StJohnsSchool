@@ -419,3 +419,10 @@
   .sj-top.stuck .sj-fld { padding-left: 11px; }
   .sj-top.stuck .sj-tools .sj-fld select { font-size: 13px; max-width: 100px; text-overflow: ellipsis; }
 }
+
+/* Space (2026-11-07): the bars pane is as tall as the subject pane beside it; the bars grow into it. */
+.sj-main { align-items: stretch; }
+.sj-main > .sj-pane:first-child { display: flex; flex-direction: column; }
+.sj-main > .sj-pane:first-child .sj-bars { flex: 1; }
+.sj-main > .sj-pane:first-child .sj-col .well { height: auto; flex: 1 1 160px; min-height: 160px; max-height: 420px; }
+@media (max-width: 1000px) { .sj-main > .sj-pane:first-child .sj-col .well { flex: none; height: 160px; } }

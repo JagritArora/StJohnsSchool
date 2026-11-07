@@ -14,7 +14,6 @@
     pick: '<circle cx="12" cy="8" r="3.5"/><path d="M5 20c.8-3.6 3.6-5.5 7-5.5s6.2 1.9 7 5.5"/><path d="M18.5 3.5l1 1.5 1.5 1-1.5 1-1 1.5-1-1.5-1.5-1 1.5-1z"/>',
     groups: '<circle cx="7" cy="8" r="2.6"/><circle cx="17" cy="8" r="2.6"/><circle cx="12" cy="15" r="2.6"/><path d="M3 20c.4-2 1.9-3 4-3M21 20c-.4-2-1.9-3-4-3"/>',
     timer: '<circle cx="12" cy="13.5" r="7"/><path d="M12 13.5V10M10 3h4M18.5 7l1.2-1.2"/>',
-    write: '<path d="M4 20h4L19 9l-4-4L4 16z"/><path d="M13.5 6.5l4 4"/>',
     paper: '<path d="M6 3h9l4 4v14H6z"/><path d="M14 3v5h5M9 12h7M9 16h5"/>',
     chat: '<path d="M4 5h16v11H9l-5 4z"/><path d="M8 9h8M8 12h5"/>',
     task: '<rect x="5" y="4.5" width="14" height="16.5" rx="2.5"/><path d="M9.5 4.5V3.2h5v1.3"/><path d="M8.8 12.6l2.2 2.2 4.4-4.6"/>'
@@ -30,8 +29,7 @@
     ["corner/class", "timer", "gold", "Class timer", "A countdown for the projector"],
     ["corner/room", "chat", "royal", "Staff room", "Chat with teachers, one-to-one or in groups", "room"],
     ["corner/tasks", "task", "accent", "Tasks and reminders", "Assign, tick off, remind", "tasks"],
-    ["corner/paper", "paper", "slate", "Question paper", "Upload a Word file, get the school's layout"],
-    ["assist", "write", "accent", "Remarks and practice sets", "Ready-made drafts on Writing help"]
+    ["corner/paper", "paper", "slate", "Question paper", "Upload a Word file, get the school's layout"]
   ];
   const box = $("#t-corner");
   if (box) box.innerHTML = `<div class="pgl tc-cards">${CARDS.map(([go, ic, tone, n, l, c], i) => `<button type="button" class="pgl-i" data-go="${go}" style="--c:var(--${tone});--i:${i}"><span class="pg-ic">${svg(IC[ic])}</span><span class="pgl-t"><b>${n}</b><span>${l}</span></span>${c ? `<span class="count" data-tc-count="${c}" hidden></span>` : ""}</button>`).join("")}</div>`;
