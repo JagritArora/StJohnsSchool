@@ -17,7 +17,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Figtree:wght@400..800&display=swap" rel="stylesheet" />
-<link rel="stylesheet" href="css/site.css?v=140" />
+<link rel="stylesheet" href="css/site.css?v=142" />
 <link rel="stylesheet" href="css/feel.css?v=7" />
 <link rel="stylesheet" href="css/ease.css?v=8" />
 <script>try{var t={"1.1":"l","1.2":"xl"}[localStorage.getItem("sjs-zoom")];if(t)document.documentElement.dataset.text=t}catch(e){}</script>
@@ -851,7 +851,18 @@
       ...(isCT ? [{ go: "attendance", icon: PI.attendance, tone: "green", name: "Attendance", line: rec ? `Present today · ${N() - present ? `${N() - present} away` : "everyone in"}<span class="pg-sub">${waitLeaves ? `${waitLeaves} leave request${waitLeaves === 1 ? "" : "s"} waiting` : "Bars: the last six school days"}</span>` : `Not marked yet<span class="pg-sub">Parents are waiting for the morning update</span>`, flag: !rec && !!S.today.getDay(), count: waitLeaves, m: rec ? (present / N()) * 100 : 0, main: true, big: rec ? present : "–", unit: ` / ${N()}`, side: `<span class="pg-spark" title="Last six school days">${S.miniBars(S.weekOf(S.focus), { lo: 60, hi: 100, ref: 90 })}</span>` }] : []),
       { go: "homework", icon: PI.homework, tone: "royal", name: "Homework", main: true, big: hwAhead.length, unit: " due ahead", line: `${posted} posted across your sections<span class="pg-sub">${hwAhead.length ? "Due next:" : "Nothing due"}</span>`, foot: hwFoot },
       { go: "marks", icon: PI.marks, tone: "gold", name: "Marks", line: entry ? `${S.ENTRY.name}: ${entry.published ? "published" : Object.keys(entry.marks).length + " entered"}` : `${L(C)} average ${subjAvg}%`, m: entry ? (entry.published ? 100 : (Object.keys(entry.marks).length / N()) * 100) : null, main: true, big: entry ? (entry.published ? "Done" : Object.keys(entry.marks).length) : subjAvg, unit: entry ? (entry.published ? "" : ` / ${N()}`) : "%", foot: mkFoot },
-      { go: "timetable", icon: PI.timetable, tone: "teal", name: "My timetable", line: (() => { const fu = ((S.state.follow || {})[T.id] || []).filter((f) => !f.done && f.k >= S.todayKey).length; let d = new Date(S.today), n = 0; for (let i = 0; i < 7; i++, d = S.addDays(d, 1)) { const g = d.getDay(); for (let p = 0; p < S.periodsOn(d); p++) if (mine.some((k) => (S.timetableOf(k)[g] || [])[p] === SUBJ)) n++; } return `${n} classes in the next 7 days<span class="pg-sub">${fu ? `${fu} follow-up${fu === 1 ? "" : "s"} planned` : "Plan follow-ups class by class"}</span>`; })() },
+      // Their week ahead: a big count of classes, then the next class of each section as chips.
+      ...(() => {
+        const fu = ((S.state.follow || {})[T.id] || []).filter((f) => !f.done && f.k >= S.todayKey).length;
+        const now = new Date(), live = S.iso(now) === S.todayKey ? now.getHours() * 60 + now.getMinutes() : 1e9;
+        const nxt = {}; let d = new Date(S.today), n = 0;
+        for (let i = 0; i < 7; i++, d = S.addDays(d, 1)) { const g = d.getDay(), key = S.iso(d); for (let p = 0; p < S.periodsOn(d); p++) { const k = mine.find((m) => (S.timetableOf(m)[g] || [])[p] === SUBJ); if (!k) continue; n++; if (!nxt[k] && !(i === 0 && live >= S.mins(S.ENDS[p]))) nxt[k] = { key, p }; } }
+        const when = (x) => { const t = daysTo(x.key); return `${t === 0 ? "today" : t === 1 ? "tomorrow" : S.fmt(x.key, { weekday: "short" })} P${x.p + 1}`; };
+        const order = mine.filter((k) => nxt[k]).sort((u, v) => (nxt[u].key + nxt[u].p < nxt[v].key + nxt[v].p ? -1 : 1));
+        const foot = order.length ? `<span class="pg-chips">${order.slice(0, 3).map((k) => `<span class="pg-chip${daysTo(nxt[k].key) === 0 ? " soon" : ""}">${secLabel(k)} · ${when(nxt[k])}</span>`).join("")}</span>` : "";
+        return [{ go: "timetable", icon: PI.timetable, tone: "teal", name: "My timetable", main: !isCT, big: n, unit: n === 1 ? " class ahead" : " classes ahead", foot,
+          line: isCT ? `${n} classes in the next 7 days<span class="pg-sub">${fu ? `${fu} follow-up${fu === 1 ? "" : "s"} planned` : "Plan follow-ups class by class"}</span>` : `Next 7 days · ${fu ? `${fu} follow-up${fu === 1 ? "" : "s"} planned` : "plan follow-ups"}<span class="pg-sub">${order.length ? "Next up:" : "No classes ahead"}</span>` }];
+      })(),
       { go: "exams", icon: PI.exams, tone: "slate", name: "Exams", line: nextEx ? `${S.esc(nextEx.name)} from ${S.fmt(S.examSpan(nextEx, S.groupOf({ cls: x.cls, sec: x })).from)}` : "Datesheets for every class" },
       // One tile for the merged page, as on the parent's side: chat, remarks, forms and meetings.
       { go: isCT ? "care/chat" : "care", icon: isCT ? PI.messages : PI.care, tone: "green", name: isCT ? "Messages, remarks and forms" : "Remarks and forms", count: isCT ? unread : 0,

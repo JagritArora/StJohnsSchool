@@ -3794,3 +3794,6 @@ button.at-k { cursor: pointer; }
 .ttt-off { padding: 28px; text-align: center; color: var(--muted); background: var(--sunken); border-radius: 14px; }
 @media (max-width: 1100px) { .ttt-wrap { grid-template-columns: 1fr; } }
 @media (max-width: 640px) { .ttt-weekc { padding: 12px; } .ttt-bar { margin-top: 0; } }
+
+/* Also here with only two links: they share the row instead of leaving an empty third slot. */
+@media (min-width: 901px) { .app :is([data-view="home"], [data-view="overview"]) .pgl:not(:has(> :nth-child(3))) { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
