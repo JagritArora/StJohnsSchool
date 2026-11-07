@@ -63,7 +63,7 @@
   // Every confirmed action by staff is written down with who and when. Sealed like the chat,
   // so a quiet edit later shows.
   S.logAct = (what, who) => { ensure(); S.post(S.state.activity, { from: who || (S.staff ? S.staff.name : "A parent"), text: what, at: S.fmt(S.todayKey) + ", " + S.timeNow() }); S.save(); };
-  const VIEW = { attendance: "Attendance", homework: "Homework", marks: "Marks", care: "Remarks and forms", messages: "Messages", assist: "Writing help", corner: "Teachers' Corner", home: "Home", overview: "Home", classes: "Classes", admissions: "Admissions", website: "Website", exams: "Exams", notices: "Notices", class: "My class", staff: "Staff and cover", fees: "Fees", gate: "Gate", transport: "Transport", log: "Activity log" };
+  const VIEW = { attendance: "Attendance", homework: "Homework", marks: "Marks", care: "Remarks and forms", messages: "Messages", assist: "Writing help", corner: "Teachers' Corner", home: "Home", overview: "Home", classes: "Classes", admissions: "Admissions", website: "Website", exams: "Exams", notices: "Notices", class: "My class", staff: "Staff and cover", fees: "Fees", gate: "Gate", transport: "Transport", log: "Activity log", ttschool: "Timetable", timetable: "My timetable" };
   if (S.toast && /staff\.html$/.test(location.pathname)) {
     const plain = S.toast;
     S.toast = (msg, o = {}) => {

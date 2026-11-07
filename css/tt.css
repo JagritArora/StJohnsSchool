@@ -1,0 +1,144 @@
+/* The school's timetable (js/ttschool.js): staff grid, class weeks, labs, the swap editor and exam duty. */
+.tts-kpis { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; margin-bottom: 16px; }
+.tts-k { background: var(--surface); border: 1px solid var(--line); border-radius: 16px; padding: 14px 16px; display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.tts-k span { font-size: 13px; color: var(--muted); }
+.tts-k b { font-size: 26px; font-weight: 700; letter-spacing: -.01em; font-variant-numeric: tabular-nums; }
+.tts-k small { font-size: 12.5px; color: var(--muted); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.tts-k.good b { color: var(--green-text, var(--green)); }
+.tts-k.bad { border-color: color-mix(in srgb, var(--danger) 40%, var(--line)); background: color-mix(in srgb, var(--danger) 5%, var(--surface)); }
+.tts-k.bad b, .bad { color: var(--danger); }
+
+.tts-bar { display: flex; align-items: center; flex-wrap: wrap; gap: 10px 14px; margin-bottom: 14px; }
+.tts-sp { flex: 1; }
+.tts-hint { font-size: 13.5px; }
+.tts-pr svg { width: 16px; height: 16px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; margin-right: 6px; vertical-align: -3px; }
+.tts-sel select { min-width: 150px; }
+.tts-days button { position: relative; min-width: 46px; }
+.tts-days button i { position: absolute; left: 50%; bottom: 3px; width: 4px; height: 4px; margin-left: -2px; border-radius: 50%; background: var(--accent); }
+
+.tts-free { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 10px; padding: 12px 16px; margin-bottom: 14px; border-radius: 16px; background: color-mix(in srgb, var(--green) 6%, var(--surface)); border: 1px solid color-mix(in srgb, var(--green) 22%, var(--line)); }
+.tts-free > b { font-size: 15px; }
+.tts-free > span { font-size: 13px; }
+.tts-chips { flex-basis: 100%; display: flex; flex-wrap: wrap; gap: 6px; margin-top: 6px; }
+.tts-chip { display: inline-flex; align-items: center; gap: 7px; padding: 5px 11px 5px 9px; border-radius: 999px; background: var(--surface); border: 1px solid var(--line); font-size: 13.5px; font-weight: 600; }
+.tts-chip i { width: 8px; height: 8px; border-radius: 50%; background: var(--s); flex: none; }
+.tts-chip small { font-weight: 400; color: var(--muted); font-size: 12.5px; }
+
+.tts-card { padding: 14px; }
+.tts-card .card-h { padding: 2px 4px 10px; }
+.tts-card .card-h .right { font-size: 13px; }
+.tts-scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+.tts-grid, .tts-week { border-collapse: separate; border-spacing: 3px; width: 100%; font-size: 13px; }
+.tts-grid th, .tts-week th { font-weight: 600; color: var(--muted); font-size: 12px; text-align: center; padding: 4px; }
+.tts-grid thead th b, .tts-week thead th b, .tts-grid thead th span, .tts-week th[scope=row] span { display: block; }
+.tts-grid thead th span, .tts-week th[scope=row] span { font-weight: 400; font-size: 11px; }
+.tts-grid thead th button { all: unset; cursor: pointer; display: block; padding: 4px 6px; border-radius: 10px; }
+.tts-grid thead th button:hover { background: var(--sunken); }
+.tts-grid thead th button:focus-visible { outline: 2px solid var(--royal); }
+.tts-grid thead th.sp button { background: var(--green-soft); color: var(--green-text, var(--green)); }
+.tts-c0 { text-align: left !important; }
+.tts-grid th[scope=row], .tts-week th[scope=row] { text-align: left; position: sticky; left: 0; z-index: 1; background: var(--surface); }
+.tts-grid th[scope=row] { min-width: 168px; }
+.tts-who { all: unset; cursor: pointer; display: block; padding: 4px 6px; border-radius: 10px; }
+.tts-who:hover { background: var(--sunken); }
+.tts-who:focus-visible { outline: 2px solid var(--royal); }
+.tts-who b { display: block; color: var(--ink); font-size: 13.5px; }
+.tts-who small, .tts-grid td small { display: block; font-weight: 400; font-size: 11.5px; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.tts-grid td { text-align: center; padding: 6px 4px; border-radius: 10px; min-width: 62px; vertical-align: middle; }
+.tts-grid td.on { background: color-mix(in srgb, var(--s) 11%, var(--surface)); box-shadow: inset 3px 0 0 var(--s); }
+.tts-grid td.on b { font-size: 13px; color: var(--ink); }
+.tts-grid td.fr { color: color-mix(in srgb, var(--muted) 60%, transparent); background: repeating-linear-gradient(135deg, var(--sunken) 0 6px, transparent 6px 10px); font-size: 12px; }
+.tts-grid td.on.sp { opacity: .55; }
+.tts-grid td.fr.sp { background: var(--green-soft); color: var(--green-text, var(--green)); font-weight: 600; box-shadow: inset 0 0 0 1.5px color-mix(in srgb, var(--green) 45%, transparent); }
+.tts-n b { font-size: 15px; }
+.tts-load { min-width: 120px; text-align: left !important; }
+.tts-load b { font-size: 15px; margin-left: 6px; }
+.tts-load small { display: block; }
+.tts-m { position: relative; display: inline-block; vertical-align: middle; width: 70px; height: 7px; border-radius: 9px; background: var(--sunken); overflow: visible; }
+.tts-m i { position: absolute; inset: 0 auto 0 0; border-radius: 9px; background: var(--royal); }
+.tts-m u { position: absolute; top: -3px; bottom: -3px; width: 2px; background: var(--ink); opacity: .5; text-decoration: none; }
+.tts-grid tr.over th[scope=row] { box-shadow: inset 3px 0 0 var(--danger); }
+.tts-grid tr.over .tts-m i { background: var(--danger); }
+.tts-grid tr.over .tts-load small { color: var(--danger); font-weight: 600; }
+
+.tts-week td { padding: 0; border-radius: 10px; vertical-align: top; min-width: 96px; }
+.tts-week thead th.today { color: var(--accent-text); }
+.tts-week td.cl, .tts-week td.cl > button { text-align: left; }
+.tts-week td.cl { background: color-mix(in srgb, var(--s) 10%, var(--surface)); box-shadow: inset 3px 0 0 var(--s); padding: 7px 9px; }
+.tts-week td.cl b { display: block; font-size: 13.5px; color: var(--ink); }
+.tts-week td.cl small { display: block; font-size: 11.5px; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 150px; }
+.tts-week td.cl em, .tts-grid td em { display: inline-block; margin-top: 3px; font-style: normal; font-size: 10.5px; font-weight: 600; padding: 0 7px; border-radius: 999px; color: var(--accent-text); background: var(--accent-soft); }
+.tts-week tr.brk th, .tts-week tr.brk td { padding: 2px; font-size: 11px; text-align: center; color: var(--muted); background: repeating-linear-gradient(135deg, var(--sunken) 0 6px, transparent 6px 10px); border-radius: 8px; }
+.tts-week td.half { text-align: center; vertical-align: middle; color: var(--muted); font-size: 12.5px; background: repeating-linear-gradient(135deg, var(--sunken) 0 6px, transparent 6px 10px); }
+.tts-labs td.cl { background: color-mix(in srgb, var(--s) 11%, var(--surface)); box-shadow: inset 3px 0 0 var(--s); }
+
+.tts-two { display: grid; grid-template-columns: minmax(0, 1fr) 300px; gap: 14px; align-items: start; }
+.tts-side .tts-sr { display: flex; align-items: center; gap: 10px; padding: 7px 4px; border-top: 1px solid var(--line); }
+.tts-side .tts-sr i { width: 9px; height: 9px; border-radius: 3px; background: var(--s); flex: none; }
+.tts-side .tts-sr span { flex: 1; min-width: 0; }
+.tts-side .tts-sr b, .tts-side .tts-sr small { display: block; }
+.tts-side .tts-sr b { font-size: 13.5px; }
+.tts-side .tts-sr small { font-size: 12px; color: var(--muted); }
+.tts-side .tts-sr em { font-style: normal; font-weight: 700; font-variant-numeric: tabular-nums; }
+
+.tts-msg { display: flex; flex-wrap: wrap; align-items: baseline; gap: 2px 10px; padding: 12px 16px; margin-bottom: 14px; border-radius: 16px; background: var(--sunken); font-size: 14px; }
+.tts-msg b { color: var(--ink); }
+.tts-msg span { color: var(--muted); }
+.tts-msg.pick { background: color-mix(in srgb, var(--royal) 8%, var(--surface)); border: 1px solid color-mix(in srgb, var(--royal) 25%, var(--line)); }
+.tts-msg.good { background: var(--green-soft); }
+.tts-msg.bad { background: color-mix(in srgb, var(--danger) 8%, var(--surface)); border: 1px solid color-mix(in srgb, var(--danger) 25%, var(--line)); }
+.tts-msg .link-btn { margin-left: auto; }
+
+.tts-week td.ed { padding: 0; }
+.tts-week td.ed > button { all: unset; box-sizing: border-box; display: block; width: 100%; height: 100%; min-height: 58px; padding: 7px 9px; border-radius: 10px; cursor: pointer; }
+.tts-week td.ed > button:focus-visible { outline: 2px solid var(--royal); outline-offset: 1px; }
+.tts-week td.ed > button b { display: block; font-size: 13.5px; }
+.tts-week td.ed > button small { display: block; font-size: 11.5px; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 150px; }
+.tts-week td.ed > button em { display: inline-block; margin-top: 3px; font-style: normal; font-size: 10.5px; font-weight: 600; padding: 0 7px; border-radius: 999px; color: var(--accent-text); background: var(--accent-soft); }
+.tts-week td.ed:hover { filter: brightness(.97); }
+.tts-week td.picked { box-shadow: inset 0 0 0 2.5px var(--royal); background: color-mix(in srgb, var(--royal) 14%, var(--surface)); }
+.picking .tts-week td.ok { box-shadow: inset 0 0 0 2px color-mix(in srgb, var(--green) 70%, transparent); background: color-mix(in srgb, var(--green) 10%, var(--surface)); }
+.picking .tts-week td.no { opacity: .42; box-shadow: none; background: var(--sunken); }
+.picking .tts-week td.no:hover { opacity: .7; }
+.tts-lg { display: block; width: 100%; text-align: left; padding: 8px 4px; border-top: 1px solid var(--line); font-size: 13.5px; }
+.tts-lg small { display: block; color: var(--muted); font-size: 12px; }
+button.tts-lg { all: unset; box-sizing: border-box; display: block; width: 100%; padding: 8px 4px; border-top: 1px solid var(--line); cursor: pointer; font-size: 13.5px; }
+button.tts-lg:hover { background: var(--sunken); }
+button.tts-lg small { display: block; color: var(--muted); font-size: 12px; }
+.tts-empty { font-size: 13.5px; padding: 6px 4px 10px; margin: 0; }
+
+.tts-days-l { display: grid; gap: 14px; }
+.tts-dt { width: 100%; border-collapse: collapse; font-size: 13.5px; }
+.tts-dt th { text-align: left; font-size: 12px; color: var(--muted); font-weight: 600; padding: 6px 6px; border-bottom: 1px solid var(--line); }
+.tts-dt td { padding: 7px 6px; border-bottom: 1px solid var(--line); }
+.tts-dot { display: inline-block; width: 8px; height: 8px; border-radius: 50%; background: var(--s); margin-right: 7px; }
+.tts-ld { display: inline-block; margin-left: 7px; font-size: 11px; font-weight: 600; color: var(--royal-text); background: color-mix(in srgb, var(--royal) 10%, var(--surface)); padding: 0 7px; border-radius: 999px; }
+.tts-inv span { display: block; }
+.tts-inv span + span { margin-top: 2px; }
+.tts-inv i { font-style: normal; font-size: 11.5px; color: var(--muted); margin-right: 6px; font-variant-numeric: tabular-nums; }
+.tts-res { font-size: 13px; color: var(--muted); margin: 10px 4px 2px; }
+.tts-res b { color: var(--ink); }
+.tts-pt { display: grid; grid-template-columns: minmax(0, 1fr) 70px 22px; align-items: center; gap: 10px; padding: 7px 4px; border-top: 1px solid var(--line); }
+.tts-pt b, .tts-pt small { display: block; }
+.tts-pt b { font-size: 13.5px; }
+.tts-pt small { font-size: 12px; color: var(--muted); }
+.tts-pt em { font-style: normal; font-weight: 700; text-align: right; font-variant-numeric: tabular-nums; }
+.tts-pt .tts-m i { background: var(--accent); }
+
+@media (max-width: 1100px) { .tts-two { grid-template-columns: 1fr; } }
+@media (max-width: 860px) { .tts-kpis { grid-template-columns: 1fr 1fr; } }
+@media (max-width: 640px) {
+  .tts-k b { font-size: 22px; }
+  .tts-card { padding: 10px; }
+  .tts-grid th[scope=row] { min-width: 132px; }
+  .tts-hint { flex-basis: 100%; order: 9; }
+  .tts-sp { display: none; }
+}
+
+/* The parent's week: the teacher under each subject, and the lab for a practical. */
+.pivot td small { display: block; font-size: 10.5px; font-weight: 400; line-height: 1.25; opacity: .8; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.pivot td small.pv-lab { display: inline-block; margin-top: 2px; padding: 0 6px; border-radius: 999px; font-weight: 600; opacity: 1; color: var(--accent-text); background: var(--accent-soft); }
+.pv-print { margin-left: auto; margin-right: 8px; }
+@media (max-width: 640px) { .pivot td small.pv-who { display: none; } .pv-print { display: none; } }
+.card-h .pv-print ~ .seg { margin-left: 0; }
+@media (max-width: 640px) { .tts-grid th[scope=row] { min-width: 112px; } .tts-grid td { min-width: 54px; } .tts-who small { max-width: 100px; } }

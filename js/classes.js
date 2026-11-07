@@ -66,6 +66,7 @@
     S.TEACHERS.push(t); S.STAFF[p.id] = t;
   });
   const NEHA = S.STAFF["SJS-T-0412"];
+  S.CO = CO; // who takes Games, Library, Art, Music and Value Education where the plan names nobody
   // The subject a teacher teaches in a section (most teach one subject everywhere).
   S.subjOf = (t, key) => (t && t.teach && t.teach[key]) || (t && t.subject);
   // Every subject a teacher teaches, main one first.
@@ -88,11 +89,18 @@
   S.STAFF["SJS-P-0001"].lead = "principal";
 
   // ---------- Timetables ----------
-  // VI to XII from the plan; VII-B's own week stands; younger classes use VII-B's pattern.
-  S.timetableOf = (key) => {
-    if (key === "VII-B") return S.VIIB ? S.VIIB.timetable : S.timetable;
-    return PLAN.timetables[key] || S.timetable;
-  };
+  // Every section's week from the plan; VII-B's own week stands. The office can swap periods
+  // (Timetable → Edit); those edits sit over the plan in the shared record, so every page shows them.
+  const edits = () => (S.state && S.state.ttEdit) || {};
+  S.planTimetable = (key) => (key === "VII-B" ? (S.VIIB ? S.VIIB.timetable : S.timetable) : PLAN.timetables[key] || S.timetable);
+  S.timetableOf = (key) => (edits()[key] ? edits()[key].tt : S.planTimetable(key));
+  // The lab a period is in, if it isn't in the class's own room.
+  S.roomsOf = (key) => (edits()[key] ? edits()[key].rooms : (PLAN.rooms || {})[key] || {});
+  S.roomOf = (key, d, p) => S.roomsOf(key)[d + "|" + p] || null;
+  S.LABS = ["Science lab", "Physics lab", "Chemistry lab", "Biology lab", "Computer lab"];
+  S.planSections = () => Object.keys(PLAN.timetables);
+  // Who takes a period (by teacher record) for the plan's teachers; null for anyone else.
+  S.periodOwnerOf = (key, x) => key === "VII-B" ? (x === "Mathematics" || x === "Assembly Activity" ? S.STAFF["SJS-T-0412"] : null) : periodOwner[key + "|" + x] || null;
   // A teacher's week: "day|period" → { k: section, subj } for every period they take.
   S.teachWeek = (t) => {
     if (!t) return {};

@@ -26,7 +26,10 @@
   // A small line under the section: the period's subject when it isn't the teacher's main one, and "Your class".
   // One short line: the other subject if it's not the main one, else "Your class".
   const SHORTS = { "Assembly Activity": "Assembly", "Value Education": "Value Ed.", "Information Technology": "IT", "Social Science": "Social Sc.", "Business Studies": "Business St.", "Physical Education": "PE" };
-  const noteAt = (d, p, sec) => { const x = at(d, p); return x && x.subj !== SUBJ ? SHORTS[x.subj] || x.subj : sec === T.classOf ? "Your class" : ""; };
+  // A lab, where the period is a practical (the computer teacher is always in the lab, so not for them).
+  const noteAt = (d, p, sec) => { const x = at(d, p), lab = SUBJ !== "Computer" && S.roomOf ? S.roomOf(sec, d.getDay(), p) : null;
+    const n = x && x.subj !== SUBJ ? SHORTS[x.subj] || x.subj : sec === T.classOf ? "Your class" : "";
+    return lab ? (n && n !== "Your class" ? n + " · lab" : lab) : n; };
   const hwDue = (key, sec) => S.secState(sec).homework.filter((h) => h.by === T.name && h.due === key);
   const fuOf = (key, p, sec) => store().filter((f) => f.k === key && f.p === p && f.sec === sec);
   const nextClass = (sec, after) => { // the next period with this section after date key `after` (exclusive of that period)

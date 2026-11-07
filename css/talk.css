@@ -280,3 +280,32 @@ button.tm-prow:hover { border-color: color-mix(in srgb, var(--royal) 35%, var(--
 .tm-chips { gap: 5px; }
 .tm-chip { padding: 0 10px; }
 .tm-newb .tm-find { flex: none; }
+/* Teachers: two big tabs (Students, Staff), a class picker, and the class's whole roll to message a parent. */
+.tm-big { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin: 0 14px 10px; padding: 5px; border-radius: 18px; background: var(--sunken); box-shadow: inset 0 0 0 1px var(--line); }
+.tm-big button { position: relative; display: flex; align-items: center; gap: 9px; min-height: 54px; padding: 8px 10px; border: 0; border-radius: 14px; background: none; font: inherit; color: var(--muted); text-align: left; cursor: pointer; transition: background .2s, color .2s, box-shadow .2s; }
+.tm-big button svg { width: 22px; height: 22px; flex: none; }
+.tm-big button span:not(.count) { display: flex; flex-direction: column; min-width: 0; }
+.tm-big b { font-size: 15px; font-weight: 600; color: inherit; }
+.tm-big small { font-size: 11.5px; line-height: 1.25; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.tm-big button.on { background: var(--surface); color: var(--ink); box-shadow: 0 6px 16px -10px rgba(30, 30, 60, .35), 0 0 0 1px var(--line); }
+.tm-big button.on svg { color: var(--accent); }
+.tm-big .count { position: absolute; top: 6px; right: 7px; }
+.tm-big button:focus-visible { outline: 2px solid var(--royal); outline-offset: 1px; }
+.tm-cls { position: relative; display: flex; align-items: center; margin: 4px 6px 8px; min-height: 42px; padding: 0 34px 0 14px; border-radius: 999px; background: var(--surface); border: 1px solid var(--line); cursor: pointer; }
+.tm-cls:focus-within { border-color: color-mix(in srgb, var(--royal) 40%, transparent); box-shadow: 0 0 0 3px color-mix(in srgb, var(--royal) 9%, transparent); }
+.tm-cls::after { content: ""; position: absolute; right: 15px; top: 50%; width: 6px; height: 6px; border: solid var(--muted); border-width: 0 1.8px 1.8px 0; transform: translateY(-70%) rotate(45deg); pointer-events: none; }
+.tm-cls select { appearance: none; -webkit-appearance: none; border: 0; background: none; width: 100%; font: 600 14.5px var(--sans); color: var(--ink); cursor: pointer; outline: none; padding: 0; }
+.tm-chips-in { padding: 0 6px 4px; }
+.tm-lh-c { display: flex; align-items: baseline; gap: 8px; font-size: 12.5px; color: var(--ink); }
+.tm-lh-c small { font-size: 11px; letter-spacing: 0; text-transform: none; font-weight: 600; color: var(--accent-text); background: var(--accent-soft); border-radius: 999px; padding: 1px 8px; }
+.tm-roster { margin: 2px 4px 6px; border-top: 0; }
+.tm-roster summary { padding: 9px 8px; border-radius: 10px; color: var(--royal-text); }
+.tm-roster summary:hover { background: var(--sunken); }
+.tm-st { padding: 6px 8px; }
+.tm-roll { flex: none; width: 30px; height: 30px; border-radius: 9px; display: grid; place-items: center; background: var(--sunken); font: 600 12px/1 var(--sans); color: var(--muted); font-variant-numeric: tabular-nums; }
+.tm-start { display: flex; align-items: center; gap: 8px; width: calc(100% - 12px); margin: 10px 6px; padding: 10px 12px; border-radius: 12px; border: 1px dashed var(--line); background: none; font: 600 13.5px var(--sans); color: var(--royal-text); cursor: pointer; }
+.tm-start svg { width: 16px; height: 16px; }
+.tm-start:hover { background: var(--surface); border-style: solid; }
+.tm-big button { min-width: 0; }
+.tm-big button span:not(.count) { overflow: hidden; }
+@media (max-width: 400px) { .tm-big button { gap: 7px; padding: 8px; } .tm-big button svg { width: 19px; height: 19px; } }

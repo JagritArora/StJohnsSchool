@@ -293,11 +293,14 @@
 
   // ---------- The page ----------
   let open = null, mode = "chat", tab = "chats", filter = "all", query = "", info = false, staged = [], replyTo = null, raising = false, newKind = "dm", picked = new Set();
+  // Teachers: two big tabs (Students: parents and class groups, a class at a time; Staff: colleagues and staff groups).
+  let ttab = "students", tcls = "all";
   root.className = "tm-app" + (isLead ? " tm-lead" : "");
   root.innerHTML = `
     <aside class="tm-side">
       <div class="tm-sh"><label class="tm-find">${svg("search")}<input type="search" id="tm-q" placeholder="Search people and messages" aria-label="Search chats" /></label>
         <button type="button" class="tm-new" id="tm-new" aria-label="New message or group" title="New message or group">${svg("plus")}</button></div>
+      ${ME.kind === "teacher" ? `<div class="tm-big" role="tablist" aria-label="Students or staff" id="tm-big"></div>` : ""}
       ${isLead ? `<div class="seg tm-tabs" role="tablist"><button type="button" data-tm-tab="chats" class="on">For you</button><button type="button" data-tm-tab="look">Look in</button><button type="button" data-tm-tab="pulse">Pulse</button></div>` : ""}
       <div class="tm-chips" id="tm-chips"></div>
       <div class="tm-list" id="tm-list"></div>
@@ -320,8 +323,57 @@
   };
   const order = (a, b) => (unread(b) > 0) - (unread(a) > 0) || tsOf(b) - tsOf(a);
 
+  // ---------- Which side a chat sits on, for teachers ----------
+  const hasParent = (c) => c.kind !== "dm" && c.type !== "pt" && c.members().some((id) => id.startsWith("P:"));
+  const isStu = (c) => c.type === "pt" || c.kind === "class" || c.kind === "case" || c.kind === "wingp" || (c.kind === "dm" && c.other.kind === "parent") || hasParent(c);
+  const secsOfChat = (c) => c.type === "pt" ? [c.secKey] : c.kind === "class" || c.kind === "case" ? [c.raw.sec] : c.kind === "dm" ? [c.other.sec] : c.kind === "wingp" ? mySecs.filter((k) => wingOf(k) === c.raw.wing) : [...new Set(c.members().filter((id) => id.startsWith("P:")).map((id) => person(id).sec))];
+  const rowOf = (c) => { const n = unread(c), m = lastOf(c), mu = isMuted(c);
+    return `<button type="button" class="tm-row${c.id === open && mode === "chat" ? " on" : ""}${n && !mu ? " new" : ""}" data-tm-open="${c.id}">${avatar(c)}
+      <span class="tm-rt"><span class="tm-rn"><b>${esc(titleOf(c))}</b><time>${m ? esc(shortAt(m.at)) : ""}</time></span>
+      <span class="tm-rl"><span translate="no">${esc(!m && c.type === "pt" && ME.kind === "parent" ? c.other.sub : preview(c))}</span>${n ? `<span class="count${mu ? " mu" : ""}">${n}</span>` : mu ? svg("bellx", "tm-mu") : c.look ? svg("eye", "tm-mu") : ""}</span></span></button>`; };
+  const unreadOf = (cs) => cs.filter((c) => !isMuted(c)).reduce((a, c) => a + unread(c), 0);
+  function teacherList(list) {
+    const stu = list.filter(isStu), stf = list.filter((c) => !isStu(c)), nS = unreadOf(stu), nT = unreadOf(stf);
+    const big = (k, ic, t, sub, n) => `<button type="button" role="tab" aria-selected="${ttab === k}" class="${ttab === k ? "on" : ""}" data-tm-tt="${k}">${svg(ic)}<span><b>${t}</b><small>${sub}</small></span>${n ? `<span class="count">${n}</span>` : ""}</button>`;
+    q("#tm-big").innerHTML = big("students", "users", "Students", "Parents · class groups", nS) + big("staff", "staff", "Staff", "Colleagues · groups", nT);
+    q("#tm-big").hidden = !!query;
+    if (query) return list.filter(passes).sort(order).map(rowOf).join("");
+    const unreadOnly = filter === "new", keep = (c) => !unreadOnly || unread(c);
+    const chips = `<div class="tm-chips tm-chips-in">${[["all", "All"], ["new", "Unread"]].map(([k, l]) => { const n = k === "new" ? unreadOf(ttab === "students" ? stu : stf) : 0; return `<button type="button" class="tm-chip${k === filter ? " on" : ""}" data-tm-f="${k}">${l}${n ? ` <b>${n}</b>` : ""}</button>`; }).join("")}</div>`;
+    if (ttab === "staff") {
+      const groups = stf.filter((c) => c.kind !== "dm" && keep(c)).sort(order), dms = stf.filter((c) => c.kind === "dm" && keep(c)).sort(order);
+      return chips + (groups.length ? `<h3 class="tm-lh">Staff groups</h3>${groups.map(rowOf).join("")}` : "") + (dms.length ? `<h3 class="tm-lh">Colleagues</h3>${dms.map(rowOf).join("")}` : "") +
+        (!groups.length && !dms.length ? `<p class="tm-empty">${unreadOnly ? "You're all caught up." : "No chats with colleagues yet."}</p>` : "") + `<button type="button" class="tm-start" data-tm-newbtn>${svg("plus")}Message a colleague</button>`;
+    }
+    const pickCls = `<label class="tm-cls"><span class="sr-only">Class</span><select id="tm-cls" aria-label="Class">${[["all", "All my classes"], ...mySecs.map((k) => [k, S.secName(k) + (k === ST.classOf ? " · your class" : "")])].map(([v, l]) => { const n = v === "all" ? 0 : unreadOf(stu.filter((c) => secsOfChat(c).includes(v))); return `<option value="${v}"${v === tcls ? " selected" : ""}>${esc(l)}${n ? ` (${n} new)` : ""}</option>`; }).join("")}</select></label>`;
+    const block = (k) => {
+      const cs = stu.filter((c) => secsOfChat(c).includes(k) && keep(c)), grp = cs.filter((c) => c.kind !== "dm" && c.type !== "pt").sort((a, b) => (a.kind === "class" ? -1 : b.kind === "class" ? 1 : order(a, b))), one = cs.filter((c) => c.kind === "dm" || c.type === "pt").sort(order);
+      const talked = new Set(one.map((c) => c.type === "pt" ? c.pid : c.other.id));
+      const roster = sec(k).students.filter((st) => !talked.has(`P:${k}-${st.roll}`));
+      return `${tcls === "all" ? `<h3 class="tm-lh tm-lh-c">${esc(S.secName(k))}${k === ST.classOf ? " <small>Your class</small>" : ""}</h3>` : ""}${grp.map(rowOf).join("")}${one.map(rowOf).join("")}
+        ${!unreadOnly && roster.length ? `<details class="tm-fold tm-roster"${tcls !== "all" && !one.length ? " open" : ""}><summary>${tcls === "all" ? "Message a parent" : `Every student · ${sec(k).students.length}`} <small>${roster.length} more</small></summary>${roster.map((st) => { const pid = `P:${k}-${st.roll}`, pp = S.PARENTS.find((x) => x.key === `${k}-${st.roll}`);
+          return `<button type="button" class="tm-pr tm-st" data-tm-dm="${pid}"><span class="tm-roll">${String(st.roll).padStart(2, "0")}</span><span><b>${esc(st.name)}</b><small>${pp ? `${esc(pp.relation)}: ${esc(pp.parent)}` : "Message the parent"}</small></span></button>`; }).join("")}</details>` : ""}`;
+    };
+    const secs = tcls === "all" ? mySecs : [tcls], body = secs.map(block).join("");
+    const other = tcls === "all" ? stu.filter((c) => !secsOfChat(c).some((k) => mySecs.includes(k)) && keep(c)).sort(order) : [];
+    return pickCls + chips + body + (other.length ? `<h3 class="tm-lh">Other</h3>${other.map(rowOf).join("")}` : "");
+  }
+  // Parents: the same list every time, in the same order: the class, each teacher, then the school.
+  function parentList(list) {
+    if (query) return list.filter(passes).sort(order).map(rowOf).join("");
+    const rk = (c) => c.ct ? -1 : Math.min(99, ...subsOf(c.tname).map((x) => { const i = (S.subjects || []).indexOf(x); return i < 0 ? 50 : i; }));
+    const cls = list.filter((c) => c.kind === "class"), tch = list.filter((c) => c.type === "pt").sort((a, b) => rk(a) - rk(b)), sch = list.filter((c) => c.kind === "wingp" || (c.kind === "dm" && c.type !== "pt")), grp = list.filter((c) => c.kind === "group" || c.kind === "case");
+    const sec2 = (h, cs) => (cs.length ? `<h3 class="tm-lh">${h}</h3>${cs.map(rowOf).join("")}` : "");
+    return sec2(`${esc(ME.kid.first)}'s class`, cls) + sec2(`${esc(ME.kid.first)}'s teachers`, tch) + sec2("School", sch) + sec2("Groups", grp.sort(order));
+  }
+
   function drawList() {
     const list = tab === "look" ? lookIns() : mine();
+    if (tab === "chats" && (ME.kind === "teacher" || ME.kind === "parent")) {
+      q("#tm-chips").hidden = true; q("#tm-chips").innerHTML = "";
+      q("#tm-list").innerHTML = (ME.kind === "teacher" ? teacherList(list) : parentList(list)) || `<p class="tm-empty">${query ? "Nothing matches that." : "No chats here yet."}</p>`;
+      return;
+    }
     q("#tm-chips").innerHTML = tab === "chats" ? CHIPS.map(([k, l]) => { const n = k === "new" ? list.filter((c) => !isMuted(c) && unread(c)).length : 0;
       return `<button type="button" class="tm-chip${k === filter ? " on" : ""}" data-tm-f="${k}">${l}${n ? ` <b>${n}</b>` : ""}</button>`; }).join("") : "";
     q("#tm-chips").hidden = tab !== "chats";
@@ -629,7 +681,12 @@
     document.querySelectorAll('[data-count="messages"]').forEach((el) => { el.hidden = !n; el.textContent = n; });
   }
   S.talkCounts = counts;
-  S.talkOpen = (id) => { mode = "chat"; open = id; S.go("messages"); refresh(true); };
+  // The home tile: chats with something new first, then the latest.
+  S.talkPeek = (n = 3) => mine().filter((c) => !isMuted(c) && lastOf(c)).sort(order).slice(0, n).map((c) => ({ t: c.kind === "dm" ? c.other.short || titleOf(c) : titleOf(c).replace(/ class group$/, " group"), n: unread(c), stu: isStu(c) }));
+  S.talkSplit = () => { const l = mine(); return { stu: unreadOf(l.filter(isStu)), staff: unreadOf(l.filter((c) => !isStu(c))) }; };
+  S.talkOpen = (id) => { mode = "chat"; open = id; const c = findChat(id); if (c && ME.kind === "teacher") ttab = isStu(c) ? "students" : "staff"; S.go("messages"); refresh(true); };
+  // Open the Students or Staff tab (the home tile's chips).
+  S.talkTab = (k, cls) => { if (ME.kind !== "teacher") return; ttab = k; if (cls) tcls = cls; filter = "all"; drawList(); };
 
   // ---------- What people do ----------
   root.addEventListener("click", async (e) => {
@@ -639,6 +696,7 @@
     if ((x = b("[data-tm-tab]"))) { tab = x.dataset.tmTab; root.querySelectorAll("[data-tm-tab]").forEach((y) => y.classList.toggle("on", y === x)); if (tab === "pulse") { mode = "pulse"; drawMain(); } drawList(); return; }
     if ((x = b("[data-tm-mode]"))) { mode = x.dataset.tmMode; staged = []; refresh(); return; }
     if ((x = b("[data-tm-f]"))) { filter = x.dataset.tmF; drawList(); return; }
+    if ((x = b("[data-tm-tt]"))) { ttab = x.dataset.tmTt; filter = "all"; drawList(); return; }
     if (b("#tm-new") || b("[data-tm-newbtn]")) { mode = "new"; newKind = "dm"; picked = new Set(); refresh(); return; }
     if ((x = b("[data-tm-nk]"))) { newKind = x.dataset.tmNk; drawNew(); return; }
     if ((x = b("[data-tm-dm]"))) { const c = dmTarget(x.dataset.tmDm); if (!c) return; S.save(); mode = "chat"; open = c.id; refresh(true); return; }
@@ -663,6 +721,7 @@
   root.addEventListener("change", async (e) => {
     const t = e.target;
     if (t.id === "tm-file") { await stage(t.files); t.value = ""; return; }
+    if (t.id === "tm-cls") { tcls = t.value; drawList(); return; }
     if (t.matches(".tm-pick input[type=checkbox]")) { if (t.checked) picked.add(t.value); else picked.delete(t.value); const n = q("#tm-gn"); if (n) n.textContent = picked.size ? `${picked.size} picked and you` : "Pick who's in it"; return; }
     if (t.matches("[data-tm-pp]")) { const c = findChat(open); c.raw.parentsPost = t.checked; S.post(c.arr, Object.assign(now(), { from: ME.id, kind: "info", text: `${ME.name} ${t.checked ? "let parents post here" : "made this teachers-only again"}.` })); S.save(); refresh(); return; }
     if (t.matches("[data-tm-adm]")) { const c = findChat(open); c.raw.post = t.checked ? "admins" : "all"; S.save(); refresh(); return; }
@@ -699,7 +758,7 @@
   // Start: on a wide screen the newest chat is open; on a phone, the list.
   if (ME.kind !== "parent") staffGroups();
   const first = mine().sort(order)[0];
-  if (first && matchMedia("(min-width: 761px)").matches) open = first.id;
+  if (first && matchMedia("(min-width: 761px)").matches) { open = first.id; if (ME.kind === "teacher") ttab = isStu(first) ? "students" : "staff"; }
   S.save(); refresh();
   if (S.refreshHome) S.refreshHome();
 })();

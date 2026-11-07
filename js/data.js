@@ -321,7 +321,7 @@
   S.enqRef = (e) => e.ref || "SJS-27-" + String(1000 + ([...(e.child + e.phone)].reduce((a, ch) => (Math.imul(a, 31) + ch.charCodeAt(0)) >>> 0, 7) % 9000));
   S.photo = (src) => (src && src.startsWith("up:") ? (S.state.photos[src.slice(3)] || "") : src);
 
-  const PKEY = phase === "mid" ? KEY : KEY + ":" + phase, SHARED = ["site", "photos", "applications"];
+  const PKEY = phase === "mid" ? KEY : KEY + ":" + phase, SHARED = ["site", "photos", "applications", "ttEdit", "duty"];
   const read = (k) => { try { return JSON.parse(localStorage.getItem(k)); } catch (e) { return null; } };
   const fix = (st) => {
     if (!st.site) st.site = S.siteSeed();

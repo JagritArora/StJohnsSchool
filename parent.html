@@ -23,7 +23,8 @@
 <script>try{var t={"1.1":"l","1.2":"xl"}[localStorage.getItem("sjs-zoom")];if(t)document.documentElement.dataset.text=t}catch(e){}</script>
 <link rel="stylesheet" href="css/ai.css?v=3" />
 <link rel="stylesheet" href="css/journey.css?v=17" />
-<link rel="stylesheet" href="css/talk.css?v=1" />
+<link rel="stylesheet" href="css/talk.css?v=2" />
+<link rel="stylesheet" href="css/tt.css?v=1" />
 <script>
 /* Before the first paint: fade photos in as they load. */
 (function (d) { d.documentElement.classList.add("js");
@@ -84,9 +85,9 @@
         </div>
         <div class="vp" data-vp="ttp" data-v="week" hidden>
   <div class="card tt-rail" aria-labelledby="tt-h">
-          <div class="card-h"><h2 id="tt-h">Class VII-B</h2><div class="seg vt" data-vt="tt" aria-label="Timetable view"><button data-v="week">Week</button><button data-v="teachers">Teachers</button></div></div>
+          <div class="card-h"><h2 id="tt-h">Class VII-B</h2><button type="button" class="btn btn-ghost btn-sm pv-print" data-ttprint="kid">Print the week</button><div class="seg vt" data-vt="tt" aria-label="Timetable view"><button data-v="week">Week</button><button data-v="teachers">Teachers</button></div></div>
           <div class="vp" data-vp="tt" data-v="week">
-            <p class="muted" style="font-size:13.5px;margin:-6px 0 10px">Point at a period for the teacher</p>
+            <p class="muted" style="font-size:13.5px;margin:-6px 0 10px">Each period with its teacher; practicals show their lab</p>
             <div class="pivot-wrap"><table class="pivot" id="pivot"></table></div>
           </div>
           <div class="vp" data-vp="tt" data-v="teachers" hidden><p class="muted" style="font-size:13.5px;margin:-6px 0 10px">Who teaches what, and how many periods a week</p><div class="tt-sum"><table class="pivot pivot-sum" id="tt-sum"></table></div></div>
@@ -260,9 +261,9 @@
   <div style="display:flex;gap:10px;margin-top:20px"><button type="button" class="btn btn-ghost" data-close>Cancel</button><button class="btn btn-green" id="pay-done" style="flex:1">I've paid (demo)</button></div>
 </div></div>
 
-<script src="js/data.js?v=14"></script>
-<script src="js/ttplan.js?v=1"></script>
-<script src="js/classes.js?v=13"></script>
+<script src="js/data.js?v=15"></script>
+<script src="js/ttplan.js?v=2"></script>
+<script src="js/classes.js?v=14"></script>
 <script src="js/bus.js?v=5"></script>
 <script src="js/exams.js?v=9"></script>
 <script src="js/journey.js?v=15"></script>
@@ -270,7 +271,7 @@
 <script src="js/common.js?v=17"></script>
 <script src="js/charts.js?v=10"></script>
 <script src="js/hub.js?v=14"></script>
-<script src="js/more.js?v=14"></script>
+<script src="js/more.js?v=15"></script>
 <script src="js/demo.js?v=4"></script>
 <script src="js/faq.js?v=1"></script>
 <script src="js/ai.js?v=16"></script>
@@ -497,7 +498,9 @@
       h += `<tr><th scope="row" data-p="${p}"><b>${p + 1}</b><span>${t}</span></th>` + DAYS.map((d, i) => {
         const sub = S.timetable[i + 1][p];
         if (!sub) return p === 5 ? `<td class="off" rowspan="3" aria-label="Saturday: half day, home by 11:30">Half day</td>` : "";
-        return `<td tabindex="0" class="c-${HUE[sub] || "none"}${i === today ? " today" : ""}${i === today && p === cur ? " now" : ""}" data-d="${i}" data-p="${p}" aria-label="${d}, period ${p + 1}: ${sub}, ${S.ttTeachers[sub] || ""}">${SHORT[sub] || sub}</td>`;
+        // The subject, its teacher underneath, and the lab when the period is a practical.
+        const who = (S.ttTeachers[sub] || "").replace(/^(Mr|Mrs|Ms|Dr)\.\s+/, ""), lab = S.roomOf ? S.roomOf(S.me.sec.key, i + 1, p) : null;
+        return `<td tabindex="0" class="c-${HUE[sub] || "none"}${i === today ? " today" : ""}${i === today && p === cur ? " now" : ""}" data-d="${i}" data-p="${p}" aria-label="${d}, period ${p + 1}: ${sub}, ${S.ttTeachers[sub] || ""}${lab ? ", " + lab : ""}">${SHORT[sub] || sub}${who && /^(Mr|Mrs|Ms|Dr)\./.test(S.ttTeachers[sub] || "") ? `<small class="pv-who">${who}</small>` : ""}${lab ? `<small class="pv-lab">${lab}</small>` : ""}</td>`;
       }).join("") + "</tr>";
     });
     S.$("#pivot").innerHTML = h + "</tbody>";
@@ -1544,7 +1547,8 @@
   S.mountAI("parent");
 })();
 </script>
-<script src="js/talk.js?v=1"></script>
+<script src="js/talk.js?v=2"></script>
+<script src="js/ttschool.js?v=1"></script>
 <script src="js/select.js?v=4"></script>
 <script src="js/date.js?v=3"></script>
 <script src="js/portal.js?v=1"></script>

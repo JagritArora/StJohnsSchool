@@ -7,6 +7,9 @@
    - No teacher is in two rooms at once; VII-B's timetable is fixed (js/data.js) and its
      Mathematics and Assembly periods are Ms. Neha Mathew's.
    - A subject comes at most twice a day in a section, and not twice in a row.
+   - Labs: no two classes need the same lab at once. Computer and IT are always in the
+     computer lab; two Science periods a week (VI to X) are practicals in the science lab;
+     Physics, Chemistry and Biology (XI-A, XII-A) have two practicals each in their own lab.
    Teachers top up their week with Library, Value Education and (for class teachers)
    Assembly periods in their own sections. The output is fixed data, so every visit
    shows the same timetable. */
@@ -30,6 +33,16 @@ const VIIB = {
   5: ["Mathematics", "Social Science", "Science", "English", "Hindi", "Computer", "Assembly Activity", "Games"],
   6: ["English", "Mathematics", "Science", "Hindi", "Club Activities"]
 };
+
+// ---------- Labs ----------
+// A practical is kept as "Subject*" while solving; it comes out as the subject, with its room in plan.rooms.
+const PRAC = { Science: 2, Physics: 2, Chemistry: 2, Biology: 2 };
+const LAB_OF = (x) => x === "Computer" || x === "Information Technology" ? "Computer lab" : x === "Science*" ? "Science lab" : /\*$/.test(x) ? x.slice(0, -1) + " lab" : null;
+const base = (x) => x.replace(/\*$/, "");
+// VII-B's fixed week: its Computer periods, and two of its Science periods as practicals.
+const VIIB_LAB = { "2|3": "Science lab", "4|1": "Science lab" };
+Object.entries(VIIB).forEach(([d, row]) => row.forEach((x, p) => { if (x === "Computer") VIIB_LAB[d + "|" + p] = "Computer lab"; }));
+if (VIIB[2][3] !== "Science" || VIIB[4][1] !== "Science") throw new Error("VII-B practicals moved");
 
 // ---------- Who teaches what ----------
 // [id, name, main subject, { section: subject }, class teacher of]
@@ -114,7 +127,7 @@ teachers.forEach((t, i) => {
   Object.entries(t.top).forEach(([k, xs]) => xs.forEach((x) => (ownerIx[k + "|" + x] = i)));
   if (t.classOf) ownerIx[t.classOf + "|Assembly Activity"] = i;
 });
-const own = (k, x) => (ownerIx[k + "|" + x] ?? -1);
+const own = (k, x) => (ownerIx[k + "|" + base(x)] ?? -1);
 const NEHA = teachers.findIndex((t) => t.id === "SJS-T-0412");
 const NP = (d) => (d === 6 ? 5 : 8);
 const SLOTS = []; for (let d = 1; d <= 6; d++) for (let p = 0; p < NP(d); p++) SLOTS.push([d, p]);
@@ -126,7 +139,7 @@ const rnd = () => { seed = (seed * 1664525 + 1013904223) >>> 0; return seed / 42
 // Initial fill: each section's cells in random order; Club Activities fixed at Saturday P5.
 const TT = {};
 SECS.forEach((k) => {
-  const bag = []; Object.entries(weekOf(k)).forEach(([x, n]) => { if (x !== "Club Activities") for (let i = 0; i < n; i++) bag.push(x); });
+  const bag = []; Object.entries(weekOf(k)).forEach(([x, n]) => { if (x !== "Club Activities") for (let i = 0; i < n; i++) bag.push(i < (PRAC[x] || 0) ? x + "*" : x); });
   for (let i = bag.length - 1; i > 0; i--) { const j = Math.floor(rnd() * (i + 1)); [bag[i], bag[j]] = [bag[j], bag[i]]; }
   const tt = {}; let n = 0;
   for (let d = 1; d <= 6; d++) { tt[d] = []; for (let p = 0; p < NP(d); p++) tt[d][p] = d === 6 && p === 4 ? "Club Activities" : bag[n++]; }
@@ -139,6 +152,11 @@ const occ = Array.from({ length: nT }, () => Array.from({ length: 7 }, () => new
 const dayLoad = Array.from({ length: nT }, () => new Array(7).fill(0));
 Object.entries(VIIB).forEach(([d, row]) => row.forEach((x, p) => { if (x === "Mathematics" || x === "Assembly Activity") { occ[NEHA][d][p]++; dayLoad[NEHA][d]++; } }));
 SECS.forEach((k) => { for (const [d, p] of SLOTS) { const i = own(k, TT[k][d][p]); if (i >= 0) { occ[i][d][p]++; dayLoad[i][d]++; } } });
+// Labs in use: labOcc[lab][d][p].
+const LABS = ["Science lab", "Physics lab", "Chemistry lab", "Biology lab", "Computer lab"];
+const labOcc = Object.fromEntries(LABS.map((l) => [l, Array.from({ length: 7 }, () => new Array(8).fill(0))]));
+Object.entries(VIIB_LAB).forEach(([dp, l]) => { const [d, p] = dp.split("|").map(Number); labOcc[l][d][p]++; });
+SECS.forEach((k) => { for (const [d, p] of SLOTS) { const l = LAB_OF(TT[k][d][p]); if (l) labOcc[l][d][p]++; } });
 
 // Cost pieces.
 const dayPen = (t, d, n) => { const lo = d === 6 ? 3 : 6, hi = d === 6 ? 4 : 7; return n < lo ? (lo - n) * 40 : n > hi ? (n - hi) * 40 : 0; };
@@ -146,7 +164,7 @@ const clashPen = (c) => (c > 1 ? (c - 1) * 1000 : 0);
 // Section shape: per day, subject twice at most, never back to back (Club excepted).
 const secDayPen = (row) => {
   let s = 0; const cnt = {};
-  row.forEach((x, p) => { cnt[x] = (cnt[x] || 0) + 1; if (p && row[p - 1] === x) s += 60; });
+  row.forEach((y, p) => { const x = base(y); cnt[x] = (cnt[x] || 0) + 1; if (p && base(row[p - 1]) === x) s += 60; });
   Object.values(cnt).forEach((c) => { if (c > 2) s += (c - 2) * 200; });
   return s;
 };
@@ -154,6 +172,7 @@ const total = () => {
   let s = 0;
   for (let t = 0; t < nT; t++) for (let d = 1; d <= 6; d++) { s += dayPen(t, d, dayLoad[t][d]); for (let p = 0; p < NP(d); p++) s += clashPen(occ[t][d][p]); }
   SECS.forEach((k) => { for (let d = 1; d <= 6; d++) s += secDayPen(TT[k][d]); });
+  LABS.forEach((l) => { for (const [d, p] of SLOTS) s += clashPen(labOcc[l][d][p]); });
   return s;
 };
 
@@ -166,18 +185,24 @@ for (let it = 0; it < ITER && cost > 0; it++) {
   const [d1, p1] = SLOTS[Math.floor(rnd() * SLOTS.length)], [d2, p2] = SLOTS[Math.floor(rnd() * SLOTS.length)];
   const a = tt[d1][p1], b = tt[d2][p2];
   if (a === b || a === "Club Activities" || b === "Club Activities") continue;
-  const ta = own(k, a), tb = own(k, b);
+  const ta = own(k, a), tb = own(k, b), la = LAB_OF(a), lb = LAB_OF(b);
+  const labs = new Set([la, lb].filter(Boolean));
+  const labCost = () => { let s = 0; labs.forEach((l) => { s += clashPen(labOcc[l][d1][p1]) + clashPen(labOcc[l][d2][p2]); }); return s; };
+  const lmv = (l, d, p, v) => { if (l) labOcc[l][d][p] += v; };
   // Cost before.
   const touched = new Set(); [ta, tb].forEach((t) => t >= 0 && touched.add(t));
   let before = 0, after = 0;
   const secBefore = secDayPen(tt[d1]) + (d2 !== d1 ? secDayPen(tt[d2]) : 0);
   touched.forEach((t) => { before += clashPen(occ[t][d1][p1]) + clashPen(occ[t][d2][p2]) + dayPen(t, d1, dayLoad[t][d1]) + (d2 !== d1 ? dayPen(t, d2, dayLoad[t][d2]) : 0); });
+  before += labCost();
   // Apply.
   const mv = (t, d, p, v) => { if (t >= 0) { occ[t][d][p] += v; dayLoad[t][d] += v; } };
   mv(ta, d1, p1, -1); mv(tb, d2, p2, -1); mv(ta, d2, p2, 1); mv(tb, d1, p1, 1);
+  lmv(la, d1, p1, -1); lmv(lb, d2, p2, -1); lmv(la, d2, p2, 1); lmv(lb, d1, p1, 1);
   tt[d1][p1] = b; tt[d2][p2] = a;
   const secAfter = secDayPen(tt[d1]) + (d2 !== d1 ? secDayPen(tt[d2]) : 0);
   touched.forEach((t) => { after += clashPen(occ[t][d1][p1]) + clashPen(occ[t][d2][p2]) + dayPen(t, d1, dayLoad[t][d1]) + (d2 !== d1 ? dayPen(t, d2, dayLoad[t][d2]) : 0); });
+  after += labCost();
   const delta = after - before + secAfter - secBefore;
   if (delta <= 0 || rnd() < Math.exp(-delta / temp)) {
     cost += delta;
@@ -185,6 +210,7 @@ for (let it = 0; it < ITER && cost > 0; it++) {
   } else { // undo
     tt[d1][p1] = a; tt[d2][p2] = b;
     mv(ta, d2, p2, -1); mv(tb, d1, p1, -1); mv(ta, d1, p1, 1); mv(tb, d2, p2, 1);
+    lmv(la, d2, p2, -1); lmv(lb, d1, p1, -1); lmv(la, d1, p1, 1); lmv(lb, d2, p2, 1);
   }
 }
 const OUT = JSON.parse(bestTT);
@@ -195,13 +221,48 @@ const busy = {}; let clashes = 0, shape = 0; const perDay = teachers.map(() => (
 Object.entries(VIIB).forEach(([d, row]) => row.forEach((x, p) => { if (x === "Mathematics" || x === "Assembly Activity") { busy[`${NEHA}|${d}|${p}`] = "VII-B"; perDay[NEHA][d] = (perDay[NEHA][d] || 0) + 1; } }));
 SECS.forEach((k) => { for (const [d, p] of SLOTS) { const i = own(k, OUT[k][d][p]); if (i < 0) continue; if (busy[`${i}|${d}|${p}`]) clashes++; busy[`${i}|${d}|${p}`] = k; perDay[i][d] = (perDay[i][d] || 0) + 1; } });
 SECS.forEach((k) => { for (let d = 1; d <= 6; d++) shape += secDayPen(OUT[k][d]); });
+// Labs, from scratch; then the practical marks come off the subjects and go into rooms.
+const inLab = {}; let labClash = 0; const rooms = { "VII-B": VIIB_LAB };
+Object.entries(VIIB_LAB).forEach(([dp, l]) => (inLab[l + "|" + dp] = "VII-B"));
+SECS.forEach((k) => { rooms[k] = {}; for (const [d, p] of SLOTS) { const x = OUT[k][d][p], l = LAB_OF(x); if (l) { if (inLab[l + "|" + d + "|" + p]) labClash++; inLab[l + "|" + d + "|" + p] = k; rooms[k][d + "|" + p] = l; } OUT[k][d][p] = base(x); } });
+console.log("Lab clashes:", labClash);
+if (labClash) { console.error("Lab clash; not writing."); process.exit(1); }
 teachers.forEach((t, i) => console.log(`${t.name.padEnd(22)} free: ${[1, 2, 3, 4, 5, 6].map((d) => NP(d) - (perDay[i][d] || 0)).join(" ")}`));
 console.log(`Clashes: ${clashes} · section shape penalty: ${shape}`);
 if (clashes || best > 0) { console.error("Not clean; not writing."); process.exit(1); }
 
+// ---------- Nursery to Class V ----------
+// The class teacher takes most periods, so only the shape matters: a subject at most twice a day
+// (three times for the main subjects in pre-primary) and never twice in a row.
+const PRE = { English: 9, Hindi: 7, Numbers: 9, Environment: 6, Art: 4, Games: 4, Music: 3, Library: 1, "Assembly Activity": 1, "Club Activities": 1 };
+const PRI = { English: 8, Hindi: 7, Mathematics: 8, EVS: 7, Computer: 2, Games: 3, Art: 2, Music: 2, Library: 2, "Value Education": 2, "Assembly Activity": 1, "Club Activities": 1 };
+for (const w of [PRE, PRI]) { const n = Object.values(w).reduce((a, b) => a + b, 0); if (n !== 45) throw new Error("junior week is " + n); }
+const JUN = [...["Nur", "LKG", "UKG"].flatMap((c) => ["A", "B"].map((x) => [c + "-" + x, PRE])), ...["I", "II", "III", "IV", "V"].flatMap((c) => ["A", "B", "C"].map((x) => [c + "-" + x, PRI]))];
+const shapeOf = (row, cap) => { let s = 0; const cnt = {}; row.forEach((x, p) => { cnt[x] = (cnt[x] || 0) + 1; if (p && row[p - 1] === x && x !== "Club Activities") s++; }); Object.values(cnt).forEach((c) => { if (c > cap) s += c - cap; }); return s; };
+JUN.forEach(([k, wk]) => {
+  const cap = wk === PRE ? 3 : 2, bag = [];
+  Object.entries(wk).forEach(([x, n]) => { if (x !== "Club Activities") for (let i = 0; i < n; i++) bag.push(x); });
+  const tt = {}; let n = 0;
+  for (let i = bag.length - 1; i > 0; i--) { const j = Math.floor(rnd() * (i + 1)); [bag[i], bag[j]] = [bag[j], bag[i]]; }
+  for (let d = 1; d <= 6; d++) { tt[d] = []; for (let p = 0; p < NP(d); p++) tt[d][p] = d === 6 && p === 4 ? "Club Activities" : bag[n++]; }
+  let c = 0; for (let d = 1; d <= 6; d++) c += shapeOf(tt[d], cap);
+  for (let it = 0; it < 4e5 && c > 0; it++) {
+    const [d1, p1] = SLOTS[Math.floor(rnd() * SLOTS.length)], [d2, p2] = SLOTS[Math.floor(rnd() * SLOTS.length)];
+    const a = tt[d1][p1], b = tt[d2][p2]; if (a === b || a === "Club Activities" || b === "Club Activities") continue;
+    const before = shapeOf(tt[d1], cap) + (d2 !== d1 ? shapeOf(tt[d2], cap) : 0);
+    tt[d1][p1] = b; tt[d2][p2] = a;
+    const after = shapeOf(tt[d1], cap) + (d2 !== d1 ? shapeOf(tt[d2], cap) : 0);
+    if (after <= before || rnd() < 0.02) c += after - before; else { tt[d1][p1] = a; tt[d2][p2] = b; }
+  }
+  if (c) { console.error(k + ": junior week not clean"); process.exit(1); }
+  OUT[k] = tt;
+});
+console.log("Junior weeks:", JUN.length);
+
 // ---------- Write js/ttplan.js ----------
-const plan = { teachers: teachers.map((t) => ({ id: t.id, name: t.name, subject: t.subject, teach: t.teach, top: t.top, classOf: t.classOf })), timetables: OUT };
-const body = `/* Generated by tools/ttplan.js: who teaches what in Classes VI to XII, and each section's week.
+const plan = { teachers: teachers.map((t) => ({ id: t.id, name: t.name, subject: t.subject, teach: t.teach, top: t.top, classOf: t.classOf })), timetables: OUT, rooms };
+const body = `/* Generated by tools/ttplan.js: who teaches what in Classes VI to XII, each section's week
+   (Nursery to XII), and the lab each practical is in.
    Edit the plan there and run \`node tools/ttplan.js\`; don't edit this file by hand. */
 window.SJS = window.SJS || {};
 window.SJS.PLAN = ${JSON.stringify(plan)};

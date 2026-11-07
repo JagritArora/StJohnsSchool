@@ -23,7 +23,8 @@
 <script>try{var t={"1.1":"l","1.2":"xl"}[localStorage.getItem("sjs-zoom")];if(t)document.documentElement.dataset.text=t}catch(e){}</script>
 <link rel="stylesheet" href="css/ai.css?v=3" />
 <link rel="stylesheet" href="css/journey.css?v=17" />
-<link rel="stylesheet" href="css/talk.css?v=1" />
+<link rel="stylesheet" href="css/talk.css?v=2" />
+<link rel="stylesheet" href="css/tt.css?v=1" />
 <script>
 /* Before the first paint: fade photos in as they load. */
 (function (d) { d.documentElement.classList.add("js");
@@ -61,7 +62,7 @@
     <!-- MY CLASS: how the class (or, for a subject teacher, each section) is doing -->
     <!-- MY TIMETABLE: the week period by period, with follow-ups planned against real classes (js/ttteach.js) -->
     <section data-view="timetable" data-roles="teacher">
-      <div class="topbar"><div><h1>My timetable</h1><div class="sub">Your week, period by period. Tap a class to plan what to follow up on in it.</div></div></div>
+      <div class="topbar"><div><h1>My timetable</h1><div class="sub">Your week, period by period. Tap a class to plan what to follow up on in it.</div></div><div class="right"><button type="button" class="btn btn-ghost btn-sm" data-ttprint="me">Print my week</button></div></div>
       <div id="ttt-view">
         <div class="ttt-bar"><div class="ttt-wkn"><button type="button" class="icon-btn" data-ttw="-1" aria-label="Previous week">‹</button><div class="ttt-wkt"><b id="ttt-wk"></b><span id="ttt-range"></span></div><button type="button" class="icon-btn" data-ttw="1" aria-label="Next week">›</button><button type="button" class="btn btn-ghost btn-sm" data-ttw="0" id="ttt-today" hidden>Back to this week</button></div><div class="legend ttt-key" id="ttt-key"></div></div>
         <div class="ttt-wrap"><div class="card ttt-weekc"><div id="ttt-week"></div></div><div class="card ttt-side" id="ttt-side"></div></div>
@@ -391,6 +392,18 @@
       <div class="grid g21 staff-g"><div class="card" id="d-cover"></div><div class="staff-side"><div class="kslot" id="k-staff"></div><div class="card" id="d-leave"></div></div></div>
     </section>
 
+    <!-- TIMETABLE (school): every teacher's day, every class's week, swaps and exam duty (js/ttschool.js) -->
+    <section data-view="ttschool" data-roles="principal admin">
+      <div class="topbar"><div><h1>Timetable</h1><div class="sub">Who is teaching where and who is free, every class's week and its labs, swaps that keep every rule, and exam duty.</div></div></div>
+      <div class="vt-row ptabs hn-swrap ms4"><div class="seg vt" data-vt="tts" aria-label="Staff, classes, edit or exam duty"><button data-v="staff"><span class="hs-ring nt" id="rg-tts-staff"><span></span></span><span class="hs-t"><b>Staff</b><small id="rg-tts-staff-t"></small></span></button><button data-v="classes"><span class="hs-ring rm" id="rg-tts-classes"><span></span></span><span class="hs-t"><b>Classes</b><small id="rg-tts-classes-t"></small></span></button><button data-v="edit"><span class="hs-ring mt" id="rg-tts-edit"><span></span></span><span class="hs-t"><b>Edit</b><small id="rg-tts-edit-t"></small></span></button><button data-v="duty"><span class="hs-ring due" id="rg-tts-duty"><span></span></span><span class="hs-t"><b>Exam duty</b><small id="rg-tts-duty-t"></small></span></button></div></div>
+      <div class="pm-panes" id="tts">
+        <div class="vp" data-vp="tts" data-v="staff"><div id="tts-staff"></div></div>
+        <div class="vp" data-vp="tts" data-v="classes" hidden><div id="tts-classes"></div></div>
+        <div class="vp" data-vp="tts" data-v="edit" hidden><div id="tts-edit"></div></div>
+        <div class="vp" data-vp="tts" data-v="duty" hidden><div id="tts-duty"></div></div>
+      </div>
+    </section>
+
     <!-- GATE: pick-ups and visitors -->
     <section data-view="gate" data-roles="principal admin">
       <div class="topbar"><div><h1>Gate</h1><div class="sub">Check a one-time pick-up code or the list of who may collect a child, and sign visitors in and out.</div></div></div>
@@ -645,9 +658,9 @@
 
 
 
-<script src="js/data.js?v=14"></script>
-<script src="js/ttplan.js?v=1"></script>
-<script src="js/classes.js?v=13"></script>
+<script src="js/data.js?v=15"></script>
+<script src="js/ttplan.js?v=2"></script>
+<script src="js/classes.js?v=14"></script>
 <script src="js/exams.js?v=9"></script>
 <script src="js/journey.js?v=15"></script>
 <script src="js/care.js?v=2"></script>
@@ -705,12 +718,12 @@
     transport: '<rect x="5" y="3.5" width="14" height="14" rx="2.5"/><path d="M5 11h14M8.5 20.5v-3M15.5 20.5v-3"/>',
     log: '<path d="M6 3h9l4 4v14H6z"/><path d="M14 3v5h5M9 12h7M9 16h7"/><circle cx="9" cy="12" r=".3"/>',
     ptm: '<circle cx="8" cy="9" r="3"/><circle cx="16" cy="9" r="3"/><path d="M3 19c.6-3 2.6-4.5 5-4.5s4.4 1.5 5 4.5M11 19c.6-3 2.6-4.5 5-4.5s4.4 1.5 5 4.5"/>',
-    notices: '<path d="M4 10v4h3l6 4V6L7 10z"/><path d="M17 9a4 4 0 0 1 0 6"/>', classes: '<rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 10h18M9 10v10M15 10v10"/>', website: '<rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 9h18M7 6.5h.01M10 6.5h.01"/>'
+    notices: '<path d="M4 10v4h3l6 4V6L7 10z"/><path d="M17 9a4 4 0 0 1 0 6"/>', ttschool: '<rect x="4" y="4" width="16" height="16" rx="2"/><path d="M4 9.5h16M9.5 9.5V20M14.5 9.5V20"/>', classes: '<rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 10h18M9 10v10M15 10v10"/>', website: '<rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 9h18M7 6.5h.01M10 6.5h.01"/>'
   };
   const NAV = {
     teacher: [["home", "Home"], ["timetable", "My timetable"], ["class", me.classOf ? "My class" : "My sections"], ["attendance", "Attendance"], ["homework", "Homework"], ["marks", "Marks"], ["exams", "Exams"], ["messages", "Messages"], ["care", "Remarks and forms"], ["assist", "Writing help"], ["corner", "Teachers' Corner"]],
-    principal: [["overview", "Home"], ["messages", "Messages"], ["attendance", "Attendance"], ["staff", "Staff and cover"], ["fees", "Fees"], ["classes", "Classes"], ["admissions", "Admissions"], ["exams", "Exams"], ["notices", "Notices"], ["gate", "Gate"], ["transport", "Transport"], ["log", "Activity log"], ["website", "Website"]],
-    admin: [["overview", "Home"], ["messages", "Messages"], ["attendance", "Attendance"], ["staff", "Staff and cover"], ["fees", "Fees"], ["classes", "Classes"], ["admissions", "Admissions"], ["exams", "Exams"], ["notices", "Notices"], ["gate", "Gate"], ["transport", "Transport"], ["log", "Activity log"], ["website", "Website"]]
+    principal: [["overview", "Home"], ["messages", "Messages"], ["attendance", "Attendance"], ["staff", "Staff and cover"], ["ttschool", "Timetable"], ["fees", "Fees"], ["classes", "Classes"], ["admissions", "Admissions"], ["exams", "Exams"], ["notices", "Notices"], ["gate", "Gate"], ["transport", "Transport"], ["log", "Activity log"], ["website", "Website"]],
+    admin: [["overview", "Home"], ["messages", "Messages"], ["attendance", "Attendance"], ["staff", "Staff and cover"], ["ttschool", "Timetable"], ["fees", "Fees"], ["classes", "Classes"], ["admissions", "Admissions"], ["exams", "Exams"], ["notices", "Notices"], ["gate", "Gate"], ["transport", "Transport"], ["log", "Activity log"], ["website", "Website"]]
   }[role].filter(([k]) => role !== "teacher" || me.classOf || k !== "attendance");
   const btn = ([k, l]) => `<button class="side-btn" data-go="${k}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">${I[k]}</svg>${l}<span class="count" data-count="${k}" hidden></span></button>`;
   document.getElementById("nav-side").innerHTML = NAV.map(btn).join("");
@@ -723,7 +736,7 @@
 <script src="js/common.js?v=17"></script>
 <script src="js/charts.js?v=10"></script>
 <script src="js/hub.js?v=14"></script>
-<script src="js/more.js?v=14"></script>
+<script src="js/more.js?v=15"></script>
 <script src="js/staffroom.js?v=3"></script>
 <script src="js/faq.js?v=1"></script>
 <script src="js/ai.js?v=16"></script>
@@ -857,7 +870,11 @@
     const mkFoot = entry ? `<span class="pg-chips">${mine.map((k) => { const e = S.entry(k, sj(k)), n = Object.keys(e.marks).length, t = S.sectionByKey(k).students.length; return `<span class="pg-chip${e.published ? "" : " soon"}">${secLabel(k)} · ${e.published ? "published ✓" : `${n}/${t}`}</span>`; }).join("")}</span>` : "";
     S.paint(S.$("#t-tiles"), S.tilesHTML([
       { go: "class", icon: PI.class, tone: "accent", name: isCT ? "My class" : "My sections", line: isCT ? `${clsAvg}% average` : `${SUBJ_L} average ${subjAvg}%`, main: true, big: isCT ? clsAvg : subjAvg, unit: "%", side: clsSide },
-      ...(isCT ? [{ go: "attendance", icon: PI.attendance, tone: "green", name: "Attendance", line: rec ? `Present today · ${N() - present ? `${N() - present} away` : "everyone in"}<span class="pg-sub">${waitLeaves ? `${waitLeaves} leave request${waitLeaves === 1 ? "" : "s"} waiting` : "Bars: the last six school days"}</span>` : `Not marked yet<span class="pg-sub">Parents are waiting for the morning update</span>`, flag: !rec && !!S.today.getDay(), count: waitLeaves, m: rec ? (present / N()) * 100 : 0, main: true, big: rec ? present : "–", unit: ` / ${N()}`, side: `<span class="pg-spark" title="Last six school days">${S.miniBars(S.weekOf(S.focus), { lo: 60, hi: 100, ref: 90 })}</span>` }] : []),
+      // Messages: parents, colleagues and the class groups. For a class teacher it takes the big row; attendance sits below.
+      (() => { const n = S.talkUnread ? S.talkUnread() : unread, sp = S.talkSplit ? S.talkSplit() : { stu: unread, staff: 0 }, peek = S.talkPeek ? S.talkPeek(3) : [];
+        const foot = isCT && peek.length ? `<span class="pg-chips">${peek.map((p) => `<span class="pg-chip${p.n ? " soon" : ""}">${S.esc(p.t)}${p.n ? ` · ${p.n} new` : ""}</span>`).join("")}</span>` : "";
+        return { go: "messages", icon: PI.messages, tone: "royal", name: "Messages", main: isCT, big: n, unit: " new", count: isCT ? 0 : n, foot,
+          line: isCT ? `${sp.stu} from parents · ${sp.staff} from staff<span class="pg-sub">${peek.length ? "Latest:" : "Parents, colleagues and class groups"}</span>` : `${n ? `${n} new` : "All caught up"}<span class="pg-sub">Parents, colleagues and class groups</span>` }; })(),
       { go: "homework", icon: PI.homework, tone: "royal", name: "Homework", main: true, big: hwAhead.length, unit: " due ahead", line: `${posted} posted across your sections<span class="pg-sub">${hwAhead.length ? "Due next:" : "Nothing due"}</span>`, foot: hwFoot },
       { go: "marks", icon: PI.marks, tone: "gold", name: "Marks", line: entry ? `${S.ENTRY.name}: ${entry.published ? "published" : Object.keys(entry.marks).length + " entered"}` : `${L(C)} average ${subjAvg}%`, m: entry ? (entry.published ? 100 : (Object.keys(entry.marks).length / N()) * 100) : null, main: true, big: entry ? (entry.published ? "Done" : Object.keys(entry.marks).length) : subjAvg, unit: entry ? (entry.published ? "" : ` / ${N()}`) : "%", foot: mkFoot },
       // Their week ahead: a big count of classes, then the next class of each section as chips.
@@ -873,9 +890,7 @@
           line: isCT ? `${n} classes in the next 7 days<span class="pg-sub">${fu ? `${fu} follow-up${fu === 1 ? "" : "s"} planned` : "Plan follow-ups class by class"}</span>` : `Next 7 days · ${fu ? `${fu} follow-up${fu === 1 ? "" : "s"} planned` : "plan follow-ups"}<span class="pg-sub">${order.length ? "Next up:" : "No classes ahead"}</span>` }];
       })(),
       { go: "exams", icon: PI.exams, tone: "slate", name: "Exams", line: nextEx ? `${S.esc(nextEx.name)} from ${S.fmt(S.examSpan(nextEx, S.groupOf({ cls: x.cls, sec: x })).from)}` : "Datesheets for every class" },
-      // Messages: parents, colleagues and the class groups, in one place.
-      (() => { const n = S.talkUnread ? S.talkUnread() : unread; return { go: "messages", icon: PI.messages, tone: "royal", name: "Messages", count: n,
-        line: `${n ? `${n} new` : "All caught up"}<span class="pg-sub">Parents, colleagues and class groups</span>` }; })(),
+      ...(isCT ? [{ go: "attendance", icon: PI.attendance, tone: "green", name: "Attendance", line: rec ? `Present today · ${N() - present ? `${N() - present} away` : "everyone in"}<span class="pg-sub">${waitLeaves ? `${waitLeaves} leave request${waitLeaves === 1 ? "" : "s"} waiting` : "Bars: the last six school days"}</span>` : `Not marked yet<span class="pg-sub">Parents are waiting for the morning update</span>`, flag: !rec && !!S.today.getDay(), count: waitLeaves, m: rec ? (present / N()) * 100 : 0, side: `<span class="pg-spark" title="Last six school days">${S.miniBars(S.weekOf(S.focus), { lo: 60, hi: 100, ref: 90 })}</span>` }] : []),
       { go: "care", icon: PI.care, tone: "green", name: "Remarks and forms", line: `${forms ? `${forms} form${forms === 1 ? "" : "s"} sent · notes on any student` : "Notes on any student you teach"}<span class="pg-sub">Meeting: ${ptm ? `${bk} booked for ${S.fmt(ptm.date)}` : "none planned yet"}</span>` }
     ]));
   }
@@ -1732,6 +1747,7 @@
     S.paint(S.$("#p-tiles"), S.tilesHTML([
       { go: "attendance", icon: PI.attendance, tone: "green", name: "Attendance", line: today === null ? "Not marked yet" : `${today}% present today`, flag: today !== null && today < 90, main: true, bars: byDay, barsOpt: { lo: 80, hi: 100, ref: 90 } },
       { go: "staff", icon: PI.staff, tone: "royal", name: "Staff and cover", main: true, big: toCover, unit: toCover === 1 ? " period to cover" : " to cover", line: toCover ? `${toCover} period${toCover === 1 ? "" : "s"} to cover` : S.PHASE === "mid" ? "84 of 88 present · all covered" : "All periods covered", flag: toCover > 0 },
+      { go: "ttschool", icon: PI.timetable, tone: "teal", name: "Timetable", line: `${S.TEACHERS.length} teachers, 4 to 5 classes each<span class="pg-sub">Who's free when · every class's week · exam duty</span>` },
       { go: "fees", icon: PI.fees, tone: "gold", name: "Fees", line: `${F.pct}% of ${F.q} collected`, m: F.pct, main: true, big: F.pct, unit: "%" },
       { go: "classes", icon: PI.classes, tone: "teal", name: "Classes", main: true, big: S.PHASE === "mid" ? watchN : S.allSections().length, unit: S.PHASE === "mid" ? " to watch" : " sections", line: S.PHASE === "start" ? `${roll.toLocaleString("en-IN")} students in ${S.allSections().length} sections` : S.PHASE === "end" ? "Results by class and toppers" : `${watchN} section${watchN === 1 ? "" : "s"} to watch` },
       { go: "admissions", icon: PI.admissions, tone: "accent", name: "Admissions", line: fresh ? `${fresh} new to call · ${enq.length} this season` : `${enq.length} enquiries this season`, count: fresh },
@@ -2229,11 +2245,12 @@
 <script src="js/desk.js?v=6"></script>
 <script src="js/corner.js?v=7"></script>
 <script src="js/attrack.js?v=1"></script>
-<script src="js/ttteach.js?v=3"></script>
+<script src="js/ttteach.js?v=4"></script>
+<script src="js/ttschool.js?v=1"></script>
 <script src="js/paperdoc.js?v=1"></script>
 <script src="js/qpaper.js?v=12"></script>
 <script src="js/transport.js?v=4"></script>
-<script src="js/talk.js?v=1"></script>
+<script src="js/talk.js?v=2"></script>
 <script src="js/select.js?v=4"></script>
 <script src="js/date.js?v=3"></script>
 <script src="js/portal.js?v=1"></script>
