@@ -3797,3 +3797,5 @@ button.at-k { cursor: pointer; }
 
 /* Also here with only two links: they share the row instead of leaving an empty third slot. */
 @media (min-width: 901px) { .app :is([data-view="home"], [data-view="overview"]) .pgl:not(:has(> :nth-child(3))) { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+/* Also here with four links: two rows of two, never three and a lone one. */
+@media (min-width: 901px) { .app :is([data-view="home"], [data-view="overview"]) .pgl:has(> :nth-child(4):last-child) { grid-template-columns: repeat(2, minmax(0, 1fr)); } }

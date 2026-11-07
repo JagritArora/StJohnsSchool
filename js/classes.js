@@ -92,6 +92,18 @@
     t.title = `${t.subject} · ${t.sections.join(", ")}` + (t.classOf ? ` · class teacher ${t.classOf}` : "");
   });
 
+  // ---------- School leadership: the vice principal and a coordinator for each wing ----------
+  // They use the leadership pages; in Messages each sees the wings they look after.
+  const LEADS = [["SJS-P-0002", "Mrs. Rekha Menon", "vp", null],
+    ["SJS-W-0101", "Ms. Shalini Kapoor", "coord", 0], ["SJS-W-0102", "Mrs. Poonam Arora", "coord", 1], ["SJS-W-0103", "Mr. Vikram Sethi", "coord", 2],
+    ["SJS-W-0104", "Mrs. Kavita Bhalla", "coord", 3], ["SJS-W-0105", "Dr. Meenakshi Rao", "coord", 4]];
+  S.LEADS = LEADS.map(([id, name, lead, w]) => {
+    const p = { id, role: "principal", lead, name, first: name.split(" ")[1], initials: initials(name.replace(/^Dr\.\s*/, "")), wing: w === null ? null : S.WING_NAMES[w],
+      title: lead === "vp" ? "Vice principal" : `Coordinator · ${S.WING_NAMES[w]} wing`, tone: "" };
+    S.STAFF[id] = p; return p;
+  });
+  S.STAFF["SJS-P-0001"].lead = "principal";
+
   // ---------- Timetables ----------
   // Greedy fill, day by day: no subject more than twice a day, never twice in a
   // row, and never at a time its teacher is busy in another section.

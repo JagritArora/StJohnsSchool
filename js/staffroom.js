@@ -41,7 +41,7 @@
   R();
   const mine = () => Object.values(R().threads).filter((t) => t.members.includes(ME.id));
   const seenOf = () => (R().seen[ME.id] = R().seen[ME.id] || {});
-  const unread = (t) => t.msgs.slice(seenOf()[t.id] || 0).filter((m) => m.from !== ME.id).length;
+  const unread = (t) => t.msgs.slice(seenOf()[t.id] || 0).filter((m) => m.from !== ME.id && !m.old).length;
   S.staffUnread = () => mine().reduce((a, t) => a + unread(t), 0);
   S.tasksFor = (id) => R().tasks.filter((k) => k.to.includes(id) && !k.done[id]);
   const titleOf = (t) => (t.kind === "group" ? t.name : who(t.members.find((m) => m !== ME.id)).name);
@@ -57,7 +57,7 @@
   function counts() {
     const n = S.staffUnread(), k = S.tasksFor(ME.id).length;
     const set = (sel, v) => document.querySelectorAll(sel).forEach((c) => { c.hidden = !v; c.textContent = v; });
-    set('[data-tc-count="room"]', n); set('[data-tc-count="tasks"]', k); set('[data-count="corner"]', n + k);
+    set('[data-tc-count="room"]', n); set('[data-tc-count="tasks"]', k); set('[data-count="corner"]', k); if (S.talkCounts) S.talkCounts();
     const rt = $("#tc-room-t"), tt = $("#tc-tasks-t");
     if (rt) rt.textContent = n ? `${n} new message${n === 1 ? "" : "s"}` : "Chat and groups";
     if (tt) tt.textContent = k ? `${k} for you` : "Assign and remind";

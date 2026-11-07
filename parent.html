@@ -17,12 +17,13 @@
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Figtree:wght@400..800&display=swap" rel="stylesheet" />
-<link rel="stylesheet" href="css/site.css?v=142" />
+<link rel="stylesheet" href="css/site.css?v=143" />
 <link rel="stylesheet" href="css/feel.css?v=7" />
 <link rel="stylesheet" href="css/ease.css?v=8" />
 <script>try{var t={"1.1":"l","1.2":"xl"}[localStorage.getItem("sjs-zoom")];if(t)document.documentElement.dataset.text=t}catch(e){}</script>
 <link rel="stylesheet" href="css/ai.css?v=3" />
 <link rel="stylesheet" href="css/journey.css?v=17" />
+<link rel="stylesheet" href="css/talk.css?v=1" />
 <script>
 /* Before the first paint: fade photos in as they load. */
 (function (d) { d.documentElement.classList.add("js");
@@ -209,13 +210,16 @@
 
     <!-- MESSAGES -->
     <section data-view="messages">
-      <div class="topbar"><div><h1>Messages, Forms and Meetings</h1><div class="sub" id="msg-sub">With Ms. Neha Mathew, class teacher VII-B</div></div></div>
+      <div class="topbar"><div><h1>Messages, Forms and Meetings</h1><div class="sub">Teachers, the class group and the school, kept as a record</div><span id="msg-sub" hidden></span></div></div>
       <div class="ptabs hn-swrap ms4"><div class="seg vt" data-vt="pmsg" aria-label="Chat, remarks, forms or meetings"><button data-v="chat"><span class="hs-ring nt" id="ms-chat"><span></span></span><span class="hs-t"><b>Chat</b><small id="ms-chat-t"></small></span></button><button data-v="remarks"><span class="hs-ring rm" id="ms-remarks"><span></span></span><span class="hs-t"><b>Remarks</b><small id="ms-remarks-t"></small></span></button><button data-v="forms"><span class="hs-ring due" id="ms-forms"><span></span></span><span class="hs-t"><b>Forms</b><small id="ms-forms-t"></small></span></button><button data-v="ptm"><span class="hs-ring mt" id="ms-ptm"><span></span></span><span class="hs-t"><b>Meetings</b><small id="ms-ptm-t"></small></span></button></div></div>
       <div class="pm-panes">
       <div class="card vp" data-vp="pmsg" data-v="remarks" hidden style="max-width:720px"><p class="muted" style="font-size:14px;margin-bottom:6px">What teachers have noted about <b class="kid-first">Aarav</b>, newest first.</p><div class="rem-list" id="p-remarks"></div></div>
       <div class="card vp" data-vp="pmsg" data-v="forms" hidden style="max-width:720px"><div class="form-list" id="p-forms"></div></div>
       <div class="card vp" data-vp="pmsg" data-v="ptm" hidden style="max-width:720px"><div id="p-ptm"></div></div>
-      <div class="card vp chat2" data-vp="pmsg" data-v="chat">
+      <div class="vp tk-pane" data-vp="pmsg" data-v="chat">
+        <div id="talk"></div>
+        <!-- The earlier one-chat view: kept hidden, as the page's own code still draws into it. -->
+        <div class="card chat2" hidden>
         <div class="chat-to" id="chat-to" role="group" aria-label="Choose a teacher"></div>
         <div class="ch-main">
         <div class="ch-head" id="ch-head"></div>
@@ -224,6 +228,7 @@
         <div class="ch-quick" id="ch-quick"><button type="button">Thank you!</button><button type="button">Noted, will do.</button><button type="button">Can we talk for a few minutes?</button><button type="button">My child was unwell today.</button></div>
         <form id="msg-form" class="ai-form" style="padding:14px 0 0;margin-top:12px"><input placeholder="Write to the class teacher…" aria-label="Message" /><button type="submit" aria-label="Send"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button></form>
         <div id="p-rec"></div>
+        </div>
         </div>
       </div>
       </div>
@@ -256,7 +261,7 @@
 </div></div>
 
 <script src="js/data.js?v=14"></script>
-<script src="js/classes.js?v=10"></script>
+<script src="js/classes.js?v=11"></script>
 <script src="js/bus.js?v=5"></script>
 <script src="js/exams.js?v=9"></script>
 <script src="js/journey.js?v=15"></script>
@@ -265,7 +270,7 @@
 <script src="js/charts.js?v=10"></script>
 <script src="js/hub.js?v=14"></script>
 <script src="js/more.js?v=13"></script>
-<script src="js/demo.js?v=3"></script>
+<script src="js/demo.js?v=4"></script>
 <script src="js/faq.js?v=1"></script>
 <script src="js/ai.js?v=16"></script>
 <script>
@@ -1538,6 +1543,7 @@
   S.mountAI("parent");
 })();
 </script>
+<script src="js/talk.js?v=1"></script>
 <script src="js/select.js?v=4"></script>
 <script src="js/date.js?v=3"></script>
 <script src="js/portal.js?v=1"></script>

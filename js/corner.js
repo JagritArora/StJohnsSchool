@@ -27,7 +27,7 @@
     ["corner/class", "pick", "royal", "Name picker", "A student at random, no repeats"],
     ["corner/class", "groups", "green", "Student groups", "Random or mixed ability, in a tap"],
     ["corner/class", "timer", "gold", "Class timer", "A countdown for the projector"],
-    ["corner/room", "chat", "royal", "Staff room", "Chat with teachers, one-to-one or in groups", "room"],
+    ["messages", "chat", "royal", "Messages", "Parents, colleagues and class groups", "room"],
     ["corner/tasks", "task", "accent", "Tasks and reminders", "Assign, tick off, remind", "tasks"],
     ["corner/paper", "paper", "slate", "Question paper", "Upload a Word file, get the school's layout"]
   ];
