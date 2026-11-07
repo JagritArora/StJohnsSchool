@@ -1,5 +1,5 @@
 #!/bin/bash
-# The full portal audit, run before every push: 8 demo people × 3 session stages × 2 widths = 48 runs.
+# The full portal audit, run before every push: 9 demo people × 3 session stages × 2 widths = 54 runs.
 # Each run opens every view of the page and reports script errors and sideways overflow.
 # Needs the local server (python3 -m http.server 8080 in the project folder) and Chrome's headless shell.
 cd "$(dirname "$0")/.."
@@ -15,7 +15,7 @@ s = open(f).read().replace("<head>", '<head><script src="tools/stage-audit.js"><
 open("_audit_" + f, "w").write(s)
 PY
 done
-PEOPLE="parent.html?kid=VII-B-1:parent-VII parent.html?kid=IX-A-30:parent-IX parent.html?kid=XII-B-12:parent-XII staff.html?id=SJS-T-0508:teacher staff.html?id=SJS-P-0001:principal staff.html?id=SJS-A-0107:office driver.html?id=SJS-D-0114:driver login.html:sign-in"
+PEOPLE="parent.html?kid=VII-B-1:parent-VII parent.html?kid=IX-A-30:parent-IX parent.html?kid=XII-B-12:parent-XII staff.html?id=SJS-T-0508:teacher staff.html?id=SJS-P-0001:principal staff.html?id=SJS-A-0107:office staff.html?id=SJS-C-0001:planner driver.html?id=SJS-D-0114:driver login.html:sign-in"
 clear=0; runs=0
 for ph in start mid end; do for W in 1280 390; do for p in $PEOPLE; do
   url=${p%%:*}; name=${p##*:}; sep=$([[ $url == *\?* ]] && echo "&" || echo "?")

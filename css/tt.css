@@ -163,3 +163,51 @@ button.tts-lg small { display: block; color: var(--muted); font-size: 12px; }
 .tts-pt em small { display: inline; font-size: 11px; font-weight: 500; color: var(--muted); margin-left: 1px; }
 .tts-pt { grid-template-columns: minmax(0, 1fr) 70px 46px; }
 .tts-pt em { white-space: nowrap; }
+
+/* The principal's view: the office and the academic planner make the changes, so their buttons stay off. */
+.tts-ro .tts-acts, .tts-ro label.tts-who, .tts-ro [data-tts-send], .tts-ro [data-tts-takeall], .tts-ro [data-tts-clearall], .tts-ro [data-tts-res], .tts-ro [data-tts-unres], .tts-ro [data-tts-undo], .tts-ro [data-tts-reset] { display: none !important; }
+.tts-ro .tts-week td.ed > button { cursor: default; }
+.tts-ro .tts-week td.ed:hover { filter: none; }
+
+/* My timetable (teachers): cover the office gave them and exam duty, in free periods; the side's
+   responsibilities and leave. Cover is gold, as on the home page's day; duty has a dashed edge. */
+.ttt-c.ex, .ttt-r.ex { background: color-mix(in srgb, var(--gold) 13%, var(--surface)); border: 1px solid color-mix(in srgb, var(--gold) 38%, var(--line)); }
+.ttt-c.ex.du, .ttt-r.ex.du { border-style: dashed; background: color-mix(in srgb, var(--gold) 8%, var(--surface)); }
+.ttt-c.ex b { font-size: 14px; font-weight: 650; color: color-mix(in srgb, var(--gold-text, var(--gold)) 80%, var(--ink)); }
+.ttt-c.ex small { font-size: 11.5px; color: var(--muted); }
+.ttt-r.ex > b { font-size: 15px; color: color-mix(in srgb, var(--gold-text, var(--gold)) 80%, var(--ink)); }
+.ttt-r.ex > b small { font-weight: 400; font-size: 12.5px; color: var(--muted); }
+.ttt-tags i.du { background: color-mix(in srgb, var(--gold) 18%, var(--surface)); color: var(--gold-text, var(--gold)); }
+.ttt-ex { --s: var(--gold); cursor: default; }
+.ttt-ex.du i { background: transparent; border: 2px dashed var(--gold); width: 8px; height: 8px; }
+.ttt-resp { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 14px; }
+.ttt-resp span { font-size: 13px; font-weight: 600; padding: 4px 10px; border-radius: 999px; background: color-mix(in srgb, var(--royal) 9%, var(--surface)); color: var(--royal-text, var(--royal)); }
+.ttt-resp small { flex-basis: 100%; font-size: 12px; color: var(--muted); }
+.ttt-kl { display: flex; align-items: baseline; justify-content: space-between; gap: 10px; }
+.ttt-kl .link-btn { text-transform: none; letter-spacing: 0; font-size: 13px; }
+.ttt-lv { display: grid; gap: 8px; margin-bottom: 10px; padding: 12px; border-radius: 12px; background: var(--sunken); }
+.ttt-lv label { display: grid; gap: 3px; font-size: 12.5px; color: var(--muted); }
+.ttt-lv .input { min-height: 36px; font-size: 14px; }
+.ttt-lvr { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.ttt-lva { display: flex; align-items: center; gap: 12px; }
+.ttt-lvi { cursor: default; --s: var(--muted); }
+.ttt-lvi.waiting { --s: var(--gold); }
+.ttt-lvi.approved { --s: var(--green); }
+
+/* Staff and cover: the days ahead, and leave teachers asked for. */
+.cv-days { display: flex; gap: 6px; overflow-x: auto; scrollbar-width: none; margin: 0 0 10px; padding-bottom: 2px; }
+.cv-days::-webkit-scrollbar { display: none; }
+.cv-days button { flex: 1 0 74px; display: grid; gap: 1px; padding: 7px 8px; border: 1px solid var(--line); border-radius: 12px; background: var(--surface); font: inherit; color: var(--ink); cursor: pointer; text-align: center; }
+.cv-days button:hover { background: var(--sunken); }
+.cv-days button.on { background: var(--ink); color: var(--surface); border-color: var(--ink); }
+.cv-days b { font-size: 13.5px; } .cv-days span { font-size: 12px; opacity: .75; }
+.cv-days small { font-size: 11.5px; color: var(--green-text, var(--green)); font-weight: 600; }
+.cv-days small.warn { color: var(--warn-text, var(--warn)); }
+.cv-days button.on small { color: inherit; opacity: .85; }
+.lv-req .t { min-width: 0; }
+.lv-req .t > span { display: block; }
+.lv-req .pill { margin-top: 6px; display: inline-block; }
+.lv-acts { display: flex !important; gap: 8px; margin-top: 8px; }
+.lv-h2 { margin-top: 16px; padding-top: 14px; border-top: 1px solid var(--line); }
+.ttt-up + .ttt-k, .ttt-up + .ttt-lv, .ttt-lv + .ttt-up { margin-top: 16px; }
+.ttt-none.ttt-lvl { margin-bottom: 16px; }

@@ -11,15 +11,28 @@
   const ini = (n) => short(n).split(" ").map((w) => w[0]).join("").slice(0, 2);
 
   // ---------- Cover ----------
+  // Today, or a day ahead: approved leave puts a teacher's periods in the list for each day they're away.
+  let cvDay = null;
+  const coverDays = () => { const out = []; let d = S.periodsOn(S.today) ? S.today : S.nextSchoolDay(S.today, 1); for (let i = 0; i < 6; i++, d = S.nextSchoolDay(d, 1)) out.push(S.iso(d)); return out; };
+  const dayName = (k) => k === S.todayKey ? "today" : k === S.iso(S.nextSchoolDay(S.today, 1)) && S.iso(S.addDays(S.today, 1)) === k ? "tomorrow" : S.fmt(k, { weekday: "long", day: "numeric", month: "short" });
+  const doneOn = (k) => S.state.cover[k] || (S.state.cover[k] = {});
   function renderCover() {
-    const away = S.leaveToday(), rows = S.coverToday(), done = S.state.cover[S.todayKey] || (S.state.cover[S.todayKey] = {});
+    const days = coverDays(); if (!cvDay || !days.includes(cvDay)) cvDay = days[0];
+    const away = S.leaveOn(cvDay), rows = S.coverOn(cvDay), done = doneOn(cvDay);
     const left = rows.filter((r) => !done[r.id]).length, picks = bestPicks(rows, done);
-    S.paint(S.$("#d-cover"), `<div class="card-h"><h2>Periods to cover today</h2><span class="right pill ${left ? "warn" : "green"}">${left ? `${left} to assign` : "All covered"}</span>${Object.keys(picks).length > 1 ? `<button type="button" class="cv-best cv-all" data-cv-all>${CHK}Assign all ${Object.keys(picks).length} suggested</button>` : ""}</div>` +
+    const strip = `<div class="cv-days" role="group" aria-label="Day">${days.map((k) => { const rs = S.coverOn(k), dn = (S.state.cover[k] || {}), open = rs.filter((r) => !dn[r.id]).length;
+      return `<button type="button" class="${k === cvDay ? "on" : ""}" data-cv-day="${k}" aria-pressed="${k === cvDay}"><b>${k === S.todayKey ? "Today" : S.fmt(k, { weekday: "short" })}</b><span>${S.fmt(k, { day: "numeric", month: "short" })}</span><small class="${open ? "warn" : ""}">${rs.length ? (open ? `${open} open` : "covered") : "none"}</small></button>`; }).join("")}</div>`;
+    S.paint(S.$("#d-cover"), `<div class="card-h"><h2>Periods to cover ${esc(dayName(cvDay))}</h2><span class="right pill ${left ? "warn" : "green"}">${left ? `${left} to assign` : "All covered"}</span>${Object.keys(picks).length > 1 ? `<button type="button" class="cv-best cv-all" data-cv-all>${CHK}Assign all ${Object.keys(picks).length} suggested</button>` : ""}</div>` + strip +
       (rows.length ? `<div class="list">${rows.map((r) => { const a = done[r.id]; return `<div class="li cv-li${a ? " on" : ""}" data-cv-row="${esc(r.id)}"><span class="sq ${a ? "green" : "warn"} cv-p">P${r.p + 1}</span><div class="t"><b>${esc(S.secName(r.key))} · ${esc(r.subj)} · ${r.time}</b><span>${a ? `Covered by ${esc(a)}` : `Usually ${esc(r.teacher)}`}</span></div>
-        <div class="cv-do">${!a && picks[r.id] ? `<button type="button" class="cv-best" data-cv-best="${esc(r.id)}" title="${esc(picks[r.id].subject)}${picks[r.id].same ? ", same subject" : ""} · ${picks[r.id].load} periods today">${CHK}${esc(short(picks[r.id].name))}</button>` : ""}<label class="cv-pick"><span class="sr-only">Cover teacher</span><select data-cv="${esc(r.id)}"><option value="">${a ? "Change" : "Assign"}</option>${r.free.map((f) => `<option value="${esc(f.name)}"${a === f.name ? " selected" : ""}>${esc(f.name)} · ${esc(f.subject)}${f.same ? ", same subject" : ""} · ${f.load} periods today</option>`).join("")}</select></label></div></div>`; }).join("")}</div>
-        <p class="muted cv-note">Suggestions are teachers free in that period: the same subject first, then whoever has the lightest day.</p>` : `<p class="muted">No periods to cover today.</p>`));
+        <div class="cv-do">${!a && picks[r.id] ? `<button type="button" class="cv-best" data-cv-best="${esc(r.id)}" title="${esc(picks[r.id].subject)}${picks[r.id].same ? ", same subject" : ""} · ${picks[r.id].load} periods that day">${CHK}${esc(short(picks[r.id].name))}</button>` : ""}<label class="cv-pick"><span class="sr-only">Cover teacher</span><select data-cv="${esc(r.id)}"><option value="">${a ? "Change" : "Assign"}</option>${r.free.map((f) => `<option value="${esc(f.name)}"${a === f.name ? " selected" : ""}>${esc(f.name)} · ${esc(f.subject)}${f.same ? ", same subject" : ""} · ${f.load} periods that day</option>`).join("")}</select></label></div></div>`; }).join("")}</div>
+        <p class="muted cv-note">Suggestions are teachers free in that period who take cover: the same subject first, then whoever has the lightest day. The teacher sees it on their home page and timetable.</p>` : `<p class="muted">No periods to cover ${esc(dayName(cvDay))}.</p>`));
     const pool = S.TEACHERS.filter((t) => !away.some((a) => a.name === t.name));
-    S.paint(S.$("#d-leave"), `<div class="card-h"><h2>On leave today</h2></div><div class="list">${away.map((a) => `<div class="li"><span class="avatar soft">${ini(a.name)}</span><div class="t"><b>${esc(a.name)}</b><span>${esc(a.why)}</span></div></div>`).join("")}</div>
+    // Leave teachers asked for: waiting ones first, then the last few decided.
+    const reqs = S.staffReqs(), wait = reqs.filter((r) => r.status === "waiting"), past = reqs.filter((r) => r.status !== "waiting").slice(-3).reverse();
+    const span = (r) => r.from === r.to ? S.fmt(r.from, { weekday: "short", day: "numeric", month: "short" }) : `${S.fmt(r.from, { day: "numeric", month: "short" })} to ${S.fmt(r.to, { day: "numeric", month: "short" })}`;
+    const reqBox = reqs.length ? `<div class="card-h lv-h"><h2>Leave requests</h2>${wait.length ? `<span class="right pill warn">${wait.length} waiting</span>` : ""}</div><div class="list">${[...wait, ...past].map((r) => { const n = S.schoolDaysIn(r.from, r.to).length;
+      return `<div class="li lv-req" data-lv-row="${esc(r.id)}"><span class="avatar soft">${ini(r.name)}</span><div class="t"><b>${esc(r.name)} · ${esc(span(r))}</b><span>${esc(r.kind)} leave${n > 1 ? `, ${n} school days` : ""}${r.note ? ` · ${esc(r.note)}` : ""}</span>${r.status === "waiting" ? (role === "principal" ? `<span class="lv-acts"><button type="button" class="btn btn-primary btn-sm" data-lv-ok="${esc(r.id)}">Approve</button><button type="button" class="btn btn-ghost btn-sm" data-lv-no="${esc(r.id)}">Decline</button></span>` : `<span class="pill">Waiting for the principal</span>`) : `<span class="pill ${r.status === "approved" ? "green" : ""}">${r.status === "approved" ? "Approved" : "Declined"}${r.by ? " · " + esc(r.by) : ""}</span>`}</div></div>`; }).join("")}</div>` : "";
+    S.paint(S.$("#d-leave"), reqBox + `<div class="card-h${reqs.length ? " lv-h2" : ""}"><h2>On leave ${esc(dayName(cvDay))}</h2></div><div class="list">${away.map((a) => `<div class="li"><span class="avatar soft">${ini(a.name)}</span><div class="t"><b>${esc(a.name)}</b><span>${esc(a.why)}</span></div></div>`).join("")}</div>
       <form id="lv-form" class="lv-form"><label class="sr-only" for="lv-t">Teacher</label><select id="lv-t" class="input">${pool.map((t) => `<option>${esc(t.name)}</option>`).join("")}</select><button class="btn btn-ghost btn-sm" type="submit">Mark on leave</button></form>`);
   }
   // The best free teacher for each open period, never the same person twice in one period.
@@ -31,7 +44,7 @@
   }
   document.addEventListener("click", (e) => {
     const one = e.target.closest("[data-cv-best]"), all = e.target.closest("[data-cv-all]"); if (!one && !all) return;
-    const rows = S.coverToday(), done = S.state.cover[S.todayKey], picks = bestPicks(rows, done);
+    const rows = S.coverOn(cvDay), done = doneOn(cvDay), picks = bestPicks(rows, done);
     const ids = one ? [one.dataset.cvBest] : Object.keys(picks);
     ids.forEach((id) => { if (picks[id]) done[id] = picks[id].name; });
     S.save(); renderCover();
@@ -40,14 +53,25 @@
   });
   document.addEventListener("change", (e) => {
     const sel = e.target.closest("[data-cv]"); if (!sel || !sel.value) return;
-    const r = S.coverToday().find((x) => x.id === sel.dataset.cv); S.state.cover[S.todayKey][r.id] = sel.value; S.save(); renderCover();
+    const r = S.coverOn(cvDay).find((x) => x.id === sel.dataset.cv); doneOn(cvDay)[r.id] = sel.value; S.save(); renderCover();
     S.landed(S.$(`[data-cv-row="${CSS.escape(r.id)}"]`));
     S.toast(`Assigned: ${sel.value} takes ${S.secName(r.key)} ${r.subj}, period ${r.p + 1}. They have an app alert.`);
   });
   document.addEventListener("submit", (e) => {
     if (e.target.id !== "lv-form") return; e.preventDefault();
-    const n = S.$("#lv-t").value; S.leaveToday().push({ name: n, why: "Leave marked by the office" }); S.save(); renderCover();
-    S.toast(`Marked on leave: ${n}. Their periods are in the cover list.`);
+    const n = S.$("#lv-t").value; S.leaveOn(cvDay).push({ name: n, why: "Leave marked by the office" }); S.save(); renderCover();
+    S.toast(`Marked on leave ${dayName(cvDay)}: ${n}. Their periods are in the cover list.`);
+  });
+  document.addEventListener("click", (e) => {
+    const d = e.target.closest("[data-cv-day]"); if (d) { cvDay = d.dataset.cvDay; renderCover(); return; }
+    const ok = e.target.closest("[data-lv-ok]"), no = e.target.closest("[data-lv-no]"); if ((!ok && !no) || role !== "principal") return;
+    const r = S.staffReqs().find((x) => x.id === (ok || no).dataset[ok ? "lvOk" : "lvNo"]); if (!r || r.status !== "waiting") return;
+    if (ok) { S.approveLeave(r, me); const ds = S.schoolDaysIn(r.from, r.to); cvDay = ds.find((k) => coverDays().includes(k)) || cvDay;
+      const n = ds.reduce((a, k) => a + S.coverOn(k).filter((c) => c.teacher === r.name).length, 0);
+      S.toast(`Approved: ${r.name}, ${r.kind.toLowerCase()} leave. ${n} period${n === 1 ? "" : "s"} joined the cover list.`, { done: true }); }
+    else { r.status = "declined"; r.by = me; S.toast(`Declined: ${r.name}'s leave request. They see it on their timetable page.`); }
+    if (S.logAct) S.logAct(`Leave ${ok ? "approved" : "declined"}: ${r.name}, ${r.from}${r.to !== r.from ? " to " + r.to : ""}`); else S.save();
+    renderCover(); if (S.renderHubAgain) S.renderHubAgain();
   });
 
   // ---------- Gate: pick-ups and visitors ----------

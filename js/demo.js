@@ -15,7 +15,7 @@
     const ts = S.CAST.teachers.map((id) => S.STAFF[id]).filter(Boolean);
     const ps = S.CAST.parents.map((k) => S.PARENTS.find((p) => p.key === k)).filter(Boolean);
     return [
-      { label: "School leadership", items: [["staff:SJS-P-0001", "Principal"], ["staff:SJS-P-0002", "Vice principal · Mrs. Usha Khanna"], ["staff:SJS-W-0104", "Coordinator, Secondary wing · Mrs. Kavita Bhalla"], ["staff:SJS-W-0105", "Coordinator, Senior secondary · Dr. Meenakshi Rao"], ["staff:SJS-A-0107", "Office admin · Mrs. Anita Joseph"]] },
+      { label: "School leadership", items: [["staff:SJS-P-0001", "Principal"], ["staff:SJS-P-0002", "Vice principal · Mrs. Usha Khanna"], ["staff:SJS-W-0104", "Coordinator, Secondary wing · Mrs. Kavita Bhalla"], ["staff:SJS-W-0105", "Coordinator, Senior secondary · Dr. Meenakshi Rao"], ["staff:SJS-A-0107", "Office admin · Mrs. Anita Joseph"], ["staff:SJS-C-0001", "Academic planner · Mrs. Rekha Dutta"]] },
       { label: "Teachers", items: ts.map((t) => [`staff:${t.id}`, tLabel(t)]) },
       { label: "Parents", items: ps.map((p) => { const k = S.kid(p.key); return [`kid:${p.key}`, `${p.parent} · parent of ${k.name}, ${k.label}`]; }) }
     ];

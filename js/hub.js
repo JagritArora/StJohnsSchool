@@ -151,7 +151,9 @@
     const main = tiles.filter((t) => t.main), rest = tiles.filter((t) => !t.main);
     if (!main.length) return `<div class="pgs">${tiles.map(tileOf).join("")}</div>`;
     return `<div class="pgs pgs-main" style="--n:${main.length}">${main.map(tileOf).join("")}</div>` +
-      (rest.length ? `<h3 class="pgl-h">Also here</h3><div class="pgl">${rest.map((t, i) => linkOf(t, i + main.length)).join("")}</div>` : "");
+      (!rest.length ? "" : !rest.some((t) => t.grp) ? `<h3 class="pgl-h">Also here</h3><div class="pgl">${rest.map((t, i) => linkOf(t, i + main.length)).join("")}</div>`
+        // Grouped (grp on each tile): a small heading per group, in the order the groups first come.
+        : [...new Set(rest.map((t) => t.grp || "Also here"))].map((g) => `<h3 class="pgl-h">${g}</h3><div class="pgl">${rest.filter((t) => (t.grp || "Also here") === g).map((t) => linkOf(t, rest.indexOf(t) + main.length)).join("")}</div>`).join(""));
   };
 
   // ---------- The school clock ----------

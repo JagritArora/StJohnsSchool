@@ -24,7 +24,7 @@
 <link rel="stylesheet" href="css/ai.css?v=3" />
 <link rel="stylesheet" href="css/journey.css?v=17" />
 <link rel="stylesheet" href="css/talk.css?v=2" />
-<link rel="stylesheet" href="css/tt.css?v=2" />
+<link rel="stylesheet" href="css/tt.css?v=3" />
 <script>
 /* Before the first paint: fade photos in as they load. */
 (function (d) { d.documentElement.classList.add("js");
@@ -261,20 +261,20 @@
   <div style="display:flex;gap:10px;margin-top:20px"><button type="button" class="btn btn-ghost" data-close>Cancel</button><button class="btn btn-green" id="pay-done" style="flex:1">I've paid (demo)</button></div>
 </div></div>
 
-<script src="js/data.js?v=15"></script>
+<script src="js/data.js?v=16"></script>
 <script src="js/ttplan.js?v=2"></script>
-<script src="js/classes.js?v=14"></script>
+<script src="js/classes.js?v=15"></script>
 <script src="js/bus.js?v=5"></script>
 <script src="js/exams.js?v=9"></script>
-<script src="js/journey.js?v=15"></script>
+<script src="js/journey.js?v=16"></script>
 <script src="js/care.js?v=2"></script>
 <script src="js/common.js?v=17"></script>
 <script src="js/charts.js?v=10"></script>
-<script src="js/hub.js?v=14"></script>
-<script src="js/more.js?v=15"></script>
-<script src="js/demo.js?v=4"></script>
+<script src="js/hub.js?v=15"></script>
+<script src="js/more.js?v=16"></script>
+<script src="js/demo.js?v=5"></script>
 <script src="js/faq.js?v=1"></script>
-<script src="js/ai.js?v=16"></script>
+<script src="js/ai.js?v=17"></script>
 <script>
 (function () {
   const S = SJS;
@@ -738,8 +738,8 @@
     months.forEach((r) => { r.me = Math.round((r.P / r.n) * 1000) / 10; r.c = Math.round((r.cls / r.n) * 1000) / 10; r.label = S.fmt(r.m + "-01", { month: "short" }); });
     return months;
   }
-  // Exams so far this year, oldest first, starting from last year's final.
-  const examsSoFar = () => [...new Set(["ly", ...[...S.EX.list].reverse()])];
+  // Exams so far this session, oldest first.
+  const examsSoFar = () => [...S.EX.list].reverse();
   function renderSession() {
     const days = sessionDays(), first = new Date(days[0] + "T00:00");
     // Session: the story of the term so far, unbroken runs, each day away and the breaks between, oldest first.
@@ -902,6 +902,10 @@
   if (!P) S.$('[data-vt="res"] [data-v="change"]').remove();
 
   function renderResults() {
+    // The start of the session: no exams yet, so the results cards stay away (the session's exams list is shown instead).
+    // (style, not hidden: the grid's own display would override the attribute)
+    document.querySelectorAll(".res-glance, .res-more").forEach((el) => (el.style.display = exam ? "" : "none"));
+    if (!exam) { renderPhaseResults(); renderResSwitch(); return; }
     const marks = me[exam];
     S.$("#res-title").textContent = S.vt.res === "change" && P ? `${L(P)} to ${L(C).toLowerCase()} · change by subject` : L(exam) + " · marks by subject (%)";
     // Against the class: the class average (ring) to the child's mark (dot), on CBSE's grade bands.
@@ -939,9 +943,9 @@
       S.paint(S.$("#dumb").nextElementSibling, `<span><i class="dot" style="border:2px solid var(--muted);width:10px;height:10px"></i>${L(P)}</span><span><i class="dot" style="background:var(--green)"></i>${L(C)}, up</span><span><i class="dot" style="background:var(--accent)"></i>${L(C)}, down</span>`);
     }
     // Table: every exam so far, oldest first, and the class average for the latest.
-    const cols = [...S.EX.list].reverse(), short = (k) => ({ ly: "Last year", ut1: "UT 1", hy: "Half-yearly", fin: board ? "Pre-board" : "Final" }[k]);
+    const cols = [...S.EX.list].reverse(), short = (k) => ({ ut1: "UT 1", hy: "Half-yearly", fin: board ? "Pre-board" : "Final" }[k]);
     const clsCur = (x) => S.classAvg(C, x);
-    // Trend: every exam from last year's final to now, one small line per subject.
+    // Trend: every exam so far this session, one small line per subject.
     const run = examsSoFar(), tr = (vals, lbl) => `<td class="tr-sp">${S.spark(vals, { tone: "var(--royal)", w: 56, h: 20, label: lbl })}</td>`;
     S.$("#res-tbl").innerHTML = `<thead><tr><th>Subject</th>${cols.map((k) => `<th class="num">${short(k)}</th>`).join("")}<th class="num">Class avg</th>${S.PHASE === "end" ? '<th class="num">Grade</th>' : ""}${run.length > 1 ? "<th>Trend</th>" : ""}</tr></thead><tbody>` +
       S.subjects.map((s) => `<tr><td>${s}</td>${cols.map((k) => `<td class="num">${k === C ? `<b>${me[k][s]}</b>` : me[k][s]}</td>`).join("")}<td class="num muted">${clsCur(s)}</td>${S.PHASE === "end" ? `<td class="num"><b>${S.grade(me[C][s])}</b></td>` : ""}${run.length > 1 ? tr(run.map((k) => me[k][s]), `${s}: ` + run.map((k) => `${L(k)} ${me[k][s]}%`).join(", ")) : ""}</tr>`).join("") +
@@ -955,10 +959,6 @@
       const up = [...S.subjects].sort((a, b) => (me[C][b] - me[P][b]) - (me[C][a] - me[P][a]))[0], d = me[C][up] - me[P][up];
       S.$("#res-ai").innerHTML = `${me.first}'s strongest subject is <b>${best}</b> (${me[C][best]}%). The biggest ${d >= 0 ? "improvement" : "change"} since the ${L(P).toLowerCase()} is in <b>${up}</b> (${d >= 0 ? "+" : "−"}${Math.abs(d)} points). ` +
         (weak.gap > 0 ? `<b>${weak.x}</b> is the one to watch: ${me[C][weak.x]}%, against a class average of ${clsCur(weak.x)}%.` : `Every subject is at or above the class average.`) + lift + tail;
-    } else {
-      S.$("#res-ai").innerHTML = `Last session, ${me.first} did best in <b>${best}</b> (${me[C][best]}%). ` +
-        (weak.gap > 0 ? `<b>${weak.x}</b> was below the class average (${me[C][weak.x]}% against ${clsCur(weak.x)}%), so it's worth a word with ${S.ttTeachers[weak.x] || "the subject teacher"} at Meet the Teacher on Saturday, 18 April.` : "Every subject was at or above the class average.") +
-        ` Unit Test 1 is from 20 July.`;
     }
     const pub = S.PHASE === "end" ? [] : published();
     S.$("#ut2-card").innerHTML = pub.map(([k, v]) => {
@@ -1034,8 +1034,8 @@
   function renderResSwitch() {
     const r1 = S.$("#rs-marks"); if (!r1) return;
     const set = (r, p, mid, txt) => { r.style.setProperty("--p", p); r.classList.toggle("clear", mid === "✓"); r.firstElementChild.textContent = mid; S.$("#" + r.id + "-t").textContent = txt; };
-    const a = Math.round(S.avgOf(me[exam]));
-    set(r1, a, a, `${L(exam)} · ${a}%, grade ${S.grade(a)}`);
+    if (!exam) set(r1, 0, "–", "No exams yet this session");
+    else { const a = Math.round(S.avgOf(me[exam])); set(r1, a, a, `${L(exam)} · ${a}%, grade ${S.grade(a)}`); }
     const e = pickExam(), np = nextPaper();
     if (!e || !e.published) { set(S.$("#rs-ds"), 0, "–", e ? `${e.name} datesheet not out yet` : "None yet"); return; }
     const all = myExams(), done = all.filter((x) => x.published && S.examStatus(x, G).k === "done").length;
@@ -1421,13 +1421,13 @@
     const hwFoot = pend.length ? `<span class="pg-chips">${pend.slice(0, 3).map((h) => `<span class="pg-chip${daysTo(h.due) <= 1 ? " soon" : ""}">${S.esc(SHORT[h.subj] || h.subj)} · ${daysTo(h.due) === 0 ? "today" : daysTo(h.due) === 1 ? "tomorrow" : S.fmt(h.due, { day: "numeric", month: "short" })}</span>`).join("")}</span>` : "";
     const pAvg = P && me[P] ? S.avgOf(me[P]) : null, dAvg = pAvg === null ? null : Math.round((avg - pAvg) * 10) / 10;
     const resSide = dAvg === null ? "" : `<span class="pg-delta ${dAvg >= 0 ? "up" : "down"}">${dAvg >= 0 ? "▲" : "▼"} ${Math.abs(dAvg)}<small>since ${S.esc(L(P))}</small></span>`;
-    const rows = S.subjects.map((x) => ({ x, v: me[C][x] })).sort((a, b) => b.v - a.v), nm = (x) => SHORT[x] || x;
+    const rows = C ? S.subjects.map((x) => ({ x, v: me[C][x] })).sort((a, b) => b.v - a.v) : [], nm = (x) => SHORT[x] || x;
     const allF = declared(), paidAmt = allF.filter((x) => x.paid).reduce((a, x) => a + x.amount, 0), totAmt = allF.reduce((a, x) => a + x.amount, 0), fd = fee ? daysTo(fee.due) : 0;
     S.paint(S.$("#hub-tiles"), S.tilesHTML([
       { go: "timetable", icon: I.timetable, tone: "teal", name: "Today, Bus and Timetable", line: R && busNow().live ? `${S.esc(R.bus)} · ${S.esc(busNow().line)}` : nowLine(), flag: !!R && ["soon", "here"].includes(busNow().state) },
       { go: "attendance", icon: I.attendance, tone: "green", name: "Attendance", line: `Present this session · ${away ? `${away} day${away === 1 ? "" : "s"} missed of ${days.length}` : `not a day missed in ${days.length}`}`, flag: pct < 85, m: pct, main: true, big: pct, unit: "%", side: mos.length > 1 ? attSide : "" },
       { go: "homework", icon: I.homework, tone: "royal", name: "Homework and Notices", line: `${hi ? `${hi} important notice${hi === 1 ? "" : "s"} to read` : nts.length ? `${nts.length} notice${nts.length === 1 ? "" : "s"} coming up` : "No new notices"}<span class="pg-sub">${pend.length ? `Homework: ${S.cs.homework.length - pend.length} of ${S.cs.homework.length} done · due next:` : "Homework all done"}</span>`, flag: hi > 0, count: S.cs.homework.filter((h) => h.fresh && !h.done).length, main: true, big: pend.length, unit: " to do", m: S.cs.homework.length ? ((S.cs.homework.length - pend.length) / S.cs.homework.length) * 100 : null, foot: hwFoot },
-      { go: "results", icon: I.results, tone: "accent", name: ex ? "Exams and results" : "Results", line: `${L(C)}${next}<br />Best in ${S.esc(nm(rows[0].x))} · most to gain in ${S.esc(nm(rows[rows.length - 1].x))}`.replace("<br />", "<span class=\"pg-sub\">") + "</span>", m: avg, main: true, big: avg, unit: "%", side: resSide },
+      !C ? { go: "results", icon: I.results, tone: "accent", name: ex ? "Exams and results" : "Results", line: `No exams yet${next}<span class="pg-sub">Marks show here after each exam</span>` } : { go: "results", icon: I.results, tone: "accent", name: ex ? "Exams and results" : "Results", line: `${L(C)}${next}<br />Best in ${S.esc(nm(rows[0].x))} · most to gain in ${S.esc(nm(rows[rows.length - 1].x))}`.replace("<br />", "<span class=\"pg-sub\">") + "</span>", m: avg, main: true, big: avg, unit: "%", side: resSide },
       { go: "fees", icon: I.fees, tone: "gold", name: "Fees", main: true, big: fee ? S.rupee(fee.amount) : "Paid", line: fee ? `Due ${S.fmt(fee.due, { day: "numeric", month: "long" })} · ${fd < 0 ? `${-fd} day${fd === -1 ? "" : "s"} overdue` : fd === 0 ? "today" : `in ${fd} day${fd === 1 ? "" : "s"}`}<span class="pg-sub">${S.rupee(paidAmt)} of ${S.rupee(totAmt)} declared, paid</span>` : `${S.rupee(paidAmt)} of ${S.rupee(totAmt)} declared, paid`, flag: fee && fd <= 14, m: totAmt ? (paidAmt / totAmt) * 100 : null },
       { go: "messages", icon: I.messages, tone: "royal", name: "Messages, Forms and Meetings", line: `${toSign ? `${toSign} form${toSign === 1 ? "" : "s"} to sign` : unread ? `${unread} new from ${S.esc(S.teacher.name)}` : `Chat with ${S.esc(S.teacher.name)}`}<span class="pg-sub">${unread && toSign ? `${unread} new message${unread === 1 ? "" : "s"} · ` : ""}${rem ? `${rem} remark${rem === 1 ? "" : "s"} · ` : ""}meeting: ${!ptm || !S.noticeFor(ptm, me) ? "none planned yet" : booked.length ? `${booked.length} time${booked.length === 1 ? "" : "s"} booked, ${S.fmt(ptm.date)}` : `book times for ${S.fmt(ptm.date)}`}</span>`, count: unread, flag: toSign > 0 },
     ]));
@@ -1503,6 +1503,7 @@
       <div class="st-tiles"><div><b>${all}%</b><span>${S.esc(me.first)}'s overall</span></div><div><b>${cAll}%</b><span>class average</span></div><div><b>${all - cAll >= 0 ? "+" : ""}${all - cAll}</b><span>points from the average</span></div></div>`);
   }
   function renderResX() {
+    if (!exam) return; // no exams yet this session
     const marks = me[exam], prev = exam === C ? P : null, cut = [33, 41, 51, 61, 71, 81, 91];
     const rows = S.subjects.map((x) => ({ x, v: marks[x], avg: S.classAvg(exam, x), d: prev ? marks[x] - me[prev][x] : null }));
     const weak = [...rows].sort((a, b) => (a.v - a.avg) - (b.v - b.avg))[0], best = [...rows].sort((a, b) => b.v - a.v)[0];
@@ -1548,11 +1549,11 @@
 })();
 </script>
 <script src="js/talk.js?v=2"></script>
-<script src="js/ttschool.js?v=2"></script>
+<script src="js/ttschool.js?v=3"></script>
 <script src="js/select.js?v=4"></script>
 <script src="js/date.js?v=3"></script>
 <script src="js/portal.js?v=1"></script>
-<script src="js/feel.js?v=9"></script>
+<script src="js/feel.js?v=10"></script>
 <script src="js/ease.js?v=7"></script>
 <script src="js/case.js?v=3"></script>
 </body>

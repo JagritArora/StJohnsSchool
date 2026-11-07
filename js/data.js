@@ -51,8 +51,9 @@
   for (let d = new Date(S.SESSION_START + "T00:00"); d < today; d = addDays(d, 1)) if (isSchoolDay(d)) S.schoolDays.push(iso(d));
 
   // Exams this session, and which ones have happened by the stage shown.
-  S.EXAMS = { ly: "Last year's final", ut1: "Unit Test 1", hy: "Half-yearly", fin: "Final exam" };
-  S.EX = { start: { list: ["ly"], cur: "ly", prev: null }, mid: { list: ["hy", "ut1"], cur: "hy", prev: "ut1" }, end: { list: ["fin", "hy", "ut1"], cur: "fin", prev: "hy" } }[phase];
+  // No marks from earlier years: at the start of the session there are no results yet (cur is null).
+  S.EXAMS = { ut1: "Unit Test 1", hy: "Half-yearly", fin: "Final exam" };
+  S.EX = { start: { list: [], cur: null, prev: null }, mid: { list: ["hy", "ut1"], cur: "hy", prev: "ut1" }, end: { list: ["fin", "hy", "ut1"], cur: "fin", prev: "hy" } }[phase];
   // Classes X and XII sit the CBSE board exam, so their school final is the pre-board.
   S.exLabel = (k, cls) => (k === "fin" && /^(X|XII)$/.test(cls || "") ? "Pre-board" : S.EXAMS[k]);
   S.CALENDAR = [
@@ -105,11 +106,10 @@
   by("Ishita Verma").ut1.Science = 79; by("Ishita Verma").hy.Science = 63;
   Object.assign(by("Rohan Yadav").ut1, { Mathematics: 52, Science: 55, English: 60 });
   Object.assign(by("Rohan Yadav").hy, { Mathematics: 41, Science: 46, English: 52 });
-  // Last year's final and this year's final, for every VII-B student.
-  const r2 = rng(2027), cl = (v) => Math.round(Math.min(98, Math.max(35, v)));
-  S.students.forEach((s) => { s.ly = {}; s.fin = {}; S.subjects.forEach((x) => { s.ly[x] = cl(s.ut1[x] + (r2() - 0.5) * 12); s.fin[x] = Math.round(Math.min(98, Math.max(24, s.hy[x] + (r2() - 0.4) * 10 - (s.hy[x] < 50 ? 12 : 0)))); }); });
+  // This year's final, for every VII-B student (r2 is still drawn twice, so the finals stay as they were).
+  const r2 = rng(2027);
+  S.students.forEach((s) => { s.fin = {}; S.subjects.forEach((x) => { r2(); s.fin[x] = Math.round(Math.min(98, Math.max(24, s.hy[x] + (r2() - 0.4) * 10 - (s.hy[x] < 50 ? 12 : 0)))); }); });
   Object.assign(by("Aarav Sharma"), {
-    ly: { English: 80, Hindi: 72, Mathematics: 76, Science: 85, "Social Science": 79, Computer: 90 },
     fin: { English: 87, Hindi: 70, Mathematics: 86, Science: 92, "Social Science": 81, Computer: 95 }
   });
   S.student = (roll) => S.students.find((s) => s.roll === +roll);
@@ -127,8 +127,9 @@
   }
 
   S.hash = hash; S.rng = rng;
-  S.classAvg = (exam, subj) => Math.round(S.students.reduce((a, s) => a + s[exam][subj], 0) / S.students.length);
-  S.avgOf = (marks) => Math.round(Object.values(marks).reduce((a, b) => a + b, 0) / Object.values(marks).length);
+  // Both give null when there's no exam yet (the start of the session).
+  S.classAvg = (exam, subj) => (exam ? Math.round(S.students.reduce((a, s) => a + s[exam][subj], 0) / S.students.length) : null);
+  S.avgOf = (marks) => (marks ? Math.round(Object.values(marks).reduce((a, b) => a + b, 0) / Object.values(marks).length) : null);
 
   // Timetable (VII-B)
   S.timetable = {
@@ -155,9 +156,11 @@
   S.STAFF = {
     "SJS-T-0412": { role: "teacher", name: "Ms. Neha Mathew", first: "Neha", initials: "NM", title: "Class teacher · VII-B", tone: "green" },
     "SJS-A-0107": { role: "admin", name: "Mrs. Anita Joseph", first: "Anita", initials: "AJ", title: "School office", tone: "" },
-    "SJS-P-0001": { role: "principal", name: "The Principal", first: "", initials: "P", title: "Principal", tone: "" }
+    "SJS-P-0001": { role: "principal", name: "The Principal", first: "", initials: "P", title: "Principal", tone: "" },
+    // Decides who teaches what, class teachers, each teacher's responsibilities and what they see.
+    "SJS-C-0001": { role: "planner", name: "Mrs. Rekha Dutta", first: "Rekha", initials: "RD", title: "Academic planner", tone: "royal" }
   };
-  S.ROLE_LABEL = { teacher: "Teacher", admin: "Office admin", principal: "Principal" };
+  S.ROLE_LABEL = { teacher: "Teacher", admin: "Office admin", principal: "Principal", planner: "Academic planner" };
   S.sibling = { name: "Ananya Sharma", initials: "AS", cls: "III-A", teacher: "Mrs. Priya Nair" };
 
   // ---- Shared, mutable state --------------------------------------------
@@ -321,7 +324,7 @@
   S.enqRef = (e) => e.ref || "SJS-27-" + String(1000 + ([...(e.child + e.phone)].reduce((a, ch) => (Math.imul(a, 31) + ch.charCodeAt(0)) >>> 0, 7) % 9000));
   S.photo = (src) => (src && src.startsWith("up:") ? (S.state.photos[src.slice(3)] || "") : src);
 
-  const PKEY = phase === "mid" ? KEY : KEY + ":" + phase, SHARED = ["site", "photos", "applications", "ttEdit", "duty"];
+  const PKEY = phase === "mid" ? KEY : KEY + ":" + phase, SHARED = ["site", "photos", "applications", "ttEdit", "duty", "plan", "staffRoles"];
   const read = (k) => { try { return JSON.parse(localStorage.getItem(k)); } catch (e) { return null; } };
   const fix = (st) => {
     if (!st.site) st.site = S.siteSeed();
@@ -343,6 +346,9 @@
     return fix(mine);
   };
   S.state = load();
+  // The academic planner's published plan, if any, stands over the one in js/ttplan.js.
+  S.planStamp = () => ((S.state.plan || {}).pub || {}).at || "";
+  const stamp0 = S.planStamp();
   // Returns false when the browser's storage is full (big photos), so the caller can say so.
   S.save = () => {
     try {
@@ -358,7 +364,11 @@
   window.addEventListener("storage", (e) => {
     if (e.key === "sjs-phase") { if (PORTAL) location.reload(); return; }
     if (e.key !== PKEY && e.key !== KEY) return;
+    const mine = () => (S.staff && S.staff.role === "teacher" ? JSON.stringify((S.state.staffRoles || {})[S.staff.id] || null) : ""), r0 = mine();
     S.state = load(); S._ver = (S._ver || 0) + 1;
+    // A newly published plan (who teaches what) rebuilds every teacher and timetable, and a
+    // teacher's own pages or responsibilities set the menu: reload.
+    if (PORTAL && (S.planStamp() !== stamp0 || mine() !== r0)) { location.reload(); return; }
     document.dispatchEvent(new CustomEvent("sjs:sync"));
   });
 
@@ -404,6 +414,7 @@
   S.atRisk = (only) => S.students.map((s) => {
     const why = [], pct = S.attendancePct(s.roll), C = S.EX.cur, P = S.EX.prev, subs = only || S.subjects;
     if (pct < 85 && S.schoolDays.length >= 20) why.push(`attendance ${pct}%`); // too few days early on to judge
+    if (!C) return { s, why, pct }; // no exams yet
     if (P) subs.forEach((sub) => { const drop = s[P][sub] - s[C][sub]; if (drop >= 15) why.push(`${sub} fell ${drop} points (${s[P][sub]}% → ${s[C][sub]}%)`); });
     const low = subs.filter((sub) => s[C][sub] < 50);
     if (low.length) why.push(`below 50% in ${low.join(", ")}`);

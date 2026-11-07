@@ -8,7 +8,7 @@
 (function () {
   const S = window.SJS;
   const KIND = {
-    ly: { name: "Last year", one: "Last year", c: "slate" }, ut: { name: "Unit tests", one: "Unit test", c: "royal" }, ts: { name: "Test series", one: "Test series", c: "teal" },
+    ut: { name: "Unit tests", one: "Unit test", c: "royal" }, ts: { name: "Test series", one: "Test series", c: "teal" },
     hy: { name: "Half-yearly", one: "Half-yearly", c: "gold" }, pb: { name: "Pre-boards", one: "Pre-board", c: "accent" }, fin: { name: "Final", one: "Final", c: "green" }, board: { name: "Board exam", one: "Board exam", c: "plum" }
   };
   const kindOf = (k) => KIND[k] || { name: k, one: k, c: "slate" };
@@ -25,8 +25,6 @@
     const G = S.groupOf(me), subs = o.only ? me.sec.subjects.filter((x) => o.only.includes(x)) : me.sec.subjects, today = S.todayKey;
     const mates = o.noCls ? [] : me.sec.students.map((st) => Object.assign(Object.create(st), st, { sec: me.sec, cls: me.cls }));
     const nodes = [];
-    if (me.ly) nodes.push({ id: "ly", kind: "ly", name: "Last year's final", short: "Last year", date: S.SESSION_START, papers: [], status: "done",
-      marks: Object.fromEntries(subs.filter((x) => me.ly[x] != null).map((x) => [x, { v: me.ly[x], of: 100 }])), cls: null });
     const exams = S.examsFor(me).map((e) => ({ e, ps: [...(e.papers[G] || [])].filter((p) => subs.includes(p.subj)).sort((a, b) => (a.date < b.date ? -1 : 1)) })).filter((x) => x.ps.length);
     exams.forEach(({ e, ps }) => {
       // A rolling test series becomes rounds; everything else is one node.

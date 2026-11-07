@@ -16,9 +16,11 @@
   const attLine = () => { const a = S.attSummary ? S.attSummary() : null; return a ? `<b>${a.pct}% present</b> school-wide (sample). Lowest: ${a.low ? a.low.label + " at " + a.lowPct + "%" : "none"}. ${a.waiting.length} section${a.waiting.length === 1 ? " has" : "s have"} not marked yet${a.waiting.length ? ": " + a.waiting.map((x) => x.label).join(", ") : ""}.` : ""; };
   const upcomingHolidays = () => Object.entries(S.HOLIDAYS).filter(([k]) => k >= S.todayKey).slice(0, 3);
 
+  // Before the first exam of the session there are no marks to talk about.
+  const NO_EX = () => "There are no exams yet this session, so there are no marks to show. Results appear here after the first exam; the datesheet is under Exams.";
   // ---------- Shared helpers ----------
   S.weekly = () => {
-    const s = S.me, hy = s[C()];
+    const s = S.me, hy = s[C()] || {}; // no exams yet at the start of the session
     const sorted = [...S.subjects].sort((a, b) => hy[b] - hy[a]);
     const weak = S.subjects.map((x) => ({ x, gap: S.classAvg(C(), x) - hy[x] })).sort((a, b) => b.gap - a.gap)[0];
     const pending = S.cs.homework.filter((h) => !h.done);
@@ -29,14 +31,18 @@
       const st = S.statusOn(s.roll, S.iso(d)); if (st === "H" || st === null) continue; days++; if (st === "P") present++;
     }
     return `${s.first} was present <b>${present} of ${days} days</b> this week.\n` +
-      `${LB(C())} results are strongest in <b>${sorted[0]} (${hy[sorted[0]]}%)</b> and <b>${sorted[1]} (${hy[sorted[1]]}%)</b>.\n` +
-      (weak.gap > 0 ? `<b>${weak.x} (${hy[weak.x]}%)</b> is below the class average of ${S.classAvg(C(), weak.x)}% — 15 minutes of reading aloud each day would help.\n` : "") +
+      (!C() ? "" : `${LB(C())} results are strongest in <b>${sorted[0]} (${hy[sorted[0]]}%)</b> and <b>${sorted[1]} (${hy[sorted[1]]}%)</b>.\n`) +
+      (C() && weak.gap > 0 ? `<b>${weak.x} (${hy[weak.x]}%)</b> is below the class average of ${S.classAvg(C(), weak.x)}% — 15 minutes of reading aloud each day would help.\n` : "") +
       (pending.length ? `Still to do: ${pending.map((h) => `${h.subj} — ${h.title} (due ${S.fmt(h.due)})`).join("; ")}.\n` : "All homework is done.\n") +
       (fee ? `The ${fee.q.split(" ·")[0]} fee of <b>${S.rupee(fee.amount)}</b> is due on ${S.fmt(fee.due)}.` : "All fees are paid. Thank you!");
   };
 
   S.remarkFor = (s) => {
-    const hy = s[C()], ut = P() ? s[P()] : hy, att = S.attendancePct(s.roll);
+    const att = S.attendancePct(s.roll);
+    // Before the first exam, the remark is about settling in and attendance only.
+    if (!C()) return `${s.first} has settled into the new session well and takes part readily in class. ` +
+      (att >= 92 ? `Attendance is excellent (${att}%).` : att >= 85 ? `Attendance is satisfactory (${att}%).` : `Attendance (${att}%) needs to improve; regular attendance will help from the start of the year.`);
+    const hy = s[C()], ut = P() ? s[P()] : hy;
     const best = [...S.subjects].sort((a, b) => hy[b] - hy[a]).slice(0, 2);
     const worst = [...S.subjects].sort((a, b) => hy[a] - hy[b])[0];
     const up = S.subjects.filter((x) => hy[x] - ut[x] >= 5).sort((a, b) => (hy[b] - ut[b]) - (hy[a] - ut[a]))[0];
@@ -109,16 +115,16 @@
       }
       const subj = subjIn(q);
       if (subj) {
-        const e = S.entry(S.focusKey, subj), u2 = S.PHASE !== "end" && e.published && e.marks[s.roll] != null && !isNaN(+e.marks[s.roll]) ? `\n${S.ENTRY.name} (just published): <b>${e.marks[s.roll]}/${S.ENTRY.max}</b>.` : "";
+        if (!C()) return NO_EX(); const e = S.entry(S.focusKey, subj), u2 = S.PHASE !== "end" && e.published && e.marks[s.roll] != null && !isNaN(+e.marks[s.roll]) ? `\n${S.ENTRY.name} (just published): <b>${e.marks[s.roll]}/${S.ENTRY.max}</b>.` : "";
         return `${subj}: ${P() ? `${LB(P())} <b>${s[P()][subj]}%</b> → ` : ""}${LB(C())} <b>${s[C()][subj]}%</b> (class average ${S.classAvg(C(), subj)}%).${u2}\n` +
           (s[C()][subj] >= S.classAvg(C(), subj) ? s.first + " is above the class average here. 👍" : "This is below the class average. A short daily practice and a chat with the subject teacher at " + PTM() + " would help.");
       }
       if (has(q, /weak|improve|help|struggl|focus|concern|work on/)) {
-        const w = S.subjects.map((x) => ({ x, gap: S.classAvg(C(), x) - s[C()][x] })).sort((a, b) => b.gap - a.gap)[0];
+        if (!C()) return NO_EX(); const w = S.subjects.map((x) => ({ x, gap: S.classAvg(C(), x) - s[C()][x] })).sort((a, b) => b.gap - a.gap)[0];
         return `The subject to focus on is <b>${w.x}</b> — ${s[C()][w.x]}% against a class average of ${S.classAvg(C(), w.x)}%${P() ? `, after ${s[P()][w.x]}% in the ${LB(P()).toLowerCase()}` : ""}.\nSuggestions:\n• 15 minutes with the ${w.x} textbook each evening\n• Practise the end-of-chapter exercises\n• Raise it with the teacher at ${PTM()}`;
       }
       if (has(q, /mark|result|score|exam|grade|perform|report/)) {
-        const avg = S.avgOf(s[C()]);
+        if (!C()) return NO_EX(); const avg = S.avgOf(s[C()]);
         return `${LB(C())} average: <b>${avg}%</b>${P() ? ` (${LB(P())}: ${S.avgOf(s[P()])}%)` : ""}.\n` + S.subjects.map((x) => `• ${x}: ${s[C()][x]}%`).join("\n");
       }
       if (has(q, /bag|pack|timetable|period|tomorrow.*(class|subject)|subjects tomorrow/)) {
@@ -168,9 +174,10 @@
         return (t ? `Today: ${S.students.length - Object.keys(t.marks).length}/${S.students.length} present.` + (Object.keys(t.marks).length ? " Away: " + Object.keys(t.marks).map((r) => S.student(r).name).join(", ") + "." : "") : "Today's attendance is not marked yet.") +
           `\nBelow 85% this session: ${chronic.map((s) => `${s.name} (${S.attendancePct(s.roll)}%)`).join(", ") || "nobody"}.`;
       }
+      if (st && !C()) return `<b>${st.name}</b> (Roll ${st.roll}) — attendance ${S.attendancePct(st.roll)}%. No exams yet this session.`;
       if (st) return `<b>${st.name}</b> (Roll ${st.roll}) — attendance ${S.attendancePct(st.roll)}%, ${LB(C()).toLowerCase()} average ${S.avgOf(st[C()])}%.\nBest: ${[...S.subjects].sort((a, b) => st[C()][b] - st[C()][a])[0]}. Weakest: ${[...S.subjects].sort((a, b) => st[C()][a] - st[C()][b])[0]}.`;
       if (has(q, /average|top|class perform|rank|best/)) {
-        const top = [...S.students].sort((a, b) => S.avgOf(b[C()]) - S.avgOf(a[C()])).slice(0, 3);
+        if (!C()) return NO_EX(); const top = [...S.students].sort((a, b) => S.avgOf(b[C()]) - S.avgOf(a[C()])).slice(0, 3);
         return LB(C()) + " class averages:\n" + S.subjects.map((x) => `• ${x}: ${S.classAvg(C(), x)}%`).join("\n") + `\nTop three: ${top.map((s) => `${s.name} (${S.avgOf(s[C()])}%)`).join(", ")}.`;
       }
       return "I can draft report-card remarks, make practice sets and lesson plans, and draft notes to parents. Try: “Quiz on fractions” or “Remarks for Kabir”.";

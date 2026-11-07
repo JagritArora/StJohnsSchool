@@ -48,6 +48,9 @@
     if (!s.feeFollow) s.feeFollow = {};
     if (!s.cover) s.cover = {};
     if (!s.staffLeave) s.staffLeave = {};
+    // Leave teachers ask for; one waiting for the principal, so the demo has one to approve.
+    if (!s.staffReq) { const nd = (n) => S.iso(S.nextSchoolDay(S.today, n));
+      s.staffReq = [{ id: "lr1", tid: "SJS-T-0530", name: "Ms. Shweta Sethi", from: nd(3), to: nd(3), kind: "Personal", note: "Family wedding out of town", status: "waiting", at: S.fmt(S.todayKey) + ", 8:12 AM" }]; }
     if (!s.weekly) s.weekly = { on: true };
     if (!s.activity) {
       s.activity = [];
@@ -115,7 +118,7 @@
     docEl.classList.add("open");
   };
 
-  // Exams so far this session, oldest first, and last year's final for the year-on-year view.
+  // Exams so far this session, oldest first. (No earlier years: the school has no past marks in the app.)
   const ORDER = ["ut1", "hy", "fin"];
   S.examsSoFar = () => ORDER.filter((k) => S.EX.list.includes(k));
   // kid: a student with marks by exam; x: their section.
@@ -123,18 +126,18 @@
     const subs = x.subjects, ex = S.examsSoFar(), last = ex[ex.length - 1];
     const avg = (k) => Math.round(subs.reduce((a, s) => a + kid[k][s], 0) / subs.length);
     const att = o.att != null ? o.att : S.attOf(x, kid.roll);
-    const rows = subs.map((s) => `<tr><td>${esc(s)}</td><td class="n muted">${kid.ly[s]}</td>${ex.map((k) => `<td class="n">${kid[k][s]}</td>`).join("")}<td class="n"><b>${last ? S.grade(kid[last][s]) : "–"}</b></td></tr>`).join("");
+    const rows = subs.map((s) => `<tr><td>${esc(s)}</td>${ex.map((k) => `<td class="n">${kid[k][s]}</td>`).join("")}<td class="n"><b>${last ? S.grade(kid[last][s]) : "–"}</b></td></tr>`).join("");
     return head(`Report card · Session 2026–27 · ${esc(S.PHASES[S.PHASE].when)}`) +
       `<table><tr><td><b>${esc(kid.name)}</b><br><span class="muted">Class ${esc(x.label)}${x.stream ? " · " + esc(x.stream) : ""} · Roll ${String(kid.roll).padStart(2, "0")}</span></td><td class="n">Class teacher<br><b>${esc(x.teacher)}</b></td></tr></table>` +
-      `<div class="kv"><div><b>${last ? avg(last) + "%" : "–"}</b>${last ? esc(S.exLabel(last, x.cls)) : "No exams yet"} average</div><div><b>${last ? S.grade(avg(last)) : "–"}</b>Overall grade</div><div><b>${att}%</b>Attendance</div><div><b>${avg("ly")}%</b>Last year's final</div></div>` +
-      `<h2>Marks by subject (%)</h2><table><thead><tr><th>Subject</th><th class="n">Last year</th>${ex.map((k) => `<th class="n">${esc(S.exLabel(k, x.cls))}</th>`).join("")}<th class="n">Grade</th></tr></thead><tbody>${rows}</tbody></table>` +
+      `<div class="kv"><div><b>${last ? avg(last) + "%" : "–"}</b>${last ? esc(S.exLabel(last, x.cls)) : "No exams yet"} average</div><div><b>${last ? S.grade(avg(last)) : "–"}</b>Overall grade</div><div><b>${att}%</b>Attendance</div></div>` +
+      `<h2>Marks by subject (%)</h2><table><thead><tr><th>Subject</th>${ex.map((k) => `<th class="n">${esc(S.exLabel(k, x.cls))}</th>`).join("")}<th class="n">Grade</th></tr></thead><tbody>${rows}</tbody></table>` +
       (o.remark ? `<h2>Class teacher's remark</h2><p>${esc(o.remark)}</p>` : "") +
       `<div class="sig"><span>Class teacher</span><span>Principal</span><span>Parent</span></div>` +
       `<p class="foot">Grades on the CBSE eight-point scale. Made from the marks entered in the school app on ${S.fmt(S.todayKey, { day: "numeric", month: "long", year: "numeric" })}. Prototype: sample marks.</p>`;
   };
   // Everything about one student on one page, for a parent meeting.
   S.summarySheet = (kid, x, o = {}) => {
-    const subs = x.subjects, ex = ["ly", ...S.examsSoFar()];
+    const subs = x.subjects, ex = S.examsSoFar();
     const away = Object.entries(x.history).filter(([, d]) => d[kid.roll]).map(([k, d]) => [k, d[kid.roll]]);
     const rem = S.remarksFor(x.key, kid.roll, true), forms = S.formsFor(x.key);
     const leaves = (S.secState(x.key).leaves || []).filter((l) => l.roll === kid.roll);
@@ -142,7 +145,7 @@
     return head(`Student summary · for the parent-teacher meeting · ${S.fmt(S.todayKey, { day: "numeric", month: "long", year: "numeric" })}`) +
       `<table><tr><td><b>${esc(kid.name)}</b><br><span class="muted">Class ${esc(x.label)} · Roll ${String(kid.roll).padStart(2, "0")}</span></td><td class="n">Prepared by<br><b>${esc(o.by || x.teacher)}</b>${o.cap ? `<br><span class="muted">${esc(o.cap)}</span>` : ""}</td></tr></table>` +
       `<div class="kv"><div><b>${S.attOf(x, kid.roll)}%</b>Attendance</div><div><b>${away.filter(([, v]) => v === "A").length}</b>Days absent</div><div><b>${away.filter(([, v]) => v === "L").length}</b>Days on leave</div><div><b>${booking ? booking[0].split("|")[2] : "–"}</b>PTM slot</div></div>` +
-      `<h2>Marks (%)</h2><table><thead><tr><th>Subject</th>${ex.map((k) => `<th class="n">${k === "ly" ? "Last year" : esc(S.exLabel(k, x.cls))}</th>`).join("")}</tr></thead><tbody>${subs.map((s) => `<tr><td>${esc(s)}</td>${ex.map((k) => `<td class="n">${kid[k][s]}</td>`).join("")}</tr>`).join("")}</tbody></table>` +
+      `<h2>Marks (%)</h2>` + (!ex.length ? `<p class="muted">No exams yet this session.</p>` : "") + `<table${ex.length ? "" : " hidden"}><thead><tr><th>Subject</th>${ex.map((k) => `<th class="n">${esc(S.exLabel(k, x.cls))}</th>`).join("")}</tr></thead><tbody>${subs.map((s) => `<tr><td>${esc(s)}</td>${ex.map((k) => `<td class="n">${kid[k][s]}</td>`).join("")}</tr>`).join("")}</tbody></table>` +
       `<h2>Remarks</h2>${rem.length ? `<table><tbody>${rem.map((r) => `<tr><td style="width:110px">${S.fmt(r.at)}</td><td>${esc(S.REMARK_KINDS[r.kind])}${r.share ? "" : '<span class="tag">Staff only</span>'}<br>${esc(r.text)}<br><span class="muted">${esc(r.by)}</span></td></tr>`).join("")}</tbody></table>` : '<p class="muted">None yet.</p>'}` +
       `<h2>Forms</h2>${forms.length ? `<table><tbody>${forms.map((f) => { const a = S.formAnswer(f, kid.roll); return `<tr><td>${esc(f.title)}</td><td class="n">${a ? esc(S.formLabel(a.v)) + " · " + S.fmt(a.at) : "Waiting"}</td></tr>`; }).join("")}</tbody></table>` : '<p class="muted">None.</p>'}` +
       (leaves.length ? `<h2>Leave asked for</h2><table><tbody>${leaves.map((l) => `<tr><td>${S.fmt(l.from)} to ${S.fmt(l.to)}</td><td>${esc(l.why)}</td><td class="n">${esc(l.status)}</td></tr>`).join("")}</tbody></table>` : "") +
@@ -238,7 +241,7 @@
         const b = m[`${t}|${d}|${p}`]; if (!b) continue;
         const subj = (S.TEACHERS.find((v) => v.name === t) || {}).subject;
         const load = (v) => Array.from({ length: n }, (_, q) => (m[`${v.name}|${d}|${q}`] ? 1 : 0)).reduce((a, c) => a + c, 0);
-        const free = S.TEACHERS.filter((v) => !away.includes(v.name) && !m[`${v.name}|${d}|${p}`])
+        const free = S.TEACHERS.filter((v) => !away.includes(v.name) && !m[`${v.name}|${d}|${p}`] && S.rolesOf(v.id).cover)
           .map((v) => ({ name: v.name, subject: v.subject, same: v.subject === subj, load: load(v) }))
           .sort((a, b2) => (b2.same - a.same) || (a.load - b2.load) || a.name.localeCompare(b2.name));
         rows.push({ id: `${t}|${p}`, teacher: t, why: (S.leaveOn(key).find((l) => l.name === t) || {}).why, p, time: S.periodTimes[p], key: b.key, subj: b.subj, free: free.slice(0, 4) });
@@ -246,6 +249,20 @@
     });
     return rows.sort((a, b) => a.p - b.p);
   };
+
+  // ---------- Leave that teachers ask for ----------
+  // S.state.staffReq: [{ id, tid, name, from, to, kind, note, status: "waiting" | "approved" | "declined", at, by }].
+  // The principal approves; the teacher is then on leave each school day in the range, and their periods join the cover list.
+  S.staffReqs = () => S.state.staffReq || (S.state.staffReq = []);
+  S.schoolDaysIn = (from, to) => { const out = [], end = new Date(to + "T00:00"); let d = new Date(from + "T00:00");
+    for (let i = 0; i < 60 && d <= end; i++, d = S.addDays(d, 1)) if (S.periodsOn(d)) out.push(S.iso(d)); return out; };
+  S.approveLeave = (r, by) => {
+    r.status = "approved"; r.by = by;
+    S.schoolDaysIn(r.from, r.to).forEach((k) => { const l = S.leaveOn(k); if (!l.some((x) => x.name === r.name)) l.push({ name: r.name, why: `${r.kind} leave, approved`, req: r.id }); });
+  };
+  // The cover a teacher has been given on a date: [{ p, key, subj, teacher }].
+  S.coverFor = (name, key) => { const given = (S.state.cover || {})[key] || {}; if (!Object.values(given).includes(name)) return [];
+    return S.coverOn(key).filter((r) => given[r.id] === name); };
 
   // ---------- Fee follow-up (sample families) ----------
   S.feeFamilies = () => {

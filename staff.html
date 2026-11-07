@@ -24,7 +24,8 @@
 <link rel="stylesheet" href="css/ai.css?v=3" />
 <link rel="stylesheet" href="css/journey.css?v=17" />
 <link rel="stylesheet" href="css/talk.css?v=2" />
-<link rel="stylesheet" href="css/tt.css?v=2" />
+<link rel="stylesheet" href="css/tt.css?v=3" />
+<link rel="stylesheet" href="css/plan.css?v=1" />
 <script>
 /* Before the first paint: fade photos in as they load. */
 (function (d) { d.documentElement.classList.add("js");
@@ -310,8 +311,21 @@
       </div>
     </section>
 
+    <!-- STAFF PLAN (academic planner): who teaches what, class teachers, responsibilities, pages each teacher sees (js/plan.js) -->
+    <section data-view="plan" data-roles="planner">
+      <div class="topbar"><div><h1>Staff plan</h1><div class="sub">Who teaches which subject in which class, class teachers, each teacher's responsibilities and the pages they see. Teaching changes build a new timetable before anyone sees them.</div></div></div>
+      <div id="pl-bar"></div>
+      <div class="vt-row ptabs hn-swrap ms4"><div class="seg vt" data-vt="pl" aria-label="Teachers, classes, responsibilities or changes"><button data-v="teachers"><span class="hs-ring nt" id="rg-pl-teachers"><span></span></span><span class="hs-t"><b>Teachers</b><small id="rg-pl-teachers-t"></small></span></button><button data-v="classes"><span class="hs-ring rm" id="rg-pl-classes"><span></span></span><span class="hs-t"><b>Classes</b><small id="rg-pl-classes-t"></small></span></button><button data-v="duties"><span class="hs-ring mt" id="rg-pl-duties"><span></span></span><span class="hs-t"><b>Responsibilities</b><small id="rg-pl-duties-t"></small></span></button><button data-v="changes"><span class="hs-ring due" id="rg-pl-changes"><span></span></span><span class="hs-t"><b>Changes</b><small id="rg-pl-changes-t"></small></span></button></div></div>
+      <div class="pm-panes" id="pl">
+        <div class="vp" data-vp="pl" data-v="teachers"><div id="pl-teachers"></div></div>
+        <div class="vp" data-vp="pl" data-v="classes" hidden><div id="pl-classes"></div></div>
+        <div class="vp" data-vp="pl" data-v="duties" hidden><div id="pl-duties"></div></div>
+        <div class="vp" data-vp="pl" data-v="changes" hidden><div id="pl-changes"></div></div>
+      </div>
+    </section>
+
     <!-- MESSAGES: parents, staff, class and wing groups; leadership looks in quietly (js/talk.js) -->
-    <section data-view="messages" data-roles="teacher principal admin">
+    <section data-view="messages" data-roles="teacher principal admin planner">
       <div class="topbar"><div><h1>Messages</h1><div class="sub" id="tm-sub">Parents, colleagues and groups, kept by the school as a record.</div></div></div>
       <div id="talk"></div>
     </section>
@@ -388,12 +402,12 @@
 
     <!-- STAFF AND COVER: who is in, who is on leave, and their periods to cover -->
     <section data-view="staff" data-roles="principal admin">
-      <div class="topbar"><div><h1>Staff and cover</h1><div class="sub">Teachers on leave today, and a free teacher for each of their periods.</div></div></div>
+      <div class="topbar"><div><h1>Staff and cover</h1><div class="sub">Teachers on leave and their leave requests, and a free teacher for each of their periods, today and the days ahead.</div></div></div>
       <div class="grid g21 staff-g"><div class="card" id="d-cover"></div><div class="staff-side"><div class="kslot" id="k-staff"></div><div class="card" id="d-leave"></div></div></div>
     </section>
 
     <!-- TIMETABLE (school): every teacher's day, every class's week, swaps and exam duty (js/ttschool.js) -->
-    <section data-view="ttschool" data-roles="principal admin">
+    <section data-view="ttschool" data-roles="principal admin planner">
       <div class="topbar"><div><h1>Timetable</h1><div class="sub">Who is teaching where and who is free, every class's week and its labs, swaps that keep every rule, and exam duty.</div></div></div>
       <div class="vt-row ptabs hn-swrap ms4"><div class="seg vt" data-vt="tts" aria-label="Staff, classes, edit or exam duty"><button data-v="staff"><span class="hs-ring nt" id="rg-tts-staff"><span></span></span><span class="hs-t"><b>Staff</b><small id="rg-tts-staff-t"></small></span></button><button data-v="classes"><span class="hs-ring rm" id="rg-tts-classes"><span></span></span><span class="hs-t"><b>Classes</b><small id="rg-tts-classes-t"></small></span></button><button data-v="edit"><span class="hs-ring mt" id="rg-tts-edit"><span></span></span><span class="hs-t"><b>Edit</b><small id="rg-tts-edit-t"></small></span></button><button data-v="duty"><span class="hs-ring due" id="rg-tts-duty"><span></span></span><span class="hs-t"><b>Exam duty</b><small id="rg-tts-duty-t"></small></span></button></div></div>
       <div class="pm-panes" id="tts">
@@ -460,9 +474,8 @@
           <div class="kslot k-row" id="k-cls"></div>
           <div id="p-phase"></div>
         <div class="card">
-          <div class="card-h"><div class="seg vt" data-vt="watch" aria-label="Sections or students"><button data-v="sec">Sections to watch</button><button data-v="stu" data-only="principal">Students · VII-B</button></div><button class="right link-btn" data-go="classes/one">One class at a time →</button></div>
+          <div class="card-h"><div class="seg vt" data-vt="watch" aria-label="Sections or students"><button data-v="sec">Sections to watch</button></div><button class="right link-btn" data-go="classes/one">One class at a time →</button></div>
           <div class="vp" data-vp="watch" data-v="sec"><div class="list" id="watch"></div></div>
-          <div class="vp" data-vp="watch" data-v="stu" data-only="principal" hidden><div class="list" id="p-risk"></div><button class="link-btn" type="button" data-sec="VII-B" style="margin-top:12px">Open VII-B →</button></div>
         </div>
         </div>
         <div class="vp" data-vp="pcls" data-v="one" hidden>
@@ -482,10 +495,9 @@
       </div>
       <div class="grid g21">
         <div class="card">
-          <div class="card-h"><h2>Students</h2><div class="seg vt" data-vt="cstu" aria-label="Students view"><button data-v="support">Need support</button><button data-v="top">Top 5</button><button data-v="all">All</button></div></div>
+          <div class="card-h"><h2>Students</h2><div class="seg vt" data-vt="cstu" aria-label="Students view"><button data-v="top">Top 5</button><button data-v="all">All</button></div></div>
           <div id="c-swarm"></div>
-          <div class="vp" data-vp="cstu" data-v="support"><div class="list" id="c-support"></div></div>
-          <div class="vp" data-vp="cstu" data-v="top" hidden><div class="list" id="c-top"></div></div>
+          <div class="vp" data-vp="cstu" data-v="top"><div class="list" id="c-top"></div></div>
           <div class="vp" data-vp="cstu" data-v="all" hidden><div class="tbl-wrap roster"><table class="tbl" id="c-all"></table></div></div>
         </div>
         <div class="card">
@@ -658,13 +670,13 @@
 
 
 
-<script src="js/data.js?v=15"></script>
+<script src="js/data.js?v=16"></script>
 <script src="js/ttplan.js?v=2"></script>
-<script src="js/classes.js?v=14"></script>
+<script src="js/classes.js?v=15"></script>
 <script src="js/exams.js?v=9"></script>
-<script src="js/journey.js?v=15"></script>
+<script src="js/journey.js?v=16"></script>
 <script src="js/care.js?v=2"></script>
-<script src="js/demo.js?v=4"></script>
+<script src="js/demo.js?v=5"></script>
 <script src="js/bus.js?v=5"></script>
 <script>
 /* One staff page. The staff ID (from sign-in, or ?id= in the address) picks the
@@ -672,7 +684,8 @@
 (function () {
   const S = SJS;
   let id = new URLSearchParams(location.search).get("id");
-  try { if (id) localStorage.setItem("sjs-staff", id.toUpperCase()); else id = localStorage.getItem("sjs-staff"); } catch (e) {}
+  // ?peek=1: the planner looking at a teacher's view in another tab; it doesn't change who is signed in here.
+  try { if (id && !new URLSearchParams(location.search).get("peek")) localStorage.setItem("sjs-staff", id.toUpperCase()); else if (!id) id = localStorage.getItem("sjs-staff"); } catch (e) {}
   id = (id || "").toUpperCase();
   const me = S.STAFF[id];
   if (!me) { location.replace("login.html?role=staff"); return; }
@@ -695,7 +708,8 @@
   const PROTO = {
     teacher: (() => { const p = S.PARENTS.find((v) => me.classOf && v.sec === me.classOf); return p ? `Teacher view with sample data. <a href="parent.html?kid=${p.key}" target="_blank">Open ${p.parent}'s parent view in a new tab</a>` : "Teacher view with sample data."; })(),
     principal: "Principal view. School-wide numbers are samples; VII-B and admissions are live from the demo.",
-    admin: "School office view. Admissions, notices and the website are live from the demo."
+    admin: "School office view. Admissions, notices and the website are live from the demo.",
+    planner: "Academic planner view. Changes here reach every teacher's page, every class's week and the parents' timetables."
   };
   document.getElementById("proto").innerHTML = `<b>Prototype</b> · ${PROTO[role]}`;
   S.mountDemo("staff:" + id);
@@ -718,32 +732,45 @@
     transport: '<rect x="5" y="3.5" width="14" height="14" rx="2.5"/><path d="M5 11h14M8.5 20.5v-3M15.5 20.5v-3"/>',
     log: '<path d="M6 3h9l4 4v14H6z"/><path d="M14 3v5h5M9 12h7M9 16h7"/><circle cx="9" cy="12" r=".3"/>',
     ptm: '<circle cx="8" cy="9" r="3"/><circle cx="16" cy="9" r="3"/><path d="M3 19c.6-3 2.6-4.5 5-4.5s4.4 1.5 5 4.5M11 19c.6-3 2.6-4.5 5-4.5s4.4 1.5 5 4.5"/>',
+    plan: '<circle cx="7" cy="7" r="2.5"/><circle cx="17" cy="7" r="2.5"/><circle cx="12" cy="17" r="2.5"/><path d="M8.6 8.9l2.2 5.6M15.4 8.9l-2.2 5.6M9.5 7h5"/>',
     notices: '<path d="M4 10v4h3l6 4V6L7 10z"/><path d="M17 9a4 4 0 0 1 0 6"/>', ttschool: '<rect x="4" y="4" width="16" height="16" rx="2"/><path d="M4 9.5h16M9.5 9.5V20M14.5 9.5V20"/>', classes: '<rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 10h18M9 10v10M15 10v10"/>', website: '<rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 9h18M7 6.5h.01M10 6.5h.01"/>'
   };
   const NAV = {
     teacher: [["home", "Home"], ["timetable", "My timetable"], ["class", me.classOf ? "My class" : "My sections"], ["attendance", "Attendance"], ["homework", "Homework"], ["marks", "Marks"], ["exams", "Exams"], ["messages", "Messages"], ["care", "Remarks and forms"], ["assist", "Writing help"], ["corner", "Teachers' Corner"]],
     principal: [["overview", "Home"], ["messages", "Messages"], ["attendance", "Attendance"], ["staff", "Staff and cover"], ["ttschool", "Timetable"], ["fees", "Fees"], ["classes", "Classes"], ["admissions", "Admissions"], ["exams", "Exams"], ["notices", "Notices"], ["gate", "Gate"], ["transport", "Transport"], ["log", "Activity log"], ["website", "Website"]],
-    admin: [["overview", "Home"], ["messages", "Messages"], ["attendance", "Attendance"], ["staff", "Staff and cover"], ["ttschool", "Timetable"], ["fees", "Fees"], ["classes", "Classes"], ["admissions", "Admissions"], ["exams", "Exams"], ["notices", "Notices"], ["gate", "Gate"], ["transport", "Transport"], ["log", "Activity log"], ["website", "Website"]]
-  }[role].filter(([k]) => role !== "teacher" || me.classOf || k !== "attendance");
+    admin: [["overview", "Home"], ["messages", "Messages"], ["attendance", "Attendance"], ["staff", "Staff and cover"], ["ttschool", "Timetable"], ["fees", "Fees"], ["classes", "Classes"], ["admissions", "Admissions"], ["exams", "Exams"], ["notices", "Notices"], ["gate", "Gate"], ["transport", "Transport"], ["log", "Activity log"], ["website", "Website"]],
+    planner: [["plan", "Staff plan"], ["ttschool", "Timetable"], ["messages", "Messages"]]
+  }[role].filter(([k]) => role !== "teacher" || me.classOf || k !== "attendance")
+    // The academic planner decides which pages each teacher gets.
+    .filter(([k]) => role !== "teacher" || S.canSee(id, k));
+  // Pages hidden from this teacher: links to them lead home (set once common.js has made S.ALIAS).
+  S.HIDDEN_VIEWS = role === "teacher" ? S.TEACHER_PAGES.map(([k]) => k).filter((k) => !S.canSee(id, k)) : [];
+  S.HIDDEN_VIEWS.forEach((k) => document.querySelectorAll(`.pbar [data-go="${k}"]`).forEach((b) => b.remove()));
   const btn = ([k, l]) => `<button class="side-btn" data-go="${k}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">${I[k]}</svg>${l}<span class="count" data-count="${k}" hidden></span></button>`;
   document.getElementById("nav-side").innerHTML = NAV.map(btn).join("");
   // Phones: Home and the four pages used most; the rest are tiles on the welcome page.
-  const BOTTOM = role === "teacher" ? ["home", "attendance", "homework", "marks", "messages"] : ["overview", "messages", "attendance", "classes", "notices"];
+  const BOTTOM = role === "teacher" ? ["home", "attendance", "homework", "marks", "messages"] : role === "planner" ? ["plan", "ttschool", "messages"] : ["overview", "messages", "attendance", "classes", "notices"];
   document.getElementById("nav-bottom").innerHTML = NAV.filter(([k]) => BOTTOM.includes(k)).map(([k, l]) => btn([k, l])).join("");
   S.NAV_ICONS = I;
 })();
 </script>
 <script src="js/common.js?v=17"></script>
 <script src="js/charts.js?v=10"></script>
-<script src="js/hub.js?v=14"></script>
-<script src="js/more.js?v=15"></script>
-<script src="js/staffroom.js?v=3"></script>
+<script src="js/hub.js?v=15"></script>
+<script src="js/more.js?v=16"></script>
+<script>
+/* Each role downloads only its own scripts, in the same order as before (written in place while the
+   page loads, so they run exactly where a plain tag would). The rest stay plain tags for everyone. */
+SJS.only = function (roles, files) { var r = (SJS.staff || {}).role; if (roles.split(" ").indexOf(r) < 0) return; files.forEach(function (f) { document.write('<script src="' + f + '"><\/script>'); }); };
+SJS.only("teacher", ["js/staffroom.js?v=3"]);
+</script>
 <script src="js/faq.js?v=1"></script>
-<script src="js/ai.js?v=16"></script>
+<script src="js/ai.js?v=17"></script>
 <script>
 (function () {
   const S = SJS;
   if (!S.staff || S.staff.role !== "teacher") return;
+  (S.HIDDEN_VIEWS || []).forEach((k) => (S.ALIAS[k] = "home")); // pages the academic planner hasn't given this teacher
   // Every teacher sees their own class: the one they're class teacher of, or the
   // first section they teach. Marks and homework can go to any of their sections.
   const T = S.staff, SUBJ = T.subject, mine = T.sections, home = T.classOf || mine[0], isCT = !!T.classOf;
@@ -792,29 +819,31 @@
   function renderHome() {
     rings();
     S.$("#hello").textContent = S.greet() + ", " + T.first;
-    S.$("#today-line").textContent = S.fmtLong(S.today) + (isCT ? ` · Class teacher, ${secLabel(home)}` : ` · ${SUBJ_L}, ${mine.map(secLabel).join(", ")}`) + ` · ${S.PHASES[S.PHASE].label}`;
+    const duties = S.rolesOf(T.id).duties; // responsibilities from the academic planner
+    S.$("#today-line").textContent = S.fmtLong(S.today) + (isCT ? ` · Class teacher, ${secLabel(home)}` : ` · ${SUBJ_L}, ${mine.map(secLabel).join(", ")}`) + (duties.length ? ` · ${duties.join(", ")}` : "") + ` · ${S.PHASES[S.PHASE].label}`;
     const rec = S.cs.attendance[S.todayKey];
     const waitLeaves = S.cs.leaves.filter((l) => l.status === "Waiting").length;
     const unread = threads().reduce((a, t) => a + t.msgs.filter((m) => m.from === "parent" && m.fresh).length, 0);
     const present = rec ? N() - Object.keys(rec.marks).length : 0;
-    const clsAvg = Math.round(S.students.reduce((a, s) => a + S.avgOf(s[C]), 0) / N());
+    // Before the first exam of the session there are no averages (C is null).
+    const clsAvg = C ? Math.round(S.students.reduce((a, s) => a + S.avgOf(s[C]), 0) / N()) : null;
     const prevAvg = P ? Math.round(S.students.reduce((a, s) => a + S.avgOf(s[P]), 0) / N()) : null;
-    const per = periodsToday(), subjAvg = Math.round(mine.reduce((a, k) => { const y = S.sectionByKey(k); return a + y.students.reduce((b, s) => b + s[C][sj(k)], 0) / y.students.length; }, 0) / mine.length);
+    const per = periodsToday(), subjAvg = !C ? null : Math.round(mine.reduce((a, k) => { const y = S.sectionByKey(k); return a + y.students.reduce((b, s) => b + s[C][sj(k)], 0) / y.students.length; }, 0) / mine.length);
     const posted = mine.reduce((a, k) => a + S.secState(k).homework.filter((h) => h.by === T.name).length, 0);
     // Trend lines: the class's last six school days, and its average (or the subject's) at each exam so far.
-    const exams = [...new Set(["ly", ...[...S.EX.list].reverse()])];
+    const exams = [...S.EX.list].reverse();
     const clsRun = exams.map((k) => Math.round(S.students.reduce((a, s) => a + S.avgOf(s[k]), 0) / N()));
     const subRun = exams.map((k) => Math.round(mine.reduce((a, key) => { const y = S.sectionByKey(key); return a + y.students.reduce((b, s) => b + s[k][sj(key)], 0) / y.students.length; }, 0) / mine.length));
     const numRow = (num, sp) => `<div class="num-row"><div class="num">${num}</div>${sp}</div>`;
     const runLbl = "At each exam: " + exams.map(L).join(", ");
     S.paint(S.$("#t-stats"), isCT ? `
       <div class="card stat"><span class="lbl">Present today</span>${numRow(`${rec ? present : "—"}<small> / ${N()}</small>`, S.spark(S.weekOf(S.focus), { tone: "var(--green)", ref: 90, label: "Attendance, last six school days" }))}<div class="foot">${rec ? "Marked " + rec.at : "Not marked yet"}</div>${S.meter(rec ? (present / N()) * 100 : 0, { tone: "var(--green)", mark: 90, tip: "The line marks the school's 90% target" })}</div>
-      <div class="card stat"><span class="lbl">Class average</span>${numRow(`${clsAvg}<small>%</small>`, S.spark(clsRun, { tone: "var(--royal)", label: runLbl }))}<div class="foot">${prevAvg !== null ? S.delta(clsAvg - prevAvg, { tip: `${L(P)} ${prevAvg}%` }) + " since the " + L(P).toLowerCase() : L(C)}</div>${S.meter(clsAvg, { tone: "var(--royal)", mark: prevAvg, tip: prevAvg ? `The line marks the ${L(P).toLowerCase()} average, ${prevAvg}%` : "" })}</div>
+      <div class="card stat"><span class="lbl">Class average</span>${numRow(C ? `${clsAvg}<small>%</small>` : "—", S.spark(clsRun, { tone: "var(--royal)", label: runLbl }))}<div class="foot">${prevAvg !== null ? S.delta(clsAvg - prevAvg, { tip: `${L(P)} ${prevAvg}%` }) + " since the " + L(P).toLowerCase() : C ? L(C) : "No exams yet"}</div>${S.meter(clsAvg || 0, { tone: "var(--royal)", mark: prevAvg, tip: prevAvg ? `The line marks the ${L(P).toLowerCase()} average, ${prevAvg}%` : "" })}</div>
       <div class="card stat"><span class="lbl">Leave requests</span><div class="num">${waitLeaves}</div><div class="foot">Waiting for you</div>${S.stack([{ v: waitLeaves, tone: "var(--warn)", tip: `${waitLeaves} waiting` }, { v: S.cs.leaves.length - waitLeaves, tone: "var(--green)", tip: `${S.cs.leaves.length - waitLeaves} approved` }, { v: S.cs.leaves.length ? 0 : 1, tone: "var(--sunken)" }])}</div>
       <div class="card stat"><span class="lbl">Messages</span><div class="num">${unread}</div><div class="foot">Unread from parents</div>${S.meter(unread ? 100 : 0, { tone: "var(--accent)", tip: unread ? `${unread} unread` : "All read" })}</div>` : `
       <div class="card stat"><span class="lbl">Periods today</span><div class="num">${per.length}</div><div class="foot">${per.length ? "First at " + S.periodTimes[per[0][0]] : "A free day"}</div>${S.meter((per.length / 8) * 100, { tone: "var(--royal)", tip: `${per.length} of 8 periods` })}</div>
       <div class="card stat"><span class="lbl">Students</span><div class="num">${mine.reduce((a, k) => a + S.sectionByKey(k).students.length, 0)}</div><div class="foot">${mine.map(secLabel).join(", ")}</div></div>
-      <div class="card stat"><span class="lbl">${SUBJ_L} average</span>${numRow(`${subjAvg}<small>%</small>`, S.spark(subRun, { tone: "var(--royal)", label: runLbl }))}<div class="foot">${P ? S.delta(subRun[subRun.length - 1] - subRun[subRun.length - 2], { tip: `${L(P)} ${subRun[subRun.length - 2]}%` }) + " since the " + L(P).toLowerCase() : L(C) + ", your sections"}</div>${S.meter(subjAvg, { tone: "var(--accent)" })}</div>
+      <div class="card stat"><span class="lbl">${SUBJ_L} average</span>${numRow(C ? `${subjAvg}<small>%</small>` : "—", S.spark(subRun, { tone: "var(--royal)", label: runLbl }))}<div class="foot">${P ? S.delta(subRun[subRun.length - 1] - subRun[subRun.length - 2], { tip: `${L(P)} ${subRun[subRun.length - 2]}%` }) + " since the " + L(P).toLowerCase() : C ? L(C) + ", your sections" : "No exams yet"}</div>${S.meter(subjAvg || 0, { tone: "var(--accent)" })}</div>
       <div class="card stat"><span class="lbl">Homework posted</span><div class="num">${posted}</div><div class="foot">Across your sections</div></div>`);
     renderPhase(); renderTHub(rec, present, waitLeaves, unread, clsAvg, prevAvg, subjAvg, per); renderTX();
     renderTDay();
@@ -834,7 +863,7 @@
     const line = S.$("#t-line");
     if (isCT && rec) { line.style.setProperty("--c", "var(--green)"); S.paint(line, `<i></i><span><b>${present} of ${N()} in today.</b> Attendance went to parents at ${rec.at}.</span>`); }
     else if (isCT) { line.style.setProperty("--c", "var(--warn)"); S.paint(line, `<i></i><span><b>${secLabel(home)}'s attendance isn't marked yet.</b> Parents are waiting for the morning update.</span>`); }
-    else { line.style.setProperty("--c", "var(--royal)"); S.paint(line, `<i></i><span><b>${SUBJ_L} average ${subjAvg}%</b> across your ${mine.length} section${mine.length === 1 ? "" : "s"}: ${mine.map(secLabel).join(", ")}.</span>`); }
+    else { line.style.setProperty("--c", "var(--royal)"); S.paint(line, !C ? `<i></i><span><b>No exams yet this session.</b> ${SUBJ_L} averages show here after the first one, for ${mine.map(secLabel).join(", ")}.</span>` : `<i></i><span><b>${SUBJ_L} average ${subjAvg}%</b> across your ${mine.length} section${mine.length === 1 ? "" : "s"}: ${mine.map(secLabel).join(", ")}.</span>`); }
     if (isCT && !rec && S.today.getDay()) N2.push({ tone: "red", icon: PI.attendance, t: `Take today's attendance for ${secLabel(home)}`, sub: "Parents get it the moment you submit", when: "Before 8:30", act: "Take", go: "attendance" });
     if (waitLeaves) N2.push({ tone: "gold", icon: PI.attendance, t: `${waitLeaves} leave request${waitLeaves === 1 ? "" : "s"} from parents`, sub: "Approve and the parent hears at once", act: "Review", go: "attendance/leave" });
     if (unread) N2.push({ tone: "royal", icon: PI.messages, t: `${unread} new message${unread === 1 ? "" : "s"} from parents`, sub: `Your office hours are ${S.hoursText(T.name)}`, act: "Reply", go: "messages" });
@@ -850,6 +879,13 @@
     if (S.tasksFor) S.tasksFor(T.id).forEach((k) => N2.push({ tone: "royal", icon: PI.corner, t: S.esc(k.title), sub: `From ${S.esc(S.STAFF[k.by] ? S.STAFF[k.by].name : "a teacher")}`, when: k.due ? `Due ${short(k.due)}` : "", act: "Open", go: "corner/tasks" }));
     const chatN = S.talkUnread ? Math.max(0, S.talkUnread() - unread) : S.staffUnread ? S.staffUnread() : 0;
     if (chatN) N2.push({ tone: "royal", icon: PI.messages, t: `${chatN} new message${chatN === 1 ? "" : "s"} in Messages`, sub: "From colleagues, parents and class groups", act: "Read", go: "messages" });
+    // Cover the office gave them, exam duty sent to staff, and the principal's answer on leave.
+    if (S.coverFor) [S.todayKey, S.iso(S.nextSchoolDay(S.today, 1))].forEach((k, i) => { const cs = S.coverFor(T.name, k); if (cs.length) N2.push({ tone: "royal", icon: PI.timetable, t: `Cover ${i ? S.fmt(k, { weekday: "long" }) : "today"}: ${cs.map((c) => `${secLabel(c.key)} ${S.esc(c.subj)}, P${c.p + 1}`).join(" · ")}`, sub: `For ${[...new Set(cs.map((c) => S.esc(c.teacher)))].join(" and ")}, who is on leave`, act: "See", go: "timetable" }); });
+    if (S.dutyOf) { const by = {}; S.dutyOf(T.id).filter((x) => x.date >= S.todayKey && daysTo(x.date) <= 3).forEach((x) => (by[x.date] = by[x.date] || []).push(x));
+      Object.entries(by).forEach(([k, xs]) => N2.push({ tone: "gold", icon: PI.exams, t: `Invigilation ${daysTo(k) === 0 ? "today" : daysTo(k) === 1 ? "tomorrow" : S.fmt(k, { weekday: "long" })}: ${xs[0].reserve ? "reserve" : secLabel(xs[0].k)}, P${xs[0].p + 1}${xs.length > 1 ? "–" + (xs[xs.length - 1].p + 1) : ""}`, sub: `${S.esc(xs[0].exam)}${xs[0].subj ? " · " + S.esc(xs[0].subj) + " paper" : ""} · report 15 minutes early`, act: "See", go: "timetable" })); }
+    if (S.staffReqs) S.staffReqs().filter((r) => r.tid === T.id && r.status !== "waiting" && !r.seen).forEach((r) => N2.push({ tone: r.status === "approved" ? "green" : "slate", icon: PI.timetable, t: `Your leave for ${short(r.from)}${r.to !== r.from ? " to " + short(r.to) : ""} was ${r.status}`, sub: r.status === "approved" ? "The office is arranging cover" : `By ${S.esc(r.by || "the principal")}`, act: "See", go: "timetable" }));
+    // Only what's on pages this teacher has (the academic planner decides).
+    for (let i = N2.length - 1; i >= 0; i--) if (!S.canSee(T.id, N2[i].go)) N2.splice(i, 1);
     S.setNeeds(N2, { empty: "Nothing needs you right now." });
     // The same list as a tag at the top of the welcome sheet, as on the parent's home: what's waiting, one tap to see it.
     const VERB = { Take: "take attendance", Review: "review leave", Reply: "reply to parents", Enter: "enter marks", Times: "check PTM times", Open: "open a task", Read: "read the staff room" };
@@ -869,14 +905,14 @@
     const hwFoot = hwAhead.length ? `<span class="pg-chips">${hwAhead.slice(0, 3).map(([k, h]) => `<span class="pg-chip${daysTo(h.due) <= 1 ? " soon" : ""}">${secLabel(k)} · ${daysTo(h.due) === 0 ? "today" : daysTo(h.due) === 1 ? "tomorrow" : S.fmt(h.due, { day: "numeric", month: "short" })}</span>`).join("")}</span>` : "";
     const mkFoot = entry ? `<span class="pg-chips">${mine.map((k) => { const e = S.entry(k, sj(k)), n = Object.keys(e.marks).length, t = S.sectionByKey(k).students.length; return `<span class="pg-chip${e.published ? "" : " soon"}">${secLabel(k)} · ${e.published ? "published ✓" : `${n}/${t}`}</span>`; }).join("")}</span>` : "";
     S.paint(S.$("#t-tiles"), S.tilesHTML([
-      { go: "class", icon: PI.class, tone: "accent", name: isCT ? "My class" : "My sections", line: isCT ? `${clsAvg}% average` : `${SUBJ_L} average ${subjAvg}%`, main: true, big: isCT ? clsAvg : subjAvg, unit: "%", side: clsSide },
+      { go: "class", icon: PI.class, tone: "accent", name: isCT ? "My class" : "My sections", line: !C ? `No exams yet<span class="pg-sub">Averages show after the first exam</span>` : isCT ? `${clsAvg}% average` : `${SUBJ_L} average ${subjAvg}%`, main: true, big: !C ? (isCT ? N() : mine.reduce((a, k) => a + S.sectionByKey(k).students.length, 0)) : isCT ? clsAvg : subjAvg, unit: !C ? " students" : "%", side: clsSide },
       // Messages: parents, colleagues and the class groups. For a class teacher it takes the big row; attendance sits below.
       (() => { const n = S.talkUnread ? S.talkUnread() : unread, sp = S.talkSplit ? S.talkSplit() : { stu: unread, staff: 0 }, peek = S.talkPeek ? S.talkPeek(3) : [];
         const foot = isCT && peek.length ? `<span class="pg-chips">${peek.map((p) => `<span class="pg-chip${p.n ? " soon" : ""}">${S.esc(p.t)}${p.n ? ` · ${p.n} new` : ""}</span>`).join("")}</span>` : "";
         return { go: "messages", icon: PI.messages, tone: "royal", name: "Messages", main: isCT, big: n, unit: " new", count: isCT ? 0 : n, foot,
           line: isCT ? `${sp.stu} from parents · ${sp.staff} from staff<span class="pg-sub">${peek.length ? "Latest:" : "Parents, colleagues and class groups"}</span>` : `${n ? `${n} new` : "All caught up"}<span class="pg-sub">Parents, colleagues and class groups</span>` }; })(),
       { go: "homework", icon: PI.homework, tone: "royal", name: "Homework", main: true, big: hwAhead.length, unit: " due ahead", line: `${posted} posted across your sections<span class="pg-sub">${hwAhead.length ? "Due next:" : "Nothing due"}</span>`, foot: hwFoot },
-      { go: "marks", icon: PI.marks, tone: "gold", name: "Marks", line: entry ? `${S.ENTRY.name}: ${entry.published ? "published" : Object.keys(entry.marks).length + " entered"}` : `${L(C)} average ${subjAvg}%`, m: entry ? (entry.published ? 100 : (Object.keys(entry.marks).length / N()) * 100) : null, main: true, big: entry ? (entry.published ? "Done" : Object.keys(entry.marks).length) : subjAvg, unit: entry ? (entry.published ? "" : ` / ${N()}`) : "%", foot: mkFoot },
+      { go: "marks", icon: PI.marks, tone: "gold", name: "Marks", line: entry ? `${S.ENTRY.name}: ${entry.published ? "published" : Object.keys(entry.marks).length + " entered"}` : C ? `${L(C)} average ${subjAvg}%` : "No exams yet", m: entry ? (entry.published ? 100 : (Object.keys(entry.marks).length / N()) * 100) : null, main: true, big: entry ? (entry.published ? "Done" : Object.keys(entry.marks).length) : C ? subjAvg : "–", unit: entry ? (entry.published ? "" : ` / ${N()}`) : C ? "%" : "", foot: mkFoot },
       // Their week ahead: a big count of classes, then the next class of each section as chips.
       ...(() => {
         const fu = ((S.state.follow || {})[T.id] || []).filter((f) => !f.done && f.k >= S.todayKey).length;
@@ -892,17 +928,17 @@
       { go: "exams", icon: PI.exams, tone: "slate", name: "Exams", line: nextEx ? `${S.esc(nextEx.name)} from ${S.fmt(S.examSpan(nextEx, S.groupOf({ cls: x.cls, sec: x })).from)}` : "Datesheets for every class" },
       ...(isCT ? [{ go: "attendance", icon: PI.attendance, tone: "green", name: "Attendance", line: rec ? `Present today · ${N() - present ? `${N() - present} away` : "everyone in"}<span class="pg-sub">${waitLeaves ? `${waitLeaves} leave request${waitLeaves === 1 ? "" : "s"} waiting` : "Bars: the last six school days"}</span>` : `Not marked yet<span class="pg-sub">Parents are waiting for the morning update</span>`, flag: !rec && !!S.today.getDay(), count: waitLeaves, m: rec ? (present / N()) * 100 : 0, side: `<span class="pg-spark" title="Last six school days">${S.miniBars(S.weekOf(S.focus), { lo: 60, hi: 100, ref: 90 })}</span>` }] : []),
       { go: "care", icon: PI.care, tone: "green", name: "Remarks and forms", line: `${forms ? `${forms} form${forms === 1 ? "" : "s"} sent · notes on any student` : "Notes on any student you teach"}<span class="pg-sub">Meeting: ${ptm ? `${bk} booked for ${S.fmt(ptm.date)}` : "none planned yet"}</span>` }
-    ]));
+    ].filter((t) => S.canSee(T.id, t.go))));
   }
   // ---------- Your day: every period in a row, yours in colour, a marker at the time now ----------
   const slotsOn = (day) => {
     const g = day.getDay(), n = S.periodsOn(day), isToday = S.iso(day) === S.todayKey;
-    const given = isToday ? ((S.state.cover || {})[S.todayKey] || {}) : {};
-    const cov = isToday && n ? S.coverToday().filter((r) => given[r.id] === T.name) : [];
+    // Cover the office gave this teacher that day, and exam duty sent to staff.
+    const key = S.iso(day), cov = n && S.coverFor ? S.coverFor(T.name, key) : [], du = n && S.dutyOf ? S.dutyOf(T.id).filter((x) => x.date === key) : [];
     const wk = S.teachWeek(T);
     return Array.from({ length: n }, (_, p) => {
-      const w = wk[g + "|" + p], k = w ? w.k : null, cv = !k && cov.find((r) => r.p === p);
-      return { p, k: k || (cv ? cv.key : null), subj: w ? w.subj : null, cover: cv || null };
+      const w = wk[g + "|" + p], k = w ? w.k : null, cv = !k && cov.find((r) => r.p === p), dv = !k && !cv && du.find((x) => x.p === p);
+      return { p, k: k || (cv ? cv.key : dv ? dv.k || "Reserve" : null), subj: w ? w.subj : null, cover: cv || null, duty: dv || null };
     });
   };
   const at = (p) => S.periodTimes[p], till = (p) => S.ENDS[p];
@@ -918,16 +954,17 @@
     if (live && c.cur >= 0 && slots[c.cur].k) { f = slots[c.cur]; kick = `On now · ${40 - Math.floor(c.frac * 40)} min left`; tone = "green"; }
     else if (live && !c.after && (f = teach.find((x) => S.mins(at(x.p)) > c.nowM))) { const lead = c.brk ? "Break now" : c.cur >= 0 ? "Free now" : ""; kick = `${lead ? lead + " · next" : c.before ? "First" : "Next"} ${inMin(S.mins(at(f.p)) - c.nowM, c.nowM)}`; }
     else if (!live && teach.length) { f = teach[0]; kick = isToday ? "First period" : `First on ${S.fmt(day, { weekday: "long" })}`; }
-    const name = (x) => (x.cover ? `Cover for ${S.esc(x.cover.teacher)}` : x.subj || SUBJ) + `${x.k === T.classOf ? " · your class" : ""}`;
+    const name = (x) => (x.cover ? `Cover for ${S.esc(x.cover.teacher)}` : x.duty ? `Invigilation${x.duty.reserve ? ", reserve" : ""}` : x.subj || SUBJ) + `${x.k === T.classOf && !x.duty ? " · your class" : ""}`;
     let card;
     if (f) {
       const acts = [];
       if (isToday && isCT && f.k === home && !rec) acts.push(`<button class="btn btn-primary btn-sm" type="button" data-go="attendance">Take attendance</button>`);
-      if (!f.cover) acts.push(`<button class="btn btn-ghost btn-sm" type="button" data-go="homework" data-hwsec="${f.k}">Homework for ${secLabel(f.k)}</button>`);
-      if (!f.cover && f.subj === sj(f.k) && S.ENTRY && S.PHASE !== "start" && !S.entry(f.k, sj(f.k)).published) acts.push(`<button class="btn btn-ghost btn-sm" type="button" data-go="marks" data-msec="${f.k}">${S.ENTRY.name} marks</button>`);
+      if (!f.cover && !f.duty) acts.push(`<button class="btn btn-ghost btn-sm" type="button" data-go="homework" data-hwsec="${f.k}">Homework for ${secLabel(f.k)}</button>`);
+      if (f.duty) acts.push(`<button class="btn btn-ghost btn-sm" type="button" data-go="timetable">My timetable</button>`);
+      if (!f.cover && !f.duty && f.subj === sj(f.k) && S.ENTRY && S.PHASE !== "start" && !S.entry(f.k, sj(f.k)).published) acts.push(`<button class="btn btn-ghost btn-sm" type="button" data-go="marks" data-msec="${f.k}">${S.ENTRY.name} marks</button>`);
       if (f.cover) acts.push(`<button class="btn btn-ghost btn-sm" type="button" data-x-ask="What should I do in a cover period for ${secLabel(f.k)} ${S.esc(f.cover.subj)}?">Ideas for the period</button>`);
-      card = `<div class="tnow t-${tone}${f.cover ? " cv" : ""}"><span class="tnow-k"><i></i>${kick}</span><b class="tnow-sec">${secLabel(f.k)}</b>
-        <span class="tnow-s">${name(f)}${f.cover ? ` · ${S.esc(f.cover.subj)}` : ""}</span><span class="tnow-t">Period ${f.p + 1} · ${at(f.p)} to ${till(f.p)}</span>
+      card = `<div class="tnow t-${tone}${f.cover || f.duty ? " cv" : ""}"><span class="tnow-k"><i></i>${kick}</span><b class="tnow-sec">${secLabel(f.k)}</b>
+        <span class="tnow-s">${name(f)}${f.cover ? ` · ${S.esc(f.cover.subj)}` : f.duty && f.duty.subj ? ` · ${S.esc(f.duty.subj)} paper` : ""}</span><span class="tnow-t">Period ${f.p + 1} · ${at(f.p)} to ${till(f.p)}</span>
         ${kick.startsWith("On now") ? `<span class="tnow-bar" aria-hidden="true"><i style="width:${(c.frac * 100).toFixed(1)}%"></i></span>` : ""}
         <div class="tnow-acts">${acts.slice(0, 2).join("")}</div></div>`;
     } else {
@@ -943,14 +980,14 @@
     slots.forEach((x) => {
       if (x.p === 4) rail += `<div class="tr-s brk" style="--i:${i++}" title="Break, 10:40 to 10:50"><span class="tr-b">${live && c.brk ? mark(c.frac) : ""}</span><span class="tr-t" aria-hidden="true"></span></div>`;
       const on = live && c.cur === x.p, past = live && (c.after || (c.cur > x.p) || (c.cur < 0 && S.mins(till(x.p)) <= c.nowM));
-      const kind = x.cover ? "cv" : x.k ? "tc" : "fr";
+      const kind = x.cover || x.duty ? "cv" : x.k ? "tc" : "fr";
       rail += `<div class="tr-s ${kind}${x.k && x.k === T.classOf ? " mine" : ""}${on ? " on" : ""}${past ? " past" : ""}" style="--i:${i++}" role="listitem" aria-label="Period ${x.p + 1}, ${at(x.p)}: ${x.k ? secLabel(x.k) + (x.cover ? ", cover" : "") : "free"}${on ? ", on now" : ""}">
-        <span class="tr-b"${on ? ` style="--f:${(c.frac * 100).toFixed(1)}%"` : ""}><span class="tr-p">P${x.p + 1}</span><b>${x.k ? secLabel(x.k) : "Free"}</b>${x.cover ? `<span class="tr-tag">Cover</span>` : ""}${on ? mark(c.frac) : ""}</span><span class="tr-t" aria-hidden="true">${at(x.p)}</span></div>`;
+        <span class="tr-b"${on ? ` style="--f:${(c.frac * 100).toFixed(1)}%"` : ""}><span class="tr-p">P${x.p + 1}</span><b>${x.k ? secLabel(x.k) : "Free"}</b>${x.cover ? `<span class="tr-tag">Cover</span>` : x.duty ? `<span class="tr-tag">Duty</span>` : ""}${on ? mark(c.frac) : ""}</span><span class="tr-t" aria-hidden="true">${at(x.p)}</span></div>`;
     });
-    const free = slots.length - teach.length, cov = teach.filter((x) => x.cover).length;
+    const free = slots.length - teach.length, cov = teach.filter((x) => x.cover).length, duN = teach.filter((x) => x.duty).length;
     S.paint(S.$("#t-day"), `${card}<div class="trail"><div class="tr-h"><b>${isToday ? "Your day" : S.fmt(day, { weekday: "long", day: "numeric", month: "short" })}</b><span>${slots.length} periods · ${at(0)} to ${till(slots.length - 1)}</span></div>
       <div class="tr${live && !c.before && !c.after ? " live" : ""}" role="list">${rail}</div>
-      <p class="tr-sum"><span><i class="k-tc"></i>${teach.length - cov} teaching</span>${cov ? `<span><i class="k-cv"></i>${cov} cover</span>` : ""}<span><i class="k-fr"></i>${free} free</span>${isCT ? `<span><i class="k-mine"></i>${secLabel(home)}, your class</span>` : ""}</p></div>`);
+      <p class="tr-sum"><span><i class="k-tc"></i>${teach.length - cov - duN} teaching</span>${cov ? `<span><i class="k-cv"></i>${cov} cover</span>` : ""}${duN ? `<span><i class="k-cv"></i>${duN} exam duty</span>` : ""}<span><i class="k-fr"></i>${free} free</span>${isCT ? `<span><i class="k-mine"></i>${secLabel(home)}, your class</span>` : ""}</p></div>`);
   }
   // Keep the day moving while the welcome page is open.
   setInterval(() => { if (!document.hidden && document.body.classList.contains("on-hub")) renderTDay(); }, 30000);
@@ -963,7 +1000,9 @@
   function renderTX() {
     const isCT = ctv(); // the class view only while the class teacher is looking at their own class
     // My class: each subject's class average, with the tick at the last exam. Subject teachers: each section's average in their subject.
-    const exs = [...new Set(["ly", ...[...S.EX.list].reverse()])], last = exs[exs.length - 1], before = exs.length > 1 ? exs[exs.length - 2] : null;
+    const exs = [...S.EX.list].reverse(), last = exs[exs.length - 1], before = exs.length > 1 ? exs[exs.length - 2] : null;
+    if (!last) { S.$("#tc-x-h").textContent = isCT ? "Subject by subject" : `${SUBJ_L} by section`; S.$("#tc-x-sub").textContent = "";
+      S.paint(S.$("#tc-x"), `<p class="muted">No exams yet this session. Each subject's average shows here after the first exam.</p>`); return; }
     const avgIn = (y, subj, k) => Math.round(y.students.reduce((a, st) => a + st[k][subj], 0) / y.students.length);
     let items, head, lo;
     if (isCT) {
@@ -1007,8 +1046,8 @@
     S.explore(S.$("#t-att-x"), { kind: "cols", lo: Math.min(70, Math.floor(((worst ? worst.v : 90) - 5) / 10) * 10), hi: 100, items: items2, sel: worst && worst.v < 100 ? worst.k : days[days.length - 1], line: { v: 90, label: "School target 90%" }, label: "Attendance, last six school days",
       head: avg6 === null ? "Nothing marked in the last six school days." : `${secLabel(home)} averaged <b>${avg6}%</b> over the last ${marked.length} school days${worst && worst.v < 90 ? `; the low was <b>${worst.label}</b> at ${worst.v}%` : ", at or above the school's 90% target every day"}.` });
   }
-  const clsAvgOf = (k) => Math.round(S.students.reduce((a, st) => a + S.avgOf(st[k]), 0) / N());
-  const subjAvgOf = (k) => Math.round(mine.reduce((a, key) => { const y = S.sectionByKey(key); return a + y.students.reduce((b, st) => b + st[k][sj(key)], 0) / y.students.length; }, 0) / mine.length);
+  const clsAvgOf = (k) => !k ? null : Math.round(S.students.reduce((a, st) => a + S.avgOf(st[k]), 0) / N());
+  const subjAvgOf = (k) => !k ? null : Math.round(mine.reduce((a, key) => { const y = S.sectionByKey(key); return a + y.students.reduce((b, st) => b + st[k][sj(key)], 0) / y.students.length; }, 0) / mine.length);
 
   document.addEventListener("click", (e) => {
     const a = e.target.closest("[data-approve]");
@@ -1162,7 +1201,7 @@
   const passOf = () => S.state.pass[`${mkey}|${sj(mkey)}`] ?? (MAX === 100 ? 33 : Math.ceil(MAX * 0.33) + 1);
   let LOW = MAX === 100 ? 33 : 8;
   const STAT = { AB: "Absent", ML: "Medical leave" }, statOf = (v) => (v == null || v === "" || !isNaN(+v) ? null : STAT[v] || String(v));
-  const OUT = { ut1: 20, ut2: 20, ut3: 20, hy: 100, fin: 100, ly: 100 }; // what each paper was marked out of
+  const OUT = { ut1: 20, ut2: 20, ut3: 20, hy: 100, fin: 100 }; // what each paper was marked out of
   let mView = "marks"; try { mView = localStorage.getItem("sjs-mview") || "marks"; } catch (e) {}
   let mkey = mine.includes(home) ? home : mine[0];
   S.$("#m-sec").value = mkey;
@@ -1353,7 +1392,7 @@
     S.toast(`Filled ${n} marks from the file · check them, then publish to parents`, { done: false });
   });
   S.$("#fill-sample").addEventListener("click", () => {
-    const y = S.sectionByKey(mkey), m = S.entry(mkey, sj(mkey)).marks, src = S.PHASE === "start" ? "ly" : S.PHASE === "end" ? "fin" : "hy";
+    const y = S.sectionByKey(mkey), m = S.entry(mkey, sj(mkey)).marks, src = S.PHASE === "start" ? "ut1" : S.PHASE === "end" ? "fin" : "hy"; // start: no exams yet, so the sample is shaped like Unit Test 1
     y.students.forEach((s) => { m[s.roll] = Math.max(Math.round(MAX * 0.2), Math.min(MAX, Math.round((s[src][sj(mkey)] / 100) * MAX + (((s.roll * 7) % 5) - 2) * (MAX / 20)))); });
     S.save(); delete S.$("#m-tbl").dataset.built; renderMarks();
   });
@@ -1565,10 +1604,14 @@
     const n = N();
     // My class
     const avg = clsAvgOf(C), sAvg = subjAvgOf(C);
+    // Before the first exam: nothing to ring yet.
+    if (!C) { ring("tcls-year", 0, "–", "No exams yet"); ring("tcls-glance", 0, "–", "After the first exam"); }
+    else {
     ring("tcls-year", isCT ? avg : sAvg, isCT ? avg : sAvg, `${isCT ? "Class" : SUBJ_L} average, ${L(C).toLowerCase()}`);
     const subRows = isCT ? x.subjects.map((k) => Math.round(S.students.reduce((a, st) => a + st[C][k], 0) / n)) : mine.map((k) => { const y = S.sectionByKey(k); return Math.round(y.students.reduce((a, st) => a + st[C][sj(k)], 0) / y.students.length); });
     const weak = subRows.filter((v) => v < 70).length;
     ring("tcls-glance", ((subRows.length - weak) / subRows.length) * 100, weak || "✓", weak ? `${weak} ${isCT ? "subject" : "section"}${weak === 1 ? "" : "s"} under 70%` : `Every ${isCT ? "subject" : "section"} 70%+`);
+    }
     // Attendance
     const rec = S.cs.attendance[S.todayKey], open = S.isSchoolDay(S.today), away = rec ? Object.keys(rec.marks || {}).length : 0;
     ring("reg-today", rec ? 100 : 0, !open ? "–" : rec ? "✓" : "!", !open ? "No school today" : rec ? `${n - away} of ${n} in` : "Not marked yet");
@@ -1724,6 +1767,21 @@
     if (notMarked.length && S.today.getDay()) N2.push({ tone: "red", icon: PI.attendance, t: `${notMarked.length} section${notMarked.length === 1 ? " hasn't" : "s haven't"} marked attendance`, sub: notMarked.slice(0, 6).join(", ") + (notMarked.length > 6 ? " and more" : ""), act: "See", go: "attendance" });
     if (low.length) N2.push({ tone: "warn", icon: PI.attendance, t: `${low.length === 1 ? S.classLabel(low[0]) + " is" : low.length + " classes are"} under the 90% target today`, sub: low.map((c) => `${S.classLabel(c)} ${vals[classes.indexOf(c)]}%`).join(", "), act: "See", go: "attendance" });
     if (toCover) N2.push({ tone: "red", icon: PI.staff, t: `${toCover} period${toCover === 1 ? "" : "s"} to cover today`, sub: `${S.leaveToday().map((l) => S.esc(l.name)).join(" and ")} ${S.leaveToday().length === 1 ? "is" : "are"} on leave`, act: "Assign", go: "staff" });
+    // Leave teachers asked for: the principal approves.
+    const lvWait = S.staffReqs ? S.staffReqs().filter((r) => r.status === "waiting") : [];
+    lvWait.forEach((r) => N2.push({ tone: "gold", icon: PI.staff, t: `Leave request: ${S.esc(r.name)}`, sub: `${S.esc(r.kind)} leave, ${r.from === r.to ? shortD(r.from) : shortD(r.from) + " to " + shortD(r.to)}${role === "principal" ? "" : " · waiting for the principal"}`, act: role === "principal" ? "Review" : "See", go: "staff" }));
+    // The office: cover still open for approved leave in the days ahead, and exam duty to assign or send.
+    if (role === "admin" && S.coverOn) {
+      let d = S.today; for (let i = 0; i < 5; i++) { d = S.nextSchoolDay(d, 1); const k = S.iso(d), lv = S.leaveOn(k).filter((l) => l.req), dn = (S.state.cover || {})[k] || {};
+        const open = S.coverOn(k).filter((r) => lv.some((l) => l.name === r.teacher) && !dn[r.id]).length;
+        if (open) N2.push({ tone: "royal", icon: PI.staff, t: `Cover for ${lv.map((l) => S.esc(l.name)).join(" and ")}, ${shortD(k)}`, sub: `${open} period${open === 1 ? "" : "s"} to assign · approved leave`, act: "Assign", go: "staff" }); }
+    }
+    if (role === "admin" && S.examDuty) (S.state.exams || []).filter((e) => e.kind !== "ts" && e.classes.some((c) => S.sample.classes.indexOf(c) >= 8)).forEach((e) => {
+      const from = S.examSpan(e).from, days = Math.round((new Date(from + "T00:00") - S.today) / 864e5); if (days < 0 || days > 21) return;
+      const D = S.examDuty(e), rec = (S.state.duty || {})[e.id] || {}, sent = rec.sent && rec.sig === JSON.stringify([rec.asg || {}, rec.res || {}]);
+      if (!D.all) N2.push({ tone: "gold", icon: PI.exams, t: `Exam duty for ${S.esc(e.name)}: ${D.nRooms - D.nDone} paper${D.nRooms - D.nDone === 1 ? "" : "s"} to assign`, sub: "The plan has suggested an invigilator for each", when: `From ${shortD(from)}`, act: "Assign", go: "ttschool/duty" });
+      else if (!sent) N2.push({ tone: "gold", icon: PI.exams, t: `Exam duty for ${S.esc(e.name)} is ready to send`, sub: "Every paper has an invigilator", when: `From ${shortD(from)}`, act: "Send", go: "ttschool/duty" });
+    });
     if (fresh) N2.push({ tone: "accent", icon: PI.admissions, t: `Call back ${fresh} new admission ${fresh === 1 ? "enquiry" : "enquiries"}`, sub: "From the website's visit form", act: "Call", go: "admissions" });
     const feeDays = Math.round((new Date(F.due + "T00:00") - S.today) / 864e5);
     if (S.PHASE !== "end" && feeDays >= 0 && feeDays <= 14) N2.push({ tone: "gold", icon: PI.fees, t: `${F.q} fees are due ${shortD(F.due)}: ${F.families} families yet to pay`, sub: `${F.pct}% collected so far`, when: `In ${feeDays} day${feeDays === 1 ? "" : "s"}`, act: "Follow up", go: "fees/follow" });
@@ -1747,16 +1805,16 @@
     S.paint(S.$("#p-tiles"), S.tilesHTML([
       { go: "attendance", icon: PI.attendance, tone: "green", name: "Attendance", line: today === null ? "Not marked yet" : `${today}% present today`, flag: today !== null && today < 90, main: true, bars: byDay, barsOpt: { lo: 80, hi: 100, ref: 90 } },
       { go: "staff", icon: PI.staff, tone: "royal", name: "Staff and cover", main: true, big: toCover, unit: toCover === 1 ? " period to cover" : " to cover", line: toCover ? `${toCover} period${toCover === 1 ? "" : "s"} to cover` : S.PHASE === "mid" ? "84 of 88 present · all covered" : "All periods covered", flag: toCover > 0 },
-      { go: "ttschool", icon: PI.timetable, tone: "teal", name: "Timetable", line: `${S.TEACHERS.length} teachers, 4 to 5 classes each<span class="pg-sub">Who's free when · every class's week · exam duty</span>` },
+      { go: "ttschool", grp: "Teaching", icon: PI.timetable, tone: "teal", name: "Timetable", line: `${S.TEACHERS.length} teachers, 4 to 5 classes each<span class="pg-sub">Who's free when · every class's week · exam duty</span>` },
       { go: "fees", icon: PI.fees, tone: "gold", name: "Fees", line: `${F.pct}% of ${F.q} collected`, m: F.pct, main: true, big: F.pct, unit: "%" },
       { go: "classes", icon: PI.classes, tone: "teal", name: "Classes", main: true, big: S.PHASE === "mid" ? watchN : S.allSections().length, unit: S.PHASE === "mid" ? " to watch" : " sections", line: S.PHASE === "start" ? `${roll.toLocaleString("en-IN")} students in ${S.allSections().length} sections` : S.PHASE === "end" ? "Results by class and toppers" : `${watchN} section${watchN === 1 ? "" : "s"} to watch` },
-      { go: "admissions", icon: PI.admissions, tone: "accent", name: "Admissions", line: fresh ? `${fresh} new to call · ${enq.length} this season` : `${enq.length} enquiries this season`, count: fresh },
-      { go: "exams", icon: PI.exams, tone: "slate", name: "Exams", line: nextEx ? `${S.esc(nextEx.name)}${S.examSpan(nextEx).from > S.todayKey ? " from " + S.fmt(S.examSpan(nextEx).from) : " on now"}` : "Datesheets for every class" },
-      { go: "notices", icon: PI.notices, tone: "accent", name: "Notices", line: role === "principal" && pend.length ? `${pend.length} waiting for you` : `${upcoming} coming up`, flag: role === "principal" && pend.length > 0, count: role === "principal" ? pend.length : 0 },
-      { go: "gate", icon: PI.gate, tone: "teal", name: "Gate", line: `${passes} one-off pick-up${passes === 1 ? "" : "s"} · ${vis} visitor${vis === 1 ? "" : "s"} today` },
-      { go: "transport", icon: S.NAV_ICONS.transport, tone: "gold", name: "Transport", line: (() => { const rs = S.routes(), on = rs.filter((r) => S.busLive(r.id)).length, sug = rs.reduce((a, r) => a + (r.pending || []).length, 0); return `${rs.length} routes · ${on ? `${on} bus${on === 1 ? "" : "es"} on the road` : "no bus on the road now"}${sug ? ` · ${sug} stop${sug === 1 ? "" : "s"} suggested` : ""}`; })(), flag: rs0() },
-      { go: "log", icon: PI.log, tone: "slate", name: "Activity log", line: `${(S.state.activity || []).length} entries, sealed` },
-      { go: "website", icon: PI.website, tone: "royal", name: "Website", line: missing ? `${missing} details still to add` : "Up to date", flag: role === "admin" && missing > 0 }
+      { go: "admissions", grp: "School office", icon: PI.admissions, tone: "accent", name: "Admissions", line: fresh ? `${fresh} new to call · ${enq.length} this season` : `${enq.length} enquiries this season`, count: fresh },
+      { go: "exams", grp: "Teaching", icon: PI.exams, tone: "slate", name: "Exams", line: nextEx ? `${S.esc(nextEx.name)}${S.examSpan(nextEx).from > S.todayKey ? " from " + S.fmt(S.examSpan(nextEx).from) : " on now"}` : "Datesheets for every class" },
+      { go: "notices", grp: "School office", icon: PI.notices, tone: "accent", name: "Notices", line: role === "principal" && pend.length ? `${pend.length} waiting for you` : `${upcoming} coming up`, flag: role === "principal" && pend.length > 0, count: role === "principal" ? pend.length : 0 },
+      { go: "gate", grp: "School office", icon: PI.gate, tone: "teal", name: "Gate", line: `${passes} one-off pick-up${passes === 1 ? "" : "s"} · ${vis} visitor${vis === 1 ? "" : "s"} today` },
+      { go: "transport", grp: "School office", icon: S.NAV_ICONS.transport, tone: "gold", name: "Transport", line: (() => { const rs = S.routes(), on = rs.filter((r) => S.busLive(r.id)).length, sug = rs.reduce((a, r) => a + (r.pending || []).length, 0); return `${rs.length} routes · ${on ? `${on} bus${on === 1 ? "" : "es"} on the road` : "no bus on the road now"}${sug ? ` · ${sug} stop${sug === 1 ? "" : "s"} suggested` : ""}`; })(), flag: rs0() },
+      { go: "log", grp: "School office", icon: PI.log, tone: "slate", name: "Activity log", line: `${(S.state.activity || []).length} entries, sealed` },
+      { go: "website", grp: "School office", icon: PI.website, tone: "royal", name: "Website", line: missing ? `${missing} details still to add` : "Up to date", flag: role === "admin" && missing > 0 }
     ]));
   }
 
@@ -1790,6 +1848,7 @@
       key: `<span><i style="background:var(--green)"></i>At or ahead of the school</span><span><i style="background:var(--gold)"></i>Just behind</span><span><i style="background:var(--accent)"></i>More than 4 behind</span><span><i style="background:var(--ink);width:3px;border-radius:1px"></i>School-wide ${F.pct}%</span>` });
   }
   document.addEventListener("sjs:view", (e) => { if (e.detail === "overview") render(); });
+  S.renderHubAgain = render; // after a leave request is decided, the tray and tiles catch up
   // Where the school day is, after the date: the period on now, break, or the day done.
   const clockLine = () => { const c = S.schoolClock(); return !c.live || c.before ? "" : c.after ? " · School's over for today" : c.brk ? " · Break, until 10:50" : c.cur >= 0 ? ` · Period ${c.cur + 1} of ${c.n}, until ${S.ENDS[c.cur]}` : ""; };
   setInterval(() => { if (!document.hidden && document.body.classList.contains("on-hub")) S.$("#p-today-line").textContent = S.fmtLong(S.today) + clockLine(); }, 30000);
@@ -1874,7 +1933,6 @@
     S.paint(S.$("#fee-stack"), S.stack([{ v: F.online, tone: "var(--green)", tip: `₹${(F.online / 100).toFixed(2)} Cr`, tipT: "Paid online" }, { v: F.counter, tone: "color-mix(in srgb, var(--green) 45%, var(--surface))", tip: `₹${(F.counter / 100).toFixed(2)} Cr`, tipT: "Paid at the counter" }, { v: left, tone: "var(--sunken)", tip: `₹${(left / 100).toFixed(2)} Cr · ${F.families} families`, tipT: "Yet to pay" }]).replace("stackbar", "stackbar lg"));
     S.paint(S.$("#wing"), WINGS.map(([w, total, pct]) => `<div class="wing-row"><span>${w}</span>${S.meter(pct, { tone: pct < F.pct - 4 ? "var(--warn)" : "var(--green)", mark: F.pct, tip: `₹${(total * pct / 100).toFixed(2)} Cr of ₹${total.toFixed(2)} Cr` })}<b>${pct}%</b></div>`).join("") + `<p class="chart-note" style="margin-top:2px">The line marks the school-wide ${F.pct}%.</p>`);
     if (S.$("#enq-mini")) S.$("#enq-mini").innerHTML = enq.slice(0, 4).map((e) => `<div class="li"><span class="avatar soft">${e.child.split(" ").map((p) => p[0]).join("").slice(0, 2)}</span><div class="t"><b>${S.esc(e.child)} · ${S.esc(e.cls)}</b><span>${S.esc(e.parent)} · ${S.fmt(e.at)}</span></div><span class="end pill ${e.status === "New" ? "red" : e.status === "Visit booked" ? "green" : ""}">${e.status}</span></div>`).join("");
-    if (S.$("#p-risk")) S.$("#p-risk").innerHTML = S.atRisk().map((x) => `<div class="li"><span class="avatar soft">${x.s.initials}</span><div class="t"><b>${x.s.name}</b><span>${x.why.join(" · ")}</span></div></div>`).join("");
     document.querySelectorAll('[data-count="admissions"]').forEach((c) => { c.hidden = !fresh; c.textContent = fresh; });
 
     // Admissions
@@ -2070,7 +2128,7 @@
     const x = S.section(pick.c, pick.s), st = S.secStats(x), today = S.todayPct(x);
     const sibs = secsOf(x.cls), sst = sibs.map(S.secStats);
     const others = sibs.map((y, i) => [y, sst[i]]).filter(([y]) => y.sec !== x.sec);
-    const LC = L(C, x.cls), LP = P ? L(P, x.cls) : null;
+    const LC = C ? L(C, x.cls) : "Marks", LP = P ? L(P, x.cls) : null, NOEX = `<p class="muted">No exams yet this session. This fills in after the first exam.</p>`;
     S.$("#c-cls").value = x.cls;
     S.$("#c-sec").innerHTML = S.SECTIONS[x.cls].map((s) => `<option value="${s}" ${s === x.sec ? "selected" : ""}>${s}${S.STREAM(x.cls, s) ? " · " + S.STREAM(x.cls, s) : ""}</option>`).join("");
     S.$("#c-line").textContent = `${S.classLabel(x.cls)} has ${sibs.length} sections · ${S.fmtLong(S.today)} · ${S.PHASES[S.PHASE].label}`;
@@ -2083,17 +2141,18 @@
     const school = S.schoolToday();
     // A section's average at each exam of the year so far, oldest first.
     const exAvg = (y, k) => Math.round(avgOf(y.students.map((s) => avgOf(y.subjects.map((j) => s[k][j])))));
-    const exams = [...new Set(["ly", ...[...S.EX.list].reverse()])];
+    const exams = [...S.EX.list].reverse();
     const sp = (html) => (html ? `<span class="kpi-sp">${html}</span>` : "");
     S.paint(S.$("#c-kpis"), `
       <div>${sp(S.spark(S.weekOf(x), { tone: "var(--green)", ref: 90, w: 64, h: 24, label: "Attendance, last six school days" }))}<dt>Present today</dt><dd>${present === null ? "Not marked" : `${present}<small> / ${st.n}</small>`}</dd><span>${today === null ? "Waiting for the class teacher" : today + "% · school " + school + "%"}</span>${S.meter(today || 0, { tone: today !== null && today < 90 ? "var(--warn)" : "var(--green)", mark: 90, tip: "The line marks the 90% target" })}</div>
       <div><dt>This session</dt><dd>${st.att}<small>%</small></dd><span>Attendance · class ${clsAtt}%</span>${S.meter(st.att, { tone: "var(--green)", mark: clsAtt, tip: `The line marks ${S.classLabel(x.cls)}'s average, ${clsAtt}%` })}</div>
-      <div>${sp(S.spark(exams.map((k) => exAvg(x, k)), { tone: "var(--royal)", w: 64, h: 24, label: "Average at each exam: " + exams.map((k) => L(k, x.cls)).join(", ") }))}<dt>${LC}</dt><dd>${st.cur}<small>%</small></dd><span>${st.prev === null ? "From last session" : `${st.cur === st.prev ? "Level with" : st.cur > st.prev ? "Up from" : "Down from"} ${st.prev}% in ${LP}`}</span>${S.meter(st.cur, { tone: "var(--accent)", mark: others.length ? othCur : null, tip: others.length ? `The line marks the other sections, ${othCur}%` : "" })}</div>
-      ${S.PHASE === "end" ? `<div><dt>Passed every subject</dt><dd>${st.pass}<small>%</small></dd><span>${Math.round((st.pass / 100) * st.n)} of ${st.n} ${/^(X|XII)$/.test(x.cls) ? "ready for the boards" : "promoted"}</span>${S.meter(st.pass, { tone: "var(--royal)", mark: 95, tip: "The line marks 95%" })}</div>` : `<div><dt>${F.q} fees</dt><dd>${x.fees}<small>%</small></dd><span>${Math.round(((100 - x.fees) / 100) * st.n)} families yet to pay</span>${S.meter(x.fees, { tone: x.fees < 66 ? "var(--warn)" : "var(--green)", mark: 70, tip: "The line marks the school's 70%" })}</div>`}
-      <div class="${st.support ? "due" : ""}"><dt>Need support</dt><dd>${st.support}<small> of ${st.n}</small></dd><span>Flagged from marks and attendance</span>${S.meter((st.support / st.n) * 100, { tone: "var(--accent)", tip: `${st.support} flagged` })}</div>`);
+      <div>${sp(S.spark(exams.map((k) => exAvg(x, k)), { tone: "var(--royal)", w: 64, h: 24, label: "Average at each exam: " + exams.map((k) => L(k, x.cls)).join(", ") }))}<dt>${LC}</dt><dd>${C ? `${st.cur}<small>%</small>` : "—"}</dd><span>${!C ? "No exams yet this session" : st.prev === null ? "The first exam of the session" : `${st.cur === st.prev ? "Level with" : st.cur > st.prev ? "Up from" : "Down from"} ${st.prev}% in ${LP}`}</span>${S.meter(st.cur || 0, { tone: "var(--accent)", mark: others.length && C ? othCur : null, tip: others.length ? `The line marks the other sections, ${othCur}%` : "" })}</div>
+      ${S.PHASE === "end" ? `<div><dt>Passed every subject</dt><dd>${st.pass}<small>%</small></dd><span>${Math.round((st.pass / 100) * st.n)} of ${st.n} ${/^(X|XII)$/.test(x.cls) ? "ready for the boards" : "promoted"}</span>${S.meter(st.pass, { tone: "var(--royal)", mark: 95, tip: "The line marks 95%" })}</div>` : `<div><dt>${F.q} fees</dt><dd>${x.fees}<small>%</small></dd><span>${Math.round(((100 - x.fees) / 100) * st.n)} families yet to pay</span>${S.meter(x.fees, { tone: x.fees < 66 ? "var(--warn)" : "var(--green)", mark: 70, tip: "The line marks the school's 70%" })}</div>`}`);
 
     // Subjects: this section against the other sections of the class (same subject only).
-    S.$("#c-sbj-h").textContent = "Subjects · " + LC.toLowerCase();
+    S.$("#c-sbj-h").textContent = C ? "Subjects · " + LC.toLowerCase() : "Subjects";
+    if (!C) { S.paint(S.$("#c-sbj"), NOEX); S.paint(S.$("#c-sbj-read"), ""); S.paint(S.$("#c-sbj-tbl"), ""); }
+    else {
     const oth = (k) => { const v = others.filter(([y]) => y.subjects.includes(k)).map(([, w]) => w.subj[k].cur); return v.length ? Math.round(avgOf(v)) : null; };
     const rows = x.subjects.map((k) => { const v = st.subj[k], o = oth(k); return { k, v, o, gap: o === null ? null : v.cur - o, d: v.prev === null ? null : v.cur - v.prev }; });
     const M = Math.max(5, ...rows.map((r) => Math.abs(r.gap || 0)));
@@ -2111,23 +2170,25 @@
       (moved && Math.abs(moved.d) >= 2 ? `Biggest move since the ${LP.toLowerCase()}: ${moved.k}, ${moved.d > 0 ? "up" : "down"} ${Math.abs(moved.d)}.` : "")));
     S.paint(S.$("#c-sbj-tbl"), `<thead><tr><th>Subject</th><th>Teacher</th>${P ? `<th class="num">${LP}</th>` : ""}<th class="num">${LC}</th>${P ? '<th class="num">Change</th>' : ""}<th class="num">Other sections</th></tr></thead><tbody>` +
       x.subjects.map((k) => { const v = st.subj[k], d = v.prev === null ? 0 : v.cur - v.prev, o = oth(k); return `<tr><td>${k}</td><td class="muted">${S.esc(x.subjTeachers[k] || "")}</td>${P ? `<td class="num">${v.prev}</td>` : ""}<td class="num"><b>${v.cur}</b></td>${P ? `<td class="num ${d < 0 ? "dn" : d > 0 ? "up" : ""}">${d > 0 ? "+" : d < 0 ? "−" : ""}${Math.abs(d)}</td>` : ""}<td class="num muted">${o ?? "–"}</td></tr>`; }).join("") + "</tbody>");
+    }
 
     // Sections of the class, side by side.
     S.$("#c-secs-h").textContent = `Sections of ${S.classLabel(x.cls)}`;
-    S.paint(S.$("#c-secs"), `<thead><tr><th>Section</th><th class="num">Today</th><th class="num">${S.PHASE === "end" ? "Final" : "Marks"}</th><th class="num">${S.PHASE === "end" ? "Pass" : "Fees"}</th><th class="num">Support</th></tr></thead><tbody>` +
-      sibs.map((y, i) => { const t = S.todayPct(y); return `<tr class="${y.sec === x.sec ? "on" : ""}" data-sec="${y.cls}-${y.sec}" tabindex="0"><td><b>${nameOf(y)}${y.stream ? ` <small class="muted">${y.stream}</small>` : ""}</b><span>${S.esc(y.teacher)}</span></td><td class="num ${t !== null && t < 90 ? "lo" : ""}">${t === null ? '<span class="pill">Not marked</span>' : t + "%"}</td><td class="num">${sst[i].cur}%</td>${S.PHASE === "end" ? `<td class="num ${sst[i].pass < 90 ? "lo" : ""}">${sst[i].pass}%</td>` : `<td class="num ${y.fees < 66 ? "lo" : ""}">${y.fees}%</td>`}<td class="num">${sst[i].support ? `<span class="pill ${sst[i].support > 3 ? "red" : "warn"}">${sst[i].support}</span>` : "–"}</td></tr>`; }).join("") + "</tbody>");
+    S.paint(S.$("#c-secs"), `<thead><tr><th>Section</th><th class="num">Today</th><th class="num">${S.PHASE === "end" ? "Final" : "Marks"}</th><th class="num">${S.PHASE === "end" ? "Pass" : "Fees"}</th></tr></thead><tbody>` +
+      sibs.map((y, i) => { const t = S.todayPct(y); return `<tr class="${y.sec === x.sec ? "on" : ""}" data-sec="${y.cls}-${y.sec}" tabindex="0"><td><b>${nameOf(y)}${y.stream ? ` <small class="muted">${y.stream}</small>` : ""}</b><span>${S.esc(y.teacher)}</span></td><td class="num ${t !== null && t < 90 ? "lo" : ""}">${t === null ? '<span class="pill">Not marked</span>' : t + "%"}</td><td class="num">${C ? sst[i].cur + "%" : "–"}</td>${S.PHASE === "end" ? `<td class="num ${sst[i].pass < 90 ? "lo" : ""}">${sst[i].pass}%</td>` : `<td class="num ${y.fees < 66 ? "lo" : ""}">${y.fees}%</td>`}</tr>`; }).join("") + "</tbody>");
 
-    // Students: the whole class on one line, flagged students in colour.
-    const flagged = st.studs.filter((v) => v.why.length);
+    // Students: the whole class on one line (before the first exam: no marks, so no chart or top five).
+    if (!C) { S.paint(S.$("#c-swarm"), NOEX); S.paint(S.$("#c-top"), NOEX); }
+    else {
     const avs = st.studs.map((v) => v.avg).sort((a, b) => a - b), q = (f) => avs[Math.min(avs.length - 1, Math.floor(f * avs.length))];
     const lo = Math.max(0, Math.min(40, Math.floor((avs[0] - 5) / 10) * 10));
-    S.paint(S.$("#c-swarm"), S.read(`The middle half of ${nameOf(x)} averages <b>${q(0.25)}–${q(0.75)}%</b>; the spread runs from ${avs[0]}% to ${avs[avs.length - 1]}%. ${flagged.length ? `${flagged.length} flagged student${flagged.length > 1 ? "s are" : " is"} in red.` : "No one is flagged."}`) +
-      S.swarm(st.studs.map((v) => ({ v: v.avg, cls: v.why.length ? "flag" : "", tip: `${v.avg}% average · ${v.att}% present${v.why.length ? " · " + v.why.join(", ") : ""}`, tipT: v.s.name })), { lo, W: S.narrow() ? 340 : 600, R: S.narrow() ? 5 : 6, marks: [{ v: st.cur, label: `Section ${st.cur}%` }], label: `Every student in ${nameOf(x)} by ${LC.toLowerCase()} average` }));
-    S.paint(S.$("#c-support"), flagged.length ? flagged.map((v) => `<div class="li"><span class="avatar soft">${v.s.initials}</span><div class="t"><b>${S.esc(v.s.name)}</b><span>${S.esc(v.why.join(" · "))}</span></div><span class="end stu-n"><b>${v.avg}%</b><small>${v.att}% present</small></span></div>`).join("") : '<p class="muted" style="font-size:14.5px">No one flagged in this section.</p>');
+    S.paint(S.$("#c-swarm"), S.read(`The middle half of ${nameOf(x)} averages <b>${q(0.25)}–${q(0.75)}%</b>; the spread runs from ${avs[0]}% to ${avs[avs.length - 1]}%.`) +
+      S.swarm(st.studs.map((v) => ({ v: v.avg, cls: "", tip: `${v.avg}% average · ${v.att}% present`, tipT: v.s.name })), { lo, W: S.narrow() ? 340 : 600, R: S.narrow() ? 5 : 6, marks: [{ v: st.cur, label: `Section ${st.cur}%` }], label: `Every student in ${nameOf(x)} by ${LC.toLowerCase()} average` }));
     S.paint(S.$("#c-top"), [...st.studs].sort((a, b) => b.avg - a.avg).slice(0, 5).map((v, i) => `<div class="li"><span class="sq ${i ? "" : "green"}">${i + 1}</span><div class="t"><b>${S.esc(v.s.name)}</b><span>Best: ${[...x.subjects].sort((a, b) => v.s[C][b] - v.s[C][a])[0]} ${Math.max(...x.subjects.map((k) => v.s[C][k]))}%</span></div><span class="end stu-n"><b>${v.avg}%</b><small>${v.att}% present</small></span></div>`).join(""));
+    }
     const parentsHere = new Set(S.PARENTS.filter((p) => p.sec === x.key).map((p) => p.roll));
     S.paint(S.$("#c-all"), `<thead><tr><th>Roll</th><th>Student</th><th class="num">Attendance</th><th class="num">${LC}</th></tr></thead><tbody>` +
-      st.studs.map((v) => `<tr><td class="muted">${String(v.s.roll).padStart(2, "0")}</td><td>${S.esc(v.s.name)}${v.why.length ? ` <span class="pill red" title="${S.esc(v.why.join(" · "))}">Support</span>` : ""}${parentsHere.has(v.s.roll) ? ` <a class="pill royal" href="parent.html?kid=${x.key}-${v.s.roll}" target="_blank" rel="noopener">Parent view</a>` : ""}</td><td class="num ${v.att < 85 ? "lo" : ""}">${v.att}%</td><td class="num ${v.avg < 50 ? "lo" : ""}">${v.avg}%</td></tr>`).join("") + "</tbody>");
+      st.studs.map((v) => `<tr><td class="muted">${String(v.s.roll).padStart(2, "0")}</td><td>${S.esc(v.s.name)}${parentsHere.has(v.s.roll) ? ` <a class="pill royal" href="parent.html?kid=${x.key}-${v.s.roll}" target="_blank" rel="noopener">Parent view</a>` : ""}</td><td class="num ${v.att < 85 ? "lo" : ""}">${v.att}%</td><td class="num ${v.avg !== null && v.avg < 50 ? "lo" : ""}">${v.avg === null ? "–" : v.avg + "%"}</td></tr>`).join("") + "</tbody>");
 
     // This week: attendance day by day against the class, then what's on.
     const days = S.lastDays(), wk = S.weekOf(x), sw = sibs.map(S.weekOf);
@@ -2150,15 +2211,13 @@
     const marked = all.filter((a) => a.t !== null), waiting = all.filter((a) => a.t === null);
     const low = marked.reduce((a, b) => (b.t < a.t ? b : a));
     const cur = all.filter((a) => a.x.ci >= 3).reduce((a, b) => (b.st.cur < a.st.cur ? b : a));
-    const sup = all.reduce((a, b) => (b.st.support > a.st.support ? b : a));
     const fee = all.reduce((a, b) => (b.x.fees < a.x.fees ? b : a));
     const pass = all.filter((a) => a.x.ci >= 3).reduce((a, b) => (b.st.pass < a.st.pass ? b : a));
     const row = (a, tone, b, sp) => `<button class="li todo" type="button" data-sec="${a.x.cls}-${a.x.sec}"><span class="sq ${tone} sec-sq">${nameOf(a.x).replace("Nursery", "Nur")}</span><div class="t"><b>${b}</b><span>${sp}</span></div><span class="end muted" aria-hidden="true">›</span></button>`;
     S.paint(S.$("#watch"),
       (waiting.length ? row(waiting[0], "warn", `${waiting.length} section${waiting.length > 1 ? "s" : ""} haven't marked attendance`, waiting.map((a) => nameOf(a.x)).join(", ")) : "") +
       row(low, "warn", `Lowest attendance today, ${low.t}%`, `Class teacher ${low.x.teacher}`) +
-      row(sup, "red", `${sup.st.support} students need support`, `The most of any section · ${sup.st.n} in the class`) +
-      (S.PHASE === "end" ? row(pass, "royal", `Lowest pass rate, ${pass.st.pass}%`, `${Math.round(((100 - pass.st.pass) / 100) * pass.st.n)} students have a re-test`) : row(cur, "royal", `Lowest ${L(C, cur.x.cls).toLowerCase()} average, ${cur.st.cur}%`, S.PHASE === "start" ? "From last session's final" : "School-wide, Classes I to XII")) +
+      (S.PHASE === "end" ? row(pass, "royal", `Lowest pass rate, ${pass.st.pass}%`, `${Math.round(((100 - pass.st.pass) / 100) * pass.st.n)} students have a re-test`) : !C ? "" : row(cur, "royal", `Lowest ${L(C, cur.x.cls).toLowerCase()} average, ${cur.st.cur}%`, S.PHASE === "start" ? "From last session's final" : "School-wide, Classes I to XII")) +
       row(fee, "gold", `Lowest ${F.q} fee collection, ${fee.x.fees}%`, `${Math.round(((100 - fee.x.fees) / 100) * fee.st.n)} families yet to pay`));
   }
 
@@ -2242,20 +2301,22 @@
 })();
 </script>
 <script src="js/office.js?v=15"></script>
-<script src="js/desk.js?v=6"></script>
-<script src="js/corner.js?v=7"></script>
-<script src="js/attrack.js?v=1"></script>
-<script src="js/ttteach.js?v=4"></script>
-<script src="js/ttschool.js?v=2"></script>
-<script src="js/paperdoc.js?v=1"></script>
-<script src="js/qpaper.js?v=12"></script>
-<script src="js/transport.js?v=4"></script>
+<script>
+SJS.only("principal admin", ["js/desk.js?v=7"]);
+SJS.only("teacher", ["js/corner.js?v=7", "js/attrack.js?v=1", "js/ttteach.js?v=5"]);
+</script>
+<script src="js/ttschool.js?v=3"></script>
+<script>
+SJS.only("planner", ["js/ttsolve.js?v=1", "js/plan.js?v=1"]);
+SJS.only("teacher", ["js/paperdoc.js?v=1", "js/qpaper.js?v=12"]);
+SJS.only("principal admin", ["js/transport.js?v=4"]);
+</script>
 <script src="js/talk.js?v=2"></script>
 <script src="js/select.js?v=4"></script>
 <script src="js/date.js?v=3"></script>
 <script src="js/portal.js?v=1"></script>
 <script src="js/upload.js?v=3"></script>
-<script src="js/feel.js?v=9"></script>
+<script src="js/feel.js?v=10"></script>
 <script src="js/ease.js?v=7"></script>
 <script src="js/case.js?v=3"></script>
 </body>

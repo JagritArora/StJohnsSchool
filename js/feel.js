@@ -10,7 +10,7 @@
   const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
   const drv = document.body.classList.contains("drv"), parent = !!S.me && !S.staff;
   const role = drv ? "driver" : S.staff ? S.staff.role : parent ? "parent" : "";
-  const HOME = role === "principal" || role === "admin" ? "overview" : "home";
+  const HOME = S.HOME || (role === "principal" || role === "admin" ? "overview" : "home");
   const svg = (d, cls = "") => `<svg viewBox="0 0 24 24" class="${cls}" aria-hidden="true">${d}</svg>`;
   const pad = (n) => String(n).padStart(2, "0"), isoOf = (d) => `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
 

@@ -50,7 +50,11 @@
   // up their week with Library and Value Education in their own sections; the Computer
   // and PE teachers go round every section.
   const GRADES = ["VIII", "IX", "X", "XI", "XII"];
-  const PLAN = S.PLAN || { teachers: [], timetables: {} };
+  // The academic planner can publish a new plan (who teaches what, and the weeks it gives); it
+  // stands over the one built into js/ttplan.js. Nursery to V and VII-B stay as they are.
+  const BUILT = S.PLAN || { teachers: [], timetables: {}, rooms: {} }, PUB = ((S.state && S.state.plan) || {}).pub;
+  const PLAN = PUB ? { teachers: PUB.teachers, timetables: Object.assign({}, BUILT.timetables, PUB.timetables), rooms: Object.assign({}, BUILT.rooms, PUB.rooms) } : BUILT;
+  S.livePlan = PLAN; S.builtPlan = BUILT;
   S.TEACHERS = [];
   const ownerOf = {}; // "VIII-A|English" → teacher (subjects); periodOwner adds Library, Value Education, Games, Assembly
   const periodOwner = {};
@@ -75,6 +79,15 @@
     if (t === NEHA) return;
     t.title = `${S.subjsOf(t).join(" and ")} · ${t.sections.join(", ")}` + (t.classOf ? ` · class teacher ${t.classOf}` : "");
   });
+
+  // ---------- Responsibilities, and the pages each teacher sees (set by the academic planner) ----------
+  // S.state.staffRoles[id] = { duties: [..], hide: [view..], inv: false (no invigilation), cover: false (no cover periods) }.
+  S.DUTY_LIST = ["Head of department", "Question-paper setter", "Exam cell", "House master", "Club in-charge", "Morning gate duty", "Bus duty", "Discipline committee", "Sports and games", "Library in-charge"];
+  // Pages a teacher can be given or not; Home, My timetable and My class always show, and Attendance for class teachers.
+  S.TEACHER_PAGES = [["homework", "Homework"], ["marks", "Marks"], ["exams", "Exams"], ["messages", "Messages"], ["care", "Remarks and forms"], ["assist", "Writing help"], ["corner", "Teachers' Corner"]];
+  S.rolesOf = (id) => { const r = ((S.state && S.state.staffRoles) || {})[id] || {};
+    return { duties: r.duties || [], hide: r.hide || [], inv: r.inv !== false, cover: r.cover !== false }; };
+  S.canSee = (id, view) => !S.rolesOf(id).hide.includes(String(view || "").split("/")[0]);
 
   // ---------- School leadership: the vice principal and a coordinator for each wing ----------
   // They use the leadership pages; in Messages each sees the wings they look after.
@@ -121,6 +134,7 @@
   const whyOf = (st, subjects, att) => {
     const w = [], C = S.EX.cur, P = S.EX.prev;
     if (att < 85 && S.schoolDays.length >= 20) w.push(`attendance ${att}%`);
+    if (!C) return w; // no exams yet
     if (P) subjects.forEach((x) => { const d = st[P][x] - st[C][x]; if (d >= 15) w.push(`${x} fell ${d} points`); });
     const low = subjects.filter((x) => st[C][x] < 50);
     if (low.length) w.push(`below 50% in ${low.join(", ")}`);
@@ -143,7 +157,7 @@
       });
       const absentRate = r() < 0.05 ? 0.12 + r() * 0.12 : 0.008 + r() * 0.05;
       let name; do { name = `${FIRST[Math.floor(r() * FIRST.length)]} ${LAST[Math.floor(r() * LAST.length)]}`; } while (names.has(name)); names.add(name);
-      students.push({ name, ly, ut1, hy, fin, absentRate });
+      students.push({ name, ut1, hy, fin, absentRate }); // ly only seeds the marks; no earlier year is kept
     }
     students.sort((a, b) => a.name.localeCompare(b.name)).forEach((st, i) => { st.roll = i + 1; st.first = st.name.split(" ")[0]; st.initials = st.name.split(" ").map((p) => p[0]).join(""); });
     // Attendance, every school day so far.
@@ -216,16 +230,15 @@
   const secStats = (x) => {
     const C = S.EX.cur, P = S.EX.prev;
     const studs = x.students.map((s) => {
-      const att = S.attOf(x, s.roll), a = Math.round(avg(x.subjects.map((k) => s[C][k])));
+      const att = S.attOf(x, s.roll), a = C ? Math.round(avg(x.subjects.map((k) => s[C][k]))) : null;
       return { s, att, avg: a, why: whyOf(s, x.subjects, att) };
     });
-    const subj = Object.fromEntries(x.subjects.map((k) => [k, { cur: Math.round(avg(x.students.map((s) => s[C][k]))), prev: P ? Math.round(avg(x.students.map((s) => s[P][k]))) : null }]));
+    const subj = Object.fromEntries(x.subjects.map((k) => [k, { cur: C ? Math.round(avg(x.students.map((s) => s[C][k]))) : null, prev: P ? Math.round(avg(x.students.map((s) => s[P][k]))) : null }]));
     return {
       studs, subj, n: x.students.length,
-      att: r1(avg(studs.map((v) => v.att))), cur: Math.round(avg(studs.map((v) => v.avg))),
+      att: r1(avg(studs.map((v) => v.att))), cur: C ? Math.round(avg(studs.map((v) => v.avg))) : null,
       prev: P ? Math.round(avg(x.students.map((s) => avg(x.subjects.map((k) => s[P][k]))))) : null,
-      support: studs.filter((v) => v.why.length).length,
-      pass: Math.round((studs.filter((v) => x.subjects.every((k) => v.s[C][k] >= 33)).length / studs.length) * 1000) / 10
+      pass: !C ? null : Math.round((studs.filter((v) => x.subjects.every((k) => v.s[C][k] >= 33)).length / studs.length) * 1000) / 10
     };
   };
   // Whole-school attendance today, from every section that has marked.

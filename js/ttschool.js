@@ -115,10 +115,30 @@
     return { ok: !why.length, why: [...new Set(why)], x, y, tx, ty };
   };
 
-  // ---------- The principal's and the office's page ----------
+  // ---------- Exam duty as sent to staff, for one person ----------
+  // [{ date, p, k, subj, exam, reserve }]: only what the office sent counts (the record's sig is
+  // what went out), so a change still being made doesn't show on anyone's timetable.
+  S.dutyOf = (id) => {
+    const out = [];
+    Object.entries(S.state.duty || {}).forEach(([eid, rec]) => {
+      if (!rec || !rec.sent || !rec.sig) return;
+      const e = (S.state.exams || []).find((x) => x.id === eid); if (!e) return;
+      let sent; try { sent = JSON.parse(rec.sig); } catch (er) { return; }
+      const win = e.kind === "ut" || e.kind === "ts" ? [0, 1] : [0, 1, 2, 3], [asg, res] = sent;
+      const subjOf = (date, k) => { const x = S.sectionByKey(k), g = x.cls === "XI" || x.cls === "XII" ? k : x.cls; return ((e.papers[g] || []).find((q) => q.date === date) || {}).subj || ""; };
+      Object.entries(asg || {}).forEach(([key, ids]) => { const [date, k] = key.split("|"); (ids || []).forEach((x, i) => { if (x === id) out.push({ date, p: win[i], k, subj: subjOf(date, k), exam: e.name }); }); });
+      Object.entries(res || {}).forEach(([date, x]) => { if (x === id) win.forEach((p) => out.push({ date, p, k: null, subj: "", exam: e.name, reserve: true })); });
+    });
+    return out.sort((a, b) => (a.date < b.date ? -1 : a.date > b.date ? 1 : a.p - b.p));
+  };
+
+  // ---------- The principal's, the office's and the academic planner's page ----------
   const box = document.getElementById("tts");
-  if (!S.staff || !box || !["principal", "admin"].includes(S.staff.role)) return;
+  if (!S.staff || !box || !["principal", "admin", "planner"].includes(S.staff.role)) return;
   const ME = S.staff;
+  // The principal sees everything here; the office and the academic planner make the changes.
+  const RO = ME.role === "principal";
+  box.classList.toggle("tts-ro", RO);
   const editable = order.filter((k) => S.planSections().includes(k) && S.sectionByKey(k).ci >= 8);
   const schoolDay = () => { let d = S.today; if (!S.periodsOn(d)) d = S.nextSchoolDay(d, 1); return d; };
   const ui = { day: schoolDay().getDay(), spot: null, cls: "IX-A", cview: "week", ed: "IX-A", pick: null, msg: "", exam: null };
@@ -209,9 +229,10 @@
     const [pg, pp] = ui.pick ? ui.pick.split("|").map(Number) : [0, 0], px = ui.pick ? tt[pg][pp] : null;
     const all = Object.entries(edits()).filter(([, r]) => r.log.length);
     const bar = `<div class="tts-bar sj-pick"><label class="sj-fld tts-sel">${ic('<path d="M4 20V9l8-5 8 5v11"/><path d="M9 20v-6h6v6"/>')}<select id="tts-ed" aria-label="Class to edit">${secOpts(editable, key)}</select></label>
-      <span class="muted tts-hint">${ui.pick ? (okN ? `${okN} place${okN === 1 ? "" : "s"} ${esc(px)} can go` : `${esc(px)} can't move anywhere without breaking a rule. Try another period.`) : "Tap a period, then tap where it should go"}</span><span class="tts-sp"></span>
+      <span class="muted tts-hint">${ui.pick ? (okN ? `${okN} place${okN === 1 ? "" : "s"} ${esc(px)} can go` : `${esc(px)} can't move anywhere without breaking a rule. Try another period.`) : RO ? "Every class's week as it stands" : "Tap a period, then tap where it should go"}</span><span class="tts-sp"></span>
       ${log.length ? `<button type="button" class="btn btn-ghost btn-sm" data-tts-undo>Undo last</button><button type="button" class="btn btn-ghost btn-sm" data-tts-reset>Back to the plan</button>` : ""}</div>`;
     const msg = ui.pick ? `<div class="tts-msg pick"><b>${esc(px)} · ${DAYS[pg - 1]}, period ${pp + 1}</b><span>${esc(whoTakes(key, px) || "")}${S.roomOf(key, pg, pp) ? " · " + esc(S.roomOf(key, pg, pp)) : ""}. Green periods keep every rule; tap one to swap. Tap a grey one to see why not.</span><button type="button" class="link-btn" data-tts-unpick>Cancel</button></div>`
+      : RO ? `<div class="tts-msg"><b>The office and the academic planner make swaps.</b><span>You see each class's week as it stands; every change is listed alongside, with who made it.</span></div>`
       : ui.msg ? `<div class="tts-msg${ui.msgBad ? " bad" : " good"}">${ui.msg}</div>` : `<div class="tts-msg"><b>The rules every swap keeps</b><span>No teacher in two rooms at once · every teacher keeps a free period each day · a lab is never double-booked · a subject at most twice a day, never twice in a row · Club Activities stays on Saturday.</span></div>`;
     const grid = weekGrid(key, (g, p, x) => {
       const id = g + "|" + p, c = checks[id], l = S.roomOf(key, g, p);
@@ -256,7 +277,8 @@
     const count = Object.fromEntries(S.TEACHERS.map((t) => [t.id, 0]));
     const days = Object.keys(byDate).sort().map((date) => {
       const g = new Date(date + "T00:00").getDay(), sitting = new Set(byDate[date].map((r) => r.k));
-      const freeAt = (p) => S.TEACHERS.filter((t) => { const o = W[t.id][g + "|" + p]; return !o || sitting.has(o.k); });
+      // Free then (or their own class is sitting), and on invigilation (the academic planner can take someone off it).
+      const freeAt = (p) => S.TEACHERS.filter((t) => { const o = W[t.id][g + "|" + p]; return (!o || sitting.has(o.k)) && S.rolesOf(t.id).inv; });
       const rank = (t) => (count[t.id] || 0) * 1000 + (hsh(t.id + date) % 997), byRank = (a, b) => rank(a) - rank(b);
       const rooms = byDate[date].map((r) => Object.assign({}, r, { setter: whoTakes(r.k, r.subj), slots: [], fix: [], warn: [] }));
       const usedDay = new Set(), taken = win.map(() => ({}));
@@ -284,6 +306,7 @@
         // Who else could take this room: free for the whole paper first, then free for part of it.
         r.opts = [...S.TEACHERS, ...S.LEADS.filter((x) => x.lead === "vp" || (x.lead === "coord" && x.wing === S.sectionByKey(r.k).wing))].map((t) => {
           if (t.name === r.setter) return { t, no: `teaches ${r.subj}` };
+          if (!t.lead && !S.rolesOf(t.id).inv) return { t, no: "not on invigilation" };
           const fr = win.map((p, i) => (t.lead || freeAt(p).some((x) => x.id === t.id)) && (!taken[i][t.id] || taken[i][t.id] === r.k) && !(rooms.some((o) => o !== r && o.fix[i] && o.slots[i] && o.slots[i].id === t.id)));
           const n = fr.filter(Boolean).length; if (!n) { const o = win.map((p, i) => taken[i][t.id]).find((k) => k && k !== r.k); return { t, no: o ? `on duty in ${secName(o)}` : "teaching then" }; }
           return { t, fr, n, note: t.lead ? (t.lead === "vp" ? "vice principal" : "coordinator") : n === win.length ? "free the whole paper" : `free ${win.filter((p, i) => fr[i]).map((p) => "P" + (p + 1)).join(", ")}` };
@@ -317,6 +340,8 @@
     const lead = D.days.reduce((a, d) => a + d.rooms.reduce((b, r) => b + r.slots.filter((x, i) => x && x.lead && !r.fix[i]).length, 0), 0);
     const how = `<div class="tts-msg${D.all ? " good" : ""}"><b>${D.all ? `All ${D.nRooms} papers assigned${fresh ? " and sent" : ""}.` : `${D.nDone} of ${D.nRooms} papers assigned.`}</b><span>${D.all ? (fresh ? "Change any name and send again." : "Check the list, then send it to the staff.") : `The plan suggests a teacher for each paper; nothing goes to staff until you assign it. Take a suggestion, or pick someone else from the list.`}</span>${left ? `<button type="button" class="btn btn-ghost btn-sm" data-tts-takeall>Assign all ${left} suggestions</button>` : `<button type="button" class="link-btn" data-tts-clearall>Clear all</button>`}</div>
       <details class="tts-why"><summary>How the suggestions are made</summary><p>One teacher for each class sitting a paper: someone free then, or whose own class is sitting. Never the subject's own teacher (they stay on call for questions), and not the class teacher where it can be helped.${D.win.length > 1 ? " Duty goes period by period, so a teacher with a class mid-paper hands over to one who is free." : ""} Duties are spread evenly, counting the ones you've already assigned, with a reserve each day.${lead ? ` Where every teacher is busy, the wing coordinator is suggested (${lead} period${lead === 1 ? "" : "s"}).` : ""}</p></details>`;
+    // The principal's status line: what the office has done, without the buttons to do it.
+    const roNote = RO ? `<div class="tts-msg${D.all ? " good" : ""}"><b>${D.all ? `All ${D.nRooms} papers assigned${fresh ? " and sent" : ""}.` : `${D.nDone} of ${D.nRooms} papers assigned.`}</b><span>The office assigns invigilators${D.all ? (fresh ? " and has sent the list to staff." : "; the list hasn't gone to staff yet.") : ". You see the list as it stands: grey names are the plan's suggestions, not yet assigned."}</span></div>` : "";
     const cell = (d, r) => {
       const runs = r.runs.map((x) => `<span class="${x.fixed ? "" : "tts-sug"}">${D.win.length > 1 && r.runs.length > 1 ? `<i>P${x.from + 1}${x.to > x.from ? "–" + (x.to + 1) : ""}</i>` : ""}${x.t ? `<b>${esc(hon(x.t.name))}</b>${x.t.lead ? `<small class="tts-ld">${x.t.lead === "vp" ? "Vice principal" : "Coordinator"}</small>` : ""}` : `<b class="bad">Nobody free</b>`}${x.fixed ? "" : `<small class="tts-st">Suggested</small>`}</span>`).join("");
       const warn = r.warn.some(Boolean) ? `<small class="tts-warn">An assigned teacher now has a class then. Pick again.</small>` : "";
@@ -329,7 +354,7 @@
       <table class="tts-dt"><thead><tr><th scope="col">Class</th><th scope="col">Paper</th><th scope="col">Invigilator</th><th scope="col">On call</th></tr></thead><tbody>${d.rooms.map((r) => `<tr class="${r.done ? "is-done" : ""}"><td><b>${esc(secName(r.k))}</b></td><td><i class="tts-dot" style="--s:${tone(r.subj)}"></i>${esc(r.subj)}</td>${cell(d, r)}<td class="muted">${esc(hon(r.setter || ""))}</td></tr>`).join("")}</tbody></table>
       ${resRow(d)}</div>`).join("");
     const side = `<div class="card tts-card tts-side"><div class="card-h"><h2>Periods of duty</h2><span class="right muted">assigned · <span class="tts-sg">suggested</span></span></div>${per.map((x) => `<div class="tts-pt"><span><b>${esc(hon(x.t.name))}</b><small>${esc(sh(x.t.subject))}${x.sp ? ` · reserve ${x.sp}×` : ""}</small></span><span class="tts-m"><i style="width:${(x.n / mx) * 100}%"></i><i class="sg" style="width:${(x.s / mx) * 100}%"></i></span><em>${x.n}${x.s ? `<small>+${x.s}</small>` : ""}</em></div>`).join("")}</div>`;
-    S.paint($("#tts-duty"), bar + (short ? `<div class="tts-msg bad"><b>${short} day${short === 1 ? "" : "s"} short of a teacher.</b><span>Move a period on the Edit tab, or name someone from outside the plan.</span></div>` : "") + how + `<div class="tts-two"><div class="tts-days-l">${days || '<div class="card"><p class="muted">No papers for Classes VI to XII in this exam.</p></div>'}</div>${side}</div>`);
+    S.paint($("#tts-duty"), (RO ? roNote : "") + bar + (short ? `<div class="tts-msg bad"><b>${short} day${short === 1 ? "" : "s"} short of a teacher.</b><span>Move a period on the Edit tab, or name someone from outside the plan.</span></div>` : "") + (RO ? "" : how) + `<div class="tts-two"><div class="tts-days-l">${days || '<div class="card"><p class="muted">No papers for Classes VI to XII in this exam.</p></div>'}</div>${side}</div>`);
   }
   // Assign: the suggestion for every open period of a room, or one chosen teacher where they're free.
   function assign(e, id, who) {
@@ -371,8 +396,11 @@
     if (t === "staff") drawStaff(); else if (t === "classes") drawClasses(); else if (t === "edit") drawEdit(); else drawDuty(); rings(); };
   S.ttsDraw = draw;
 
+  // View-only for the principal: nothing that changes the timetable or the duty list.
+  const MUT = "[data-tts-cell], [data-tts-undo], [data-tts-reset], [data-tts-send], [data-tts-take], [data-tts-takeall], [data-tts-unasg], [data-tts-clearall], [data-tts-res], [data-tts-unres]";
   box.addEventListener("click", (e) => {
     const b = (q) => e.target.closest(q); let x;
+    if (RO && b(MUT)) return;
     if ((x = b("[data-tts-day]"))) { ui.day = +x.dataset.ttsDay; draw(); return; }
     if ((x = b("[data-tts-spot]"))) { ui.spot = +x.dataset.ttsSpot; drawStaff(); return; }
     if ((x = b("[data-tts-cv]"))) { ui.cview = x.dataset.ttsCv; drawClasses(); return; }
@@ -399,7 +427,7 @@
     if (t.id === "tts-cls") { ui.cls = t.value; drawClasses(); }
     if (t.id === "tts-ed") { ui.ed = t.value; ui.pick = null; ui.msg = ""; drawEdit(); }
     if (t.id === "tts-exam") { ui.exam = t.value; drawDuty(); rings(); }
-    if (t.dataset.ttsWho && t.value) { assign(pickExam(), t.dataset.ttsWho, t.value); drawDuty(); rings(); }
+    if (t.dataset.ttsWho && t.value && !RO) { assign(pickExam(), t.dataset.ttsWho, t.value); drawDuty(); rings(); }
   });
   document.addEventListener("click", (e) => { if (e.target.closest('[data-vt="tts"] button')) requestAnimationFrame(draw); });
   document.addEventListener("keydown", (e) => { if (e.key === "Escape" && ui.pick && box.closest(".active")) { ui.pick = null; drawEdit(); } });

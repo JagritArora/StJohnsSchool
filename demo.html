@@ -95,10 +95,10 @@
     <div class="secs" id="secs"></div>
   </section>
 </main>
-<script src="js/data.js?v=15"></script>
+<script src="js/data.js?v=16"></script>
 <script src="js/ttplan.js?v=2"></script>
-<script src="js/classes.js?v=14"></script>
-<script src="js/demo.js?v=4"></script>
+<script src="js/classes.js?v=15"></script>
+<script src="js/demo.js?v=5"></script>
 <script src="js/common.js?v=17"></script>
 <script>
 (function () {
@@ -115,7 +115,8 @@
   // Leadership
   S.$("#t-lead").innerHTML = `<thead><tr><th>Staff ID</th><th>Name</th><th>Role</th><th>Sees</th><th></th></tr></thead><tbody>
     <tr><td><b>SJS-P-0001</b></td><td>The Principal</td><td>Principal</td><td>Overview, morning brief, every class and section, admissions, notices, website</td><td class="open"><button class="btn btn-primary btn-sm" data-open="staff:SJS-P-0001">Open</button></td></tr>
-    <tr><td><b>SJS-A-0107</b></td><td>Mrs. Anita Joseph</td><td>Office admin</td><td>Office desk, classes, admissions, notices, website</td><td class="open"><button class="btn btn-ghost btn-sm" data-open="staff:SJS-A-0107">Open</button></td></tr></tbody>`;
+    <tr><td><b>SJS-A-0107</b></td><td>Mrs. Anita Joseph</td><td>Office admin</td><td>Office desk, classes, admissions, notices, website</td><td class="open"><button class="btn btn-ghost btn-sm" data-open="staff:SJS-A-0107">Open</button></td></tr>
+    <tr><td><b>SJS-C-0001</b></td><td>Mrs. Rekha Dutta</td><td>Academic planner</td><td>Who teaches what, class teachers, responsibilities, pages each teacher sees, the timetable</td><td class="open"><button class="btn btn-ghost btn-sm" data-open="staff:SJS-C-0001">Open</button></td></tr></tbody>`;
 
   // Teachers
   const gradeOf = (k) => k.split("-")[0];
