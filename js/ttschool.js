@@ -6,9 +6,10 @@
      the swap keeps every rule: no teacher in two rooms, a free period every day for each teacher, a lab
      free, a subject at most twice a day and never twice in a row, Club Activities fixed. Edits sit over
      the plan in the shared record (S.state.ttEdit), so teachers and parents see them straight away.
-   - Exam duty: one invigilator for each class sitting a paper, from teachers free then (or whose own class
-     is sitting), never the subject's own teacher, nor the class teacher where it can be helped, and spread
-     evenly; a reserve each day.
+   - Exam duty: the plan suggests one invigilator for each class sitting a paper, from teachers free then (or
+     whose own class is sitting), never the subject's own teacher, nor the class teacher where it can be helped,
+     spread evenly, with a reserve each day. The office assigns (a suggestion or anyone free); only assigned
+     duties print as names or go to staff (S.state.duty).
    - Print: a clean week for a teacher or a class, one page each, for the notice board ([data-ttprint]).
    Load after classes.js, exams.js and more.js. */
 (() => {
@@ -239,13 +240,16 @@
   }
 
   // ----- Exam duty -----
+  // The plan only suggests. The office assigns: S.state.duty[examId] = { asg: { "date|key": [id per period] }, res: { date: id }, sent, sig }.
   const exams = () => (S.state.exams || []).filter((e) => e.classes.some((c) => S.sample.classes.indexOf(c) >= 8));
   const pickExam = () => { const xs = exams(); if (ui.exam && xs.some((e) => e.id === ui.exam)) return xs.find((e) => e.id === ui.exam);
     const up = xs.filter((e) => e.kind !== "ts" && S.examSpan(e).to >= S.todayKey).sort((a, b) => (S.examSpan(a).from < S.examSpan(b).from ? -1 : 1));
     return up[0] || xs[xs.length - 1]; };
   const hsh = (s) => [...s].reduce((a, ch) => (Math.imul(a, 31) + ch.charCodeAt(0)) >>> 0, 7);
+  const dutyRec = (e, make) => { const all = S.state.duty || (make ? (S.state.duty = {}) : {}); return all[e.id] || (make ? (all[e.id] = { asg: {}, res: {} }) : { asg: {}, res: {} }); };
+  const whoId = (id) => S.TEACHERS.find((t) => t.id === id) || S.LEADS.find((t) => t.id === id) || null;
   S.examDuty = (e) => {
-    const W = busy(), win = e.kind === "ut" || e.kind === "ts" ? [0, 1] : [0, 1, 2, 3];
+    const W = busy(), win = e.kind === "ut" || e.kind === "ts" ? [0, 1] : [0, 1, 2, 3], rec = dutyRec(e), asg = rec.asg || {}, resv = rec.res || {};
     const secs = order.filter((k) => S.sectionByKey(k).ci >= 8), byDate = {};
     secs.forEach((k) => { const x = S.sectionByKey(k); if (!e.classes.includes(x.cls)) return; const g = x.cls === "XI" || x.cls === "XII" ? k : x.cls;
       (e.papers[g] || []).forEach((p) => (byDate[p.date] = byDate[p.date] || []).push({ k, subj: p.subj })); });
@@ -254,62 +258,104 @@
       const g = new Date(date + "T00:00").getDay(), sitting = new Set(byDate[date].map((r) => r.k));
       const freeAt = (p) => S.TEACHERS.filter((t) => { const o = W[t.id][g + "|" + p]; return !o || sitting.has(o.k); });
       const rank = (t) => (count[t.id] || 0) * 1000 + (hsh(t.id + date) % 997), byRank = (a, b) => rank(a) - rank(b);
-      const rooms = byDate[date].map((r) => Object.assign({}, r, { setter: whoTakes(r.k, r.subj), slots: [] }));
-      const usedDay = new Set();
-      // Period by period: whoever is free then (or whose own class is sitting). A teacher keeps the room while they're free.
+      const rooms = byDate[date].map((r) => Object.assign({}, r, { setter: whoTakes(r.k, r.subj), slots: [], fix: [], warn: [] }));
+      const usedDay = new Set(), taken = win.map(() => ({}));
       win.forEach((p, i) => {
         const pool = freeAt(p), used = new Set();
         const can = (t, r) => t && !used.has(t.id) && t.name !== r.setter && pool.some((x) => x.id === t.id);
-        const pick = (r, t) => { r.slots[i] = t; if (t) { used.add(t.id); usedDay.add(t.id); count[t.id] = (count[t.id] || 0) + 1; } };
-        rooms.forEach((r) => { const prev = r.slots[i - 1]; if (i && prev && !prev.lead && can(prev, r)) pick(r, prev); });
+        const pick = (r, t, fixed) => { r.slots[i] = t; r.fix[i] = !!fixed; if (t) { used.add(t.id); usedDay.add(t.id); taken[i][t.id] = r.k; count[t.id] = (count[t.id] || 0) + 1; } };
+        // What the office has assigned comes first; the suggestions fill around it.
+        rooms.forEach((r) => { const id = (asg[date + "|" + r.k] || [])[i], t = id && whoId(id); if (!t) return;
+          if (!t.lead && !pool.some((x) => x.id === t.id)) r.warn[i] = "now teaches then"; pick(r, t, true); });
+        rooms.forEach((r) => { const prev = r.slots[i - 1]; if (r.slots[i] === undefined && i && prev && !prev.lead && can(prev, r)) pick(r, prev); });
         rooms.forEach((r) => {
           if (r.slots[i] !== undefined) return;
-          // Fewer handovers: someone free for the rest of the paper first, then the fewest duties so far.
           const run = (t) => { let n = 0; for (let j = i; j < win.length && freeAt(win[j]).some((x) => x.id === t.id); j++) n++; return n; };
           const sc = (t) => (count[t.id] || 0) - 2 * run(t), best = (a, b2) => sc(a) - sc(b2) || byRank(a, b2);
           const c = pool.filter((t) => can(t, r)), t = c.filter((x) => x.classOf !== r.k).sort(best)[0] || c.sort(best)[0];
           if (t) return pick(r, t);
-          // Nobody left: the wing's coordinator steps in, then the vice principal.
           const prev = r.slots[i - 1], l = prev && prev.lead && !used.has(prev.id) ? prev : [S.LEADS.find((x) => x.lead === "coord" && x.wing === S.sectionByKey(r.k).wing), S.LEADS.find((x) => x.lead === "vp")].find((x) => x && !used.has(x.id));
           pick(r, l || null);
         });
       });
-      // Runs of the same person: "P1–2 Ajay Talwar · P3–4 Mary Raina".
-      rooms.forEach((r) => { r.runs = []; r.slots.forEach((t, i) => { const last = r.runs[r.runs.length - 1]; if (last && last.t === t) last.to = win[i]; else r.runs.push({ t, from: win[i], to: win[i] }); }); r.inv = r.runs.length === 1 ? r.runs[0].t : null; r.short = r.slots.some((t) => !t); });
+      rooms.forEach((r) => { r.runs = []; r.slots.forEach((t, i) => { const last = r.runs[r.runs.length - 1], f = r.fix[i];
+          if (last && last.t === t && last.fixed === f) last.to = win[i]; else r.runs.push({ t, fixed: f, from: win[i], to: win[i] }); });
+        r.inv = r.runs.length === 1 ? r.runs[0].t : null; r.short = r.slots.some((t) => !t); r.done = r.fix.length === win.length && r.fix.every(Boolean); r.part = r.fix.some(Boolean);
+        // Who else could take this room: free for the whole paper first, then free for part of it.
+        r.opts = [...S.TEACHERS, ...S.LEADS.filter((x) => x.lead === "vp" || (x.lead === "coord" && x.wing === S.sectionByKey(r.k).wing))].map((t) => {
+          if (t.name === r.setter) return { t, no: `teaches ${r.subj}` };
+          const fr = win.map((p, i) => (t.lead || freeAt(p).some((x) => x.id === t.id)) && (!taken[i][t.id] || taken[i][t.id] === r.k) && !(rooms.some((o) => o !== r && o.fix[i] && o.slots[i] && o.slots[i].id === t.id)));
+          const n = fr.filter(Boolean).length; if (!n) { const o = win.map((p, i) => taken[i][t.id]).find((k) => k && k !== r.k); return { t, no: o ? `on duty in ${secName(o)}` : "teaching then" }; }
+          return { t, fr, n, note: t.lead ? (t.lead === "vp" ? "vice principal" : "coordinator") : n === win.length ? "free the whole paper" : `free ${win.filter((p, i) => fr[i]).map((p) => "P" + (p + 1)).join(", ")}` };
+        }).sort((a, b) => (a.no ? 1 : 0) - (b.no ? 1 : 0) || (b.n || 0) - (a.n || 0) || (!!a.t.lead - !!b.t.lead) || (count[a.t.id] || 0) - (count[b.t.id] || 0) || a.t.name.localeCompare(b.t.name)); });
+      const fixedRes = resv[date] && whoId(resv[date]);
       const allFree = S.TEACHERS.filter((t) => !usedDay.has(t.id) && win.every((p) => freeAt(p).some((x) => x.id === t.id))).sort(byRank);
-      const spare = allFree[0] || null;
-      return { date, g, rooms, spare, freeN: freeAt(win[0]).length };
+      const spare = fixedRes || allFree[0] || null;
+      return { date, g, rooms, spare, spareFix: !!fixedRes, spareOpts: allFree, freeN: freeAt(win[0]).length };
     });
-    return { win, days, count };
+    const nRooms = days.reduce((a, d) => a + d.rooms.length, 0), nDone = days.reduce((a, d) => a + d.rooms.filter((r) => r.done).length, 0);
+    return { win, days, count, nRooms, nDone, all: nRooms > 0 && nDone === nRooms };
   };
-  const runTxt = (r, w, nm = (t) => t.name) => r.runs.map((x) => `${w.length > 1 && r.runs.length > 1 ? `P${x.from + 1}${x.to > x.from ? "–" + (x.to + 1) : ""} ` : ""}${x.t ? nm(x.t) : "to be named"}`).join(" · ");
+  // Assigned periods only: a period still waiting on the office reads "to be named".
+  const runTxt = (r, w, nm = (t) => t.name) => r.runs.map((x) => `${w.length > 1 && r.runs.length > 1 ? `P${x.from + 1}${x.to > x.from ? "–" + (x.to + 1) : ""} ` : ""}${x.t && x.fixed ? nm(x.t) : "to be named"}`).join(" · ");
   const dutyDoc = (e, D) => S.docHead(`Invigilation duty · ${esc(e.name)} · ${esc(e.time)}`) + D.days.map((d) =>
-    `<h2>${S.fmt(d.date, { weekday: "long", day: "numeric", month: "long" })}</h2><table><thead><tr><th>Class</th><th>Paper</th><th>Invigilator</th><th>On call (the subject's teacher)</th></tr></thead><tbody>${d.rooms.map((r) => `<tr><td>${esc(secName(r.k))}</td><td>${esc(r.subj)}</td><td><b>${esc(runTxt(r, D.win))}</b></td><td>${esc(r.setter || "")}</td></tr>`).join("")}</tbody></table><p class="muted">Reserve: ${d.spare ? esc(d.spare.name) : "none free"}</p>`).join("") +
+    `<h2>${S.fmt(d.date, { weekday: "long", day: "numeric", month: "long" })}</h2><table><thead><tr><th>Class</th><th>Paper</th><th>Invigilator</th><th>On call (the subject's teacher)</th></tr></thead><tbody>${d.rooms.map((r) => `<tr><td>${esc(secName(r.k))}</td><td>${esc(r.subj)}</td><td><b>${esc(runTxt(r, D.win))}</b></td><td>${esc(r.setter || "")}</td></tr>`).join("")}</tbody></table><p class="muted">Reserve: ${d.spareFix ? esc(d.spare.name) : "to be named"}</p>`).join("") +
     `<p class="foot">Classes I to V are invigilated by their own class teachers. Report 15 minutes before the paper; collect the question papers from the exam cell.</p>`;
+  const sigOf = (rec) => JSON.stringify([rec.asg || {}, rec.res || {}]);
   function drawDuty() {
     const e = pickExam();
     if (!e) { S.paint($("#tts-duty"), `<div class="card"><p class="muted">No exams for Classes VI to XII in the calendar.</p></div>`); return; }
-    const D = S.examDuty(e), sp = S.examSpan(e), sent = ((S.state.duty || {})[e.id] || {}).sent;
+    const D = S.examDuty(e), rec = dutyRec(e), sent = rec.sent, fresh = sent && rec.sig === sigOf(rec), left = D.nRooms - D.nDone;
     const short = D.days.filter((d) => d.rooms.some((r) => r.short)).length;
-    const per = S.TEACHERS.map((t) => ({ t, n: D.days.reduce((a, d) => a + d.rooms.reduce((b, r) => b + r.slots.filter((x) => x && x.id === t.id).length, 0), 0), sp: D.days.filter((d) => d.spare && d.spare.id === t.id).length })).sort((a, b) => b.n - a.n || a.t.name.localeCompare(b.t.name));
-    const mx = Math.max(1, ...per.map((x) => x.n));
+    const per = S.TEACHERS.map((t) => { let n = 0, s = 0; D.days.forEach((d) => d.rooms.forEach((r) => r.slots.forEach((x, i) => { if (x && x.id === t.id) r.fix[i] ? n++ : s++; })));
+      return { t, n, s, sp: D.days.filter((d) => d.spareFix && d.spare.id === t.id).length }; }).sort((a, b) => b.n - a.n || b.s - a.s || a.t.name.localeCompare(b.t.name));
+    const mx = Math.max(1, ...per.map((x) => x.n + x.s));
+    const sendLbl = !D.all ? `Send to all staff` : fresh ? "Sent to staff ✓" : sent ? "Send the changes" : "Send to all staff";
     const bar = `<div class="tts-bar sj-pick"><label class="sj-fld tts-sel">${ic('<rect x="4" y="3" width="16" height="18" rx="2"/><path d="M8 8h8M8 12h8M8 16h5"/>')}<select id="tts-exam" aria-label="Exam">${exams().map((x) => `<option value="${x.id}"${x.id === e.id ? " selected" : ""}>${esc(x.name)} · ${S.fmt(S.examSpan(x).from, { day: "numeric", month: "short" })}</option>`).join("")}</select></label>
       <span class="muted tts-hint">${esc(e.time)} · periods ${D.win[0] + 1} to ${D.win[D.win.length - 1] + 1}${e.published ? "" : " · datesheet still a draft"}</span><span class="tts-sp"></span>
-      <button type="button" class="btn btn-ghost btn-sm tts-pr" data-tts-dprint>${PR}Print the duty list</button><button type="button" class="btn btn-primary btn-sm" data-tts-send${sent ? " disabled" : ""}>${sent ? "Sent to staff ✓" : "Send to all staff"}</button></div>`;
-    const lead = D.days.reduce((a, d) => a + d.rooms.reduce((b, r) => b + r.slots.filter((x) => x && x.lead).length, 0), 0);
-    const how = `<div class="tts-msg"><b>How the duties are given</b><span>One teacher for each class sitting a paper: someone free then, or whose own class is sitting. Never the subject's own teacher (they stay on call for questions), and not the class teacher where it can be helped. ${D.win.length > 1 ? " Duty goes period by period, so a teacher with a class mid-paper hands over to one who is free." : ""} Duties are spread evenly, with a reserve each day.${lead ? ` Where every teacher is busy, the wing coordinator steps in (${lead} period${lead === 1 ? "" : "s"}).` : ""}</span></div>`;
-    const days = D.days.map((d) => `<div class="card tts-card tts-dd"><div class="card-h"><h2>${S.fmt(d.date, { weekday: "short", day: "numeric", month: "short" })}</h2><span class="right muted">${d.rooms.length} class${d.rooms.length === 1 ? "" : "es"} · ${d.freeN} teachers free</span></div>
-      <table class="tts-dt"><thead><tr><th scope="col">Class</th><th scope="col">Paper</th><th scope="col">Invigilator</th><th scope="col">On call</th></tr></thead><tbody>${d.rooms.map((r) => `<tr><td><b>${esc(secName(r.k))}</b></td><td><i class="tts-dot" style="--s:${tone(r.subj)}"></i>${esc(r.subj)}</td><td class="tts-inv">${r.runs.map((x) => `<span>${D.win.length > 1 && r.runs.length > 1 ? `<i>P${x.from + 1}${x.to > x.from ? "–" + (x.to + 1) : ""}</i>` : ""}${x.t ? `<b>${esc(hon(x.t.name))}</b>${x.t.lead ? `<small class="tts-ld">${x.t.lead === "vp" ? "Vice principal" : "Coordinator"}</small>` : ""}` : `<b class="bad">To be named</b>`}</span>`).join("")}</td><td class="muted">${esc(hon(r.setter || ""))}</td></tr>`).join("")}</tbody></table>
-      <p class="tts-res">Reserve: <b>${d.spare ? esc(hon(d.spare.name)) : "nobody is free for the whole paper"}</b></p></div>`).join("");
-    const side = `<div class="card tts-card tts-side"><div class="card-h"><h2>Periods of duty</h2><span class="right muted">${D.days.reduce((a, d) => a + d.rooms.length, 0)} papers</span></div>${per.map((x) => `<div class="tts-pt"><span><b>${esc(hon(x.t.name))}</b><small>${esc(sh(x.t.subject))}${x.sp ? ` · reserve ${x.sp}×` : ""}</small></span><span class="tts-m"><i style="width:${(x.n / mx) * 100}%"></i></span><em>${x.n}</em></div>`).join("")}</div>`;
-    S.paint($("#tts-duty"), bar + (short ? `<div class="tts-msg bad"><b>${short} day${short === 1 ? "" : "s"} short of a teacher.</b><span>Move a period on the Edit tab, or name someone from outside the plan.</span></div>` : how) + `<div class="tts-two"><div class="tts-days-l">${days || '<div class="card"><p class="muted">No papers for Classes VI to XII in this exam.</p></div>'}</div>${side}</div>`);
+      <button type="button" class="btn btn-ghost btn-sm tts-pr" data-tts-dprint>${PR}Print the duty list</button><button type="button" class="btn btn-primary btn-sm" data-tts-send${!D.all || fresh ? " disabled" : ""}${!D.all ? ` title="Assign every class first"` : ""}>${sendLbl}</button></div>`;
+    const lead = D.days.reduce((a, d) => a + d.rooms.reduce((b, r) => b + r.slots.filter((x, i) => x && x.lead && !r.fix[i]).length, 0), 0);
+    const how = `<div class="tts-msg${D.all ? " good" : ""}"><b>${D.all ? `All ${D.nRooms} papers assigned${fresh ? " and sent" : ""}.` : `${D.nDone} of ${D.nRooms} papers assigned.`}</b><span>${D.all ? (fresh ? "Change any name and send again." : "Check the list, then send it to the staff.") : `The plan suggests a teacher for each paper; nothing goes to staff until you assign it. Take a suggestion, or pick someone else from the list.`}</span>${left ? `<button type="button" class="btn btn-ghost btn-sm" data-tts-takeall>Assign all ${left} suggestions</button>` : `<button type="button" class="link-btn" data-tts-clearall>Clear all</button>`}</div>
+      <details class="tts-why"><summary>How the suggestions are made</summary><p>One teacher for each class sitting a paper: someone free then, or whose own class is sitting. Never the subject's own teacher (they stay on call for questions), and not the class teacher where it can be helped.${D.win.length > 1 ? " Duty goes period by period, so a teacher with a class mid-paper hands over to one who is free." : ""} Duties are spread evenly, counting the ones you've already assigned, with a reserve each day.${lead ? ` Where every teacher is busy, the wing coordinator is suggested (${lead} period${lead === 1 ? "" : "s"}).` : ""}</p></details>`;
+    const cell = (d, r) => {
+      const runs = r.runs.map((x) => `<span class="${x.fixed ? "" : "tts-sug"}">${D.win.length > 1 && r.runs.length > 1 ? `<i>P${x.from + 1}${x.to > x.from ? "–" + (x.to + 1) : ""}</i>` : ""}${x.t ? `<b>${esc(hon(x.t.name))}</b>${x.t.lead ? `<small class="tts-ld">${x.t.lead === "vp" ? "Vice principal" : "Coordinator"}</small>` : ""}` : `<b class="bad">Nobody free</b>`}${x.fixed ? "" : `<small class="tts-st">Suggested</small>`}</span>`).join("");
+      const warn = r.warn.some(Boolean) ? `<small class="tts-warn">An assigned teacher now has a class then. Pick again.</small>` : "";
+      const pickL = `<label class="tts-who"><span class="sr-only">Someone else for ${esc(secName(r.k))}</span><select data-tts-who="${d.date}|${r.k}"><option value="">${r.part ? "Change…" : "Someone else…"}</option>${r.opts.map((o) => `<option value="${o.t.id}"${o.no ? " disabled" : ""}>${esc(hon(o.t.name))} · ${esc(o.no || o.note)}</option>`).join("")}</select></label>`;
+      const acts = `<div class="tts-acts">${r.done ? `<span class="tts-ok">Assigned</span><button type="button" class="link-btn" data-tts-unasg="${d.date}|${r.k}">Clear</button>` : r.short ? "" : `<button type="button" class="btn btn-ghost btn-sm" data-tts-take="${d.date}|${r.k}">${r.part ? "Assign the rest" : "Assign"}</button>`}${pickL}${r.part && !r.done ? `<button type="button" class="link-btn" data-tts-unasg="${d.date}|${r.k}">Clear</button>` : ""}</div>`;
+      return `<td class="tts-inv">${runs}${warn}${acts}</td>`;
+    };
+    const resRow = (d) => `<div class="tts-res">Reserve: ${d.spare ? `<b>${esc(hon(d.spare.name))}</b>${d.spareFix ? ` <span class="tts-ok">Assigned</span> <button type="button" class="link-btn" data-tts-unres="${d.date}">Clear</button>` : ` <small class="tts-st">Suggested</small> <button type="button" class="link-btn" data-tts-res="${d.date}|${d.spare.id}">Assign</button>`}` : `<b>nobody is free for the whole paper</b>`}</div>`;
+    const days = D.days.map((d) => `<div class="card tts-card tts-dd"><div class="card-h"><h2>${S.fmt(d.date, { weekday: "short", day: "numeric", month: "short" })}</h2><span class="right muted">${d.rooms.filter((r) => r.done).length} of ${d.rooms.length} assigned · ${d.freeN} teachers free</span></div>
+      <table class="tts-dt"><thead><tr><th scope="col">Class</th><th scope="col">Paper</th><th scope="col">Invigilator</th><th scope="col">On call</th></tr></thead><tbody>${d.rooms.map((r) => `<tr class="${r.done ? "is-done" : ""}"><td><b>${esc(secName(r.k))}</b></td><td><i class="tts-dot" style="--s:${tone(r.subj)}"></i>${esc(r.subj)}</td>${cell(d, r)}<td class="muted">${esc(hon(r.setter || ""))}</td></tr>`).join("")}</tbody></table>
+      ${resRow(d)}</div>`).join("");
+    const side = `<div class="card tts-card tts-side"><div class="card-h"><h2>Periods of duty</h2><span class="right muted">assigned · <span class="tts-sg">suggested</span></span></div>${per.map((x) => `<div class="tts-pt"><span><b>${esc(hon(x.t.name))}</b><small>${esc(sh(x.t.subject))}${x.sp ? ` · reserve ${x.sp}×` : ""}</small></span><span class="tts-m"><i style="width:${(x.n / mx) * 100}%"></i><i class="sg" style="width:${(x.s / mx) * 100}%"></i></span><em>${x.n}${x.s ? `<small>+${x.s}</small>` : ""}</em></div>`).join("")}</div>`;
+    S.paint($("#tts-duty"), bar + (short ? `<div class="tts-msg bad"><b>${short} day${short === 1 ? "" : "s"} short of a teacher.</b><span>Move a period on the Edit tab, or name someone from outside the plan.</span></div>` : "") + how + `<div class="tts-two"><div class="tts-days-l">${days || '<div class="card"><p class="muted">No papers for Classes VI to XII in this exam.</p></div>'}</div>${side}</div>`);
+  }
+  // Assign: the suggestion for every open period of a room, or one chosen teacher where they're free.
+  function assign(e, id, who) {
+    const D = S.examDuty(e), [date, k] = id.split("|"), d = D.days.find((x) => x.date === date), r = d && d.rooms.find((x) => x.k === k); if (!r) return;
+    const rec = dutyRec(e, true), cur = (rec.asg[id] || []).slice();
+    if (who) { const o = r.opts.find((x) => x.t.id === who); if (!o || o.no) return; D.win.forEach((p, i) => { if (o.fr[i]) cur[i] = who; }); }
+    else D.win.forEach((p, i) => { if (!cur[i] && r.slots[i]) cur[i] = r.slots[i].id; });
+    rec.asg[id] = D.win.map((p, i) => cur[i] || null);
+    S.save(); const t = who && whoId(who); S.toast(t ? `${hon(t.name)} on duty in ${secName(k)}` : `Duty assigned for ${secName(k)}`, { done: true });
+  }
+  function takeAll(e) {
+    // One room at a time, so each suggestion counts the ones already taken.
+    for (let n = 0; n < 200; n++) { const D = S.examDuty(e); let r0 = null, d0 = null;
+      D.days.some((d) => (r0 = d.rooms.find((r) => !r.done && !r.short)) && (d0 = d)); if (!r0) break;
+      const rec = dutyRec(e, true), id = d0.date + "|" + r0.k, cur = rec.asg[id] || [];
+      rec.asg[id] = D.win.map((p, i) => cur[i] || (r0.slots[i] && r0.slots[i].id) || null); }
+    const D = S.examDuty(e), rec = dutyRec(e, true); D.days.forEach((d) => { if (!d.spareFix && d.spare) rec.res[d.date] = d.spare.id; });
+    S.save(); S.toast(`All suggested duties assigned for ${e.name}`, { done: true });
   }
   function sendDuty() {
-    const e = pickExam(), D = S.examDuty(e), th = (S.state.staffroom || {}).threads || {}, g = th["g:all"];
-    const lines = D.days.map((d) => `${S.fmt(d.date, { weekday: "short", day: "numeric", month: "short" })}: ` + d.rooms.map((r) => `${secName(r.k)} ${runTxt(r, D.win, (t) => hon(t.name))}`).join(", ") + (d.spare ? `; reserve ${hon(d.spare.name)}` : "")).join("\n");
-    if (g) S.post(g.msgs, { from: ME.id, kind: "notice", text: `Invigilation duty, ${e.name} (${e.time}):\n${lines}`, at: "Today, " + S.timeNow(), ts: Date.now() });
-    (S.state.duty || (S.state.duty = {}))[e.id] = { sent: S.todayKey, by: ME.name };
-    S.save(); S.toast(`Duty list sent to all staff`, { done: true }); drawDuty();
+    const e = pickExam(), D = S.examDuty(e), th = (S.state.staffroom || {}).threads || {}, g = th["g:all"]; if (!D.all) return;
+    const rec = dutyRec(e, true), again = !!rec.sent;
+    const lines = D.days.map((d) => `${S.fmt(d.date, { weekday: "short", day: "numeric", month: "short" })}: ` + d.rooms.map((r) => `${secName(r.k)} ${runTxt(r, D.win, (t) => hon(t.name))}`).join(", ") + (d.spareFix ? `; reserve ${hon(d.spare.name)}` : "")).join("\n");
+    if (g) S.post(g.msgs, { from: ME.id, kind: "notice", text: `Invigilation duty${again ? " (changed)" : ""}, ${e.name} (${e.time}):\n${lines}`, at: "Today, " + S.timeNow(), ts: Date.now() });
+    Object.assign(rec, { sent: S.todayKey, by: ME.name, sig: sigOf(rec) });
+    S.save(); S.toast(again ? `Changes to the duty list sent to all staff` : `Duty list sent to all staff`, { done: true }); drawDuty(); rings();
   }
 
   // ----- Rings on the tabs -----
@@ -319,7 +365,7 @@
     ring("tts-staff", ((st.length - over) / st.length) * 100, over || "✓", over ? `${over} overloaded` : `All ${st.length} within limits`);
     const L = labMap(); ring("tts-classes", 100, L.clash || "✓", L.clash ? `${L.clash} lab clashes` : `${order.length} classes · labs clear`);
     const n = Object.values(edits()).reduce((a, r) => a + r.log.length, 0); ring("tts-edit", n ? 100 : 0, n || "–", n ? `${n} change${n === 1 ? "" : "s"} from the plan` : "Same as the plan");
-    const e = pickExam(); if (e) { const D = S.examDuty(e), sent = ((S.state.duty || {})[e.id] || {}).sent; ring("tts-duty", sent ? 100 : 50, sent ? "✓" : D.days.length, `${e.name}${sent ? " · sent" : ` · ${D.days.length} days`}`); }
+    const e = pickExam(); if (e) { const D = S.examDuty(e), rec = dutyRec(e), sent = rec.sent && rec.sig === sigOf(rec); ring("tts-duty", D.nRooms ? (D.nDone / D.nRooms) * 100 : 0, sent ? "✓" : D.nRooms - D.nDone, `${e.name} · ${sent ? "sent" : D.all ? "ready to send" : `${D.nRooms - D.nDone} to assign`}`); }
   }
   const draw = () => { const v = ($('[data-vt="tts"] button.on') || {}).dataset; const t = (v && v.v) || "staff";
     if (t === "staff") drawStaff(); else if (t === "classes") drawClasses(); else if (t === "edit") drawEdit(); else drawDuty(); rings(); };
@@ -341,12 +387,19 @@
     if ((x = b("[data-tts-goed]"))) { ui.ed = x.dataset.ttsGoed; ui.pick = null; ui.msg = ""; drawEdit(); return; }
     if (b("[data-tts-dprint]")) { const ex = pickExam(); S.showDoc(`Invigilation duty · ${ex.name}`, S.docPage(`Invigilation duty ${ex.name}`, [dutyDoc(ex, S.examDuty(ex))]), { file: `Invigilation-${ex.name.replace(/\W+/g, "-")}.pdf` }); return; }
     if (b("[data-tts-send]")) { sendDuty(); return; }
+    if ((x = b("[data-tts-take]"))) { assign(pickExam(), x.dataset.ttsTake); drawDuty(); rings(); return; }
+    if (b("[data-tts-takeall]")) { takeAll(pickExam()); drawDuty(); rings(); return; }
+    if ((x = b("[data-tts-unasg]"))) { delete dutyRec(pickExam(), true).asg[x.dataset.ttsUnasg]; S.save(); drawDuty(); rings(); return; }
+    if (b("[data-tts-clearall]")) { const r = dutyRec(pickExam(), true); r.asg = {}; r.res = {}; S.save(); S.toast("Duty assignments cleared", { done: true }); drawDuty(); rings(); return; }
+    if ((x = b("[data-tts-res]"))) { const [d, id] = x.dataset.ttsRes.split("|"); dutyRec(pickExam(), true).res[d] = id; S.save(); drawDuty(); rings(); return; }
+    if ((x = b("[data-tts-unres]"))) { delete dutyRec(pickExam(), true).res[x.dataset.ttsUnres]; S.save(); drawDuty(); rings(); return; }
   });
   box.addEventListener("change", (e) => {
     const t = e.target;
     if (t.id === "tts-cls") { ui.cls = t.value; drawClasses(); }
     if (t.id === "tts-ed") { ui.ed = t.value; ui.pick = null; ui.msg = ""; drawEdit(); }
     if (t.id === "tts-exam") { ui.exam = t.value; drawDuty(); rings(); }
+    if (t.dataset.ttsWho && t.value) { assign(pickExam(), t.dataset.ttsWho, t.value); drawDuty(); rings(); }
   });
   document.addEventListener("click", (e) => { if (e.target.closest('[data-vt="tts"] button')) requestAnimationFrame(draw); });
   document.addEventListener("keydown", (e) => { if (e.key === "Escape" && ui.pick && box.closest(".active")) { ui.pick = null; drawEdit(); } });

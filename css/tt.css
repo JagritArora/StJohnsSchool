@@ -142,3 +142,24 @@ button.tts-lg small { display: block; color: var(--muted); font-size: 12px; }
 @media (max-width: 640px) { .pivot td small.pv-who { display: none; } .pv-print { display: none; } }
 .card-h .pv-print ~ .seg { margin-left: 0; }
 @media (max-width: 640px) { .tts-grid th[scope=row] { min-width: 112px; } .tts-grid td { min-width: 54px; } .tts-who small { max-width: 100px; } }
+
+/* Exam duty: the plan suggests, the office assigns */
+.tts-sug b { font-weight: 500; color: var(--muted); }
+.tts-st { display: inline-block; margin-left: 7px; font-size: 11px; color: var(--muted); border: 1px dashed var(--line); padding: 0 7px; border-radius: 999px; }
+.tts-ok { font-size: 12px; font-weight: 600; color: var(--green-text, var(--green)); }
+.tts-warn { display: block; font-size: 12px; color: var(--danger); margin-top: 2px; }
+.tts-acts { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 10px; margin-top: 6px; }
+.tts-acts .btn-sm { padding: 3px 12px; min-height: 0; }
+.tts-who select { font: inherit; font-size: 12.5px; max-width: 220px; padding: 3px 8px; border: 1px solid var(--line); border-radius: 10px; background: var(--surface); color: var(--ink); }
+.tts-dt tr.is-done td { background: color-mix(in srgb, var(--green) 4%, transparent); }
+.tts-why { margin: -6px 2px 14px; font-size: 13px; color: var(--muted); }
+.tts-why summary { cursor: pointer; width: fit-content; }
+.tts-why p { margin: 6px 0 0; max-width: 72ch; }
+.tts-msg .btn { margin-left: auto; }
+.tts-pt .tts-m { display: flex; overflow: hidden; }
+.tts-pt .tts-m i { position: static; height: 100%; border-radius: 0; flex: none; }
+.tts-pt .tts-m i.sg, .tts-sg { background: color-mix(in srgb, var(--accent) 28%, var(--sunken)); }
+.tts-sg { padding: 0 5px; border-radius: 6px; }
+.tts-pt em small { display: inline; font-size: 11px; font-weight: 500; color: var(--muted); margin-left: 1px; }
+.tts-pt { grid-template-columns: minmax(0, 1fr) 70px 46px; }
+.tts-pt em { white-space: nowrap; }
