@@ -19,7 +19,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Figtree:wght@400..800&display=swap" rel="stylesheet" />
 <link rel="stylesheet" href="css/site.css?v=143" />
 <link rel="stylesheet" href="css/feel.css?v=7" />
-<link rel="stylesheet" href="css/ease.css?v=8" />
+<link rel="stylesheet" href="css/ease.css?v=9" />
 <script>try{var t={"1.1":"l","1.2":"xl"}[localStorage.getItem("sjs-zoom")];if(t)document.documentElement.dataset.text=t}catch(e){}</script>
 <link rel="stylesheet" href="css/ai.css?v=3" />
 <link rel="stylesheet" href="css/journey.css?v=17" />
@@ -85,7 +85,7 @@
     <!-- ATTENDANCE -->
     <section data-view="attendance" data-roles="teacher">
       <div class="topbar"><div><h1 id="att-h1">Attendance · VII-B</h1><div class="sub" id="att-sub">Tap a name to mark absent. Tap again for leave.</div></div>
-        <div class="right"><button class="btn btn-ghost btn-sm" id="all-present">All present</button><span class="split"><button class="btn btn-primary btn-sm" id="att-save">Submit</button><button class="btn btn-primary btn-sm split-more" id="att-later" type="button" aria-label="Submit later or keep as a draft" aria-haspopup="menu">⋯</button></span></div></div>
+        <div class="right"><label class="m-pick"><span class="sr-only">Day</span><select id="att-day" class="input" aria-label="Day to mark or correct"></select></label><button class="btn btn-ghost btn-sm" id="all-present">All present</button><span class="split"><button class="btn btn-primary btn-sm" id="att-save">Submit</button><button class="btn btn-primary btn-sm split-more" id="att-later" type="button" aria-label="Submit later or keep as a draft" aria-haspopup="menu">⋯</button></span></div></div>
       <div id="att-done" style="margin-bottom:16px"></div>
       <div class="vt-row ptabs hn-swrap ms4"><div class="seg vt" data-vt="reg" aria-label="Attendance view"><button data-v="today"><span class="hs-ring due" id="rg-reg-today"><span></span></span><span class="hs-t"><b>Mark today</b><small id="rg-reg-today-t"></small></span></button><button data-v="week"><span class="hs-ring dsr" id="rg-reg-week"><span></span></span><span class="hs-t"><b>Last six days</b><small id="rg-reg-week-t"></small></span></button><button data-v="leave"><span class="hs-ring mt" id="rg-reg-leave"><span></span></span><span class="hs-t"><b>Leave requests</b><small id="rg-reg-leave-t"></small></span></button><button data-v="students"><span class="hs-ring" id="rg-reg-students"><span></span></span><span class="hs-t"><b>Students</b><small id="rg-reg-students-t"></small></span></button></div></div>
       <div class="chips" id="att-count" style="margin:-6px 0 14px"></div>
@@ -140,7 +140,7 @@
         <div class="right"><label class="m-pick"><span class="sr-only">Section</span><select id="m-sec" class="input" aria-label="Section"></select></label><button class="btn btn-ghost btn-sm" id="rc-all" type="button" hidden>Report cards</button><button class="btn btn-ghost btn-sm" id="fill-sample">Fill sample marks</button><span class="split"><button class="btn btn-primary btn-sm" id="publish">Publish to parents</button><button class="btn btn-primary btn-sm split-more" id="pub-later" type="button" aria-label="Publish later" aria-haspopup="menu">⋯</button></span></div></div>
       <div class="grid g4" id="m-stats" style="margin-bottom:16px"></div>
       <div class="vt-row ptabs hn-swrap"><div class="seg vt" data-vt="marks" aria-label="Marks view"><button data-v="entry"><span class="hs-ring due" id="rg-marks-entry"><span></span></span><span class="hs-t"><b>Enter marks</b><small id="rg-marks-entry-t"></small></span></button><button data-v="spread"><span class="hs-ring dsr" id="rg-marks-spread"><span></span></span><span class="hs-t"><b>Spread</b><small id="rg-marks-spread-t"></small></span></button></div></div>
-      <div class="vp" data-vp="marks" data-v="entry"><div class="card"><div class="m-tip tbl-bar"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="8" y="3" width="11" height="14" rx="2"/><path d="M5 7v11a3 3 0 0 0 3 3h8"/></svg><span>Marks in Excel? Paste a column into the first box, or upload the sheet. <kbd>Enter</kbd> moves to the next student.</span><div class="m-tools"><button type="button" class="m-pass" id="m-pass" aria-haspopup="menu" title="Locked: tap to change the pass mark"></button><div class="m-seg" role="group" aria-label="Show past tests as"><button type="button" data-mview="marks">Marks</button><button type="button" data-mview="pct">%</button></div><button type="button" class="ez-xl" id="m-tpl" title="A sheet with every student's roll and name, ready to fill"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 3h9l4 4v14H6z"/><path d="M14 3v5h5M9 13h6M9 17h6"/></svg><span>Template</span></button><button type="button" class="ez-xl" id="m-up" title="Upload marks from Excel or a CSV file"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 15V4M7.5 8.5 12 4l4.5 4.5M5 19.5h14"/></svg><span>Upload</span></button><input type="file" id="m-file" accept=".csv,.tsv,.txt,.xlsx,.xls" hidden /></div></div><div class="m-up" id="m-prev" hidden></div><div class="tbl-wrap"><table class="tbl" id="m-tbl"></table></div></div></div>
+      <div class="vp" data-vp="marks" data-v="entry"><div class="card"><div class="m-tip tbl-bar"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="8" y="3" width="11" height="14" rx="2"/><path d="M5 7v11a3 3 0 0 0 3 3h8"/></svg><span>Marks in Excel? Paste a column into the first box, or upload the sheet. <kbd>Enter</kbd> moves to the next student. Tap an earlier test's mark to correct it.</span><div class="m-tools"><button type="button" class="m-pass" id="m-pass" aria-haspopup="menu" title="Locked: tap to change the pass mark"></button><div class="m-seg" role="group" aria-label="Show past tests as"><button type="button" data-mview="marks">Marks</button><button type="button" data-mview="pct">%</button></div><button type="button" class="ez-xl" id="m-tpl" title="A sheet with every student's roll and name, ready to fill"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 3h9l4 4v14H6z"/><path d="M14 3v5h5M9 13h6M9 17h6"/></svg><span>Template</span></button><button type="button" class="ez-xl" id="m-up" title="Upload marks from Excel or a CSV file"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 15V4M7.5 8.5 12 4l4.5 4.5M5 19.5h14"/></svg><span>Upload</span></button><input type="file" id="m-file" accept=".csv,.tsv,.txt,.xlsx,.xls" hidden /></div></div><div class="m-up" id="m-prev" hidden></div><div class="tbl-wrap"><table class="tbl" id="m-tbl"></table></div></div></div>
       <div class="vp" data-vp="marks" data-v="spread" hidden><div class="card"><div class="card-h"><h2 id="dots-h">Unit Test 2 · every student's mark</h2><span class="right muted" style="font-size:13.5px">One dot per student</span></div><div id="m-dots"></div>
         <div class="legend"><span><i class="dot" style="background:color-mix(in srgb, var(--royal) 75%, var(--surface))"></i><span id="dots-ok">8 or more</span></span><span><i class="dot" style="background:var(--accent)"></i><span id="dots-low">Below 8 — plan a re-test</span></span><span><i class="dash"></i>Class average</span></div></div></div>
     </section>
@@ -672,7 +672,7 @@
 
 <script src="js/data.js?v=16"></script>
 <script src="js/ttplan.js?v=2"></script>
-<script src="js/classes.js?v=15"></script>
+<script src="js/classes.js?v=16"></script>
 <script src="js/exams.js?v=9"></script>
 <script src="js/journey.js?v=16"></script>
 <script src="js/care.js?v=2"></script>
@@ -1041,7 +1041,7 @@ SJS.only("teacher", ["js/staffroom.js?v=3"]);
       return { k, label: S.fmt(k, { weekday: "long", day: "numeric", month: "short" }), axis: S.fmt(k, { weekday: "short" }), v, tone: v === null ? "wait" : v < 85 ? "low" : v < 90 ? "watch" : "good",
         vText: v === null ? "Not marked" : v + "%",
         note: v === null ? "Not marked yet. Parents are waiting for the morning update." : `<b>${N() - list.length} of ${N()}</b> present. ` + (list.length ? `Away: ${list.join(", ")}.` : "Everyone was in."),
-        acts: v === null ? `<button class="btn btn-primary btn-sm" type="button" data-go="attendance/today">Take attendance</button>` : "" }; });
+        acts: v === null ? `<button class="btn btn-primary btn-sm" type="button" data-go="attendance/today">Take attendance</button>` : k !== S.todayKey ? `<button class="btn btn-ghost btn-sm" type="button" data-go="attendance/today" data-att-fix="${k}">Correct this day</button>` : "" }; });
     const marked = items2.filter((d) => d.v !== null), avg6 = marked.length ? Math.round(marked.reduce((a, d) => a + d.v, 0) / marked.length) : null, worst = [...marked].sort((a, b) => a.v - b.v)[0];
     S.explore(S.$("#t-att-x"), { kind: "cols", lo: Math.min(70, Math.floor(((worst ? worst.v : 90) - 5) / 10) * 10), hi: 100, items: items2, sel: worst && worst.v < 100 ? worst.k : days[days.length - 1], line: { v: 90, label: "School target 90%" }, label: "Attendance, last six school days",
       head: avg6 === null ? "Nothing marked in the last six school days." : `${secLabel(home)} averaged <b>${avg6}%</b> over the last ${marked.length} school days${worst && worst.v < 90 ? `; the low was <b>${worst.label}</b> at ${worst.v}%` : ", at or above the school's 90% target every day"}.` });
@@ -1104,15 +1104,33 @@ SJS.only("teacher", ["js/staffroom.js?v=3"]);
   function renderAtt() {
     rings();
     if (!isCT) return;
-    const rec = S.cs.attendance[S.todayKey];
+    const past = attDay !== S.todayKey, rec = past ? null : S.cs.attendance[S.todayKey], fix = past ? (S.secState(home).attFix || {})[attDay] : null;
     S.$("#att-grid").innerHTML = S.students.map((s) => { const st = draft[s.roll] || "P"; return `<div class="att-w"><button class="att" data-roll="${s.roll}" data-s="${st}"><div><span class="roll">${String(s.roll).padStart(2, "0")}</span><span class="nm">${s.name}</span>${why[s.roll] && st !== "P" ? `<span class="why">${S.esc(why[s.roll])}</span>` : ""}</div><span class="st">${st}</span></button><button type="button" class="att-more" data-att-more="${s.roll}" aria-label="More for ${s.name}: absent, medical leave or a reason" aria-haspopup="menu">⋯</button></div>`; }).join("");
     const a = Object.values(draft).filter((v) => v === "A").length, l = Object.values(draft).filter((v) => v === "L").length;
     S.$("#att-count").innerHTML = `<span class="pill green">${N() - a - l} present</span><span class="pill red">${a} absent</span><span class="pill warn">${l} leave</span>`;
     S.$("#att-meter").innerHTML = S.stack([{ v: N() - a - l, tone: "var(--green)", tip: `${N() - a - l} present` }, { v: a, tone: "var(--accent)", tip: `${a} absent` }, { v: l, tone: "var(--warn)", tip: `${l} on leave` }]);
     if (S.attTrack) S.attTrack();
-    S.$("#att-done").innerHTML = rec ? `<div class="status ok"><span class="sq green">✓</span><div><b>Submitted at ${rec.at}</b><span>Change anything and submit again — parents get the correction.</span></div></div>` : "";
-    S.$("#att-sub").textContent = S.fmtLong(S.today) + " · tap a name to mark absent, again for leave.";
+    S.$("#att-done").innerHTML = rec ? `<div class="status ok"><span class="sq green">✓</span><div><b>Submitted at ${rec.at}</b><span>Change anything and submit again — parents get the correction.</span></div></div>`
+      : past ? `<div class="status ${fix ? "ok" : ""}"><span class="sq ${fix ? "green" : "royal"}">${fix ? "✓" : "✎"}</span><div><b>${fix ? `Corrected ${S.esc(fix.at)}` : `Marked on ${S.fmt(attDay, { weekday: "long", day: "numeric", month: "short" })}`}</b><span>Change anything and save the correction. Only the parents whose child's mark changes get a message.</span></div></div>` : "";
+    S.$("#att-sub").textContent = (past ? S.fmt(attDay, { weekday: "long", day: "numeric", month: "long" }) + " · correcting an earlier day" : S.fmtLong(S.today)) + " · tap a name to mark absent, again for leave.";
+    S.$("#att-save").textContent = past ? "Save correction" : "Submit";
+    S.$("#att-later").hidden = past;
   }
+  // The day being marked: today, or an earlier school day to correct.
+  let attDay = S.todayKey;
+  const attDays = () => { const out = [], d0 = new Date(S.SESSION_START + "T00:00"); let d = new Date(S.today); while (out.length < 30) { d = S.addDays(d, -1); if (d < d0) break; if (S.isSchoolDay(d)) out.push(S.iso(d)); } return out; };
+  function attFill() {
+    const sel = S.$("#att-day"); if (!sel) return;
+    sel.innerHTML = `<option value="${S.todayKey}">Today</option>` + attDays().map((k) => `<option value="${k}">${S.fmt(k, { weekday: "short", day: "numeric", month: "short" })}${(S.secState(home).attFix || {})[k] ? " · corrected" : ""}</option>`).join("");
+    sel.value = attDay;
+  }
+  function attLoad(k) {
+    attDay = k;
+    if (k === S.todayKey) { const t = S.cs.attendance[S.todayKey] || {}; draft = Object.assign({}, t.marks); why = Object.assign({}, t.why); }
+    else { const f = (S.secState(home).attFix || {})[k]; draft = Object.assign({}, S.sectionByKey(home).history[k]); why = Object.assign({}, f && f.why); }
+    attFill(); renderAtt();
+  }
+  S.attOpenDay = attLoad;
   if (isCT) {
     S.$("#att-grid").addEventListener("click", (e) => {
       const b = e.target.closest(".att"); if (!b) return;
@@ -1138,7 +1156,24 @@ SJS.only("teacher", ["js/staffroom.js?v=3"]);
       S.toast(when ? "Scheduled · parents get it at that time. It's in the Drafts tray until then." : "Kept as a draft · post it from the Drafts tray", { done: false });
     }));
     S.$("#all-present").addEventListener("click", () => { draft = {}; why = {}; renderAtt(); });
+    S.$("#att-day").addEventListener("change", (e) => attLoad(e.target.value));
+    attFill();
+    // A past day: a correction over the record; parents of the students whose mark changed are told.
+    S.$("#att-save").addEventListener("click", (e) => {
+      if (attDay === S.todayKey) return;
+      e.stopImmediatePropagation();
+      const before = S.sectionByKey(home).history[attDay] || {}, rolls = new Set([...Object.keys(before), ...Object.keys(draft)]);
+      const changed = [...rolls].filter((r) => (before[r] || "P") !== (draft[r] || "P"));
+      const st = S.secState(home), f0 = (st.attFix || {})[attDay], whyChanged = JSON.stringify((f0 && f0.why) || {}) !== JSON.stringify(why);
+      if (!changed.length && !whyChanged) { S.toast("Nothing has changed on that day", { done: false }); return; }
+      st.attFix = st.attFix || {};
+      st.attFix[attDay] = { marks: Object.assign({}, draft), why: Object.assign({}, why), at: `on ${S.fmt(S.todayKey, { day: "numeric", month: "short" })}, ${S.timeNow()}`, by: T.name };
+      S.save(); S.sectionByKey(home); attFill(); renderAtt(); renderHome();
+      const dl = S.fmt(attDay, { weekday: "short", day: "numeric", month: "short" });
+      S.toast(changed.length ? `Saved · ${dl} corrected, ${changed.length} parent${changed.length > 1 ? "s" : ""} told by app and SMS` : `Saved · reasons for ${dl} updated`);
+    });
     S.$("#att-save").addEventListener("click", () => {
+      if (attDay !== S.todayKey) return;
       S.cs.attendance[S.todayKey] = { taken: true, at: S.timeNow(), marks: Object.assign({}, draft), why: Object.assign({}, why) };
       S.save(); renderAtt(); renderHome();
       const away = Object.keys(draft).length;
@@ -1150,7 +1185,7 @@ SJS.only("teacher", ["js/staffroom.js?v=3"]);
   function renderHw() {
     rings();
     const list = mine.flatMap((k) => S.secState(k).homework.filter((h) => h.by === T.name).map((h) => [k, h]));
-    S.$("#hw-list").innerHTML = list.length ? list.map(([k, h]) => `<div class="li"><span class="sq red"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3h9l4 4v14H6z"/><path d="M14 3v5h5"/></svg></span><div class="t"><b>${S.esc(h.title)}</b><span>${secLabel(k)} · due ${S.fmt(h.due)} · ${h.done ? "marked done by a parent" : "seen by parents"}</span></div></div>`).join("") : '<p class="muted" style="font-size:14.5px">Nothing posted yet.</p>';
+    S.$("#hw-list").innerHTML = list.length ? list.map(([k, h]) => `<div class="li"><span class="sq red"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3h9l4 4v14H6z"/><path d="M14 3v5h5"/></svg></span><div class="t"><b>${S.esc(h.title)}</b><span>${secLabel(k)} · due ${S.fmt(h.due)} · ${h.done ? "marked done by a parent" : "seen by parents"}${h.edited ? " · edited" : ""}</span></div><span class="end hw-acts"><button type="button" class="link-btn" data-hw-edit="${k}|${h.id}">Edit</button><button type="button" class="link-btn" data-hw-del="${k}|${h.id}">Delete</button></span></div>`).join("") : '<p class="muted" style="font-size:14.5px">Nothing posted yet.</p>';
   }
   S.$("#hw-due").value = S.iso(S.nextSchoolDay(S.today, 2));
   // The same homework often goes to every section of a class: tick the others instead of posting again.
@@ -1183,9 +1218,42 @@ SJS.only("teacher", ["js/staffroom.js?v=3"]);
     rtEmpty();
     S.toast("Draft ready — edit it before posting");
   });
+  // Edit or delete what's already posted: parents see the change straight away.
+  let hwEdit = null;
+  const hwFind = (v) => { const [k, id] = v.split("|"); return { k, h: S.secState(k).homework.find((h) => h.id === id) }; };
+  const hwMode = (on) => {
+    const f = S.$("#hw-form"), btn = f.querySelector('button[type="submit"]');
+    f.querySelector(".card-h h2").textContent = on ? "Edit homework" : "New homework";
+    btn.textContent = on ? "Save changes" : "Post to parents";
+    S.$("#hw-cls").disabled = !!on;
+    let x = S.$("#hw-cancel");
+    if (!x) { x = document.createElement("button"); x.type = "button"; x.id = "hw-cancel"; x.className = "btn btn-ghost"; x.textContent = "Cancel"; btn.before(x); x.addEventListener("click", () => hwReset()); }
+    x.hidden = !on; S.$("#hw-ai").hidden = !!on;
+    if (on) S.$("#hw-also").hidden = true; else hwAlso();
+  };
+  function hwReset() { const k = S.$("#hw-cls").value; hwEdit = null; S.$("#hw-form").reset(); ed.innerHTML = ""; rtEmpty(); S.$("#hw-cls").value = k; S.$("#hw-due").value = S.iso(S.nextSchoolDay(S.today, 2)); hwMode(false); }
+  S.$("#hw-list").addEventListener("click", (e) => {
+    const eb = e.target.closest("[data-hw-edit]"), db = e.target.closest("[data-hw-del]");
+    if (eb) { const { k, h } = hwFind(eb.dataset.hwEdit); if (!h) return;
+      hwEdit = { k, id: h.id }; S.$("#hw-cls").value = k; S.$("#hw-due").value = h.due; S.$("#hw-title").value = h.title; ed.innerHTML = h.detail || ""; rtEmpty(); hwMode(true);
+      S.$("#hw-form").scrollIntoView({ behavior: "smooth", block: "start" }); setTimeout(() => S.$("#hw-title").focus({ preventScroll: true }), 300); return; }
+    if (db) { const { k, h } = hwFind(db.dataset.hwDel); if (!h) return;
+      S.pop(db, `<p class="dot-h">Delete “${S.esc(h.title)}”?</p><p class="dot-s">Parents of ${secLabel(k)} stop seeing it.</p><button type="button" data-pick="del">Delete homework</button><button type="button" data-pick="no">Keep it</button>`, (pk) => {
+        if (pk !== "del") return;
+        const list = S.secState(k).homework, i = list.indexOf(h); if (i < 0) return;
+        list.splice(i, 1); if (hwEdit && hwEdit.id === h.id) hwReset();
+        S.save(); renderHw(); renderHome(); S.toast(`Deleted · parents of ${secLabel(k)} no longer see “${h.title}”`, { done: true });
+      }); }
+  });
   S.$("#hw-form").addEventListener("submit", (e) => {
     e.preventDefault();
     if (rtEmpty()) { ed.setAttribute("aria-invalid", "true"); ed.focus(); S.toast("Write the details for parents first", { done: false }); return; }
+    if (hwEdit) {
+      const { k, h } = hwFind(hwEdit.k + "|" + hwEdit.id);
+      if (h) Object.assign(h, { title: S.$("#hw-title").value.trim(), detail: S.rich(ed.innerHTML), due: S.$("#hw-due").value, edited: S.todayKey, fresh: true });
+      S.save(); hwReset(); renderHw(); renderHome();
+      S.toast(`Saved · parents of ${secLabel(k)} see the updated homework`); return;
+    }
     const ks = [S.$("#hw-cls").value, ...[...S.$("#hw-chips").querySelectorAll("input:checked")].map((c) => c.value)];
     const at = Date.now(), n = ks.reduce((a, k) => a + S.sectionByKey(k).students.length, 0);
     ks.forEach((k, i) => S.secState(k).homework.unshift({ id: "h" + (at + i), subj: sj(k), cls: k, title: S.$("#hw-title").value.trim(), detail: S.rich(ed.innerHTML), due: S.$("#hw-due").value, by: T.name, done: false, fresh: true }));
@@ -1222,14 +1290,14 @@ SJS.only("teacher", ["js/staffroom.js?v=3"]);
       <div class="card stat"><span class="lbl">Entered</span><div class="num">${vals.length}<small> / ${n}</small></div>${S.meter((vals.length / n) * 100, { tone: "var(--royal)" })}</div>
       <div class="card stat"><span class="lbl">Average</span><div class="num">${avg}<small> / ${MAX}</small></div></div>
       <div class="card stat"><span class="lbl">Highest</span><div class="num">${vals.length ? Math.max(...vals) : "—"}</div></div>
-      <div class="card stat"><span class="lbl">Status</span><div class="num" style="font-size:24px">${e.published ? "Published" : "Draft"}</div><div class="foot">${vals.filter((v) => v < LOW).length} below the pass mark ${LOW}/${MAX}${away ? ` · ${away} absent or on leave` : ""}</div></div>`;
+      <div class="card stat"><span class="lbl">Status</span><div class="num" style="font-size:24px">${e.published ? "Published" : "Draft"}</div><div class="foot">${vals.filter((v) => v < LOW).length} below the pass mark ${LOW}/${MAX}${away ? ` · ${away} absent or on leave` : ""}${e.published ? `<br><button type="button" class="link-btn" data-m-unpub>Take back to draft</button>` : ""}</div></div>`;
     renderDots();
     if (!S.$("#m-tbl").dataset.built) {
       const cols = [...S.EX.list].reverse().filter((k) => !(S.PHASE === "end" && k === "fin")), pct = mView === "pct";
       S.$$("[data-mview]").forEach((b) => b.setAttribute("aria-pressed", b.dataset.mview === mView));
       // Past tests: the mark out of what the paper was marked out of, or the percentage.
       const cell = (k, v) => { const o = OUT[k] || 100; return pct ? `${v}%` : `${Math.round((v * o) / 100)}<small>/${o}</small>`; };
-      S.$("#m-tbl").innerHTML = `<thead><tr><th>Roll</th><th>Student</th>${cols.map((k) => `<th class="num">${S.exLabel(k, y.cls)}${pct ? " (%)" : ` (/${OUT[k] || 100})`}</th>`).join("")}<th>${EN.name} (/${MAX})</th></tr></thead><tbody>` + y.students.map((s) => `<tr><td class="muted">${String(s.roll).padStart(2, "0")}</td><td><span class="adm-who"><span class="avatar soft">${s.initials || s.name.split(" ").map((w) => w[0]).slice(0, 2).join("")}</span><span>${s.name}</span></span></td>${cols.map((k) => `<td class="num"><span class="wd t-${S.word(s[k][sj(mkey)]).t}">${cell(k, s[k][sj(mkey)])}</span></td>`).join("")}<td class="mk-c">${statOf(m[s.roll]) ? `<span class="mk-st" title="${S.esc(statOf(m[s.roll]))}">${S.esc(m[s.roll] === "AB" ? "AB" : m[s.roll] === "ML" ? "ML" : "Note")}<small>${S.esc(statOf(m[s.roll]))}</small></span>` : `<input class="mark" data-roll="${s.roll}" inputmode="numeric" maxlength="${String(MAX).length}" value="${m[s.roll] ?? ""}" aria-label="${EN.name} marks for ${s.name}" />`}<button type="button" class="mk-more" data-mk-more="${s.roll}" aria-label="More for ${s.name}: absent, medical leave or a note" aria-haspopup="menu">⋯</button></td></tr>`).join("") + "</tbody>";
+      S.$("#m-tbl").innerHTML = `<thead><tr><th>Roll</th><th>Student</th>${cols.map((k) => `<th class="num">${S.exLabel(k, y.cls)}${pct ? " (%)" : ` (/${OUT[k] || 100})`}</th>`).join("")}<th>${EN.name} (/${MAX})</th></tr></thead><tbody>` + y.students.map((s) => `<tr><td class="muted">${String(s.roll).padStart(2, "0")}</td><td><span class="adm-who"><span class="avatar soft">${s.initials || s.name.split(" ").map((w) => w[0]).slice(0, 2).join("")}</span><span>${s.name}</span></span></td>${cols.map((k) => { const fx = S.markOrig(mkey, sj(mkey), k, s.roll) != null; return `<td class="num"><button type="button" class="mk-past${fx ? " fx" : ""}" data-mk-past="${k}|${s.roll}" aria-label="${S.exLabel(k, y.cls)} mark for ${s.name}${fx ? ", corrected" : ""}: tap to correct" aria-haspopup="menu"${fx ? ' title="Corrected"' : ""}><span class="wd t-${S.word(s[k][sj(mkey)]).t}">${cell(k, s[k][sj(mkey)])}</span></button></td>`; }).join("")}<td class="mk-c">${statOf(m[s.roll]) ? `<span class="mk-st" title="${S.esc(statOf(m[s.roll]))}">${S.esc(m[s.roll] === "AB" ? "AB" : m[s.roll] === "ML" ? "ML" : "Note")}<small>${S.esc(statOf(m[s.roll]))}</small></span>` : `<input class="mark" data-roll="${s.roll}" inputmode="numeric" maxlength="${String(MAX).length}" value="${m[s.roll] ?? ""}" aria-label="${EN.name} marks for ${s.name}" />`}<button type="button" class="mk-more" data-mk-more="${s.roll}" aria-label="More for ${s.name}: absent, medical leave or a note" aria-haspopup="menu">⋯</button></td></tr>`).join("") + "</tbody>";
       S.$("#m-tbl").dataset.built = 1;
     }
   }
@@ -1255,6 +1323,30 @@ SJS.only("teacher", ["js/staffroom.js?v=3"]);
     const m = S.entry(mkey, sj(mkey)).marks, v = Math.min(MAX, parseInt(i.value, 10));
     if (isNaN(v)) delete m[i.dataset.roll]; else { m[i.dataset.roll] = v; if (+i.value > MAX) i.value = MAX; }
     S.save(); renderMarks();
+    if (S.entry(mkey, sj(mkey)).published && !pubWarned[mkey]) { pubWarned[mkey] = 1; S.toast("These marks are published: parents see each correction straight away", { done: false }); }
+  });
+  const pubWarned = {};
+  // Take published marks back to a draft; and correct a mark in an earlier test (kept over the original).
+  S.$("#m-stats").addEventListener("click", (e) => {
+    if (!e.target.closest("[data-m-unpub]")) return;
+    S.entry(mkey, sj(mkey)).published = false; S.save(); renderMarks(); renderYear();
+    S.toast(`Saved · ${EN.name} marks for ${secLabel(mkey)} are a draft again; parents don't see them until you publish`);
+  });
+  S.$("#m-tbl").addEventListener("click", (e) => {
+    const b = e.target.closest("[data-mk-past]"); if (!b) return;
+    const [k, r] = b.dataset.mkPast.split("|"), y = S.sectionByKey(mkey), st = y.students.find((v) => v.roll === +r), subj = sj(mkey), o = OUT[k] || 100, lbl = S.exLabel(k, y.cls);
+    const now = Math.round((st[k][subj] * o) / 100), orig = S.markOrig(mkey, subj, k, +r);
+    S.pop(b, `<p class="dot-h">${S.esc(st.name)} · ${S.esc(lbl)}</p><p class="dot-s">${S.esc(subj)}, out of ${o}. Parents and report cards show the corrected mark.</p><div class="dot-when"><input type="number" min="0" max="${o}" value="${now}" data-pick-text aria-label="${S.esc(lbl)} mark out of ${o}" /><span class="dot-of">/ ${o}</span><button type="button" class="dot-ok" data-pick="S" data-pick-enter>Save</button></div>${orig != null ? `<button type="button" data-pick="R">Back to the first mark (${Math.round((orig * o) / 100)}/${o})</button>` : ""}`, (pk, v) => {
+      const n = Number(v);
+      if (pk === "S" && !(v !== "" && Number.isInteger(n) && n >= 0 && n <= o)) { S.toast(`A whole number from 0 to ${o}`, { done: false }); return true; }
+      const MF = (S.state.markFix = S.state.markFix || {}), key = `${mkey}|${subj}|${k}`, base = orig != null ? orig : st[k][subj], pct = pk === "R" ? base : Math.round((n / o) * 100);
+      if (pk === "S" && n === now) return;
+      MF[key] = MF[key] || {};
+      if (pct === base) delete MF[key][r]; else MF[key][r] = pct;
+      if (!Object.keys(MF[key]).length) delete MF[key];
+      S.save(); S.sectionByKey(mkey); delete S.$("#m-tbl").dataset.built; renderMarks(); renderYear(); renderHome();
+      S.toast(`Saved · ${st.name}'s ${lbl} mark is ${Math.round((pct * o) / 100)}/${o} now`);
+    });
   });
   // A column pasted from Excel or Sheets fills this student and the ones below; anything that isn't a mark out of MAX stays empty and turns red.
   S.$("#m-tbl").addEventListener("paste", (e) => {
@@ -1469,7 +1561,9 @@ SJS.only("teacher", ["js/staffroom.js?v=3"]);
   let crSec = careSecs[0], crRoll = null, crKind = "praise";
   S.$("#cr-sec").innerHTML = careSecs.map((k) => `<option value="${k}">${secLabel(k)} · ${capOf(k)}</option>`).join("");
   const KT = { praise: "green", progress: "royal", concern: "warn", conduct: "slate" };
-  const remLine = (r) => `<div class="rem"><span class="rem-k t-${KT[r.kind]}">${S.REMARK_KINDS[r.kind]}</span>${r.share ? "" : '<span class="pill">Staff only</span>'}<p>${S.esc(r.text)}</p><span class="rem-by">${S.esc(r.by)} · ${S.esc(r.cap)} · ${S.fmt(r.at, { day: "numeric", month: "short" })}</span></div>`;
+  let remEdit = null; // the remark being edited (only the teacher's own)
+  const remLine = (r) => r.id && r.id === remEdit ? `<form class="rem rem-ed" data-rem-form="${r.id}"><span class="rem-k t-${KT[r.kind]}">${S.REMARK_KINDS[r.kind]}</span><textarea class="input" required aria-label="Remark">${S.esc(r.text)}</textarea><div class="cr-foot"><label class="cr-chk"><input type="checkbox" name="share"${r.share ? " checked" : ""} /> Share with the parent</label><span class="rem-eda"><button type="button" class="link-btn" data-rem-x>Cancel</button><button class="btn btn-primary btn-sm" type="submit">Save changes</button></span></div></form>`
+    : `<div class="rem"><span class="rem-k t-${KT[r.kind]}">${S.REMARK_KINDS[r.kind]}</span>${r.share ? "" : '<span class="pill">Staff only</span>'}${r.edits ? '<span class="pill">Edited</span>' : ""}<p>${S.esc(r.text)}</p><span class="rem-by">${S.esc(r.by)} · ${S.esc(r.cap)} · ${S.fmt(r.at, { day: "numeric", month: "short" })}${r.id && r.by === T.name ? ` · <button type="button" class="link-btn" data-rem-edit="${r.id}">Edit</button>` : ""}</span>${r.edits ? `<details class="rem-was"><summary>Earlier wording</summary>${r.edits.map((w) => `<p>${S.esc(w.text)}<small>${w.share ? "Shared" : "Staff only"} · changed ${S.fmt(w.at, { day: "numeric", month: "short" })}</small></p>`).join("")}</details>` : ""}</div>`;
   function renderCare() {
     rings();
     const x = S.sectionByKey(crSec), q = (S.$("#cr-q").value || "").trim().toLowerCase();
@@ -1482,13 +1576,13 @@ SJS.only("teacher", ["js/staffroom.js?v=3"]);
         <div class="seg" id="cr-kind" role="group" aria-label="Kind of remark">${Object.entries(S.REMARK_KINDS).map(([k, l]) => `<button type="button" data-k="${k}" class="${k === crKind ? "on" : ""}" aria-pressed="${k === crKind}">${l}</button>`).join("")}</div>
         <textarea id="cr-text" class="input" required placeholder="What did you notice? One or two sentences." aria-label="Remark"></textarea>
         <div class="cr-foot"><label class="cr-chk"><input type="checkbox" id="cr-share" checked /> Share with the parent</label><button class="btn btn-primary btn-sm" type="submit">Add remark</button></div>
-        <p class="hint">Staff-only remarks are seen by the school, never by the family. Remarks can't be deleted; add a follow-up to correct one.</p>
+        <p class="hint">Staff-only remarks are seen by the school, never by the family. Remarks can't be deleted, but you can edit your own; the earlier wording stays on record for the school.</p>
       </form>
       <div class="cr-hist"><h3>On record <span class="muted">${hist.length}</span></h3>${hist.length ? hist.map(remLine).join("") : `<p class="muted">Nothing yet for ${S.esc(v.first)}.</p>`}</div>`);
     // Forms for the section
     const fs = S.formsFor(crSec), N2 = x.students.length;
     S.paint(S.$("#cf-list"), fs.length ? fs.map((f) => { const rs = Object.values(f.replies), yes = rs.filter((r) => r.v !== "no").length, no = rs.filter((r) => r.v === "no").length, wait = N2 - rs.length; return `<div class="card cf">
-      <div class="cf-h"><div><b>${S.esc(f.title)}</b><span class="muted">${f.kind === "consent" ? "Consent" : "Read and noted"} · answer by ${S.fmt(f.due, { day: "numeric", month: "short" })} · from ${S.esc(f.by)}</span></div><button class="btn btn-ghost btn-sm" type="button" data-remind="${f.id}"${wait ? "" : " disabled"}>Remind ${wait} famil${wait === 1 ? "y" : "ies"}</button></div>
+      <div class="cf-h"><div><b>${S.esc(f.title)}</b><span class="muted">${f.kind === "consent" ? "Consent" : "Read and noted"} · answer by ${S.fmt(f.due, { day: "numeric", month: "short" })} · from ${S.esc(f.by)}</span></div><span class="cf-acts">${f.by === T.name ? `<button type="button" class="link-btn" data-cf-edit="${f.id}">Edit</button>${rs.length ? "" : `<button type="button" class="link-btn" data-cf-del="${f.id}">Withdraw</button>`}` : ""}<button class="btn btn-ghost btn-sm" type="button" data-remind="${f.id}"${wait ? "" : " disabled"}>Remind ${wait} famil${wait === 1 ? "y" : "ies"}</button></span></div>
       <p class="cf-body">${S.esc(f.body)}</p>
       <div class="cf-bar" role="img" aria-label="${yes} ${f.kind === "consent" ? "agreed" : "read it"}, ${no} did not agree, ${wait} waiting"><i class="y" style="flex:${yes}"></i><i class="n" style="flex:${no}"></i><i class="w" style="flex:${wait}"></i></div>
       <div class="cf-key"><span><i class="y"></i>${yes} ${f.kind === "consent" ? "agreed" : "read it"}</span>${f.kind === "consent" ? `<span><i class="n"></i>${no} did not agree</span>` : ""}<span><i class="w"></i>${wait} waiting</span></div>
@@ -1502,16 +1596,55 @@ SJS.only("teacher", ["js/staffroom.js?v=3"]);
     const k = e.target.closest("#cr-kind button"); if (k) { crKind = k.dataset.k; S.$$("#cr-kind button").forEach((x2) => { x2.classList.toggle("on", x2 === k); x2.setAttribute("aria-pressed", x2 === k); }); return; }
     const r = e.target.closest("[data-remind]"); if (r) { const f = S.state.forms.find((x2) => x2.id === r.dataset.remind), n = S.sectionByKey(f.sec).students.length - Object.keys(f.replies).length; S.toast(`Reminder sent to ${n} famil${n === 1 ? "y" : "ies"} in the app and by SMS`); }
   });
+  document.addEventListener("click", (e) => {
+    const b = e.target.closest("[data-rem-edit]"); if (b) { remEdit = b.dataset.remEdit; renderCare(); const t = S.$("#cr-main .rem-ed textarea"); if (t) { t.focus(); t.setSelectionRange(t.value.length, t.value.length); } return; }
+    if (e.target.closest("[data-rem-x]")) { remEdit = null; renderCare(); }
+  });
   document.addEventListener("submit", (e) => {
+    const rf = e.target.closest("[data-rem-form]");
+    if (rf) {
+      e.preventDefault();
+      const r = S.state.remarks.find((x2) => x2.id === rf.dataset.remForm), t = rf.querySelector("textarea").value.trim(), sh = rf.querySelector('[name="share"]').checked;
+      if (!r || !t) return;
+      remEdit = null;
+      if (t === r.text && sh === !!r.share) { renderCare(); return; }
+      (r.edits = r.edits || []).push({ text: r.text, share: !!r.share, at: S.todayKey });
+      r.text = t; r.share = sh; S.save(); renderCare();
+      S.toast(sh ? "Saved · the parent sees the new wording" : "Saved · now for staff only");
+      return;
+    }
     if (e.target.id !== "cr-form") return;
     e.preventDefault(); const t = S.$("#cr-text").value.trim(); if (!t) { S.$("#cr-text").focus(); return; }
     S.addRemark({ sec: crSec, roll: crRoll, kind: crKind, text: t, by: T.name, cap: capOf(crSec), share: S.$("#cr-share").checked });
     renderCare(); S.landed(S.$$("#cr-main .rem").find((r) => r.querySelector("p").textContent === t));
     S.toast(S.$("#cr-share") && !S.$("#cr-share").checked ? "Saved for staff only" : "Saved and shared with the parent");
   });
-  S.$("#cf-new").addEventListener("click", () => { S.$("#cf-for").textContent = `Goes to every family in ${secLabel(crSec)}. Each parent signs after a parent check, and gets an SMS receipt.`; S.$("#cf-d").value = S.iso(S.addDays(S.today, 7)); S.openModal("cf-modal"); setTimeout(() => S.$("#cf-t").focus(), 50); });
+  // Edit a form already sent (the kind of answer is fixed once a family has replied), or withdraw one nobody has answered.
+  let cfEdit = null;
+  const cfMode = (f) => { cfEdit = f ? f.id : null; S.$("#cf-modal h3").textContent = f ? "Edit form" : "New form for parents"; S.$('#cf-form button[type="submit"]').textContent = f ? "Save changes" : "Send to parents"; S.$("#cf-k").disabled = !!(f && Object.keys(f.replies).length); };
+  document.addEventListener("click", (e) => {
+    const eb = e.target.closest("[data-cf-edit]"), db = e.target.closest("[data-cf-del]");
+    if (eb) { const f = S.state.forms.find((x2) => x2.id === eb.dataset.cfEdit); if (!f) return; cfMode(f);
+      S.$("#cf-t").value = f.title; S.$("#cf-b").value = f.body; S.$("#cf-k").value = f.kind; S.$("#cf-d").value = f.due;
+      const n = Object.keys(f.replies).length;
+      S.$("#cf-for").textContent = n ? `${n} famil${n === 1 ? "y has" : "ies have"} answered already. They keep their answer and see the changes; the kind of answer stays as it is.` : `Nobody has answered yet. Parents of ${secLabel(f.sec)} see the changes straight away.`;
+      S.openModal("cf-modal"); setTimeout(() => S.$("#cf-t").focus(), 50); return; }
+    if (db) { const f = S.state.forms.find((x2) => x2.id === db.dataset.cfDel); if (!f) return;
+      S.pop(db, `<p class="dot-h">Withdraw “${S.esc(f.title)}”?</p><p class="dot-s">Nobody has answered it yet. Parents of ${secLabel(f.sec)} stop seeing it.</p><button type="button" data-pick="del">Withdraw form</button><button type="button" data-pick="no">Keep it</button>`, (pk) => {
+        if (pk !== "del" || Object.keys(f.replies).length) return;
+        S.state.forms.splice(S.state.forms.indexOf(f), 1); S.save(); renderCare();
+        S.toast(`Withdrawn · parents of ${secLabel(f.sec)} no longer see “${f.title}”`, { done: true });
+      }); }
+  });
+  S.$("#cf-new").addEventListener("click", () => { cfMode(null); S.$("#cf-form").reset(); S.$("#cf-for").textContent = `Goes to every family in ${secLabel(crSec)}. Each parent signs after a parent check, and gets an SMS receipt.`; S.$("#cf-d").value = S.iso(S.addDays(S.today, 7)); S.openModal("cf-modal"); setTimeout(() => S.$("#cf-t").focus(), 50); });
   S.$("#cf-form").addEventListener("submit", (e) => {
     e.preventDefault();
+    if (cfEdit) {
+      const f = S.state.forms.find((x2) => x2.id === cfEdit);
+      if (f) { Object.assign(f, { title: S.$("#cf-t").value.trim(), body: S.$("#cf-b").value.trim(), due: S.$("#cf-d").value, edited: S.todayKey }); if (!S.$("#cf-k").disabled) f.kind = S.$("#cf-k").value; }
+      S.save(); S.$("#cf-modal").classList.remove("open"); cfMode(null); e.target.reset(); renderCare();
+      S.toast(`Saved · parents of ${secLabel(f ? f.sec : crSec)} see the updated form`); return;
+    }
     S.state.forms.push({ id: "f" + Date.now().toString(36), sec: crSec, title: S.$("#cf-t").value.trim(), body: S.$("#cf-b").value.trim(), kind: S.$("#cf-k").value, due: S.$("#cf-d").value, by: T.name, cap: capOf(crSec), at: S.todayKey, replies: {} });
     S.save(); S.$("#cf-modal").classList.remove("open"); e.target.reset();
     const fb = document.querySelector('[data-vt="care"] button[data-v="forms"]'); if (fb) fb.click();
@@ -1640,6 +1773,8 @@ SJS.only("teacher", ["js/staffroom.js?v=3"]);
     if (e.detail === "care" && isCT) { const t = threads().find((v) => v.key === openThread); if (t) { t.msgs.forEach((m) => { if (m.from === "parent") m.fresh = false; }); S.save(); } }
     renderHome(); renderThread();
   });
+  // "Correct this day" on the six-day chart opens that day in the register (before the page changes).
+  document.addEventListener("click", (e) => { const b = e.target.closest("[data-att-fix]"); if (b && S.attOpenDay) S.attOpenDay(b.dataset.attFix); }, true);
   S.refreshHome = renderHome; // the staff room redraws "Needs you" after a task or a chat
   document.addEventListener("sjs:sync", () => {
     renderHome(); renderHw(); renderThread(); renderCare(); renderTPtm();
@@ -2303,7 +2438,7 @@ SJS.only("teacher", ["js/staffroom.js?v=3"]);
 <script src="js/office.js?v=15"></script>
 <script>
 SJS.only("principal admin", ["js/desk.js?v=7"]);
-SJS.only("teacher", ["js/corner.js?v=7", "js/attrack.js?v=1", "js/ttteach.js?v=5"]);
+SJS.only("teacher", ["js/corner.js?v=7", "js/attrack.js?v=1", "js/ttteach.js?v=6"]);
 </script>
 <script src="js/ttschool.js?v=3"></script>
 <script>

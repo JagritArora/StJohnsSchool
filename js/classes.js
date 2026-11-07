@@ -188,10 +188,27 @@
     });
     return x;
   }
-  S.section = (c, s) => {
-    if (c === "VII" && s === "B") return viib();
-    const k = `${c}-${s}`; return cache[k] || (cache[k] = build(c, s));
+  // Teachers' corrections, laid over the sample records each time a section is opened, so every
+  // page (parents, leadership, charts) reads the corrected day or mark. The sample stays aside.
+  //   attendance: secState(key).attFix[date] = { marks, why, at, by }
+  //   past tests: S.state.markFix["key|subject|exam"][roll] = percent
+  const fixed = (x) => {
+    const st = x.key === "VII-B" ? S.state : ((S.state || {}).secs || {})[x.key], af = st && st.attFix, mf = (S.state || {}).markFix;
+    if (af) { x._orig = x._orig || {}; Object.keys(af).forEach((d) => { if (!(d in x._orig)) x._orig[d] = x.history[d]; x.history[d] = af[d].marks; });
+      Object.keys(x._orig).forEach((d) => { if (!af[d]) { x.history[d] = x._orig[d]; delete x._orig[d]; } }); }
+    else if (x._orig) { Object.keys(x._orig).forEach((d) => (x.history[d] = x._orig[d])); x._orig = null; }
+    x._mOrig = x._mOrig || {};
+    Object.keys(x._mOrig).forEach((f) => { const [subj, ex, roll] = f.split("|"), v = mf && mf[`${x.key}|${subj}|${ex}`]; if (!v || v[roll] == null) { const s = x.students.find((y) => y.roll === +roll); if (s) s[ex][subj] = x._mOrig[f]; delete x._mOrig[f]; } });
+    if (mf) Object.keys(mf).forEach((f) => { const i = f.indexOf("|"); if (f.slice(0, i) !== x.key) return; const [subj, ex] = f.slice(i + 1).split("|");
+      Object.entries(mf[f]).forEach(([roll, v]) => { const s = x.students.find((y) => y.roll === +roll); if (!s || !s[ex]) return; const o = `${subj}|${ex}|${roll}`; if (!(o in x._mOrig)) x._mOrig[o] = s[ex][subj]; s[ex][subj] = v; }); });
+    return x;
   };
+  S.section = (c, s) => {
+    if (c === "VII" && s === "B") return fixed(viib());
+    const k = `${c}-${s}`; return fixed(cache[k] || (cache[k] = build(c, s)));
+  };
+  // The sample mark a correction replaced (percent), or null when the mark is the original.
+  S.markOrig = (key, subj, ex, roll) => { const o = (S.sectionByKey(key)._mOrig || {})[`${subj}|${ex}|${roll}`]; return o == null ? null : o; };
   S.sectionByKey = (key) => { const i = key.lastIndexOf("-"); return S.section(key.slice(0, i), key.slice(i + 1)); };
   S.allSections = () => CLS.flatMap((c) => S.SECTIONS[c].map((s) => S.section(c, s)));
 

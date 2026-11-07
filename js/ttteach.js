@@ -120,7 +120,7 @@
         <label><span>Kind</span><select class="input" name="kind"><option>Sick</option><option>Personal</option><option>Official duty</option><option>Other</option></select></label>
         <input class="input" name="note" maxlength="80" autocomplete="off" placeholder="A line for the principal (optional)" aria-label="A line for the principal" />
         <div class="ttt-lva"><button class="btn btn-primary btn-sm" type="submit">Send to the principal</button><button type="button" class="link-btn" data-ttlv-x>Cancel</button></div></form>` : ""}
-      ${mine.length ? `<div class="ttt-up ttt-lvl">${mine.map((r) => `<div class="ttt-ui ttt-lvi ${r.status}"><i></i><span><b>${esc(span(r))} · ${esc(r.kind)}</b><small>${r.status === "waiting" ? "Waiting for the principal" : r.status === "approved" ? `Approved${r.by ? " by " + esc(r.by) : ""}. The office arranges cover.` : `Declined${r.by ? " by " + esc(r.by) : ""}`}</small></span></div>`).join("")}</div>` : lvOpen ? "" : `<p class="muted ttt-none ttt-lvl">Ask here; the principal's answer shows here, and approved leave goes to the office for cover.</p>`}`;
+      ${mine.length ? `<div class="ttt-up ttt-lvl">${mine.map((r) => `<div class="ttt-ui ttt-lvi ${r.status}"><i></i><span><b>${esc(span(r))} · ${esc(r.kind)}</b><small>${r.status === "waiting" ? `Waiting for the principal · <button type="button" class="link-btn" data-ttlv-del="${r.id}">Withdraw</button>` : r.status === "approved" ? `Approved${r.by ? " by " + esc(r.by) : ""}. The office arranges cover.` : `Declined${r.by ? " by " + esc(r.by) : ""}`}</small></span></div>`).join("")}</div>` : lvOpen ? "" : `<p class="muted ttt-none ttt-lvl">Ask here; the principal's answer shows here, and approved leave goes to the office for cover.</p>`}`;
   }
 
   function side() {
@@ -171,6 +171,9 @@
     if (e.target.closest("[data-ttclose]")) { sel = null; render(); return; }
     if (e.target.closest("[data-ttlv]")) { lvOpen = true; render(); setTimeout(() => { const f = $("#ttt-lv"); if (f) f.elements.from.focus({ preventScroll: true }); }, 50); return; }
     if (e.target.closest("[data-ttlv-x]")) { lvOpen = false; render(); return; }
+    const wd = e.target.closest("[data-ttlv-del]");
+    if (wd) { const all = S.staffReqs(), i = all.findIndex((r) => r.id === wd.dataset.ttlvDel && r.tid === T.id && r.status === "waiting"); if (i < 0) return;
+      all.splice(i, 1); S.save(); render(); if (S.refreshHome) S.refreshHome(); S.toast("Leave request withdrawn · the principal no longer sees it", { done: true }); return; }
     const w = e.target.closest("[data-ttw]"); if (w) { week = w.dataset.ttw === "0" ? 0 : week + +w.dataset.ttw; dayIx = null; render(); return; }
     const dd = e.target.closest("[data-ttday]"); if (dd) { dayIx = +dd.dataset.ttday; render(); return; }
     const idea = e.target.closest("[data-ttidea]"); if (idea && sel) { add(idea.dataset.ttidea); return; }
