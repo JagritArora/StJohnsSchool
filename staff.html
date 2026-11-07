@@ -17,7 +17,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Figtree:wght@400..800&display=swap" rel="stylesheet" />
-<link rel="stylesheet" href="css/site.css?v=136" />
+<link rel="stylesheet" href="css/site.css?v=137" />
 <link rel="stylesheet" href="css/feel.css?v=7" />
 <link rel="stylesheet" href="css/ease.css?v=8" />
 <script>try{var t={"1.1":"l","1.2":"xl"}[localStorage.getItem("sjs-zoom")];if(t)document.documentElement.dataset.text=t}catch(e){}</script>
@@ -161,10 +161,10 @@
       <div class="card" id="rm-table" style="margin-top:16px" hidden><div class="card-h"><h2 id="rm-h">All remarks · VII-B</h2></div><div class="tbl-wrap"><table class="tbl"><tbody id="rm-rows"></tbody></table></div></div>
     </section>
 
-    <!-- TEACHERS' CORNER: what a teacher reaches for while teaching: classroom tools, planning, references (js/corner.js) -->
+    <!-- TEACHERS' CORNER: what a teacher reaches for while teaching: classroom tools, question paper, staff room, tasks (js/corner.js) -->
     <section data-view="corner" data-roles="teacher">
-      <div class="topbar"><div><h1>Teachers' Corner</h1><div class="sub">Everything for teaching in one place: classroom tools, lesson plans, question papers, the staff room, tasks and references.</div></div></div>
-      <div class="vt-row ptabs hn-swrap ms6"><div class="seg vt" data-vt="corner" aria-label="In class, planning, question paper, staff room, tasks or references"><button data-v="class"><span class="hs-ic"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="13.5" r="7"/><path d="M12 13.5V10M10 3h4"/></svg></span><span class="hs-t"><b>In class</b><small>Name picker, groups, timer</small></span></button><button data-v="plan"><span class="hs-ic"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="4" width="16" height="17" rx="2"/><path d="M8 2.5v3M16 2.5v3M8 11h8M8 15h5"/></svg></span><span class="hs-t"><b>Planning</b><small>Lesson plans and drafts</small></span></button><button data-v="paper"><span class="hs-ic"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 3h9l4 4v14H6z"/><path d="M14 3v5h5M9 12h7M9 16h5"/></svg></span><span class="hs-t"><b>Question paper</b><small>Upload, format, download</small></span></button><button data-v="room"><span class="hs-ic"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5h16v11H9l-5 4z"/><path d="M8 9h8M8 12h5"/></svg></span><span class="hs-t"><b>Staff room</b><small id="tc-room-t">Chat and groups</small></span></button><button data-v="tasks"><span class="hs-ic"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="4.5" width="14" height="16.5" rx="2.5"/><path d="M9.5 4.5V3.2h5v1.3"/><path d="M8.8 12.6l2.2 2.2 4.4-4.6"/></svg></span><span class="hs-t"><b>Tasks</b><small id="tc-tasks-t">Assign and remind</small></span></button><button data-v="ref"><span class="hs-ic"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 6c-2-1.5-5-2-8-1.5v13c3-.5 6 0 8 1.5 2-1.5 5-2 8-1.5v-13c-3-.5-6 0-8 1.5z"/><path d="M12 6v13"/></svg></span><span class="hs-t"><b>References</b><small>CBSE, NCERT, DIKSHA</small></span></button></div></div>
+      <div class="topbar"><div><h1>Teachers' Corner</h1><div class="sub">Everything for teaching in one place: classroom tools, question papers, the staff room and tasks.</div></div></div>
+      <div class="vt-row ptabs hn-swrap ms4"><div class="seg vt" data-vt="corner" aria-label="In class, question paper, staff room or tasks"><button data-v="class"><span class="hs-ic"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="13.5" r="7"/><path d="M12 13.5V10M10 3h4"/></svg></span><span class="hs-t"><b>In class</b><small>Name picker, groups, timer</small></span></button><button data-v="paper"><span class="hs-ic"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 3h9l4 4v14H6z"/><path d="M14 3v5h5M9 12h7M9 16h5"/></svg></span><span class="hs-t"><b>Question paper</b><small>Upload, format, download</small></span></button><button data-v="room"><span class="hs-ic"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5h16v11H9l-5 4z"/><path d="M8 9h8M8 12h5"/></svg></span><span class="hs-t"><b>Staff room</b><small id="tc-room-t">Chat and groups</small></span></button><button data-v="tasks"><span class="hs-ic"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="4.5" width="14" height="16.5" rx="2.5"/><path d="M9.5 4.5V3.2h5v1.3"/><path d="M8.8 12.6l2.2 2.2 4.4-4.6"/></svg></span><span class="hs-t"><b>Tasks</b><small id="tc-tasks-t">Assign and remind</small></span></button></div></div>
       <div class="pm-panes">
         <div class="vp" data-vp="corner" data-v="class">
           <div class="grid g3 tc-grid">
@@ -190,18 +190,6 @@
             </div>
           </div>
           <div class="card tc-gp-card" style="margin-top:16px"><div class="tc-groups" id="tc-gp-out"><p class="muted">Groups show here.</p></div></div>
-        </div>
-        <div class="vp" data-vp="corner" data-v="plan" hidden>
-          <div class="grid g21">
-            <div class="card">
-              <div class="card-h"><h2>Lesson plan</h2></div>
-              <div class="field" style="margin-top:0"><label for="tc-lp-t">Topic</label><input id="tc-lp-t" autocomplete="off" /></div>
-              <div class="row2"><div class="field"><label for="tc-lp-sec">Class</label><select id="tc-lp-sec"></select></div><div class="field"><label for="tc-lp-len">Length</label><select id="tc-lp-len"><option value="40">One period · 40 min</option><option value="80">Double period · 80 min</option></select></div></div>
-              <div class="tc-row"><button class="btn btn-primary btn-sm" type="button" id="tc-lp-go">Make the plan</button><button class="btn btn-ghost btn-sm" type="button" id="tc-lp-print" hidden>Print</button></div>
-              <div id="tc-lp-out"></div>
-            </div>
-            <div class="card"><div class="card-h"><h2>More drafting tools</h2></div><div class="pgl tc-links" id="tc-more"></div></div>
-          </div>
         </div>
         <div class="vp" data-vp="corner" data-v="paper" hidden>
           <div class="grid g21">
@@ -274,9 +262,6 @@
               <div class="tc-row"><button class="btn btn-primary btn-sm" type="submit" id="tk-go">Assign the task</button></div>
             </form>
           </div>
-        </div>
-        <div class="vp" data-vp="corner" data-v="ref" hidden>
-          <div class="card"><div class="card-h"><h2>References</h2><span class="right muted" style="font-size:13.5px">Official sites open in a new tab</span></div><div class="pgl tc-links" id="tc-ref"></div></div>
         </div>
       </div>
     </section>
@@ -2217,7 +2202,7 @@
 </script>
 <script src="js/office.js?v=15"></script>
 <script src="js/desk.js?v=6"></script>
-<script src="js/corner.js?v=4"></script>
+<script src="js/corner.js?v=5"></script>
 <script src="js/paperdoc.js?v=1"></script>
 <script src="js/qpaper.js?v=12"></script>
 <script src="js/transport.js?v=3"></script>

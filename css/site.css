@@ -3447,16 +3447,6 @@ select.adm-st { border-color: color-mix(in srgb, var(--st) 35%, var(--line)); ba
 .tc-g b { display: flex; align-items: center; justify-content: space-between; font-size: 14.5px; }
 .tc-g b small { font-size: 12.5px; font-weight: 600; color: var(--muted); }
 .tc-g ul { margin: 8px 0 0; padding: 0; list-style: none; display: grid; gap: 3px; font-size: 14px; color: var(--muted); }
-.tc-lp { margin-top: 16px; padding: 16px 18px; border: 1px solid var(--line); border-radius: 14px; background: var(--bg); font-size: 14.5px; line-height: 1.55; outline: none; }
-.tc-lp:focus { border-color: var(--accent); box-shadow: 0 0 0 4px var(--accent-soft); }
-.tc-lp h3 { font: 600 16px/1.35 var(--sans); margin: 0 0 8px; }
-.tc-lp p { margin: 6px 0; }
-.tc-lp ol { margin: 8px 0; padding-left: 22px; display: grid; gap: 5px; }
-.tc-links { grid-template-columns: 1fr; }
-#tc-ref.tc-links { grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); }
-.tc-links .pgl-i { text-decoration: none; }
-.tc-ext { flex: none; color: var(--muted); }
-.tc-ext svg { width: 16px; height: 16px; }
 @media (prefers-reduced-motion: reduce) { .tc-pop, .tc-g { animation: none; } }
 
 /* Teachers' Corner: the staff room, tasks and the question paper (js/staffroom.js, js/qpaper.js). */
