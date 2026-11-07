@@ -206,16 +206,14 @@
   };
 
   // ---------- Cover for teachers on leave ----------
-  // Who teaches what, when: from every timetable the demo builds (VII-B and VIII to XII).
+  // Who teaches what, when: from every timetable the demo builds (VII-B, and VI to XII from the plan).
   let busy = null;
   const busyMap = () => {
     if (busy) return busy;
     busy = {};
-    const keys = ["VII-B", ...["VIII", "IX", "X", "XI", "XII"].flatMap((c) => S.SECTIONS[c].map((s) => `${c}-${s}`))];
-    keys.forEach((key) => {
-      const x = S.sectionByKey(key), tt = S.timetableOf(key), who = key === "VII-B" ? S.VIIB.ttTeachers : x.subjTeachers;
-      Object.entries(tt).forEach(([d, row]) => row.forEach((subj, p) => { const t = who[subj]; if (t && (key === "VII-B" ? /^(Mr|Mrs|Ms)\. /.test(t) : S.TEACHERS.some((v) => v.name === t))) busy[`${t}|${d}|${p}`] = { key, subj }; }));
-    });
+    // VII-B's own subject teachers, then every planned teacher's full week (VI to XII, with Library, Value Education and Games periods).
+    Object.entries(S.timetableOf("VII-B")).forEach(([d, row]) => row.forEach((subj, p) => { const t = S.VIIB.ttTeachers[subj]; if (t && /^(Mr|Mrs|Ms)\. /.test(t)) busy[`${t}|${d}|${p}`] = { key: "VII-B", subj }; }));
+    S.TEACHERS.forEach((t) => Object.entries(S.teachWeek(t)).forEach(([dp, w]) => (busy[`${t.name}|${dp}`] = { key: w.k, subj: w.subj })));
     return busy;
   };
   // Who is on leave on a date (any date, so parents can see yesterday's and tomorrow's arrangements too).

@@ -96,7 +96,8 @@
   </section>
 </main>
 <script src="js/data.js?v=14"></script>
-<script src="js/classes.js?v=11"></script>
+<script src="js/ttplan.js?v=1"></script>
+<script src="js/classes.js?v=13"></script>
 <script src="js/demo.js?v=4"></script>
 <script src="js/common.js?v=17"></script>
 <script>
@@ -105,7 +106,7 @@
   S.mountDemo("");
   const GR = ["VII", "VIII", "IX", "X", "XI", "XII"];
   const avg = (o, subs) => Math.round(subs.reduce((a, k) => a + o[k], 0) / subs.length);
-  const periods = (t) => t.sections.reduce((a, k) => a + Object.values(S.timetableOf(k)).flat().filter((x) => x === t.subject).length, 0);
+  const periods = (t) => Object.keys(S.teachWeek(t)).length;
 
   // Stage of the session
   S.$("#stage").innerHTML = Object.entries(S.PHASES).map(([k, p]) => `<button type="button" class="${k === S.PHASE ? "on" : ""}" data-phase="${k}" aria-pressed="${k === S.PHASE}"><b>${p.label}</b><span>${p.when}</span><span>${{ start: "Wednesday, 8 April 2026. No exams yet; last session's results, checklists and Q1 fees.", mid: "Today's date. Unit Test 1 and the half-yearly are in; the PTM is coming up.", end: "Friday, 26 March 2027. Final results and report cards, promotions, board exams under way." }[k]}</span></button>`).join("");
@@ -126,7 +127,7 @@
     const list = cast.filter((t) => (!c || t.sections.some((k) => gradeOf(k) === c)) && (!q || `${t.name} ${t.subject} ${t.id} ${t.sections.join(" ")}`.toLowerCase().includes(q)));
     S.$("#t-n").textContent = `${list.length} of ${cast.length}`;
     S.$("#t-tbl").innerHTML = `<thead><tr><th>Staff ID</th><th>Name</th><th>Subject</th><th>Sections</th><th>Class teacher of</th><th class="num">Periods a week</th><th></th></tr></thead><tbody>` +
-      list.map((t) => `<tr><td><b>${t.id}</b></td><td>${esc(t.name)}</td><td>${esc(t.subject)}</td><td>${t.sections.map(S.secName).join(", ")}</td><td>${t.classOf ? `<span class="pill green">${t.classOf}</span>` : '<span class="muted">—</span>'}</td><td class="num">${periods(t)}</td><td class="open"><button class="btn btn-ghost btn-sm" data-open="staff:${t.id}">Open</button></td></tr>`).join("") + "</tbody>";
+      list.map((t) => `<tr><td><b>${t.id}</b></td><td>${esc(t.name)}</td><td>${esc(S.subjsOf(t).join(" and "))}</td><td>${t.sections.map(S.secName).join(", ")}</td><td>${t.classOf ? `<span class="pill green">${t.classOf}</span>` : '<span class="muted">—</span>'}</td><td class="num">${periods(t)}</td><td class="open"><button class="btn btn-ghost btn-sm" data-open="staff:${t.id}">Open</button></td></tr>`).join("") + "</tbody>";
   }
   S.$("#t-cls").addEventListener("change", renderTeachers); S.$("#t-q").addEventListener("input", renderTeachers);
   renderTeachers();
@@ -148,7 +149,7 @@
   const keys = ["VII-B", ...GR.slice(1).flatMap((g) => S.SECTIONS[g].map((s) => `${g}-${s}`))];
   S.$("#secs").innerHTML = keys.map((key) => {
     const x = S.sectionByKey(key), st = S.secStats(x), tt = S.timetableOf(key);
-    const teach = Object.assign({ Games: "Mr. Satish Malik", Library: "Mrs. Kavita Bedi", Art: "Ms. Farah Ahmed", Music: "Mr. Paul D'Cruz" }, x.subjTeachers);
+    const teach = Object.assign({ Games: "Mr. Satish Malik", Library: "Mrs. Kavita Bedi", Art: "Ms. Farah Ahmed", Music: "Mr. Paul D'Cruz" }, x.subjTeachers, x.periodTeachers);
     const fams = S.PARENTS.filter((p) => p.sec === key && S.CAST.parents.includes(p.key));
     return `<details><summary><b>${x.label}</b><span>${x.stream ? x.stream + " · " : ""}Class teacher ${esc(x.teacher)} · ${st.n} students · ${S.exLabel(C, x.cls).toLowerCase()} average ${st.cur}% · ${st.support} need support · ${fams.length} demo ${fams.length === 1 ? "family" : "families"}</span></summary>
       <div class="inner"><div><table class="tbl"><thead><tr><th>Subject</th><th>Teacher</th><th class="num">${S.exLabel(C, x.cls)}</th></tr></thead><tbody>${x.subjects.map((k) => `<tr><td>${k}</td><td>${esc(teach[k] || "")}</td><td class="num">${st.subj[k].cur}%</td></tr>`).join("")}</tbody></table>
@@ -163,7 +164,7 @@
   const save = (name, text) => { const a = document.createElement("a"); a.href = URL.createObjectURL(new Blob(["﻿" + text], { type: "text/csv" })); a.download = name; a.click(); setTimeout(() => URL.revokeObjectURL(a.href), 1000); };
   document.querySelectorAll("[data-csv]").forEach((b) => b.addEventListener("click", () => {
     const k = b.dataset.csv;
-    if (k === "teachers") save("sjs-demo-teachers.csv", csv([["Staff ID", "Name", "Subject", "Sections", "Class teacher of", "Periods a week"], ...S.TEACHERS.map((t) => [t.id, t.name, t.subject, t.sections.join(" "), t.classOf || "", periods(t)])]));
+    if (k === "teachers") save("sjs-demo-teachers.csv", csv([["Staff ID", "Name", "Subject", "Sections", "Class teacher of", "Periods a week"], ...S.TEACHERS.map((t) => [t.id, t.name, S.subjsOf(t).join(" and "), t.sections.join(" "), t.classOf || "", periods(t)])]));
     if (k === "parents") save("sjs-demo-parents.csv", csv([["Parent", "Relation", "Phone", "Child", "Class", "Roll", "Class teacher", "Transport"], ...S.PARENTS.map((p) => { const c = S.kid(p.key); return [p.parent, p.relation, p.phone, c.name, c.label, c.roll, c.sec.teacher, p.bus]; })]));
     if (k === "students") {
       const rows = [["Class", "Roll", "Name", "Attendance %", "Subject", "Last year's final", "Unit Test 1", "Half-yearly", "Final"]];

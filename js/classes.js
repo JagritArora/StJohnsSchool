@@ -21,14 +21,6 @@
     : ci < 11 ? S.subjects
     : ci < 13 ? ["English", "Hindi", "Mathematics", "Science", "Social Science", "Information Technology"]
     : sec === "A" ? SCI : COM;
-  // Periods a week (45: eight a day on weekdays, five on Saturday).
-  const WEEK = (ci, sec) => {
-    const sub = SUBJECTS(ci, sec);
-    if (ci < 8) return null;
-    if (ci < 11) return { [sub[0]]: 6, [sub[1]]: 5, [sub[2]]: 7, [sub[3]]: 6, [sub[4]]: 6, [sub[5]]: 3, Games: 3, Library: 2, Art: 2, Music: 2, "Value Education": 1, "Assembly Activity": 1, "Club Activities": 1 };
-    if (ci < 13) return { [sub[0]]: 6, [sub[1]]: 5, [sub[2]]: 7, [sub[3]]: 7, [sub[4]]: 7, [sub[5]]: 4, Games: 3, Library: 2, "Value Education": 1, "Assembly Activity": 1, "Club Activities": 2 };
-    return { [sub[0]]: 6, [sub[1]]: 7, [sub[2]]: 7, [sub[3]]: 7, [sub[4]]: 7, [sub[5]]: 4, Games: 2, Library: 2, "Value Education": 1, "Assembly Activity": 1, "Club Activities": 1 };
-  };
   const CO = { Games: "Mr. Satish Malik", Library: "Mrs. Kavita Bedi", Art: "Ms. Farah Ahmed", Music: "Mr. Paul D'Cruz", "Value Education": "Mrs. Lalitha Krishnan", "Club Activities": "House teachers, by club" };
   const WING = (ci) => (ci < 3 ? 0 : ci < 8 ? 1 : ci < 11 ? 2 : ci < 13 ? 3 : 4);
   S.WING_NAMES = ["Pre-primary", "Primary", "Middle", "Secondary", "Senior secondary"];
@@ -42,7 +34,6 @@
   const LAST = ["Agarwal", "Ahuja", "Arora", "Bhatia", "Chawla", "Dagar", "D'Souza", "Garg", "George", "Gupta", "Jain", "Joseph", "Kapoor", "Khan", "Kumar", "Malik", "Mathew", "Mehta", "Nagpal", "Nair", "Pillai", "Rana", "Rawat", "Saini", "Sharma", "Singh", "Sood", "Thomas", "Tyagi", "Verma", "Yadav"];
   const TF = ["Priya", "Shalini", "Meenu", "Ritu", "Deepa", "Anjali", "Grace", "Pooja", "Sunanda", "Kiran", "Nisha", "Rekha", "Sarita", "Lata", "Mary", "Seema", "Kavita", "Neelam", "Jyoti", "Asha", "Shweta", "Monika", "Anita", "Rachna"];
   const TM = ["Anil", "Sanjay", "Rakesh", "Vivek", "Ajay", "Manoj", "Paul", "Deepak", "Arun", "Suresh"];
-  const TL = ["Bhalla", "Chopra", "Dutta", "Fernandes", "Grover", "Iyer", "Kohli", "Luthra", "Menon", "Narang", "Oberoi", "Prasad", "Raina", "Sehgal", "Talwar", "Vohra", "Wadhwa", "Bakshi", "Kaul", "Sethi", "Anand", "Bedi", "Datta", "Gill"];
   const PF = ["Vikas", "Amit", "Rajesh", "Sunil", "Manish", "Gaurav", "Pankaj", "Harish", "Vinod", "Naveen", "Sandeep", "Rohit", "Ashok", "Tarun", "Lalit"];
   const PM = ["Sunita", "Rashmi", "Preeti", "Kavita", "Meena", "Anju", "Sonia", "Ritika", "Neetu", "Divya"];
   // A teacher's name from a number: different numbers give different people.
@@ -52,49 +43,41 @@
   const r1 = (v) => Math.round(v * 10) / 10;
   const cl = (v) => Math.round(Math.min(98, Math.max(33, v)));
 
-  // ---------- Teachers of Classes VIII to XII ----------
-  // One teacher per subject per class; in XI and XII, English and Physical
-  // Education are shared by the Science and Commerce sections.
+  // ---------- Teachers of Classes VI to XII ----------
+  // From the plan in js/ttplan.js (built by tools/ttplan.js): each teacher takes 4 or 5
+  // sections and 33 to 39 periods a week, so one or two periods a day are free. Senior
+  // teachers also teach a junior subject (Physics and Science in VIII, say); teachers top
+  // up their week with Library and Value Education in their own sections; the Computer
+  // and PE teachers go round every section.
   const GRADES = ["VIII", "IX", "X", "XI", "XII"];
-  const CLASS_TEACHER = { "VIII-A": "English", "VIII-B": "Science", "IX-A": "Mathematics", "IX-B": "Hindi", "X-A": "Science", "X-B": "Social Science", "XI-A": "Physics", "XI-B": "Accountancy", "XII-A": "Chemistry", "XII-B": "Economics" };
-  const used = new Set(["Ms. Neha Mathew", ...Object.values(S.ttTeachers), ...Object.values(CO)]);
-  let tn = 0, idn = 501;
-  const freshName = (k) => {
-    for (;;) {
-      const n = tn++, male = n % 4 === 3;
-      const name = male ? `Mr. ${TM[(n * 7 + k) % TM.length]} ${TL[(n * 5 + 3) % TL.length]}` : `${n % 3 ? "Mrs." : "Ms."} ${TF[(n * 5 + k) % TF.length]} ${TL[(n * 7 + 1) % TL.length]}`;
-      if (!used.has(name)) { used.add(name); return name; }
-    }
-  };
+  const PLAN = S.PLAN || { teachers: [], timetables: {} };
   S.TEACHERS = [];
-  const NEHA = Object.assign(S.STAFF["SJS-T-0412"], { id: "SJS-T-0412", subject: "Mathematics", sections: ["VII-B", "VIII-A", "VIII-B"], classOf: "VII-B" });
-  S.TEACHERS.push(NEHA);
-  const ownerOf = {}; // "VIII-A|English" → teacher
-  GRADES.forEach((g, gi) => {
-    const subs = [];
-    S.SECTIONS[g].forEach((s) => SUBJECTS(ciOf(g), s).forEach((x) => { if (!subs.includes(x)) subs.push(x); }));
-    subs.forEach((x, k) => {
-      const secs = S.SECTIONS[g].filter((s) => SUBJECTS(ciOf(g), s).includes(x)).map((s) => `${g}-${s}`);
-      let t;
-      if (g === "VIII" && x === "Mathematics") { t = NEHA; }
-      // IX's Maths teacher takes XII Maths too. The name and ID are still drawn, so everyone else keeps theirs.
-      else if (g === "XII" && x === "Mathematics") { freshName(gi * 3 + k); idn++; t = S.TEACHERS.find((v) => v.subject === "Mathematics" && v.sections[0].startsWith("IX-")); t.sections.push(...secs); }
-      else {
-        const name = freshName(gi * 3 + k), id = "SJS-T-0" + idn++;
-        t = { id, role: "teacher", name, first: name.split(" ")[1], initials: initials(name), subject: x, sections: secs, classOf: null, tone: ["green", "", "royal", "gold"][k % 4] };
-        S.TEACHERS.push(t); S.STAFF[id] = t;
-      }
-      secs.forEach((key) => { ownerOf[key + "|" + x] = t; if (CLASS_TEACHER[key] === x && t !== NEHA) t.classOf = key; });
-    });
+  const ownerOf = {}; // "VIII-A|English" → teacher (subjects); periodOwner adds Library, Value Education, Games, Assembly
+  const periodOwner = {};
+  PLAN.teachers.forEach((p, k) => {
+    const neha = p.id === "SJS-T-0412";
+    const t = neha ? Object.assign(S.STAFF["SJS-T-0412"], { classOf: "VII-B" }) : { role: "teacher", name: p.name, first: p.name.split(" ")[1], initials: initials(p.name), classOf: p.classOf, tone: ["green", "", "royal", "gold"][k % 4] };
+    Object.assign(t, { id: p.id, subject: p.subject, teach: Object.assign(neha ? { "VII-B": "Mathematics" } : {}, p.teach) });
+    t.sections = Object.keys(t.teach);
+    if (t.classOf && t.sections.includes(t.classOf)) t.sections = [t.classOf, ...t.sections.filter((x) => x !== t.classOf)];
+    Object.entries(p.teach).forEach(([key, x]) => (ownerOf[key + "|" + x] = periodOwner[key + "|" + x] = t));
+    Object.entries(p.top || {}).forEach(([key, xs]) => xs.forEach((x) => (periodOwner[key + "|" + x] = t)));
+    if (t.classOf && !neha) periodOwner[t.classOf + "|Assembly Activity"] = t;
+    S.TEACHERS.push(t); S.STAFF[p.id] = t;
   });
+  const NEHA = S.STAFF["SJS-T-0412"];
+  // The subject a teacher teaches in a section (most teach one subject everywhere).
+  S.subjOf = (t, key) => (t && t.teach && t.teach[key]) || (t && t.subject);
+  // Every subject a teacher teaches, main one first.
+  S.subjsOf = (t) => [...new Set([t.subject, ...Object.values(t.teach || {})])];
   S.TEACHERS.forEach((t) => {
     if (t === NEHA) return;
-    t.title = `${t.subject} · ${t.sections.join(", ")}` + (t.classOf ? ` · class teacher ${t.classOf}` : "");
+    t.title = `${S.subjsOf(t).join(" and ")} · ${t.sections.join(", ")}` + (t.classOf ? ` · class teacher ${t.classOf}` : "");
   });
 
   // ---------- School leadership: the vice principal and a coordinator for each wing ----------
   // They use the leadership pages; in Messages each sees the wings they look after.
-  const LEADS = [["SJS-P-0002", "Mrs. Rekha Menon", "vp", null],
+  const LEADS = [["SJS-P-0002", "Mrs. Usha Khanna", "vp", null],
     ["SJS-W-0101", "Ms. Shalini Kapoor", "coord", 0], ["SJS-W-0102", "Mrs. Poonam Arora", "coord", 1], ["SJS-W-0103", "Mr. Vikram Sethi", "coord", 2],
     ["SJS-W-0104", "Mrs. Kavita Bhalla", "coord", 3], ["SJS-W-0105", "Dr. Meenakshi Rao", "coord", 4]];
   S.LEADS = LEADS.map(([id, name, lead, w]) => {
@@ -105,52 +88,23 @@
   S.STAFF["SJS-P-0001"].lead = "principal";
 
   // ---------- Timetables ----------
-  // Greedy fill, day by day: no subject more than twice a day, never twice in a
-  // row, and never at a time its teacher is busy in another section.
-  const TT = {};
-  const busy = {}; // "Teacher name|day|period" → section key
-  const fillTT = (key, counts, who) => {
-    const r = rng(seedOf(key + "tt")), left = Object.assign({}, counts), tt = {};
-    const isBusy = (x, d, p) => { const t = who(x); return !!(t && busy[`${t}|${d}|${p}`]); };
-    for (let d = 1; d <= 6; d++) {
-      const n = d === 6 ? 5 : 8, day = [];
-      for (let p = 0; p < n; p++) {
-        if (d === 6 && p === 4 && left["Club Activities"]) { day.push("Club Activities"); left["Club Activities"]--; continue; }
-        let best = null, bs = -Infinity;
-        Object.keys(left).forEach((k) => {
-          if (!left[k] || k === "Club Activities") return;
-          const inDay = day.filter((x) => x === k).length;
-          const sc = left[k] * 10 + r() * 8 - (inDay >= 2 ? 200 : inDay ? 30 : 0) - (day[p - 1] === k ? 80 : 0) - (d > 1 && tt[d - 1][p] === k ? 45 : 0) - (d > 2 && tt[d - 2][p] === k ? 20 : 0) - (isBusy(k, d, p) ? 1000 : 0);
-          if (sc > bs) { bs = sc; best = k; }
-        });
-        if (!best) best = Object.keys(left).find((k) => left[k]) || "Library";
-        left[best]--; day.push(best);
-      }
-      tt[d] = day;
-    }
-    // Repair: where a teacher would be in two rooms at once, swap with a free period.
-    for (let d = 1; d <= 6; d++) tt[d].forEach((x, p) => {
-      if (!isBusy(x, d, p)) return;
-      for (let d2 = 1; d2 <= 6; d2++) for (let p2 = 0; p2 < tt[d2].length; p2++) {
-        const y = tt[d2][p2];
-        if (y === x || y === "Club Activities" || isBusy(x, d2, p2) || isBusy(y, d, p)) continue;
-        tt[d2][p2] = x; tt[d][p] = y; return;
-      }
-    });
-    for (let d = 1; d <= 6; d++) tt[d].forEach((x, p) => { const t = who(x); if (t) busy[`${t}|${d}|${p}`] = key; });
-    return tt;
-  };
-  // VII-B's timetable is fixed; mark its Maths periods as Neha's.
-  Object.entries(S.timetable).forEach(([d, day]) => day.forEach((x, p) => { if (x === "Mathematics") busy[`Ms. Neha Mathew|${d}|${p}`] = "VII-B"; }));
+  // VI to XII from the plan; VII-B's own week stands; younger classes use VII-B's pattern.
   S.timetableOf = (key) => {
     if (key === "VII-B") return S.VIIB ? S.VIIB.timetable : S.timetable;
-    if (TT[key]) return TT[key];
-    const [c, s] = key.split("-"), ci = ciOf(c), w = WEEK(ci, s);
-    if (!w) return (TT[key] = S.timetable); // younger classes: VII-B's pattern stands in
-    return (TT[key] = fillTT(key, w, (x) => (ownerOf[key + "|" + x] || {}).name));
+    return PLAN.timetables[key] || S.timetable;
   };
-  // Build VIII to XII in order so later sections avoid earlier teachers' periods.
-  GRADES.forEach((g) => S.SECTIONS[g].forEach((s) => S.timetableOf(`${g}-${s}`)));
+  // A teacher's week: "day|period" → { k: section, subj } for every period they take.
+  S.teachWeek = (t) => {
+    if (!t) return {};
+    const w = {}, keys = [...new Set([...t.sections, ...Object.keys(PLAN.timetables)])];
+    keys.forEach((key) => Object.entries(S.timetableOf(key)).forEach(([d, row]) => row.forEach((x, p) => {
+      // By ID: pages may hold a copy of the teacher's record.
+      const o = key === "VII-B" ? (t.id === NEHA.id && (x === "Mathematics" || x === "Assembly Activity") ? t : null) : periodOwner[key + "|" + x];
+      if (o && o.id === t.id) w[d + "|" + p] = { k: key, subj: x };
+    })));
+    return w;
+  };
+  S.periodTeacher = (key, x) => (periodOwner[key + "|" + x] || {}).name || null;
 
   // ---------- Sections ----------
   const NOT_MARKED = { "II-C": 1, "VI-A": 1, "XI-B": 1 };
@@ -193,8 +147,11 @@
     // Every class teacher also teaches the class one subject: where no subject teacher holds the class, they take one of its main subjects.
     const ctName = ct ? ct.name : key === "III-A" ? "Mrs. Priya Nair" : teacher(ci * 3 + si + 3);
     if (!Object.values(subjTeachers).includes(ctName)) subjTeachers[subjects[seedOf(key + "ct") % Math.min(4, subjects.length)]] = ctName;
+    // Who takes the other periods: Library, Value Education, Games and Assembly, where the plan names someone.
+    const periodTeachers = {};
+    ["Library", "Value Education", "Games", "Assembly Activity"].forEach((x) => { const n = S.periodTeacher(key, x); if (n) periodTeachers[x] = n; });
     return {
-      key, cls: c, sec: s, ci, label: S.secName(key), stream: S.STREAM(c, s), live: false, subjects, students, history, subjTeachers,
+      key, cls: c, sec: s, ci, label: S.secName(key), stream: S.STREAM(c, s), live: false, subjects, students, history, subjTeachers, periodTeachers,
       teacher: ctName, teacherId: ct ? ct.id : null,
       fees: Math.max(55, Math.min(90, WING_FEES[WING(ci)] + ((seedOf(key + "f") % 9) - 4))), wing: S.WING_NAMES[WING(ci)],
       target: key === "IX-B" ? 86 : key === "IX-A" ? 87 : Math.max(88, Math.min(99, CLASS_TODAY[ci] + ((seed % 5) - 2)))
@@ -344,7 +301,7 @@
     S.focusKey = key; S.focus = x;
     S.students = x.students; S.history = x.history; S.subjects = x.subjects;
     S.timetable = S.timetableOf(key);
-    S.ttTeachers = Object.assign({}, CO, { "Assembly Activity": x.teacher }, x.key === "VII-B" ? S.VIIB.ttTeachers : x.subjTeachers);
+    S.ttTeachers = Object.assign({}, CO, { "Assembly Activity": x.teacher }, x.key === "VII-B" ? S.VIIB.ttTeachers : Object.assign({}, x.subjTeachers, x.periodTeachers));
     S.teacher = { name: x.teacher, initials: initials(x.teacher), id: x.teacherId };
     return x;
   };

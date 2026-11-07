@@ -19,7 +19,14 @@
 
   const monday = (w) => { const d = new Date(S.today); const g = d.getDay() || 7; return S.addDays(d, 1 - g + w * 7); };
   const daysOf = (w) => DAYS.map((_, i) => S.addDays(monday(w), i));
-  const secAt = (d, p) => { const g = d.getDay(); return mine.find((k) => ((S.timetableOf(k)[g] || [])[p]) === SUBJ) || null; };
+  // Every period the teacher takes, from the school's plan: their subject, and any Library, Value Education or Assembly periods.
+  let WK = null; const wk = () => WK || (WK = S.teachWeek(T));
+  const at = (d, p) => wk()[d.getDay() + "|" + p] || null;
+  const secAt = (d, p) => { const x = at(d, p); return x ? x.k : null; };
+  // A small line under the section: the period's subject when it isn't the teacher's main one, and "Your class".
+  // One short line: the other subject if it's not the main one, else "Your class".
+  const SHORTS = { "Assembly Activity": "Assembly", "Value Education": "Value Ed.", "Information Technology": "IT", "Social Science": "Social Sc.", "Business Studies": "Business St.", "Physical Education": "PE" };
+  const noteAt = (d, p, sec) => { const x = at(d, p); return x && x.subj !== SUBJ ? SHORTS[x.subj] || x.subj : sec === T.classOf ? "Your class" : ""; };
   const hwDue = (key, sec) => S.secState(sec).homework.filter((h) => h.by === T.name && h.due === key);
   const fuOf = (key, p, sec) => store().filter((f) => f.k === key && f.p === p && f.sec === sec);
   const nextClass = (sec, after) => { // the next period with this section after date key `after` (exclusive of that period)
@@ -50,8 +57,8 @@
         if (!sec) { cells += `<div class="ttt-c free${past ? " past" : ""}"><span>Free</span></div>`; return; }
         const fu = fuOf(key, p, sec), hw = hwDue(key, sec), on = sel && sel.k === key && sel.p === p;
         const open = fu.filter((f) => !f.done).length;
-        cells += `<button type="button" class="ttt-c mine${past ? " past" : ""}${on ? " on" : ""}${key === S.todayKey ? " today" : ""}" style="--s:${TONE[sec]}" data-tt="${key}|${p}|${sec}" aria-label="${esc(S.secName(sec))}, ${when(key, p)}${fu.length ? `, ${fu.length} follow-up${fu.length === 1 ? "" : "s"}` : ""}">
-          <b>${esc(S.secName(sec))}</b>${sec === T.classOf ? `<small>Your class</small>` : ""}
+        cells += `<button type="button" class="ttt-c mine${past ? " past" : ""}${on ? " on" : ""}${key === S.todayKey ? " today" : ""}" style="--s:${TONE[sec] || "var(--slate)"}" data-tt="${key}|${p}|${sec}" aria-label="${esc(S.secName(sec))}, ${when(key, p)}${fu.length ? `, ${fu.length} follow-up${fu.length === 1 ? "" : "s"}` : ""}">
+          <b>${esc(S.secName(sec))}</b>${noteAt(d, p, sec) ? `<small>${esc(noteAt(d, p, sec))}</small>` : ""}
           <span class="ttt-tags">${hw.length ? `<i class="hw">Homework due</i>` : ""}${fu.length ? `<i class="fu${open ? "" : " done"}">${open ? `${open} to follow up` : "✓ followed up"}</i>` : ""}</span></button>`;
       });
     }
@@ -68,14 +75,14 @@
     const rows = Array.from({ length: lim }, (_, p) => { const sec = secAt(d, p);
       if (!sec) return `<div class="ttt-r free"><span class="ttt-pt"><b>P${p + 1}</b><span>${S.periodTimes[p]}</span></span><span>Free</span></div>`;
       const fu = fuOf(key, p, sec), hw = hwDue(key, sec), open = fu.filter((f) => !f.done).length;
-      return `<button type="button" class="ttt-r mine${sel && sel.k === key && sel.p === p ? " on" : ""}" style="--s:${TONE[sec]}" data-tt="${key}|${p}|${sec}"><span class="ttt-pt"><b>P${p + 1}</b><span>${S.periodTimes[p]}</span></span><b>${esc(S.secName(sec))}</b><span class="ttt-tags">${hw.length ? `<i class="hw">Homework due</i>` : ""}${fu.length ? `<i class="fu${open ? "" : " done"}">${open ? `${open} to follow up` : "✓"}</i>` : ""}</span></button>`; }).join("");
+      return `<button type="button" class="ttt-r mine${sel && sel.k === key && sel.p === p ? " on" : ""}" style="--s:${TONE[sec] || "var(--slate)"}" data-tt="${key}|${p}|${sec}"><span class="ttt-pt"><b>P${p + 1}</b><span>${S.periodTimes[p]}</span></span><b>${esc(S.secName(sec))}${noteAt(d, p, sec) ? ` <small>${esc(noteAt(d, p, sec))}</small>` : ""}</b><span class="ttt-tags">${hw.length ? `<i class="hw">Homework due</i>` : ""}${fu.length ? `<i class="fu${open ? "" : " done"}">${open ? `${open} to follow up` : "✓"}</i>` : ""}</span></button>`; }).join("");
     return tabs + `<div class="ttt-rows">${rows}</div>`;
   }
 
   function side() {
     if (sel) {
       const { k, p, sec } = sel, fu = fuOf(k, p, sec), hw = hwDue(k, sec), nx = nextClass(sec, sel);
-      return `<div class="card-h"><h2><i class="ttt-sw" style="--s:${TONE[sec]}"></i>${esc(S.secName(sec))}</h2><button type="button" class="right link-btn" data-ttclose>Back to the week</button></div>
+      return `<div class="card-h"><h2><i class="ttt-sw" style="--s:${TONE[sec] || "var(--slate)"}"></i>${esc(S.secName(sec))}</h2><button type="button" class="right link-btn" data-ttclose>Back to the week</button></div>
         <p class="ttt-when">${when(k, p)} to ${S.ENDS[p]}</p>
         ${hw.length ? `<div class="ttt-due">${hw.map((h) => `<div><b>Homework due</b><span>${esc(h.title)}</span></div>`).join("")}</div>` : ""}
         <div class="ttt-k">Follow-ups for this class</div>
@@ -91,20 +98,22 @@
     const slots = days.reduce((a, d) => a + S.periodsOn(d), 0);
     return `<div class="card-h"><h2>Coming up</h2><span class="right muted ttt-sub">${cnt} classes, ${slots - cnt} free this week</span></div>
       <div class="ttt-k">Next class with each section</div>
-      <div class="ttt-nx">${nexts.map(({ sec, n }) => `<button type="button" class="ttt-nxi" style="--s:${TONE[sec]}" data-tt="${n.k}|${n.p}|${n.sec}"><i></i><b>${esc(S.secName(sec))}</b><span>${when(n.k, n.p)}</span></button>`).join("")}</div>
+      <div class="ttt-nx">${nexts.map(({ sec, n }) => `<button type="button" class="ttt-nxi" style="--s:${TONE[sec] || "var(--slate)"}" data-tt="${n.k}|${n.p}|${n.sec}"><i></i><b>${esc(S.secName(sec))}</b><span>${when(n.k, n.p)}</span></button>`).join("")}</div>
       <div class="ttt-k">Follow-ups to do</div>
       <div class="ttt-up">${up.length ? up.map((f) => `<button type="button" class="ttt-ui" style="--s:${TONE[f.sec] || "var(--muted)"}" data-tt="${f.k}|${f.p}|${f.sec}"><i></i><span><b>${esc(f.text)}</b><small>${esc(S.secName(f.sec))} · ${when(f.k, f.p)}</small></span></button>`).join("")
         : `<div class="ttt-empty"><b>Nothing to follow up yet</b><span>Tap any class in the week to plan for it: collect homework, a re-test, a reminder.</span></div>`}</div>`;
   }
 
   function render() {
+    WK = null;
     const days = daysOf(week), a = days[0], b = days[days.length - 1];
     $("#ttt-wk").textContent = week === 0 ? "This week" : week === 1 ? "Next week" : week === -1 ? "Last week" : `${S.fmt(S.iso(a), { day: "numeric", month: "short" })} to ${S.fmt(S.iso(b), { day: "numeric", month: "short" })}`;
     $("#ttt-range").textContent = `${S.fmt(S.iso(a), { day: "numeric", month: "short" })} to ${S.fmt(S.iso(b), { day: "numeric", month: "short" })}`;
     $("#ttt-today").style.display = week === 0 ? "none" : "";
     S.paint($("#ttt-week"), S.narrow() ? dayList(days) : grid(days));
     S.paint($("#ttt-side"), side());
-    $("#ttt-key").innerHTML = mine.map((k) => `<span><i style="background:${TONE[k]}"></i>${esc(S.secName(k))}${k === T.classOf ? " · your class" : ""}</span>`).join("") + `<span><i class="fr"></i>Free</span>`;
+    const others = Object.values(wk()).some((x) => !TONE[x.k]);
+    $("#ttt-key").innerHTML = mine.filter((k) => TONE[k]).map((k) => `<span><i style="background:${TONE[k]}"></i>${esc(S.secName(k))}${k === T.classOf ? " · your class" : ""}</span>`).join("") + (others ? `<span><i style="background:var(--slate)"></i>Other sections</span>` : "") + `<span><i class="fr"></i>Free</span>`;
   }
   S.ttRender = render;
 
