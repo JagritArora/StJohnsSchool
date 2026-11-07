@@ -3505,7 +3505,6 @@ select.adm-st { border-color: color-mix(in srgb, var(--st) 35%, var(--line)); ba
 .tk-i.done .t b { color: var(--muted); text-decoration: line-through; text-decoration-color: color-mix(in srgb, var(--muted) 50%, transparent); }
 .qp-row3 { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; }
 .qp-row3 .field[hidden] { display: none; }
-.qp-src { min-height: 260px !important; font: 14px/1.6 ui-monospace, Menlo, Consolas, monospace !important; }
 .qp-sum { margin: 10px 0 0; font-size: 14px; color: var(--muted); }
 .qp-sum:empty { display: none; }
 .qp-sum b { color: var(--ink); }
@@ -3537,9 +3536,6 @@ select.adm-st { border-color: color-mix(in srgb, var(--st) 35%, var(--line)); ba
 .qp-drop:hover, .qp-drop.over { background: color-mix(in srgb, var(--royal) 7%, var(--surface)); border-color: color-mix(in srgb, var(--royal) 50%, var(--line)); }
 .qp-drop.has { border-style: solid; }
 .qp-drop:focus-within { outline: 2px solid var(--royal); outline-offset: 2px; }
-.qp-paste { margin-top: 10px; font-size: 14px; }
-.qp-paste summary { cursor: pointer; color: var(--royal-text); font-weight: 600; width: max-content; }
-.qp-paste .qp-src { width: 100%; margin: 8px 0; min-height: 200px !important; padding: 10px 12px; border: 1px solid var(--line); border-radius: 10px; background: var(--surface); color: var(--ink); resize: vertical; }
 .qp-by { display: block; margin-top: 3px; font-size: 13px; }
 .qp-spin { display: inline-block; width: 13px; height: 13px; margin-right: 4px; vertical-align: -2px; border: 2px solid color-mix(in srgb, var(--royal) 25%, transparent); border-top-color: var(--royal); border-radius: 50%; animation: qp-spin .8s linear infinite; }
 @keyframes qp-spin { to { transform: rotate(360deg); } }

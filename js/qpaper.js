@@ -1,4 +1,4 @@
-/* Question paper, in Teachers' Corner: the teacher uploads their Word file (or pastes the questions)
+/* Question paper, in Teachers' Corner: the teacher uploads their Word file
    and downloads it as a Word file in one of the school's three house layouts — Exam (normal),
    Exam with a marks column (box) and Assignment (chapter-wise).
    How it stays word for word:
@@ -834,9 +834,8 @@
   ["dragleave", "drop"].forEach((ev) => drop.addEventListener(ev, (e) => { e.preventDefault(); drop.classList.remove("over"); }));
   drop.addEventListener("drop", (e) => take(e.dataTransfer.files[0]));
   document.querySelectorAll("[name=qp-layout]").forEach((r) => r.addEventListener("change", () => render(false)));
-  $("#qp-paste-go").addEventListener("click", () => { const v = $("#qp-src").value; if (!v.trim()) { $("#qp-src").focus(); return; } picked("Pasted questions"); load(v, "Question paper"); });
   $("#qp-go").addEventListener("click", download);
-  $("#qp-sample").addEventListener("click", () => { $("#qp-paste").open = true; $("#qp-src").value = SAMPLE; picked("Sample paper"); load(SAMPLE, "Sample paper"); });
+  $("#qp-sample").addEventListener("click", () => { picked("Sample paper"); load(SAMPLE, "Sample paper"); });
   const SAMPLE = `ST. JOHN'S SCHOOL, SECTOR 7A, FARIDABAD
 Pre Board 1 Examination (2026-27)
 Subject: Biology    Class: XII
